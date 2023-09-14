@@ -1,0 +1,16 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGWILHORIZON_00057_GISELBERDUS_000,怎么，你也迷路了吗？<hex:02100103>如果有什么疑问的话，我可以帮你解答。
+1,TEXT_REGWILHORIZON_00057_SCENE00000Q,想了解什么？
+2,TEXT_REGWILHORIZON_00057_SCENE00000A1,你在这里是做什么的？
+3,TEXT_REGWILHORIZON_00057_SCENE00000A2,这里是什么村落？
+4,TEXT_REGWILHORIZON_00057_SCENE00000A3,取消
+5,TEXT_REGWILHORIZON_00057_GISELBERDUS_010,我们是铜刃团蔷薇联队。<hex:02100103>主要负责地平关的警卫工作。
+6,TEXT_REGWILHORIZON_00057_GISELBERDUS_011,所谓铜刃团，就是商人们集资成立的警备团。<hex:02100103>啊，不要因为是私兵就小看我们。
+7,TEXT_REGWILHORIZON_00057_GISELBERDUS_012,我们为商人们提供警备服务，让他们放心做买卖。<hex:02100103>开开心心赚钱，这样一来财源也会滚滚而来。<hex:02100103>所谓你好，我好，大家好嘛。
+8,TEXT_REGWILHORIZON_00057_GISELBERDUS_020,地平关是物流的中转站。<hex:02100103>通过海路运输的货物，在西面的黄昏湾卸货，<hex:02100103>经这个村落中转后，再向乌尔达哈方向运输。
+9,TEXT_REGWILHORIZON_00057_GISELBERDUS_021,这里备有卷扬机，<hex:02100103>可以将沉重的货物从位于低地的黄昏湾运送到处于高地的这里，<hex:02100103>可谓是物流的关键地点。
+10,TEXT_REGWILHORIZON_00057_GISELBERDUS_022,也正因如此，来往于这里的商人络绎不绝，<hex:02100103>让这里时时刻刻充满着活力。<hex:02100103>当然，也不乏形迹可疑的家伙混迹于其中……
+11,TEXT_REGWILHORIZON_00057_GISELBERDUS_023,为了整治这些家伙，<hex:02100103>我们铜刃团才警卫执勤。

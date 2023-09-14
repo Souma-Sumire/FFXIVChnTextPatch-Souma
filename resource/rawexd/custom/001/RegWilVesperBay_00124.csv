@@ -1,0 +1,14 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGWILVESPERBAY_00124_WILFRID_000_000,你是什么人啊？<hex:02100103>找我有事吗？
+1,TEXT_REGWILVESPERBAY_00124_WILFRID_000_010,你问我啊？我是这里的管理者。<hex:02100103>这座港湾每天都会有很多船只靠岸，<hex:02100103>如果没有个管理者的话，可是会变得一团糟的。
+2,TEXT_REGWILVESPERBAY_00124_WILFRID_000_011,不过，这样热热闹闹的才好。<hex:02100103>因为有些港湾因为栈桥的修建不够完善，<hex:02100103>导致无人问津啊。
+3,TEXT_REGWILVESPERBAY_00124_WILFRID_000_020,这里是个贸易港口。<hex:02100103>可以称作是乌尔达哈的海上西大门。<hex:02100103>是什么时候建成的来着……总之还不太久呢。
+4,TEXT_REGWILVESPERBAY_00124_WILFRID_000_021,为了能让大型船只停靠，也进行了港口浚深。<hex:02100103>那可是个费钱的大工程，<hex:02100103>是由沙蝎众的罗罗力特大人出资的。
+5,TEXT_REGWILVESPERBAY_00124_WILFRID_000_022,也托他的福，才能发展成现在这么充满活力的港口。<hex:02100103>你这种冒险者也可以在这里找到像样的工作了。
+6,TEXT_REGWILVESPERBAY_00124_Q1_000_000,想了解什么？
+7,TEXT_REGWILVESPERBAY_00124_A1_000_001,你是做什么的？
+8,TEXT_REGWILVESPERBAY_00124_A1_000_002,这里是什么地方？
+9,TEXT_REGWILVESPERBAY_00124_A1_000_003,取消

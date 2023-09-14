@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGWIKADVGUILD_00059_PAPASU_000,哎呀，你来得正好。<hex:02100103>怎么样？流沙屋的食物很好吃吧？<hex:02100103>大口吃饭才能有干劲去冒险！
+1,TEXT_REGWIKADVGUILD_00059_Q1_000_1,想了解什么？
+2,TEXT_REGWIKADVGUILD_00059_A1_000_1,你是做什么的？
+3,TEXT_REGWIKADVGUILD_00059_A1_000_2,这家店名的由来是？
+4,TEXT_REGWIKADVGUILD_00059_A1_000_3,取消
+5,TEXT_REGWIKADVGUILD_00059_PAPASU_010,我？关于我的事？哎呀，<hex:02100103>打听我这样的老太婆的事，又能如何呢。<hex:02100103>我只是打杂的帕帕斯大婶而已。
+6,TEXT_REGWIKADVGUILD_00059_PAPASU_011,大婶我的特长是烹调！<hex:02100103>帕帕斯大婶特制的小圆饼可是很好吃的！<hex:02100103>热腾腾的烤饼上涂满厚厚的黄油，你可一定要尝一尝。
+7,TEXT_REGWIKADVGUILD_00059_PAPASU_012,不光是圆饼，这家店的食物都棒极了。<hex:02100103>这些都是老板娘莫莫蒂的才干和人品，<hex:02100103>以及款待他人之心的结果。
+8,TEXT_REGWIKADVGUILD_00059_PAPASU_020,人们在这里会像流动的沙子一般，<hex:02100103>交错混杂，<hex:02100103>所以取名为流沙屋！
+9,TEXT_REGWIKADVGUILD_00059_PAPASU_021,最近，大婶我常常在想，<hex:02100103>在各地旅行的冒险者如同流动的沙子一般，<hex:02100103>也正因为这样，难以捉摸的人也有很多呢。
+10,TEXT_REGWIKADVGUILD_00059_PAPASU_022,对了，我丈夫从前也是冒险者，<hex:02100103>现在整个人都胖了好多，与其说是沙子更像是岩石？<hex:02100103>真是的，以前明明很帅的。

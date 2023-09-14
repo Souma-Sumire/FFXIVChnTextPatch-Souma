@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGGYR3COLDHEARTH_00401_GIBBON_000_000,哎呀，这偏僻的小村子居然会有客人来。<hex:02100103>虽然我们这什么都没有，但你可以放松身心好好休息一下。
+1,TEXT_REGGYR3COLDHEARTH_00401_Q1_000_000,想了解什么？
+2,TEXT_REGGYR3COLDHEARTH_00401_A1_000_001,你是做什么的？
+3,TEXT_REGGYR3COLDHEARTH_00401_A1_000_002,这里是什么地方？
+4,TEXT_REGGYR3COLDHEARTH_00401_A1_000_003,取消
+5,TEXT_REGGYR3COLDHEARTH_00401_GIBBON_000_010,我是这里的居民，名叫基伯恩。<hex:02100103>别看我现在这样，年轻的时候我可是做佣兵的，<hex:02100103>很是四处闯荡了一番。
+6,TEXT_REGGYR3COLDHEARTH_00401_GIBBON_000_011,可惜岁月不饶人，上了年纪之后我就回到了这生我的故乡。<hex:02100103>那之后的故事我就不一一跟你讲了，<hex:02100103>总之现在我是靠耕地过活。
+7,TEXT_REGGYR3COLDHEARTH_00401_GIBBON_000_020,这偏僻的村落叫做寒炉村。<hex:02100103>如你所见，是个啥都没有的穷村子。
+8,TEXT_REGGYR3COLDHEARTH_00401_GIBBON_000_021,由于土壤贫瘠，耕种只能种出最低限度的粮食来……<hex:02100103>所以我们主要都是靠出去做佣兵赚钱的年轻人往家里寄的钱过活。<hex:02100103>不过这也是被帝国占领前的事情了。
+9,TEXT_REGGYR3COLDHEARTH_00401_GIBBON_000_022,帝国军把我们村里的年轻人全都带走了。<hex:02100103>剩下的只有我们这些老人还有个别几个带着小孩的女人。<hex:02100103>也许再过不久，这个村子就不复存在了吧。
+10,TEXT_REGGYR3COLDHEARTH_00401_TALK_ACTOR,（★未使用／削除予定★）

@@ -1,0 +1,17 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_000,……请问有什么事吗？
+1,TEXT_REGOTH3SUINOSATO_00409_Q1_000_100,想了解什么？
+2,TEXT_REGOTH3SUINOSATO_00409_A1_000_101,你是做什么的？
+3,TEXT_REGOTH3SUINOSATO_00409_A1_000_102,这里是什么地方？
+4,TEXT_REGOTH3SUINOSATO_00409_A1_000_103,取消
+5,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_200,我叫细波，为紫水宫宫司潮骚大人做事。
+6,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_201,从准备宫中仪式用的书籍，<hex:02100103>到准备翠水乡举办祭典时要用的文件与印章、<hex:02100103>安排会议的举办等等……
+7,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_202,还有照顾繁忙的潮骚大人总喜欢带在身边的矶边。<hex:02100103>这些工作都是由我来负责。
+8,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_300,我们翠水之民是晨曦之民的分支。<hex:02100103>祖先们为了躲避地表的战乱，在海底建起了这翠水乡。
+9,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_301,治理这翠水乡的，是居住在紫水宫的红玉公主殿下。<hex:02100103>除了宫中的个别人员外，翠水乡之人是无法见到公主殿下的。
+10,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_302,现在由于公主殿正在进行特别的仪式，<hex:02100103>连那个别的人都被禁止进入紫水宫了。<hex:02100103>听说如此严格的禁令还是史上第一次出现。
+11,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_310,现在公主殿下的妹妹红殿下来到了这翠水乡。<hex:02100103>公主殿下及其族中之人通常会在宫中度过一生，<hex:02100103>像这样到外界走动是非常罕见的……
+12,TEXT_REGOTH3SUINOSATO_00409_SASANAMI_320,公主殿下及其族中之人通常会在宫中度过一生，<hex:02100103>侍奉公主的女官翡翠倒是经常会来到翠水乡里，<hex:02100103>给我们讲一些宫中的趣事……

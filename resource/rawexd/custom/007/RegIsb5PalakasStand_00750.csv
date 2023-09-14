@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_000,您是来帮忙的人吧。<hex:02100103>这是个小村子，请随意逛逛吧。<hex:02100103>如果您有想问的事情，我一定知无不言，言无不尽。
+1,TEXT_REGISB5PALAKASSTAND_00750_Q1_000_000,想了解什么？
+2,TEXT_REGISB5PALAKASSTAND_00750_A1_000_001,你是做什么的？
+3,TEXT_REGISB5PALAKASSTAND_00750_A1_000_002,这里是什么地方？
+4,TEXT_REGISB5PALAKASSTAND_00750_A1_000_003,取消
+5,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_010,我作为一名守护者生活在这里。<hex:02100103>这附近留存着许多神圣的寺院和坟墓对吧？<hex:02100103>巡视、修缮它们就是我们的职责。
+6,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_011,因此守护者很少走出众僧林园。<hex:02100103>就拿我来说，别说拉札罕了，就连去海边的次数都屈指可数。<hex:02100103>所以我很不擅长游泳。
+7,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_020,这里是波洛伽护法村。<hex:02100103>负责守护神兽大人的寺院、帮助信徒与僧侣的守护者<hex:02100103>以及其他居民都生活在这个村子里。
+8,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_021,这个村子原本是悌阳象族为他们自己创建的居住地。<hex:02100103>因此周边很多建筑都含有悌阳象族僧侣的名字，<hex:02100103>就比如圣仙阿迦玛之墓和帕瓦纳的悔悟。
+9,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_022,可这个传统的小村子，却因之前的混乱陷入纷扰不安。<hex:02100103>只盼不要发展到让我们背井离乡的境地……
+10,TEXT_REGISB5PALAKASSTAND_00750_MULRUNNAH_000_023,虽然之前的混乱造成了重大的损失，<hex:02100103>但这个村子也开始逐步恢复正常了。<hex:02100103>前来避难的居民人数仍然不少，我们会继续为人们提供支援。

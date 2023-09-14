@@ -1,0 +1,16 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_000,是旅人呀……如你所见，<hex:02100103>这黑乎乎的洞里没什么能让你看得上的好东西。<hex:02100103>你是有什么事吗？
+1,TEXT_REGOTH3HUNDREDANDONE_00420_Q1_000_000,想了解什么？
+2,TEXT_REGOTH3HUNDREDANDONE_00420_A1_000_001,你是做什么的？
+3,TEXT_REGOTH3HUNDREDANDONE_00420_A1_000_002,这里是什么地方？
+4,TEXT_REGOTH3HUNDREDANDONE_00420_A1_000_003,取消
+5,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_010,为了防止外面的人欺负维亚吉儿部之人天性质朴，<hex:02100103>收购矿石时狠狠压价，<hex:02100103>族中最是好胜的我被安排过来负责与外界的交易工作。
+6,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_011,我们的使命虽然是在这里赎罪，但罪也是要有命才能赎。<hex:02100103>所以收集维持生命所需的物资，<hex:02100103>用与其等价的矿石进行交换也是非常重要的事情。
+7,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_020,百一启示……<hex:02100103>正如这个名字所示，在这里可以获得很多来自神明的启示。
+8,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_021,不过我们最初住到这里的原因却是为了赎罪……<hex:02100103>很久以前，取得了“那达慕”胜利的维亚吉儿部<hex:02100103>侵占了所有的牲畜、土地、水源。
+9,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_023,神明看到维亚吉儿部毫不顾忌其他部落死活的举动后，<hex:02100103>派遣了巨大的甲虫来到地上惩罚我的祖先们。
+10,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_024,甲虫爬过之处，水源干涸，大地荒芜，<hex:02100103>就连山峦都被洞穿。<hex:02100103>祖先看到大地上寸草不生的惨状后，决定斩断私欲隐居到洞穴中来。
+11,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_025,然后没过多少时间，我们部落成功赢回了神明的信赖，<hex:02100103>甚至有人在冥想时能够得到神明的启示了。

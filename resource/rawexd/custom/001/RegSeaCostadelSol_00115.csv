@@ -1,0 +1,16 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_000,欢迎，请问找我有什么事吗？
+1,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_010,我是格格鲁玖大人的随从，他是这太阳海岸的主人。
+2,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_011,我的主人……格格鲁玖大人是走在潮流前线的富豪，<hex:02100103>论赚钱的话无人能出其右。<hex:02100103>但是，除此之外就……不太好说了。
+3,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_012,为了弥补主人的缺点，也为了能够让他更加集中精力赚钱……<hex:02100103>我们这些随从不惜一切侍奉他。
+4,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_020,这里是太阳海岸，以景色优美著称，<hex:02100103>是拉诺西亚首屈一指的高级居住地。
+5,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_021,这里原本是农夫们开拓出的田地，<hex:02100103>但因为海水的盐害特别严重，所以就被荒废了。<hex:02100103>而有一位乌尔达哈的富豪却瞄准了这一点，那就是格格鲁玖大人。
+6,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_022,他向梅尔维布提督捐献了巨额的资金后，<hex:02100103>从灵灾过后充斥着难民的乌尔达哈，<hex:02100103>移居到了风光明媚的这里。
+7,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_023,然后将“鲜血滨”这种不吉利的名字改成了“太阳海岸”，<hex:02100103>象征着阳光洒在这崭新的大陆上。
+8,TEXT_REGSEACOSTADELSOL_00115_Q1_000_000,想了解什么？
+9,TEXT_REGSEACOSTADELSOL_00115_A1_000_001,你是做什么的？
+10,TEXT_REGSEACOSTADELSOL_00115_A1_000_002,这里是什么地方？
+11,TEXT_REGSEACOSTADELSOL_00115_A1_000_003,取消

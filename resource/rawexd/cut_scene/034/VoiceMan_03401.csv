@@ -1,0 +1,9 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_VOICEMAN_03401_000050_KRILE,各位 女神索菲娅就交给你们了！<hex:02100103>要小心那些信徒！
+1,TEXT_VOICEMAN_03401_000010_CID,好，开始解除障壁！
+2,TEXT_VOICEMAN_03401_000020_CID,唔哦！
+3,TEXT_VOICEMAN_03401_000030_CID,计划有变！没想到那个大家伙居然会动……
+4,TEXT_VOICEMAN_03401_000040_CID,不行，视野太差了。抱歉，接下来你们只能自己走到入口了！

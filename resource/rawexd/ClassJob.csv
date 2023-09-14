@@ -1,0 +1,45 @@
+﻿key,0,1,2,27
+#,Name,Abbreviation,,Name{English}
+offset,0,4,8,16
+int32,str,str,str,str
+0,冒险者,ADV,,Adventurer
+1,剑术师,GLA,剑,Gladiator
+2,格斗家,PGL,格,Pugilist
+3,斧术师,MRD,斧,Marauder
+4,枪术师,LNC,枪,Lancer
+5,弓箭手,ARC,弓,Archer
+6,幻术师,CNJ,幻,Conjurer
+7,咒术师,THM,咒,Thaumaturge
+8,刻木匠,CRP,木,Carpenter
+9,锻铁匠,BSM,锻,Blacksmith
+10,铸甲匠,ARM,甲,Armorer
+11,雕金匠,GSM,雕,Goldsmith
+12,制革匠,LTW,革,Leatherworker
+13,裁衣匠,WVR,裁,Weaver
+14,炼金术士,ALC,炼,Alchemist
+15,烹调师,CUL,烹,Culinarian
+16,采矿工,MIN,矿,Miner
+17,园艺工,BTN,园,Botanist
+18,捕鱼人,FSH,鱼,Fisher
+19,骑士,PLD,骑,Paladin
+20,武僧,MNK,僧,Monk
+21,战士,WAR,战,Warrior
+22,龙骑士,DRG,龙,Dragoon
+23,吟游诗人,BRD,诗,Bard
+24,白魔法师,WHM,白,White Mage
+25,黑魔法师,BLM,黑,Black Mage
+26,秘术师,ACN,秘,Arcanist
+27,召唤师,SMN,召,Summoner
+28,学者,SCH,学,Scholar
+29,双剑师,ROG,双,Rogue
+30,忍者,NIN,忍,Ninja
+31,机工士,MCH,机,Machinist
+32,暗黑骑士,DRK,暗,Dark Knight
+33,占星术士,AST,占,Astrologian
+34,武士,SAM,武,Samurai
+35,赤魔法师,RDM,赤,Red Mage
+36,青魔法师,BLU,青,Blue Mage
+37,绝枪战士,GNB,绝,Gunbreaker
+38,舞者,DNC,舞,Dancer
+39,钐镰客,RPR,钐,Reaper
+40,贤者,SGE,贤,Sage

@@ -1,0 +1,6 @@
+﻿key,0,1,2,3
+#,JA,EN,DE,FR
+offset,0,4,8,12
+int32,str,str,str,str
+0,,,,
+1,$USER_NAME_OR_ID达成了成就「$ACHIEVEMENT」！,$USER_NAME_OR_ID达成了成就「$ACHIEVEMENT」！,$USER_NAME_OR_ID达成了成就「$ACHIEVEMENT」！,$USER_NAME_OR_ID达成了成就「$ACHIEVEMENT」！

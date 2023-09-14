@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_000,哎呀，居然会有旅人来到这晨曦王座，真是少见。<hex:02100103>难得见到人来，你有什么想问的就问吧，<hex:02100103>姐姐来回答你。
+1,TEXT_REGOTH3THEDAWNTHRONE_00418_Q1_000_000,想了解什么？
+2,TEXT_REGOTH3THEDAWNTHRONE_00418_A1_000_001,你是做什么的？
+3,TEXT_REGOTH3THEDAWNTHRONE_00418_A1_000_002,这里是什么地方？
+4,TEXT_REGOTH3THEDAWNTHRONE_00418_A1_000_003,取消
+5,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_010,呵，你对姐姐感兴趣吗？<hex:02100103>如你所见，我在这里教人学阿吉木搏克并负责组织相关事宜。<hex:02100103>至于阿吉木搏克，则是一种草原上自古流传的摔跤术。
+6,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_011,别看我块头不大，实际上我可是“巨像”级的搏克选手……<hex:02100103>也就是获得过大赛冠军的意思。
+7,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_012,嘻嘻……所以喜欢姐姐可以，但注意不要随便乱摸哟。<hex:02100103>否则也许一个不小心就把你摔出去了。
+8,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_020,晨曦王座是相传太阳神阿吉木创造的敖龙族<hex:02100103>首位男性晨曦之父诞生的圣地。
+9,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_021,这边的雕像就是晨曦之父啦。<hex:02100103>我们作为太阳神阿吉木的孩子，可以算是晨曦之父的兄弟姐妹。<hex:02100103>所以由我们来守护并居住在这圣地里也是理所当然的嘛。
+10,TEXT_REGOTH3THEDAWNTHRONE_00418_BERUDE_000_022,草原中央的这个高台上视野极好，一目望去可以看到地平线的尽头，<hex:02100103>令人心情舒畅。而且不管是靠近过来的野兽，<hex:02100103>还是敌对的部落，都能看得一清二楚。

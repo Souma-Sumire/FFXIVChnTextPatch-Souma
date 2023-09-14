@@ -1,0 +1,13 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_000,解放者阁下，谢谢你。<hex:02100103>多亏了你，我们才能成功夺回祖国。<hex:02100103>想必那些死去的同胞也能瞑目了吧……
+1,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_001,12个新生女王之刃中只有我和另一人活了下来……<hex:02100103>虽然不知道究竟是幸还是不幸，但这就是我的命运。
+2,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_002,作为幸存者，我有义务让那些牺牲的同胞之名流传于后世。<hex:02100103>他们的英勇事迹绝不能就此消失。
+3,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_003,特别是被精炼、成为了敌人阻挡在我们面前的那些人……<hex:02100103>一想到他们壮志未成身先死，我就感觉心如刀割、痛苦万分。
+4,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_004,新生女王之刃的另一个幸存者现在正被关押在地下牢房。<hex:02100103>虽然他也和其他人一样被精炼了，<hex:02100103>但所幸我们在扎杜诺尔高原上抓住了他。
+5,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_005,听说现在已经确立了解除精炼的方法，<hex:02100103>刻有术式的使魔也会在近期抵达博兹雅。<hex:02100103>相信很快就能对他进行治疗了。
+6,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_006,等他恢复正常之后，我们要一起保护博兹雅。<hex:02100103>为此，我准备重组新生女王之刃，以慰大家的在天之灵。
+7,TEXT_REGOTH4MYCSURVIVOR_00720_BLADESOFGUNNHILDR_000_007,另外，我也想替所有牺牲的同胞们向解放者阁下道谢，<hex:02100103>如果没有你的帮助，我们不可能达成夙愿。<hex:02100103>真的是万分感谢！
+8,TEXT_REGOTH4MYCSURVIVOR_00720_TALK_ACTOR,
