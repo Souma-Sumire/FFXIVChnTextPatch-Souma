@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_1,虽说这里除了以太之光什么也没有……<hex:02100103>不过你可以在这里稍作休息调整。
+1,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_2,直到5年前，我都和父亲在这一带种植小麦。
+2,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_3,可父亲因灵灾去世……<hex:02100103>如你所见，现在农田也荒废了，<hex:02100103>以前饲养的渡渡鸟也回归荒野，反倒成了这片土地的主人。
+3,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_4,可也不能总这么消沉下去。<hex:02100103>我想尽自己一切力量，<hex:02100103>复兴父亲生前所爱的这个小村落。
+4,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_5,灵灾后以太之光移动网被重新编整，<hex:02100103>这里就是那时开拓的新殖民地。
+5,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_6,原本村落是在西北方的，<hex:02100103>可等我从利姆萨·罗敏萨避难回来一看……<hex:02100103>灵灾摧毁了建筑物，农田和家畜也难逃一劫。
+6,TEXT_REGSEASWIFTPERCH_00072_LYULF_000_7,看着眼前的惨状，大家都失去了希望，<hex:02100103>也没有人想去开垦种田了。<hex:02100103>要怎样才能打破这种气氛呢……
+7,TEXT_REGSEASWIFTPERCH_00072_Q1_000_1,想了解什么？
+8,TEXT_REGSEASWIFTPERCH_00072_A1_000_1,你是做什么的？
+9,TEXT_REGSEASWIFTPERCH_00072_A1_000_2,这里是什么地方？
+10,TEXT_REGSEASWIFTPERCH_00072_A1_000_3,取消

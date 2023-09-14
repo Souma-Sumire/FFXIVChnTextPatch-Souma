@@ -1,0 +1,8 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_CMNDEFMATERIASLOTTALK_00175_MUTAMIX_000_000,不需要的 魔晶石 5个 魔晶石！<hex:02100103>把这个 还有那个 都混在一起！<hex:02100103>就可以 产生出 新的魔晶石。
+1,TEXT_CMNDEFMATERIASLOTTALK_00175_MUTAMIX_000_001,会出什么 看你运气！<hex:02100103>想试试的话 就拿来！<hex:02100103>5个 魔晶石 拿来！
+2,TEXT_CMNDEFMATERIASLOTTALK_00175_SYSTEM_000_005,将不需要的5个魔晶石交给缪塔米克斯，<hex:02100103>他会将这些合成，并生成一个新的魔晶石。
+3,TEXT_CMNDEFMATERIASLOTTALK_00175_SYSTEM_000_006,但是，完全不知道会出现什么样的魔晶石，<hex:02100103>合成的结果完全看运气。<hex:02100103>如果有不要的魔晶石的话，就去试试吧。

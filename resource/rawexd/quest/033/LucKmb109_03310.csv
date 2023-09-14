@@ -1,0 +1,99 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_LUCKMB109_03310_SEQ_00,群花馆的桑克瑞德给仙子们帮忙的工作稍微告一段落了。
+1,TEXT_LUCKMB109_03310_SEQ_01,和桑克瑞德等人商量过后，为了让给仙子族们帮忙一事有一个结果，决定找同伴相助。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入含有“Feo Ul”的词句，在群花馆的<hex:02280CFF05>EObj<hex:F61EAAE30103>附近呼唤菲奥·乌儿。
+2,TEXT_LUCKMB109_03310_SEQ_02,"菲奥·乌儿认为冒险者冷漠无情。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入含有“Please, Feo Ul, I need you.”的词句，在群花馆的<hex:02280CFF05>EObj<hex:F61EAAE30103>附近呼唤菲奥·乌儿。"
+3,TEXT_LUCKMB109_03310_SEQ_03,"菲奥·乌儿认为冒险者不够真情实感。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入含有“O loveliest of branches, please grant me your succor!”的词句，在群花馆的<hex:02280CFF05>EObj<hex:F61EAAE30103>附近呼唤菲奥·乌儿。"
+4,TEXT_LUCKMB109_03310_SEQ_04,菲奥·乌儿终于现身，在他的劝说下，仙子们解开了施在一行人身上的法术。和群花馆的桑克瑞德谈谈。
+5,TEXT_LUCKMB109_03310_SEQ_05,和桑克瑞德进行了交谈。和群花馆笃学者庄园的桑克瑞德谈谈。
+6,TEXT_LUCKMB109_03310_SEQ_06,在桑克瑞德的带领下，冒险者等人成功和于里昂热汇合了。他用沉重的语气向冒险者描述了在次元的夹缝中窥见的第八灵灾的光景，和光与暗的真相。为了不让悲剧化为现实，再次向着讨伐灵光卫出发！
+7,TEXT_LUCKMB109_03310_SEQ_07,
+8,TEXT_LUCKMB109_03310_SEQ_08,
+9,TEXT_LUCKMB109_03310_SEQ_09,
+10,TEXT_LUCKMB109_03310_SEQ_10,
+11,TEXT_LUCKMB109_03310_SEQ_11,
+12,TEXT_LUCKMB109_03310_SEQ_12,
+13,TEXT_LUCKMB109_03310_SEQ_13,
+14,TEXT_LUCKMB109_03310_SEQ_14,
+15,TEXT_LUCKMB109_03310_SEQ_15,
+16,TEXT_LUCKMB109_03310_SEQ_16,
+17,TEXT_LUCKMB109_03310_SEQ_17,
+18,TEXT_LUCKMB109_03310_SEQ_18,
+19,TEXT_LUCKMB109_03310_SEQ_19,
+20,TEXT_LUCKMB109_03310_SEQ_20,
+21,TEXT_LUCKMB109_03310_SEQ_21,
+22,TEXT_LUCKMB109_03310_SEQ_22,
+23,TEXT_LUCKMB109_03310_SEQ_23,
+24,TEXT_LUCKMB109_03310_TODO_00,于<hex:02280CFF05>EObj<hex:F61EAAE30103>在“说话”频道下输入<hex:02100103>“Feo Ul”
+25,TEXT_LUCKMB109_03310_TODO_01,"于<hex:02280CFF05>EObj<hex:F61EAAE30103>在“说话”频道下输入<hex:02100103>“Please, Feo Ul, I need you”"
+26,TEXT_LUCKMB109_03310_TODO_02,"于<hex:02280CFF05>EObj<hex:F61EAAE30103>在“说话”频道下输入<hex:02100103>“O loveliest of branches, please grant me your succor!”"
+27,TEXT_LUCKMB109_03310_TODO_03,和桑克瑞德对话
+28,TEXT_LUCKMB109_03310_TODO_04,再次和桑克瑞德对话
+29,TEXT_LUCKMB109_03310_TODO_05,
+30,TEXT_LUCKMB109_03310_TODO_06,
+31,TEXT_LUCKMB109_03310_TODO_07,
+32,TEXT_LUCKMB109_03310_TODO_08,
+33,TEXT_LUCKMB109_03310_TODO_09,
+34,TEXT_LUCKMB109_03310_TODO_10,
+35,TEXT_LUCKMB109_03310_TODO_11,
+36,TEXT_LUCKMB109_03310_TODO_12,
+37,TEXT_LUCKMB109_03310_TODO_13,
+38,TEXT_LUCKMB109_03310_TODO_14,
+39,TEXT_LUCKMB109_03310_TODO_15,
+40,TEXT_LUCKMB109_03310_TODO_16,
+41,TEXT_LUCKMB109_03310_TODO_17,
+42,TEXT_LUCKMB109_03310_TODO_18,
+43,TEXT_LUCKMB109_03310_TODO_19,
+44,TEXT_LUCKMB109_03310_TODO_20,
+45,TEXT_LUCKMB109_03310_TODO_21,
+46,TEXT_LUCKMB109_03310_TODO_22,
+47,TEXT_LUCKMB109_03310_TODO_23,
+48,TEXT_LUCKMB109_03310_THANCRED_000_000,你那边怎么样了？
+49,TEXT_LUCKMB109_03310_THANCRED_000_001,干了很多活……但是还没松口吗？
+50,TEXT_LUCKMB109_03310_THANCRED_000_002,我这边也差不多，<hex:02100103>那些家伙们是不是真的需要帮忙都不一定呢……
+51,TEXT_LUCKMB109_03310_ALISAIE_000_003,诶……这忙要帮到什么时候啊？<hex:02100103>与其说在帮他们做事，不如说是在被他们调戏。
+52,TEXT_LUCKMB109_03310_ALPHINAUD_000_004,我问仙子族还需要帮忙到什么程度才可以，<hex:02100103>他们只会说“还早着呢”。<hex:02100103>看样子根本没打算放我们走。
+53,TEXT_LUCKMB109_03310_RYNE_000_005,之前于里昂热有告诉过我……
+54,TEXT_LUCKMB109_03310_RYNE_000_006,有一种说法是，仙子族是未能出生，<hex:02100103>或者是夭折的婴儿的灵魂孕育出来的妖灵。
+55,TEXT_LUCKMB109_03310_RYNE_000_007,当然了，他们没有记忆，<hex:02100103>但想要讴歌生命、想要尽情玩耍的想法<hex:02100103>束缚着他们的灵魂……
+56,TEXT_LUCKMB109_03310_RYNE_000_008,所以他们只管玩耍，<hex:02100103>把引诱进领地的人们困在里面几年甚至几十年<hex:02100103>不让他们回去的情况也时有发生……
+57,TEXT_LUCKMB109_03310_ALPHINAUD_000_009,嗯……<hex:02100103>之前我打算从学术意义上解释死灵的本质的时候，<hex:02100103>有看到过类似的关于灵魂的说法。
+58,TEXT_LUCKMB109_03310_ALPHINAUD_000_010,里面说灵魂是以太中如同核心一样的东西。<hex:02100103>元灵和使魔之类的以太体，<hex:02100103>与我们生物之间的区别就在于有没有这个核心。
+59,TEXT_LUCKMB109_03310_ALPHINAUD_000_011,一般来说肉体死亡的同时，灵魂和以太会一同消散。<hex:02100103>但若是受到什么强烈的感情或者特殊的技术束缚，<hex:02100103>灵魂就会单独留下来。
+60,TEXT_LUCKMB109_03310_ALPHINAUD_000_012,有时候这样的灵魂在人世间徘徊的过程中会再次聚集起以太，<hex:02100103>或者寄宿在刚刚出生的生命之中。<hex:02100103>仙子族大概也是这样来的吧。
+61,TEXT_LUCKMB109_03310_ALISAIE_000_013,按照你的理论，我们只有灵魂跑到第一世界来，<hex:02100103>聚集起这边的以太形成身体，<hex:02100103>不就变成阿尔菲诺最讨厌的死灵了嘛。
+62,TEXT_LUCKMB109_03310_THANCRED_000_014,无论如何，不能再由着仙子族们的性子来了，<hex:02100103>不然可就没完没了了。
+63,TEXT_LUCKMB109_03310_THANCRED_000_015,看来我们应该再跟他们提一下交涉的事……嗯……<hex:02100103>要是他们之中能有一个容易沟通的仙子族愿意当我们的同伴，<hex:02100103>或许可以起个带头作用，改变他们的态度。
+64,TEXT_LUCKMB109_03310_THANCRED_000_016,你们帮他们做事的时候有没有发现这样的家伙？
+65,TEXT_LUCKMB109_03310_Q1_000_000,如何作答？
+66,TEXT_LUCKMB109_03310_A1_000_001,好像有碰到过？
+67,TEXT_LUCKMB109_03310_A1_000_002,菲奥·乌儿的话？
+68,TEXT_LUCKMB109_03310_THANCRED_000_017,你有想到什么吗？<hex:02100103>说来听听。
+69,TEXT_LUCKMB109_03310_THANCRED_000_018,原来是和你缔结了契约的仙子族啊！<hex:02100103>那可值得一试。
+70,TEXT_LUCKMB109_03310_THANCRED_000_019,<hex:022903EB0203>，你能不能把那个菲奥·乌儿叫出来？
+71,TEXT_LUCKMB109_03310_SYSTEM_000_020,在指定地点将聊天频道设置为“说话”频道后，<hex:02100103>使用键盘或软键盘输入“Feo Ul”来呼唤他吧。
+72,TEXT_LUCKMB109_03310_ALPHINAUD_000_030,我们也和死灵一样……是这样吗……是这样啊。
+73,TEXT_LUCKMB109_03310_ALISAIE_000_035,和仙子族缔结契约也太厉害了吧。
+74,TEXT_LUCKMB109_03310_THANCRED_000_040,就麻烦你把那个菲奥·乌儿叫出来吧，<hex:02100103>前提是他得愿意出来……
+75,TEXT_LUCKMB109_03310_RYNE_000_045,呃……菲奥要是能成为我们的突破口就好了。
+76,TEXT_LUCKMB109_03310_SYSTEM_000_050,Feo Ul
+77,TEXT_LUCKMB109_03310_SYSTEM_000_051,隐约可以听到不知来自何处的声音……
+78,TEXT_LUCKMB109_03310_FEOUL_000_052,(-菲奥·乌儿-)哼！<hex:02100103>我的小树苗绝对是把我给忘了。
+79,TEXT_LUCKMB109_03310_FEOUL_000_053,(-菲奥·乌儿-)你叫我叫得那么冷漠无情，根本就没想依靠我吧！<hex:02100103>这种小树苗我才不管呢！
+80,TEXT_LUCKMB109_03310_SYSTEM_000_054,在指定地点将聊天频道设置为“说话”频道后，<hex:02100103>使用键盘或软键盘输入“Feo Ul”来呼唤他吧。
+81,TEXT_LUCKMB109_03310_SYSTEM_000_060,"Please, Feo Ul, I need you"
+82,TEXT_LUCKMB109_03310_FEOUL_000_061,(-菲奥·乌儿-)……不、不管就是不管！<hex:02100103>你叫我的时候一点真情实感都没有！
+83,TEXT_LUCKMB109_03310_SYSTEM_000_062,"在指定地点将聊天频道设置为“说话”频道后，<hex:02100103>使用键盘或软键盘输入“Please, Feo Ul, I need you”来呼唤他吧。"
+84,TEXT_LUCKMB109_03310_SYSTEM_000_070,"O loveliest of branches, please grant me your succor!"
+85,TEXT_LUCKMB109_03310_SYSTEM_000_071,"在指定地点将聊天频道设置为“说话”频道后，<hex:02100103>使用键盘或软键盘输入“O loveliest of branches, please grant me your succor!”<hex:02100103>来呼唤他吧。"
+86,TEXT_LUCKMB109_03310_ALPHINAUD_000_080,我们就按约定在这里等你们回来，<hex:02100103>没事，我们会看情况陪仙子族玩的。
+87,TEXT_LUCKMB109_03310_ALISAIE_000_085,替我跟于里昂热问好。<hex:02100103>顺便告诉他别老窝在这种难找的地方，<hex:02100103>赶紧来和我们汇合。
+88,TEXT_LUCKMB109_03310_RYNE_000_090,我想起前往庄园的路线了，<hex:02100103>这都是多亏了菲奥和<hex:022903EB0203>。
+89,TEXT_LUCKMB109_03310_THANCRED_000_100,那我们先去见于里昂热吧，<hex:02100103>免得阿尔菲诺和阿莉塞被那群仙子玩躺下了。
+90,TEXT_LUCKMB109_03310_THANCRED_000_101,那家伙现在借住的地方，<hex:02100103>是当年孚布特的一个好奇心旺盛的庄园领主生活的地方，<hex:02100103>名叫“笃学者庄园”。
+91,TEXT_LUCKMB109_03310_THANCRED_000_102,从这里沿着小路向北走就会看到了，<hex:02100103>我们出发吧。
+92,TEXT_LUCKMB109_03310_RYNE_000_110,好怀念这里啊。<hex:02100103>于里昂热还好吗？
+93,TEXT_LUCKMB109_03310_THANCRED_000_120,花了不少时间终于到了，<hex:02100103>这就是于里昂热从妖灵们那里借住的房子。
+94,TEXT_LUCKMB109_03310_THANCRED_000_121,至于为什么非得住在这种地方……<hex:02100103>反正待会就要见到他本人了，你直接问他好了。<hex:02100103>好了，进去吧。

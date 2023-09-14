@@ -1,0 +1,17 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_CMNFATSHOP1N4TOWN_00584_GRAMSOL_000_001,哈哈，店还没开呢<hex:020813E905FF07>妹子<hex:FF07>兄弟<hex:03>！
+1,TEXT_CMNFATSHOP1N4TOWN_00584_GRAMSOL_001_001,哈哈，现在还没法做生意呢<hex:020813E905FF07>妹子<hex:FF07>兄弟<hex:03>！<hex:02100103>订的货全不到，这店简直没法开了！
+2,TEXT_CMNFATSHOP1N4TOWN_00584_SYSTEM_001_002,需要将“暗影之逆焰主线任务”推进到特定的阶段<hex:02100103>才能开始与当前地区的广域交易商进行交易。
+3,TEXT_CMNFATSHOP1N4TOWN_00584_SYSTEM_001_012,需要使雷克兰德、珂露西亚岛、安穆·艾兰、伊尔美格、<hex:02100103>拉凯提卡大森林、黑风海的危命任务完成度达到3级<hex:02100103>才能开始与此广域交易商进行交易。
+4,TEXT_CMNFATSHOP1N4TOWN_00584_GRAMSOL_002_001,哈哈，真是开心！<hex:02100103>各地的物流都恢复了稳定，不断有商品到货了！<hex:02100103>快拿双色宝石来换吧！
+5,TEXT_CMNFATSHOP1N4TOWN_00584_SYSTEM_999_001,可以和水晶都的“广域交易商 古拉姆索”进行交易了！
+6,TEXT_CMNFATSHOP1N4TOWN_00584_SYSTEM_002_002,可以和当前区域的广域交易商进行交易了！<hex:02100103>在广域交易商处可使用双色宝石交换多种道具。
+7,TEXT_CMNFATSHOP1N4TOWN_00584_GRAMSOL_003_001,哈哈，瞧一瞧看一看啊！<hex:02100103>诺弗兰特各地的特产尽数汇聚于此！
+8,TEXT_CMNFATSHOP1N4TOWN_00584_PEDRONILLE_000_001,非常抱歉，本店还在准备中。
+9,TEXT_CMNFATSHOP1N4TOWN_00584_PEDRONILLE_001_001,非常抱歉，本店还在准备中。<hex:02100103>需要等到物流恢复后店才能开起来，敬请谅解。
+10,TEXT_CMNFATSHOP1N4TOWN_00584_PEDRONILLE_002_001,欢迎光临。<hex:02100103>本店的商品都是从诺弗兰特各地运来的，<hex:02100103>您可以使用双色宝石进行交换。
+11,TEXT_CMNFATSHOP1N4TOWN_00584_SYSTEM_999_002,可以和游末邦的“广域交易商 佩德萝尼尔”进行交易了！
+12,TEXT_CMNFATSHOP1N4TOWN_00584_PEDRONILLE_003_001,这些是本店的推荐商品，请来看看吧。

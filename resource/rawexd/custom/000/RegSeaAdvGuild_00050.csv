@@ -1,0 +1,14 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGSEAADVGUILD_00050_SDHODJBI_000_1,欢迎来到沉溺海豚亭。<hex:02100103>有什么事情都可以问我。
+1,TEXT_REGSEAADVGUILD_00050_SDHODJBI_000_2,我是沉溺海豚亭的侍者。<hex:02100103>你也看见了吧？店主是个当过佣兵的大叔。<hex:02100103>所以需要我这样的女孩给店里增添几分姿色。
+2,TEXT_REGSEAADVGUILD_00050_SDHODJBI_000_3,因为第七灵灾，我失去了家、失去了希望，<hex:02100103>在我饿得快趴下的时候，<hex:02100103>巴德龙店主分给了我一点玉米面包……
+3,TEXT_REGSEAADVGUILD_00050_SDHODJBI_000_4,后来，我赖着不走，硬是要留在店里帮忙。<hex:02100103>不过，这不是为了报恩才这么做的。
+4,TEXT_REGSEAADVGUILD_00050_SDHODJBI_000_5,听说我们店出售的烈酒可以让游泳好手海豚都溺水。<hex:02100103>所以才起了这个名字。<hex:02100103>不过，船员们只要有酒就很高兴了。
+5,TEXT_REGSEAADVGUILD_00050_SDHODJBI_000_6,现在冒险者们也聚集于此，<hex:02100103>巴德龙店主为了照顾冒险者忙得不可开交呢。<hex:02100103>他是个乐于助人的老好人。
+6,TEXT_REGSEAADVGUILD_00050_Q1_000_1,想了解什么？
+7,TEXT_REGSEAADVGUILD_00050_A1_000_1,你是做什么的？
+8,TEXT_REGSEAADVGUILD_00050_A1_000_2,这家店名的由来是？
+9,TEXT_REGSEAADVGUILD_00050_A1_000_3,取消

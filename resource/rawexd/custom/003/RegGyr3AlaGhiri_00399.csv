@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGGYR3ALAGHIRI_00399_DIGGIN_000_000,不好意思，如你所见我正在执勤。<hex:02100103>如果有什么事还请长话短说。
+1,TEXT_REGGYR3ALAGHIRI_00399_Q1_000_000,想了解什么？
+2,TEXT_REGGYR3ALAGHIRI_00399_A1_000_001,你是做什么的？
+3,TEXT_REGGYR3ALAGHIRI_00399_A1_000_002,这里是什么地方？
+4,TEXT_REGGYR3ALAGHIRI_00399_A1_000_003,取消
+5,TEXT_REGGYR3ALAGHIRI_00399_DIGGIN_000_010,我是迪金，隶属于守护这个城镇的阿拉米格解放军。
+6,TEXT_REGGYR3ALAGHIRI_00399_DIGGIN_000_011,虽然我的工作只是负责维持治安，<hex:02100103>但看到这个苦苦承受了帝国20年统治的城镇，<hex:02100103>我不禁想要为它的复兴也出一份力。
+7,TEXT_REGGYR3ALAGHIRI_00399_DIGGIN_000_020,这里是阿拉基利，从前与东方的贸易还频繁时，<hex:02100103>此处作为贸易路上的一个歇脚住宿之所而繁华了起来。
+8,TEXT_REGGYR3ALAGHIRI_00399_DIGGIN_000_021,但由于帝国的侵略，交易路被斩断，<hex:02100103>这个失去了原有价值的驿站只能靠着<hex:02100103>与帝国兵做买卖而勉强延命。
+9,TEXT_REGGYR3ALAGHIRI_00399_DIGGIN_000_022,虽然只要帝国还存在一天，从陆地上通往东方的贸易路就无法复活。<hex:02100103>但如果和格里达尼亚、乌尔达哈间的物流变多，这里也能得到一条<hex:02100103>新的生路。等到那时，阿拉基利就真正能脱离苦海了。
+10,TEXT_REGGYR3ALAGHIRI_00399_TALK_ACTOR,（★未使用／削除予定★）

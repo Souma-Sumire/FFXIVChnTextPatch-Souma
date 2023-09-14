@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_001,本人是<hex:020963E802FF1F>大国防联军“黑涡团”<hex:FF1F>大国防联军“双蛇党”<hex:FF1F>大国防联军“恒辉队”<hex:03>的魔法工兵！
+1,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_006,本人是<hex:020963E802FF1F>大国防联军“黑涡团”<hex:FF1F>大国防联军“双蛇党”<hex:FF1F>大国防联军“恒辉队”<hex:03>的魔法工兵！<hex:02100103>负责给军阶在<hex:020924E802FF0A>漩士长<hex:FF0A>牙士长<hex:FF0A>耀士长<hex:03>以上的人员赋予“神应”！
+2,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_Q00,要做什么？
+3,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_A01,接受“神应”
+4,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_A02,什么是“神应”？
+5,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_A03,取消
+6,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_011,伟大的工艺神比尔格啊……<hex:02100103>请将您的加护赐予<hex:022903EB0203><hex:020960E802FF1D><hex:022819FF14>GCRankLimsaMaleText<hex:E8030103><hex:FF20><hex:02281CFF17>GCRankGridaniaMaleText<hex:E8030103><hex:FF1D><hex:022819FF14>GCRankUldahMaleText<hex:E8030103><hex:03>阁下吧……
+7,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_012,好了，“神应”的赋予完成了！<hex:02100103><hex:020960E802FF1D><hex:022819FF14>GCRankLimsaMaleText<hex:E8030103><hex:FF20><hex:02281CFF17>GCRankGridaniaMaleText<hex:E8030103><hex:FF1D><hex:022819FF14>GCRankUldahMaleText<hex:E8030103><hex:03>阁下，<hex:02100103>愿您今后能够旗开得胜！
+8,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_016,神应是<hex:020963E802FF1F>大国防联军“黑涡团”<hex:FF1F>大国防联军“双蛇党”<hex:FF1F>大国防联军“恒辉队”<hex:03><hex:02100103>与“艾欧泽亚城邦军事同盟”的加盟城邦<hex:02100103>共同开发出的装备强化术。
+9,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_017,对在制造阶段施加了“特殊魔法加工”的武器防具，<hex:02100103>附加一种强化魔法。<hex:02100103>这样可以暂时提高其强度和性能。
+10,TEXT_COMDEFSANCTION_00086_FLAMEMAGE_018,我们<hex:020936E802FF10>“黑涡团”<hex:FF10>“双蛇党”<hex:FF10>“恒辉队”<hex:03>目前正在增产作为对象的装备。<hex:02100103>军阶在<hex:020924E802FF0A>漩士长<hex:FF0A>牙士长<hex:FF0A>耀士长<hex:03>以上的人员，<hex:02100103>可以凭军票换取这些装备。

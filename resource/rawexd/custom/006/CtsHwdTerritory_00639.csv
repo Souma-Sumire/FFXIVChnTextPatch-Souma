@@ -1,0 +1,9 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_CTSHWDTERRITORY_00639_AUGEBERT_000_000,<hex:022903EB0203>，你好啊！<hex:02100103>很高兴你能过来。
+1,TEXT_CTSHWDTERRITORY_00639_AUGEBERT_000_010,正好我这里有个好消息，<hex:02100103>其实，现在天穹街正在举办天穹同庆。<hex:02100103>这是居民和留下来的工匠们一起想出来的庆祝活动。
+2,TEXT_CTSHWDTERRITORY_00639_AUGEBERT_000_020,只要参加定期举办的庆典，<hex:02100103>就能获得相应的报酬！<hex:02100103>如果你有兴趣的话不妨试试。
+3,TEXT_CTSHWDTERRITORY_00639_SYSTEM_000_030,天穹同庆期间会定期展开庆典活动。<hex:02100103>庆典活动由连续的多个小活动组成。<hex:02100103>可以在天穹街内确认详细情报。
+4,TEXT_CTSHWDTERRITORY_00639_SYSTEM_000_040,另外，只能用能工巧匠或大地使者参加庆典。<hex:02100103>参加者可以获得报酬。

@@ -1,0 +1,14 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGWILDRYBONE_00058_RAULIN_000,是冒险者啊。<hex:02100103>我可以为你介绍情况。
+1,TEXT_REGWILDRYBONE_00058_SCENE00000Q,想了解什么？
+2,TEXT_REGWILDRYBONE_00058_SCENE00000A1,你在这里是做什么的？
+3,TEXT_REGWILDRYBONE_00058_SCENE00000A2,这里是什么村落？
+4,TEXT_REGWILDRYBONE_00058_SCENE00000A3,取消
+5,TEXT_REGWILDRYBONE_00058_RAULIN_010,我在这里做类似向导的工作。<hex:02100103>原本，我只是来这附近的教会，凭吊已故的妻子。
+6,TEXT_REGWILDRYBONE_00058_RAULIN_011,但在接触了其他家属，帮助其埋葬遗体后，<hex:02100103>不知不觉这变为了我的工作。
+7,TEXT_REGWILDRYBONE_00058_RAULIN_012,世事无常呢。<hex:02100103>我觉得给予他们帮助就是对妻子最好的供奉，<hex:02100103>这样一想，工作起来就更加努力了。
+8,TEXT_REGWILDRYBONE_00058_RAULIN_020,你知道西北边的圣阿达玛·兰达玛教会吗？<hex:02100103>在5年前的灵灾时，<hex:02100103>该教会接纳了众多城区收容不下的遗体。
+9,TEXT_REGWILDRYBONE_00058_RAULIN_021,来这个村落的人多半是要去教会墓地，<hex:02100103>他们可以在这里进行埋葬的准备或是稍作休息。<hex:02100103>这里是一个为死者祈福的寂静村落。

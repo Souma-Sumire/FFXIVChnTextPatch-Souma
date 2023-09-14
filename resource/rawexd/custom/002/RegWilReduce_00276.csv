@@ -1,0 +1,12 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGWILREDUCE_00276_TALK_Q1,想了解什么？
+1,TEXT_REGWILREDUCE_00276_TALK_A1,什么是“精选”？
+2,TEXT_REGWILREDUCE_00276_TALK_A2,精选的窍门
+3,TEXT_REGWILREDUCE_00276_TALK_A3,取消
+4,TEXT_REGWILREDUCE_00276_KOKOSAMU_000_000,所谓“精选”，就是指运用精制魔晶石的技术，<hex:02100103>将作为收藏品的拥有很高价值且十分稀少的素材结晶化！
+5,TEXT_REGWILREDUCE_00276_KOKOSAMU_000_001,能用作精选素材的收藏品可不是哪里都能搞到的。<hex:02100103>灵活利用采集笔记和鱼类图鉴，到处找找吧！
+6,TEXT_REGWILREDUCE_00276_KOKOSAMU_000_010,这是很重要的一点……<hex:02100103>没有“收藏价值”的东西是没办法用“精选”的。<hex:02100103>要进行精选，必须要准备好收藏品才行。
+7,TEXT_REGWILREDUCE_00276_KOKOSAMU_000_011,另外，素材的收藏价值越高、越稀有，<hex:02100103>那么就越容易精选出贵重的物品。

@@ -1,0 +1,23 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGABR2SKYISLAND2INFO_00389_MAUNIE_000_000,自从有奇怪的浮岛漂到这里后，<hex:02100103>云冠群岛周围的属性之力就开始失去控制，<hex:02100103>让岛上产生了一片风脉特别强劲又十分混乱的地区。
+1,TEXT_REGABR2SKYISLAND2INFO_00389_MAUNIE_000_001,我们空贼将那片空域称为“乱风脉带”，<hex:02100103>想穿越它可不容易。
+2,TEXT_REGABR2SKYISLAND2INFO_00389_BARNABAIX_110_000,我们曾经是飞空艇恩惠号的船员。<hex:02100103>因为遭遇到了强风，导致飞空艇失事，漂流到了这片暗礁空域。
+3,TEXT_REGABR2SKYISLAND2INFO_00389_BARNABAIX_110_001,虽然现如今来云冠群岛探索的人渐渐增多了，<hex:02100103>但那时真是无力从这里脱身……<hex:02100103>因此，我们为了活下去，以必死的决心建造了这里。
+4,TEXT_REGABR2SKYISLAND2INFO_00389_BARNABAIX_110_002,最近，在冒险者和空贼的协助下，<hex:02100103>这里成为了云冠群岛唯一的休息处。<hex:02100103>也是为了防止再出现像我们这样的漂流者……
+5,TEXT_REGABR2SKYISLAND2INFO_00389_BARNABAIX_120_000,（★未使用／削除予定★）
+6,TEXT_REGABR2SKYISLAND2INFO_00389_BARNABAIX_120_001,（★未使用／削除予定★）
+7,TEXT_REGABR2SKYISLAND2INFO_00389_BARNABAIX_120_002,（★未使用／削除予定★）
+8,TEXT_REGABR2SKYISLAND2INFO_00389_DENNIA_210_000,云冠群岛因其厚厚的云壁与世隔绝，<hex:02100103>形成了独特的生态系统。
+9,TEXT_REGABR2SKYISLAND2INFO_00389_DENNIA_210_001,而且，由于受到混乱的属性之力影响，<hex:02100103>很多魔物发生了变异，我们也收到了好几起这样的目击报告。
+10,TEXT_REGABR2SKYISLAND2INFO_00389_DENNIA_210_002,其中也有恶名昭彰的怪物……<hex:02100103>你可要多加留意“ 恶名精英”啊。
+11,TEXT_REGABR2SKYISLAND2INFO_00389_LYOLF_310_000,在这里狩猎魔物和古代野兽时，<hex:02100103>有时会发现一些可怜的牺牲者们的遗物。
+12,TEXT_REGABR2SKYISLAND2INFO_00389_LYOLF_310_001,你如果找到了装有那些遗物的上锁的宝箱，<hex:02100103>就可以把它带去给锁匠打开。<hex:02100103>这也是我们为了在恶劣环境中生存所掌握的办法。
+13,TEXT_REGABR2SKYISLAND2INFO_00389_SYSTEM_310_010,在讨伐敌人后或是其他情况中，有时会出现“宝箱”。<hex:02100103>宝箱一共有3种，越是豪华的宝箱其中装着的道具就越值钱，<hex:02100103>但相对出现的几率也就会越低。
+14,TEXT_REGABR2SKYISLAND2INFO_00389_SYSTEM_310_011,另外，从宝箱中有时还能获得“上锁的宝箱”和“坏掉的宝箱”。
+15,TEXT_REGABR2SKYISLAND2INFO_00389_SYSTEM_310_012,将其交给云冠群岛或冒险者住宅区等地的锁匠打开，<hex:02100103>就能获得里面的道具。
+16,TEXT_REGABR2SKYISLAND2INFO_00389_IOFA_410_000,你知道“乱风脉带”吗？就是那片以太混乱的空域……
+17,TEXT_REGABR2SKYISLAND2INFO_00389_IOFA_410_001,其内部可以说是不折不扣的魔窟。<hex:02100103>如果你想探索那里，我建议你一开始不要急于深入。
+18,TEXT_REGABR2SKYISLAND2INFO_00389_IOFA_410_002,因为我听说如果不让身体先习惯云冠群岛特有的以太，<hex:02100103>就容易被混乱的属性之力影响，说不定肉体都会发生变化……

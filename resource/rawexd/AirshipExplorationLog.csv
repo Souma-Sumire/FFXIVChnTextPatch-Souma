@@ -1,0 +1,39 @@
+﻿key,0
+#,Text
+offset,0
+int32,str
+0,
+1,到达了阿巴拉提亚云海的未知区域，即将向“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”调整航线。
+2,初次到达“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”，即将开始探索。
+3,到达“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”，即将开始探索。
+4,气流安定，<hex:022903EA0203>的“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”满足出发探索的要求。
+5,检测到强风，“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”虽然满足探索的要求，但会受到一定的影响。
+6,检测到强烈的湍流，“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”虽然满足探索的要求，但当前天气进行探索十分困难。
+7,气流安定，“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”没有任何问题。
+8,检测到强风，“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”虽然满足探索的要求，但当前天气进行探索十分困难。
+9,“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”处于不安定的状态，不过仍然可以强行探索。
+10,发现了包含优质成分的“<hex:02280AFF05>Item<hex:E8020103>”，即将开始挑选回收对象。
+11,发现了包含优质成分的“<hex:02280AFF05>Item<hex:E8020103>”，即将开始进行回收。
+12,检测到“<hex:02280AFF05>Item<hex:E8020103>”，即将开始进行回收。
+13,检测到“<hex:02280AFF05>Item<hex:E8020103>”，即将开始进行回收。
+14,充分利用了“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”，回收量令人非常满意！
+15,利用了“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”，回收量结果还算过得去。
+16,以当前“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”来说回收量有些令人不太满意……
+17,考虑到“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”，回收量已经算还可以了。
+18,以当前“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”来说回收量令人相当不满意……
+19,考虑到“<hex:022821FF1C>AirshipExplorationParamType<hex:E8030103>”，回收量基本没有多少指望……
+20,<hex:024804F201F403><hex:024904F201F503>获得了<hex:022003E80303>个“<hex:02280AFF05>Item<hex:E8020103>”！<hex:0249020103><hex:0248020103>
+21,有一些额外的发现，探索继续进行。
+22,有一些额外的发现，不过还是先返航了。
+23,有一些额外的发现……不过又不见了。
+24,又观察了一下周围的情况，可是没有任何发现。
+25,“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”探索完成！　发挥出了<hex:022903EA0303>的最大性能，取得了十分喜人的成果！
+26,“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”探索完成！　发挥出了<hex:022903EA0303>的性能，取得了不错的成果！
+27,“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”探索完成！　虽然成果还不错，但下次还要再继续提高！
+28,“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”探索完成！　成果还算过得去，或许有必要考虑一下调整飞空艇的配件了。
+29,“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”探索完成！　结果十分不理想……
+30,<hex:024804F201F603><hex:024904F201F703><hex:022903EA0203>获得了<hex:022003E80303><hex:020813E4E80401FF01><hex:FF0B>(+<hex:022003E80403>%)<hex:03>点经验值！<hex:0249020103><hex:0248020103>
+31,即将转向下一个目的地“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”。
+32,所有目的地都探索完成！　即将返航！［探索完成］
+33,<hex:024804F201F603><hex:024904F201F703>在航行中发现了“<hex:02281DFF18>AirshipExplorationPoint<hex:E8020103>”！<hex:0249020103><hex:0248020103>
+34,<hex:024804F201F603><hex:024904F201F703>探索的成果得到了认可，可以登记新的飞空艇了！<hex:0249020103><hex:0248020103>

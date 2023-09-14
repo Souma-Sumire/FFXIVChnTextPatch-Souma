@@ -1,0 +1,16 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_000,哎呀……这可真是神奇的客人啊。<hex:02100103>小家伙，找我有什么事吗？
+1,TEXT_REGUNI5REAHTAHRA_00758_Q1_000_000,想了解什么？
+2,TEXT_REGUNI5REAHTAHRA_00758_A1_000_001,你是做什么的？
+3,TEXT_REGUNI5REAHTAHRA_00758_A1_000_002,这里是什么地方？
+4,TEXT_REGUNI5REAHTAHRA_00758_A1_000_003,取消
+5,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_010,嗯，想了解我吗？<hex:02100103>我是个不值一提的存在。<hex:02100103>这里有许多等待死亡来临的龙，我只是其中一员而已。
+6,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_011,我曾经和同胞一起翱翔于天际，<hex:02100103>被称赞在狩猎的本领上无人能出其右，<hex:02100103>可既然没能守护住心爱的星球，那一切都毫无意义。
+7,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_020,这是我们龙族居住的地方。<hex:02100103>自从被那群钢铁混蛋夺走了一切之后，<hex:02100103>陷入了悲伤、叹息、绝望的同胞们最终来到了这里。
+8,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_021,不，应该说是龙族曾经居住的地方。<hex:02100103>我们的旅程早已结束，<hex:02100103>我们就像是一群因为某种侥幸，尚在苟延残喘的残骸。
+9,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_022,我不在意为何而生，也不在意为何未死。<hex:02100103>唯一不变的就是我们在这里静待死亡来临。<hex:02100103>小家伙，请你不用在意我们，随我们去吧。
+10,TEXT_REGUNI5REAHTAHRA_00758_FOHLOLOH_000_023,因此我们之前一直就只是静静地等待着灭亡，<hex:02100103>不过最近情况稍微发生了一些变化。<hex:02100103>一部分同胞居然怀揣起了活下去的希望……真是不可思议。
+11,TEXT_REGUNI5REAHTAHRA_00758_TALK_ACTOR,

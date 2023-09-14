@@ -1,0 +1,16 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_000,哇哇哇，人、人类大人来找我说话啦！<hex:02100103>您、您有什么事吩咐？！
+1,TEXT_REGUNI5BESTWAYSBURROW_00754_Q1_000_000,想了解什么？
+2,TEXT_REGUNI5BESTWAYSBURROW_00754_A1_000_001,你是做什么的？
+3,TEXT_REGUNI5BESTWAYSBURROW_00754_A1_000_002,这里是什么地方？
+4,TEXT_REGUNI5BESTWAYSBURROW_00754_A1_000_003,取消
+5,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_010,您、您是问我吗？！我是一名管理技师。<hex:02100103>那边那个发亮的光球，我们叫它中央控制球，<hex:02100103>我的工作就是负责它的操作与维护。
+6,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_011,中央控制球是整个最佳威兔洞设施的核心，统管兔洞里所有的功能。<hex:02100103>如果它坏掉了的话，所有部门的工作效率都会降低，<hex:02100103>是非常非常重要的东西！
+7,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_020,这里是最佳威兔洞。<hex:02100103>这个名字代表住在这里的兔兔族们都是乖乖工作的好孩子，<hex:02100103>我们住在这里的每一天都时刻记得海德林大人托付给我们的使命。
+8,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_021,所以听话的我们，已经把月球改造成了跨越星空的宇宙飞船，<hex:02100103>现在正在为迎接各位人类登船出发做最后的准备啦。<hex:02100103>请各位安心地期待兔兔族们提供的最佳宇宙航行体验吧！
+9,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_022,我们为了帮人类逃离末日，在月球上准备了这么久，<hex:02100103>结果人类却坐了别的船去了宇宙尽头。<hex:02100103>呜呜……我们努力了这么久，感觉好浪费，好可惜呀！
+10,TEXT_REGUNI5BESTWAYSBURROW_00754_FLOPPINGWAY_000_023,听说人类靠着自己的努力度过了末日的危机呀。<hex:02100103>虽然我们费心费力准备的飞船没有用处了，<hex:02100103>但这对人类来说应该是最好的结果！
+11,TEXT_REGUNI5BESTWAYSBURROW_00754_TALK_ACTOR,（★未使用／削除予定★）

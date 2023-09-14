@@ -1,0 +1,6 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_AETHERYTEEULMORE_STOP_000,写着警示语……<hex:02100103>大意是需要特别许可才能使用以太之光。
+1,TEXT_AETHERYTEEULMORE_STOP_010,没反应……<hex:02100103>应该是机能被封锁了。

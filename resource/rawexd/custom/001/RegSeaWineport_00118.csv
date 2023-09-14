@@ -1,0 +1,15 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_000,冒险者找我有什么事啊？<hex:02100103>我可不像你那么闲。
+1,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_010,我是葡萄酒港的老板。<hex:02100103>只能喝些廉价酒的冒险者可能不懂，<hex:02100103>真正品质一流的葡萄酒可是有生命的。
+2,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_011,将精心培育出的葡萄放到木桶里发酵，<hex:02100103>让它们在酒窖里慢慢呼吸，等待它们成长。<hex:02100103>我不知道还有什么工作比这个更有意义。
+3,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_012,如果你要在葡萄酒港喝酒，<hex:02100103>那就要从第一滴品味到最后一滴。<hex:02100103>我们可不把酒卖给那些觉得能醉就行的家伙。
+4,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_020,这里是制作拉诺西亚……不，艾欧泽亚最美味的葡萄酒的地方。
+5,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_021,得益于这片土地培育出的葡萄和优质的井水，<hex:02100103>每年可以酿出许多美酒。
+6,TEXT_REGSEAWINEPORT_00118_BYRGLENT_000_022,之所以被称作“酒港”，那是因为这里是葡萄酒流通的中心……<hex:02100103>不过要我说的话，那种说法简直就是胡说。<hex:02100103>应该说这里是驶向美丽的葡萄酒海洋的港口嘛。
+7,TEXT_REGSEAWINEPORT_00118_Q1_000_000,想了解什么？
+8,TEXT_REGSEAWINEPORT_00118_A1_000_001,你是做什么的？
+9,TEXT_REGSEAWINEPORT_00118_A1_000_002,这里是什么地方？
+10,TEXT_REGSEAWINEPORT_00118_A1_000_003,取消

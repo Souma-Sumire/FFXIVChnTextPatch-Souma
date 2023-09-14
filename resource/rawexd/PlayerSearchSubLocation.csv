@@ -1,0 +1,35 @@
+﻿key,3,4,5
+#,,,
+offset,0,4,8
+int32,str,str,str
+0,无效,无效,无效
+1,所有服务器,world,全世界
+2,利姆萨·罗敏萨,Limsa Lominsa,利姆萨·罗敏萨
+3,拉诺西亚,La Noscea,拉诺西亚
+4,狼狱,The Wolves' Den,狼狱
+5,格里达尼亚,Gridania,格里达尼亚
+6,黑衣森林,The Black Shroud,黑衣森林
+7,乌尔达哈,Ul'dah,乌尔达哈
+8,萨纳兰,Thanalan,萨纳兰
+9,金碟游乐场,The Gold Saucer,金碟游乐场
+10,伊修加德,Ishgard,伊修加德
+11,库尔札斯,Coerthas,库尔札斯
+12,阿巴拉提亚,Abalathia's Spine,阿巴拉提亚
+13,田园郡,Idyllshire,田园郡
+14,龙堡,Dravania,龙堡
+15,神拳痕,Rhalgr's Reach,神拳痕
+16,基拉巴尼亚,Gyr Abania,基拉巴尼亚
+17,黄金港,Kugane,黄金港
+18,奥萨德,Othard,奥萨德
+19,拉札罕,Radz-at-Han,拉札罕
+20,萨维奈岛,Thavnair,萨维奈岛
+21,加雷马,Garlemald,加雷马
+22,水晶都,The Crystarium,水晶都
+23,游末邦,Eulmore,游末邦
+24,诺弗兰特,Norvrandt,诺弗兰特
+25,摩杜纳,Mor Dhona,摩杜纳
+26,旧萨雷安,Old Sharlayan,旧萨雷安
+27,迷津,Labyrinthos,迷津
+28,星外天域,The Sea of Stars,星外天域
+29,古代世界,The World Unsundered,古代世界
+30,其他区域,Elsewhere,其他区域

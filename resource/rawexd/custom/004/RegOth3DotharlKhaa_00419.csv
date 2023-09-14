@@ -1,0 +1,14 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_000,是旅行者呀。<hex:02100103>如果不是来攻击我们的，那你可以随便四处看看。<hex:02100103>有什么疑问也可以来问我。
+1,TEXT_REGOTH3DOTHARLKHAA_00419_Q1_000_000,想了解什么？
+2,TEXT_REGOTH3DOTHARLKHAA_00419_A1_000_001,你是做什么的？
+3,TEXT_REGOTH3DOTHARLKHAA_00419_A1_000_002,这里是什么地方？
+4,TEXT_REGOTH3DOTHARLKHAA_00419_A1_000_003,取消
+5,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_010,我在这里站岗，看着外面有没有野兽或其他部落跑来袭击。<hex:02100103>上一个我做的就是这份工作，<hex:02100103>所以现在的我延续下来也是理所当然。
+6,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_011,不过在这站岗放眼望去能看到晨曦王座令我非常不爽……<hex:02100103>因为上一个我就是被住在那里的奥罗尼部之人杀死的。
+7,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_020,这里是朵塔儿部控制的水洲，<hex:02100103>都是多亏了这里的水源，我们才得以润湿我们的嗓子，<hex:02100103>饲养我们的羊群。
+8,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_021,在这广大的月神沙漠中，水源地弥足珍贵。<hex:02100103>我在这里站岗也是为了不让其他部落将这里占了去。
+9,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_022,不过敢于正面挑战我们朵塔儿部的蠢货很少就是了，<hex:02100103>毕竟我们不会畏惧死亡。

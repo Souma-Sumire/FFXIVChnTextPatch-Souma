@@ -1,0 +1,60 @@
+﻿key,0,1,3
+#,Class{Singular},,Class{Plural}
+offset,12,0,4
+int32,str,str,str
+0,,,
+1,Academician,阿尔菲诺,学士
+2,Red Mage,阿莉塞,赤魔法师
+3,Gunbreaker,桑克瑞德,绝枪战士
+4,Oracle of Light,敏菲利亚,光之巫女
+5,Astrologian,于里昂热,占星术士
+6,Sorceress,雅·修特拉,魔女
+7,Oracle of Light,琳,光之巫女
+8,Guard Captain,莱楠,卫兵团长
+9,All-Rounder,水晶公,全才
+10,All-Rounder,古·拉哈·提亚,全才
+11,Sage,阿尔菲诺,贤者
+12,Dragoon,埃斯蒂尼安,龙骑士
+13,Lithomancer,于里昂热,秘石术师
+14,All-Rounder,维涅斯,全才
+15,The Third Seat,爱梅特赛尔克,第三席
+16,Soulseer,希斯拉德,望魂者
+17,Marauder,气盛的斧术师,斧术师
+18,Lancer,气盛的枪术师,枪术师
+19,Thaumaturge,气盛的咒术师,咒术师
+20,Conjurer,气盛的幻术师,幻术师
+21,Marauder,拂晓的斧术师,斧术师
+22,Lancer,拂晓的枪术师,枪术师
+23,Thaumaturge,拂晓的咒术师,咒术师
+24,Conjurer,拂晓的幻术师,幻术师
+25,Marauder,黑涡团斧术师,斧术师
+26,Lancer,双蛇党枪术师,枪术师
+27,Thaumaturge,恒辉队咒术师,咒术师
+28,Conjurer,双蛇党幻术师,幻术师
+29,Satrap,瓦尔桑,总督
+30,Oracle of Frost,伊塞勒,冰之巫女
+31,Temple Knight,神殿骑士团正骑士,神殿骑士
+32,Temple Banneret,神殿骑士团枪骑兵,枪骑兵
+33,Temple Chirurgeon,神殿骑士团医师,医师
+34,Chivalric Knight,奥尔什方,正骑士
+35,Poroggo,佩罗·罗格,智蛙
+36,Lord Commander,艾默里克,总骑士长
+37,Knight,福尔唐家的骑士,骑士
+38,Banneret,福尔唐家的枪骑兵,枪骑兵
+39,Archer,福尔唐家的射手,射手
+40,Archon,桑克瑞德,贤人
+41,Memoriate,零,忆晶师
+42,Archon,雅·修特拉,贤人
+43,Marauder,卡尔瓦兰,斧术师
+44,Pugilist,莉瑟,格斗家
+45,Samurai,豪雪,武士
+46,Samurai,飞燕,武士
+47,Shaman,模儿部青年,萨满
+48,Ninja,夕雾,忍者
+49,Samurai,多玛勇士,武士
+50,Fushi,多玛萨满,巫师
+51,Gladiator,阿拉米格解放军战士,剑术师
+52,Pikedancer,阿拉米格解放军刺舞兵,尖枪兵
+53,Gladiator,阿雷恩瓦尔德,剑术师
+54,Pugilist,莉瑟,格斗家
+55,Champion Gladiator,劳班,剑斗士

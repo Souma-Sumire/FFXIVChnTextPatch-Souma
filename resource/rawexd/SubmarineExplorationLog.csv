@@ -1,0 +1,36 @@
+﻿key,0
+#,
+offset,0
+int32,str
+0,
+1,到达未知的海域，正在朝着“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”航行中。
+2,初次到达“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”，即将开始探索。
+3,到达“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”，即将开始探索。
+4,海流安定……<hex:022903EA0203>的“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”满足出发探索的要求。
+5,发生了暴风雨……“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”虽然满足探索的要求，但会受到一定的影响。
+6,海底火山活动频繁……“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”虽然满足探索的要求，但当前状况进行探索十分困难。
+7,海流安定……“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”没有任何问题。
+8,发生了暴风雨……“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”虽然满足探索的要求，但当前状况进行探索十分困难。
+9,“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”处于不安定的状态，不过仍然可以强行探索。
+10,发现了包含优质成分的“<hex:02280AFF05>Item<hex:E8020103>”，即将开始挑选回收对象。
+11,发现了包含优质成分的“<hex:02280AFF05>Item<hex:E8020103>”，即将开始进行回收。
+12,检测到“<hex:02280AFF05>Item<hex:E8020103>”，即将开始进行回收。
+13,检测到“<hex:02280AFF05>Item<hex:E8020103>”，即将开始进行回收。
+14,充分利用了“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”，回收量令人非常满意！
+15,考虑到“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”，回收量已经算还可以了。
+16,以当前“<hex:02281BFF16>SubmarineSpecCategory<hex:E8030103>”回收量基本没有多少指望……
+17,<hex:024804F201F403><hex:024904F201F503>获得了<hex:022003E80303>个“<hex:02280AFF05>Item<hex:E8020103>”！<hex:0249020103><hex:0248020103>
+18,有一些额外的发现，探索继续进行。
+19,有一些额外的发现，不过还是先返航了。
+20,有一些额外的发现……不过又不见了。
+21,“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”探索完成！　发挥出了<hex:022903EA0303>的最大性能，取得了十分喜人的成果！
+22,“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”探索完成！　发挥出了<hex:022903EA0303>的性能，取得了不错的成果！
+23,“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”探索完成！　虽然成果还不错，但下次还要再继续提高！
+24,“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”探索完成！　成果还算过得去，或许有必要考虑一下调整潜水艇的配件了。
+25,“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”探索完成！　结果十分不理想……
+26,<hex:024804F201F603><hex:024904F201F703><hex:022903EA0203>获得了<hex:022003E80303><hex:020813E4E80401FF01><hex:FF0B>(+<hex:022003E80403>%)<hex:03>点经验值！<hex:0249020103><hex:0248020103>
+27,即将转向下一个目的地“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”。
+28,所有目的地都探索完成！　即将返航！［探索完成］
+29,<hex:024804F201F603><hex:024904F201F703>在航行中发现了“<hex:02281AFF15>SubmarineExploration<hex:E8020103>”！<hex:0249020103><hex:0248020103>
+30,<hex:024804F201F603><hex:024904F201F703>探索的成果得到了认可，可以登记新的潜水艇了！<hex:0249020103><hex:0248020103>
+31,<hex:024804F201F603><hex:024904F201F703>在航行中发现了“<hex:022812FF0D>SubmarineMap<hex:E8020103>”的航海图！<hex:0249020103><hex:0248020103>

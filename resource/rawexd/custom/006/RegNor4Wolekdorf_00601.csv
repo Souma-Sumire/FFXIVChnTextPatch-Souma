@@ -1,0 +1,16 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_000,哟，居然有客人来到这里，真是稀奇。<hex:02100103>我们只是喜欢平稳的生活，并不是讨厌来客。<hex:02100103>只要你不来破坏我们在这里的生活，我们就欢迎你的到来。
+1,TEXT_REGNOR4WOLEKDORF_00601_Q1_000_000,想了解什么？
+2,TEXT_REGNOR4WOLEKDORF_00601_A1_000_001,你是做什么的？
+3,TEXT_REGNOR4WOLEKDORF_00601_A1_000_002,这里是什么地方？
+4,TEXT_REGNOR4WOLEKDORF_00601_A1_000_003,取消
+5,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_100,我原本是载着主人四处旅行来着。
+6,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_101,从游末邦到拿巴示艾兰，<hex:02100103>从孚布特王国再到雷克兰德联邦……<hex:02100103>就连“旅客”这个名字都是主人给我取的。
+7,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_102,真怀念那时候整天旅行的日子……<hex:02100103>我想伊尔美格外面的世界也变化了许多吧。<hex:02100103>虽然我没有想要离开云村，可偶尔也会想念外面的世界。
+8,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_200,阿马罗之中有些家伙会突然在某天获得知性，<hex:02100103>能与人进行对等的交流。<hex:02100103>这里就是获得了知性的图帕克·阿马罗的最终栖身之所。
+9,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_201,有与主人死别的家伙、因为有了知性而被厌恶遭到舍弃的家伙，<hex:02100103>还有察觉到的时候已经是孤身一人的家伙……<hex:02100103>各种各样的阿马罗聚集在此共同生活着。
+10,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_202,我们不喜欢纷争与争斗。<hex:02100103>所以才会像这样静静地聚在一起度过余生。<hex:02100103>唯一的烦恼就是偶尔会遭到别的妖灵的恶作剧而已。
+11,TEXT_REGNOR4WOLEKDORF_00601_TALK_ACTOR,（★未使用／削除予定★）

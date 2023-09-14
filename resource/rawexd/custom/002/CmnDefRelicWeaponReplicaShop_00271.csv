@@ -1,0 +1,6 @@
+﻿key,0,1
+#,,
+offset,0,4
+int32,str,str
+0,TEXT_CMNDEFRELICWEAPONREPLICASHOP_00271_TALK_ACTOR,你好像没有黄道武器·本我啊。<hex:02100103>因为技术还不够成熟，需要作为样本的武器才行……<hex:02100103>你能把实物拿来让我看看吗？
+1,TEXT_CMNDEFRELICWEAPONREPLICASHOP_00271_MENU_TITLE,要复制哪一把黄道武器·本我？
