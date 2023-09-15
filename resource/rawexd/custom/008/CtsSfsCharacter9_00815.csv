@@ -21,11 +21,11 @@ int32,str,str
 16,TEXT_CTSSFSCHARACTER9_00815_GUIDEMENU_005_000,提高收藏价值的方法（采矿/园艺篇）
 17,TEXT_CTSSFSCHARACTER9_00815_GUIDEMENU_006_000,提高收藏价值的方法（捕鱼篇）
 18,TEXT_CTSSFSCHARACTER9_00815_GUIDEMENU_CANCEL,取消
-19,TEXT_CTSSFSCHARACTER9_00815_GUIDE_001_000,通过交纳委托品，<hex:02100103><hex:022812FF0D>ENpcResident<hex:E8020103>对你信赖度会渐渐提高。
+19,TEXT_CTSSFSCHARACTER9_00815_GUIDE_001_000,通过交纳委托品，<hex:02100103><hex:022812FF0D>ENpcResident<hex:E8020103>对你的信赖度会渐渐提高。
 20,TEXT_CTSSFSCHARACTER9_00815_GUIDE_001_001,目前的信赖度会显示在委托品列表上方的信赖槽中，<hex:02100103>如果信赖槽积满，信赖等级就会提高。<hex:02100103>另外，信赖等级会用心形图案来表示。
 21,TEXT_CTSSFSCHARACTER9_00815_GUIDE_001_002,每当信赖等级提高，<hex:02100103>就可以看到与<hex:022812FF0D>ENpcResident<hex:E8020103>有关的新故事。
 22,TEXT_CTSSFSCHARACTER9_00815_GUIDE_007_000,交纳收藏品需要收藏品对应的职业在80级以上才能进行。
-23,TEXT_CTSSFSCHARACTER9_00815_GUIDE_007_001,交纳时，若收藏品所对应的职业等级为90级，<hex:02100103>将会得到工票作为报酬，<hex:02100103>诺对应职业未满90级，将会获得经验作为报酬。
+23,TEXT_CTSSFSCHARACTER9_00815_GUIDE_007_001,交纳时，若收藏品所对应的职业等级为90级，<hex:02100103>将会得到工票作为报酬，<hex:02100103>若对应职业未满90级，将会得到经验作为报酬。
 24,TEXT_CTSSFSCHARACTER9_00815_GUIDE_002_000,如果想要调查委托品列表中的道具的获得方法，<hex:02100103>就请活用次级指令与道具说明吧。
 25,TEXT_CTSSFSCHARACTER9_00815_GUIDE_002_001,能工巧匠分类的委托品，只需要在打开列表的状态下，<hex:02100103>执行次级指令“搜索制作道具的配方”，<hex:02100103>就可以打开制作笔记，看到制作配方。
 26,TEXT_CTSSFSCHARACTER9_00815_GUIDE_002_002,采矿工或园艺工分类的委托品，只需要在打开列表的状态下，<hex:02100103>执行次级指令“搜索采集方法”，<hex:02100103>就可以打开采集笔记，看到采集地点。
