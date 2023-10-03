@@ -40,7 +40,7 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 720931,TstPlnCmpFCCounter_00035,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 720932,TstPlnTest_00036,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 720933,CmnFatTest_00037,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,危命测试,
-720934,TstPlnNcut_00038,ACTOR1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,过场测试,
+720934,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,过场测试,
 720935,CmnDefMarketBoardGridania_00039,CONDITION_DEFAULT_TALK,EOBJ_TOWN50,QUEST_TOWN50,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 720936,TstPrgGetItemTest_00040,ITEM,QUEST,LOGMSG_EVENT_INVENTORY_FULL_ERROR,,,,,,,,,,,,,,,,,,,,,,,,,,,,稀有道具测试,
 720937,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -183,7 +183,7 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 721074,CmnDefHousingPersonalRoomEntrance_00178,SCREEN_IMAGE_BUY_ROOM_SUCCESS,DEFAULT_NAME_PRIVATE_ROOM,SCREEN_IMAGE_BUY_WORKSHOP_SUCCESS,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 721075,CmnDefHousingPersonalRoomExit_00179,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 721076,ComDefMobOfficer_00180,REWARD_MOB_HUNT,GRAND_COMPANY_INVALID,GRAND_COMPANY_LIM,GRAND_COMPANY_GRD,GRAND_COMPANY_ULD,ENPC_LIM,ENPC_GRD,ENPC_ULD,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
-721077,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
+721077,FesChn2015_00181,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 721078,ComDefFrontLine_00182,NPC_OF_LIMSA,NPC_OF_GRIDANIA,NPC_OF_ULDAH,GRAND_COMPANY_INVALID,MAELSTROM,ORDER_OF_TWIN_ADDER,IMMORTAL_FLAMES,QUEST_LINE1_GRD,QUEST_LINE1_LIM,QUEST_LINE1_ULD,LINE_02_1,LINE_01_1,NPC_OF_LIMSA_02,NPC_OF_GRIDANIA_02,NPC_OF_ULDAH_02,IC_CHECK_01,NPC_OF_LIMSA_03,,,,,,,,,,,,,,进行谈话,
 721079,RegSeaNotoriousMonsterHintF1_00183,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 721080,RegSeaNotoriousMonsterHintF2_00184,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
@@ -311,7 +311,7 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 721202,CmnGscVirMinionRankingBoard_00306,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721203,FesHlw2015_00307,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721204,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-721205,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721205,FesChn2016_00309,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721206,CmnDefWeatherForeCastInTerritory_00310,ENPC_01,ENPC_02,ENPC_03,ENPC_04,ENPC_05,ENPC_06,,,,,,,,,,,,,,,,,,,,,,,,,●ここの天気は？,
 721207,RegRoc2SkyIslandEntrance_00311,QUEST_PREV,QUEST_INTRO,ITEM_TICKET,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721208,RegRoc2SkyIslandShop_00312,QUEST_PREV,QUEST_INTRO,ITEM_TICKET,PRICE_TICKET,LOGMSG_NPCSHOP_ERROR_INVENTORY_FULL,LOGMSG_NPCSHOP_ERROR_INVALID_GIL,LOGMSG_NPCSHOP_LOG_BUY,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -357,7 +357,7 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 721248,JobRel300GetRecipeAgain_00352,LOG_MSG_EVENT,ULAN_MEMO,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721249,HouFurAquarium_00353,LOGMSG_AQUARIUM_LOCK_ERR,LOGMSG_HOUSING_ERR_HOUSING_01,HOWTO_AQUARIUM,LOGMSG_CANCELLED_BEFORE_PLAY_EVENT_SCENE,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721250,FesAnv2016_00354,QST_FESANV203,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-721251,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721251,FesChn2017_00355,QUEST0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721252,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721253,CmnDefMateriaMeld_00357,QUEST_ID,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,镶嵌魔晶石,
 721254,RegSeaPvpSeasonRewardSecond_00358,LOC_MOTION0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -522,12 +522,12 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 721413,CtsErkEureka3Guide1_00517,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721414,CtsErkEureka3Guide2_00518,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721415,CtsErkEureka3Guide3_00519,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-721416,CtsErkEureka3Sphere1_00520,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,优雷卡传奇
-721417,CtsErkEureka3Sphere2_00521,LOC_ACTOR_01,LOC_ACTION_01,LOC_FACIAL_01,,,,,,,,,,,,,,,,,,,,,,,,,,,,,优雷卡传奇
-721418,CtsErkEureka3Sphere3_00522,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,优雷卡传奇
-721419,CtsErkEureka3HugeSphere_00523,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,优雷卡传奇
-721420,CtsErkEureka3AetherFlow_00524,LOC_ACTION_01,LOC_VFX_01,LOC_WEAPON_01,LOC_WEAPON_02,,,,,,,,,,,,,,,,,,,,,,,,,,,,优雷卡传奇
-721421,CtsErkEureka3MagiaArcaParts_00525,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,优雷卡传奇
+721416,CtsErkEureka3Sphere1_00520,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,エウレカストーリー
+721417,CtsErkEureka3Sphere2_00521,LOC_ACTOR_01,LOC_ACTION_01,LOC_FACIAL_01,,,,,,,,,,,,,,,,,,,,,,,,,,,,,エウレカストーリー
+721418,CtsErkEureka3Sphere3_00522,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,エウレカストーリー
+721419,CtsErkEureka3HugeSphere_00523,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,エウレカストーリー
+721420,CtsErkEureka3AetherFlow_00524,LOC_ACTION_01,LOC_VFX_01,LOC_WEAPON_01,LOC_WEAPON_02,,,,,,,,,,,,,,,,,,,,,,,,,,,,エウレカストーリー
+721421,CtsErkEureka3MagiaArcaParts_00525,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,エウレカストーリー
 721422,CtsDomReconstructMinazuki_00526,LOC_ACTOR_001,LOC_ACTOR_002,LOC_ACTOR_003,LOC_ACTOR_004,LOC_ACTOR_005,LOC_ACTOR_006,LOC_BGM_001,LOC_BGM_002,LOC_BGM_003,LOC_SCREENIMAGE_01,CLEAR_QUEST_001,LOC_ACTION_001,LOC_ACTION_002,LOC_ACTION_003,BIND_ACTOR_001,BIND_ACTOR_002,BIND_ACTOR_003,BIND_ACTOR_004,BIND_ACTOR_005,LOC_ACTOR_100,LOC_ACTOR_101,,,,,,,,,,,多玛飞地重建 水无月
 721423,CtsDomReconstructIhase_00527,LOC_ACTOR_001,LOC_ACTOR_002,LOC_ACTOR_003,LOC_ACTOR_004,LOC_ACTOR_005,LOC_ACTOR_006,LOC_ACTOR_007,LOC_ACTOR_008,LOC_ACTOR_009,LOC_ACTOR_010,LOC_ACTOR_011,LOC_ACTOR_012,LOC_ACTOR_013,LOC_ACTION_001,LOC_ACTION_002,LOC_ACTION_003,LOC_ACTION_004,LOC_BGM_001,LOC_BGM_002,LOC_SCREENIMAGE_01,CLEAR_QUEST_001,,,,,,,,,,,多玛飞地重建 岩濑
 721424,CtsDomReconstructMauto_00528,LOC_ACTOR_001,LOC_ACTOR_002,LOC_ACTOR_003,LOC_SCREENIMAGE_01,LOC_BGM_001,LOC_ACTOR_100,LOC_MOTION_001,BIND_ACTOR_001,,,,,,,,,,,,,,,,,,,,,,,,多玛飞地重建 孟冬
@@ -842,3 +842,13 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 721733,FesHlw2023Witch_00837,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 721734,RegNot5Claudien_00838,QST_STMBDI303,QST_AKTKRA305,LOC_MARKER_00,LOC_ACTOR_NEMJ,LOC_ACTOR_RUIS,INVIS_ACTOR_ALPHA,INVIS_ACTOR_OMEGA,INVIS_ACTOR_NEMJ,INVIS_ACTOR_RUIS,INVIS_ACTOR_NIGI,LOC_MUSIC_EX4_EVENT_BOTTOMWATER_PIANO_01,,,,,,,,,,,,,,,,,,,,,
 721735,RegSeaPvpCommendationCrystalShop_00839,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,交易员
+721736,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721737,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721738,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721739,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721740,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721741,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721742,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721743,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721744,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+721745,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

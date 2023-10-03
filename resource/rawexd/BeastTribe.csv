@@ -1,5 +1,5 @@
-﻿key,9,11,17
-#,Name,Plural,Name{Relation}
+﻿key,10,12,18
+#,Adjective,PossessivePronoun,
 offset,0,4,8
 int32,str,str,str
 0,,,
