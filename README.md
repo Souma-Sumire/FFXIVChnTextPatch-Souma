@@ -14,7 +14,9 @@
 
 ## 汉化
 
-请从 [release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/latest) 下载。
+直接用：请从 [release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/latest) 下载。
+
+手动：克隆本仓库，使用CSV汉化。
 
 ## 贡献
 
