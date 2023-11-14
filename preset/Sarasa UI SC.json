@@ -96,54 +96,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.399999976158142,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 9.600000381469727,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -246,54 +202,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.399999976158142,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 12.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -396,54 +308,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.399999976158142,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": true,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 14.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -546,54 +414,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.399999976158142,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 18.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -696,58 +520,14 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 2,
 								"letterSpacing": -1
-							}
-						},
-						{
-							"gamma": 1.399999976158142,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 36.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": -1,
-								"codepointReplacements": {},
-								"codepoints": [
-									[
-										0,
-										127
-									]
-								],
-								"horizontalOffset": 2,
-								"letterSpacing": 1
 							}
 						}
 					],
@@ -846,6 +626,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -948,6 +732,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -1050,6 +838,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -1206,6 +998,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 3,
@@ -1524,6 +1320,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -1626,6 +1426,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -1728,6 +1532,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -1830,6 +1638,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -1932,6 +1744,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 2,
@@ -2034,6 +1850,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 0,
@@ -2136,6 +1956,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -2238,6 +2062,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -2340,6 +2168,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 2,
@@ -2450,54 +2282,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.0,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 12.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -2600,54 +2388,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.0,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": true,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 14.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -2750,54 +2494,10 @@
 									[
 										19968,
 										40959
-									]
-								],
-								"horizontalOffset": 1,
-								"letterSpacing": 0
-							}
-						},
-						{
-							"gamma": 1.0,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 18.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": 0,
-								"codepointReplacements": {},
-								"codepoints": [
+									],
 									[
-										0,
-										127
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -2900,58 +2600,14 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 2,
 								"letterSpacing": -1
-							}
-						},
-						{
-							"gamma": 1.0,
-							"lookup": {
-								"name": "Sarasa UI SC",
-								"stretch": 5,
-								"style": 0,
-								"weight": 400
-							},
-							"mergeMode": 1,
-							"renderSpecific": {
-								"directwrite": {
-									"gridFitMode": 2,
-									"measureMode": 2,
-									"renderMode": 5
-								},
-								"empty": {
-									"ascent": 0,
-									"lineHeight": 0
-								},
-								"freetype": {
-									"forceAutohint": false,
-									"noAutohint": false,
-									"noBitmap": false,
-									"noHinting": false,
-									"renderMode": 1
-								}
-							},
-							"renderer": 2,
-							"size": 36.0,
-							"transformationMatrix": [
-								1.0,
-								0.0,
-								0.0,
-								1.0
-							],
-							"wrapModifiers": {
-								"baselineShift": -1,
-								"codepointReplacements": {},
-								"codepoints": [
-									[
-										0,
-										127
-									]
-								],
-								"horizontalOffset": 2,
-								"letterSpacing": 1
 							}
 						}
 					],
@@ -3050,6 +2706,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -3152,6 +2812,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -3254,6 +2918,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -3410,6 +3078,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 3,
@@ -3728,6 +3400,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -3830,6 +3506,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -3932,6 +3612,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -4034,6 +3718,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -4136,6 +3824,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 2,
@@ -4238,6 +3930,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 0,
@@ -4340,6 +4036,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -4442,6 +4142,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 1,
@@ -4544,6 +4248,10 @@
 									[
 										19968,
 										40959
+									],
+									[
+										65280,
+										65519
 									]
 								],
 								"horizontalOffset": 2,
