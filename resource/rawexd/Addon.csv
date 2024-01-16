@@ -17,7 +17,7 @@ int32,str
 12,德文
 13,法文
 14,简体中文
-15,在线帐号：<hex:022903EA0203>
+15,<hex:020821E4E94F64FF0D>在线账号<hex:FF0D>玩家代号<hex:03>：<hex:022903EA0203>
 16,...
 17,<hex:022206E802FF022C03>
 18,<hex:022206E802FF022C03>
@@ -8378,7 +8378,7 @@ int32,str
 9694,<hex:022903EA0203>
 9695,积分 <hex:022003E80203>
 9696,得失分差 <hex:022003E80203> 
-9697,在线帐号：<hex:022903EA0203> 
+9697,<hex:020821E4E94F64FF0D>在线账号<hex:FF0D>玩家代号<hex:03>：<hex:022903EA0203>
 9698,对局
 9699,关闭
 9700,奥秘核石A
@@ -13164,6 +13164,7 @@ int32,str
 15704, 灵活变化的曼德维尔武器[改良]
 15705, 开花结果的改良计划[第3次改良]
 15706, 名副其实的改良计划[第4次改良]
+15707,
 15708,
 15709,
 15730,不设限
@@ -13226,6 +13227,76 @@ int32,str
 15856,坚韧
 15857,信念
 15858,信仰
+15870,MOGMOG GUIDE BOOK
+15871,莫古力宝典
+15872,<hex:020817E1E80302FF0F>Part<hex:022003E80403><hex:021D0103><hex:FF01><hex:03><hex:020927E802FF0A>活动前<hex:FF0A>活动中<hex:FF0D>活动结束<hex:03>
+15873,持有数量
+15875,<hex:02280AFF05>Item<hex:E8020103>
+15876,<hex:020815E1E802F203E7FF05>999+<hex:FF07><hex:022003E80203><hex:03>
+15877,常规内容
+15878,周常内容
+15879,每周莫古挑战
+15880,莫古挑战
+15881,在活动期间，可以无限次完成的内容。<hex:02100103>稀有神典石将在完成时自动领取。
+15882,每周只能完成一次的奖励内容。<hex:02100103>每位玩家每周可选择一个。<hex:02100103>稀有神典石可从莫古力宝典中领取。
+15883,下次更新：<hex:020703E80203><hex:022002DF03>/<hex:022002DE03>/<hex:022002DC03> <hex:022002DB03>:<hex:022402DA03>
+15884,每周只能完成一次的挑战内容。<hex:02100103>完成其中一个目标，即可从莫古力宝典中领取稀有神典石。
+15885,在活动期间仅可完成一次的挑战内容。<hex:02100103>稀有神典石可从莫古力宝典中领取。
+15886,完成期限
+15887,奖励
+15888,领取奖励
+15889,×<hex:022003E80203><hex:02081FE4E803E802FF01><hex:FF16>～<hex:02080FE4E80301FF01><hex:FF07><hex:022003E80303><hex:03><hex:03>
+15890,任务搜索器
+15891,地图
+15892,查看奖励详情
+15893,可以领取稀有神典石
+15894,活动期间
+15895,已领取奖励／已过期
+15896,第<hex:022003E80203>周
+15897,完成！
+15898,没有可显示的目标。
+15899,正在加载目标
+15901,奖励列表
+15902,确认奖励
+15903,内容
+15904,奖励
+15905,<hex:020829E1E80201FF15><hex:022811FF0C>ContentType<hex:E8030103><hex:FF0D>？？？？<hex:03>
+15906,×<hex:022003E80203><hex:02081FE4E803E802FF01><hex:FF16>～<hex:02080FE4E80301FF01><hex:FF07><hex:022003E80303><hex:03><hex:03>
+15907,显示莫古力宝典的解释。
+15908,未选择目标。
+15909,目前未举办莫古力★收藏活动。<hex:02100103>请期待下次活动。
+15910,莫古力宝典
+15911,重要物品
+15912,进行中
+15914,可获取奖励
+15915,<hex:024804F201FA03><hex:024904F201FB03>即将到期　　<hex:0249020103><hex:0248020103>
+15916,<hex:02082DE1E80401FF19><hex:022815FF10>InstanceContent<hex:E8060403><hex:FF0D>？？？？<hex:03><hex:02100103>Lv<hex:022003E80803> <hex:020829E1E80201FF15><hex:022811FF0C>ContentType<hex:E8030103><hex:FF0D>？？？？<hex:03>
+15917,<hex:02280AFF05>Item<hex:E8020103>
+15918,Lv<hex:022003E80203><hex:022903EA0303>
+15919,<hex:02282BFF10>CSBonusTextData<hex:FF17><hex:022813FF0E>CSBonusSeason<hex:E8020B03><hex:0103><hex:02282BFF10>CSBonusTextData<hex:FF17><hex:022813FF0E>CSBonusSeason<hex:E8020C03><hex:0103>直至结束
+15920,<hex:020703E80203><hex:022002DF03>/<hex:022002DE03>/<hex:022002DC03> <hex:022002DB03>:<hex:022402DA03>
+15921,？？？？
+15922,攻略<hex:022815FF10>InstanceContent<hex:E8060403>。
+15923,参加<hex:022815FF10>InstanceContent<hex:E8060403>。
+15924,在任意一个<hex:022811FF0C>ContentType<hex:E8030103>中获得金碟币。
+15925,在一次<hex:022811FF0C>ContentType<hex:E8030103>航行中总共获得<hex:020815E1E80801FF07><hex:022003E80803><hex:FF07><hex:022003E80903><hex:03>点以上的积分。
+15926,通过完成任务『<hex:02280BFF06>Quest<hex:E8020103>』<hex:02100103>或『<hex:02280BFF06>Quest<hex:E8030103>』或<hex:02100103>『<hex:02280BFF06>Quest<hex:E8040103>』解锁。
+15927,<hex:0208F20105E4E80503FF98><hex:022825FF0A>PlaceName<hex:FF17><hex:022813FF0E>TerritoryType<hex:E8060603><hex:0103>或　　<hex:022825FF0A>PlaceName<hex:FF17><hex:022813FF0E>TerritoryType<hex:E8070603><hex:0103>的<hex:022811FF0C>ContentType<hex:E8030103>中完成<hex:022003E80903>次　　　　　　。<hex:FF67><hex:022825FF0A>PlaceName<hex:FF17><hex:022813FF0E>TerritoryType<hex:E8060603><hex:0103>的<hex:022811FF0C>ContentType<hex:E8030103>中完成<hex:022003E80903>次　　　　　　。<hex:03>
+15928,在<hex:022811FF0C>ContentType<hex:E8030103>中战胜<hex:022833FF0A>PlaceName<hex:FF25><hex:022821FF0E>TerritoryType<hex:FF0F><hex:02280BFF06>Level<hex:E80B0A03><hex:0603><hex:0103>的<hex:022812FF0D>ENpcResident<hex:E8060103>。
+15929,完成<hex:022828FF0A>EventItem<hex:FF1A><hex:022816FF11>MobHuntOrderType<hex:E8060303><hex:0103>。
+15930,钓上<hex:022820FF05>Item<hex:FF17><hex:022813FF0E>FishParameter<hex:E8060203><hex:0103>。
+15931,攻略<hex:02285CFF0A>PlaceName<hex:FF4E><hex:02284AFF0E>TerritoryType<hex:FF38><hex:022834FF17>ContentFinderCondition<hex:FF19><hex:022815FF10>InstanceContent<hex:E8060903><hex:0203><hex:0603><hex:0103>的<hex:020819E4E80F01FF08>B<hex:022003E80D03><hex:FF0A><hex:022003E80D03>层<hex:03>。
+15932,完成任务『<hex:02280BFF06>Quest<hex:E8020103>』解锁。
+15933,到达<hex:020890E4E80503FF46><hex:02280FFF0A>PlaceName<hex:E8060103>或者是<hex:02280FFF0A>PlaceName<hex:E8070103>时才会解锁开放。<hex:FF43><hex:020827E1E80401FF13><hex:02280FFF0A>PlaceName<hex:E8060103><hex:FF0D>？？？？<hex:03>时才会解锁开放。<hex:03>
+15934,胜负将影响奖励数量。
+15935,奖励数量因G.A.T.E.类型而异。<hex:02100103>可从「确认奖励详情」中查看。
+15936,已获得莫古力宝典。<hex:02100103>要查看说明吗？<hex:02100103><hex:02100103><hex:024804F201FA03><hex:024904F201FB03>※您随时可以通过窗口左下角的按钮进行确认。<hex:0249020103><hex:0248020103>
+15937,解读<hex:022823FF05>Item<hex:FF1A><hex:022816FF11>TreasureHuntRank<hex:E8060303><hex:0103>，并打开宝箱。
+15938,<hex:02082DE1E80401FF19><hex:022815FF10>InstanceContent<hex:E8060403><hex:FF0D>？？？？<hex:03>
+15939,<hex:020829E1E80201FF15><hex:022811FF0C>ContentType<hex:E8030103><hex:FF0D>？？？？<hex:03><hex:02100103>Lv<hex:022003E80803>
+15940,类别
+15941,访问专属网站
+15942,概览
 16001,胜利条件达成
 16002,退出表演
 16003,阶段结束
