@@ -28,15 +28,15 @@
       - 0a0000.win32.index2
   1. 使用压缩包内的文件覆盖这些文件。
   1. 游戏版本更新时，请：
-      - 恢复第4步时备份的原版文件
-      - 执行游戏更新
-      - 等待Release更新后，重新执行上述操作
-      - **若未更新对应版本Release，请等待。** 使用旧版本的文件将存在兼容性问题以及更高的违规风险
+      - 先恢复原版文件
+      - 再执行游戏更新
+      - 等待Release更新傻瓜包后，重新执行上述操作
+      - **若未更新对应版本傻瓜包，请等待。** 使用旧版本的文件将存在兼容性问题以及更高的违规风险
 
 ### 手动式
 
   1. 开启高清贴图，否则会DX崩溃。[如何设置](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
-  1. 克隆本仓库到本地
+  1. 使用Git克隆本仓库到本地，新手可使用Git图形化工具 [Github Desktop](https://desktop.github.com/)
   1. 打开游戏目录 `.\FINAL FANTASY XIV - A Realm Reborn\game\sqpack\ffxiv\`
   1. 备份以下6个原文件
       - 000000.win32.dat0
@@ -46,16 +46,15 @@
       - 0a0000.win32.index
       - 0a0000.win32.index2
   1. 运行 `FFXIVChnTextPatchGP.exe`
-  1. 游戏路径：选择你的客户端路径，例如 `D:\game\FINAL FANTASY XIV Online`
-  1. 档案语言：选择CSV
-  1. 原始语言：选择你的客户端语言
-  1. 勾选替换字体、替换文本
-  1. 点击确认
+      - 游戏路径：选择你的客户端路径，例如 `D:\game\FINAL FANTASY XIV Online`
+      - 档案语言：选择CSV
+      - 原始语言：选择你的客户端语言
+      - 勾选替换字体、替换文本
+      - 点击确认
   1. 游戏版本更新时，请：
       - 先恢复原版文件
-      - 执行游戏更新
-      - 拉取仓库最新版本 `git pull` 或使用Git图形化工具 [Github Desktop](https://desktop.github.com/)
-      - 成功合并最新CSV后，重新执行上述操作
+      - 再执行游戏更新
+      - 拉取仓库最新版本后，重新执行第五步操作
       - 若未更新对应版本CSV，也可以先以此方式对新版本的游戏文件进行打补丁，以提供基础的界面汉化。
 
 ## 自定义字体
