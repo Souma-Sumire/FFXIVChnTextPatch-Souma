@@ -46,7 +46,7 @@
       - 0a0000.win32.index
       - 0a0000.win32.index2
   1. 运行 `FFXIVChnTextPatchGP.exe`
-      - 游戏路径：选择你的游戏目录
+      - 游戏路径：选择你的游戏目录（里面有boot和game文件夹还有ffxivuninstaller.exe）
       - 档案语言：选择CSV
       - 原始语言：选择你的客户端显示语言（日文或英文）
       - 勾选替换字体、替换文本
