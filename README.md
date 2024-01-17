@@ -16,8 +16,8 @@
 
 ### 傻瓜式
 
-  1. 开启高清贴图，否则会DX崩溃。[查看设置方法](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
-  1. 下载最新的 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/latest)
+  1. 开启高清贴图，否则会DX崩溃。[如何设置](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
+  1. 下载 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/)
   1. 打开游戏目录 `.\FINAL FANTASY XIV - A Realm Reborn\game\sqpack\ffxiv\`
   1. 备份以下6个原文件
       - 000000.win32.dat0
@@ -31,11 +31,11 @@
       - 恢复第4步时备份的原版文件
       - 执行游戏更新
       - 等待Release更新后，重新执行上述操作
-      - 若未更新Release，请等待。使用旧版本的文件将存在兼容性问题以及更高的违规风险
+      - **若未更新对应版本Release，请等待。** 使用旧版本的文件将存在兼容性问题以及更高的违规风险
 
 ### 手动式
 
-  1. 开启高清贴图，否则会DX崩溃。[查看设置方法](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
+  1. 开启高清贴图，否则会DX崩溃。[如何设置](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
   1. 克隆本仓库到本地
   1. 打开游戏目录 `.\FINAL FANTASY XIV - A Realm Reborn\game\sqpack\ffxiv\`
   1. 备份以下6个原文件
@@ -54,11 +54,11 @@
   1. 游戏版本更新时，请：
       - 先恢复原版文件
       - 执行游戏更新
-      - 拉取仓库最新版本 `git pull` 或使用Git图形化工具：[Github Desktop](https://desktop.github.com/)
+      - 拉取仓库最新版本 `git pull` 或使用Git图形化工具 [Github Desktop](https://desktop.github.com/)
       - 成功合并最新CSV后，重新执行上述操作
-      - 若未更新CSV，请等待。使用旧版本的文件将存在兼容性问题以及更高的违规风险
+      - 若未更新对应版本CSV，也可以先以此方式对新版本的游戏文件进行打补丁，以提供基础的界面汉化。
 
-## 修改中文字体
+## 自定义字体
 
 参考 [Wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93)
 
