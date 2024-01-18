@@ -292,7 +292,7 @@ int32,str,str,str,str,str
 287,河马车,,SE_Bt_Etc_Mount_HippoCar_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_HippoCar_bye
 288,巨魔,,SE_Bt_Etc_Mount_Troll_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Troll_bye
 289,,,SE_Bt_Etc_MadoWhistle,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_MadoBye
-290,,,,,
+290,UFO？,,SE_Bt_Etc_Mount_FF8-UFO_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_FF8-UFO_bye
 291,醋蝎龙,,SE_Bt_Etc_Mount_Biter_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Biter_bye
 292,正统裂钳蟹,,SE_Bt_Etc_Mount_HorseshoeCrab_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_HorseshoeCrab_bye
 293,蓝羽猞猁,,SE_Bt_Etc_Mount_Maju_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Maju_bye
