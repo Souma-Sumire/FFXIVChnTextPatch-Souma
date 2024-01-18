@@ -21,6 +21,6 @@ int32,str,str,str,str,str
 16,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,保持清醒,快速连击按钮保持意识清醒！
 17,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,死斗,快速连击按钮压制回去！
 18,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,曼德维尔横跳,按下按钮使出招式吧！
-19,,,,,
+19,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,脱离,快速连击按钮挣脱出来吧！
 20,,,,,
 21,,,,,
