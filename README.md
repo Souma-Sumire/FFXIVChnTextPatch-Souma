@@ -47,4 +47,5 @@
 
 ## 捐赠
 
-![image](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/ed8b1153-4321-4ade-a607-e6ab31b0e85b)
+![image](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/33b547e0-f8d4-41ba-9d76-a813a8053daa)
+
