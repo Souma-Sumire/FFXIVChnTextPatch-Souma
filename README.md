@@ -25,7 +25,7 @@
 
 ## 常见问题解答（QA）
 
-### 1. 该版本与 GpointChen 的汉化补丁有什么不同？
+### 该版本与 GpointChen 的汉化补丁有什么不同？
 
 | 项目 | FFXIVChnTextPatch-GP | FFXIVChnTextPatch-Souma |
 | :---: | :---: | :---: |
@@ -58,9 +58,9 @@
 
 推荐搭配 [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048) 为 UI 图片文字 进行汉化。
 
-### 部分文本未被汉化
+### 发现部分文本未汉化
 
-以下部分文本未被汉化：
+以下部分文本故意未被汉化：
 
 - 敌人名称：若汉化则无法正常使用 Cactbot
 - 新版本的鱼类相关：文本过多，难以翻译
@@ -69,9 +69,8 @@
 
 ### 其他问题
 
-- 如有其他问题，请发起Issues或者加入QQ群 231937107。
-- 提出过于愚蠢的问题将被无视。
-- 若你被无视后仍不知礼义，继续私聊追问，将会被拉黑。
+- 如有其他问题，请通过发起Issues或加入QQ群 `231937107` 寻求帮助。
+- 我并非您的保姆，因此提出过于愚蠢的问题将被无视。[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
 
 ## 捐赠
 
