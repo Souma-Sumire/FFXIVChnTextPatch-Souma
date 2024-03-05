@@ -40,7 +40,7 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,st
 720931,TstPlnCmpFCCounter_00035,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 720932,TstPlnTest_00036,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 720933,CmnFatTest_00037,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,危命测试,
-720934,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,过场测试,
+720934,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 720935,CmnDefMarketBoardGridania_00039,CONDITION_DEFAULT_TALK,EOBJ_TOWN50,QUEST_TOWN50,,,,,,,,,,,,,,,,,,,,,,,,,,,,进行谈话,
 720936,TstPrgGetItemTest_00040,ITEM,QUEST,LOGMSG_EVENT_INVENTORY_FULL_ERROR,,,,,,,,,,,,,,,,,,,,,,,,,,,,稀有道具测试,
 720937,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
