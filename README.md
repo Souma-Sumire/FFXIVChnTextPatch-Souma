@@ -64,14 +64,48 @@
 
 推荐搭配 [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048) 为 UI 图片文字 进行汉化。
 
-### 发现部分文本未汉化
+### 发现部分旧主线未翻译
 
-以下部分文本故意未被汉化：
+主线部分的汉化全部为程序自动化执行，会根据每一句话的唯一 ID 去国服解包中寻找对应文本填入，因此若你在跑主线（国服已更新的）中发现部分台词未被翻译，这是由于国际服对这部分的台词 ID 进行了修改，导致无法对应到国服文本。这不是 bug，因此无需汇报。
 
-- 敌人名称：若汉化则无法正常使用 Cactbot
-- 新版本的鱼类相关：文本过多，难以翻译
-- 部分 Addon 文本：指令码过于复杂
-- 部分 旧主线 文本：国际服对此有修改，无法对应国服ID
+### 故意未汉化的文本
+
+为了正常使用 Cactbot，以下文本未被翻译：
+
+- 敌人名称
+- 倒计时相关的提示语句
+- 副本进入、离开的提示语句
+- 部分情感动作（举手、鞠躬、告别等）语句
+
+### 被放弃汉化的新文本
+
+新版本更新时，精力有限，一些文本会被我跳过。
+
+#### 确定不做的新文本
+
+- 全部捕鱼人相关新文本
+- 新成就说明文本（Achievement）
+- 极长的新功能说明性文本（Addon）
+- 掺杂了复杂指令码的新文本（ActionTransient、Addon、AddonTransient、LogMessage、Lobby）
+- 新任务道具说明（EventItemHelp）
+- 新道具描述（Item）
+- 限定节日活动相关
+
+#### 工作量不大时会做的新文本
+
+- 对话台词（DefaultTalk、NpcYell、ContentTalk、InstanceContentTextData、Balloon、CustomTalk）
+- 见闻录相关（AkatsukiNoteString、MYCWarResultNotebook、Adventure、VVDNotebookContents）
+- 副本搜索器说明（ContentFinderConditionTransient）
+- 新系统的UI文本（例如曾经的糖豆人联动、曾经的无人岛、曾经的多变迷宫）
+- 新增宏的说明文本（TextCommand）
+- 解说文本（DescriptionString）
+- 新手教程文本（HowToPage）
+- 坐骑相关文本（Mount，MountTransient）
+- 九宫幻卡相关（TripleTriadCard）
+- 木人挑战相关文本（DpsChallenge）
+- 传送相关（Warp）
+
+即使大量跳过的情况下每次版本更新也需要数十个小时的工作量，请理解。
 
 ### 其他问题
 
