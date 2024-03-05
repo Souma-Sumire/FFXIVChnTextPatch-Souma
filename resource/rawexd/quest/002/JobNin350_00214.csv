@@ -3,8 +3,8 @@
 offset,0,4
 int32,str,str
 0,TEXT_JOBNIN350_00214_SEQ_00,燕很钦佩冒险者。
-1,TEXT_JOBNIN350_00214_SEQ_01,胧在等冒险者。和码头小屋里的胧对话。
-2,TEXT_JOBNIN350_00214_SEQ_02,胧传授了冒险者新的地之印。再次和胧对话，听取关于修行的说明。
+1,TEXT_JOBNIN350_00214_SEQ_01,胧在等冒险者。和码头小屋里的胧谈谈。
+2,TEXT_JOBNIN350_00214_SEQ_02,胧传授了冒险者新的地之印。再次和胧谈谈，听取关于修行的说明。
 3,TEXT_JOBNIN350_00214_SEQ_03,空
 4,TEXT_JOBNIN350_00214_SEQ_04,空
 5,TEXT_JOBNIN350_00214_SEQ_05,空

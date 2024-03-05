@@ -3,7 +3,7 @@
 offset,0,4
 int32,str,str
 0,TEXT_JOBMNK400_01063_SEQ_00,艾里克有事想要委托给冒险者。
-1,TEXT_JOBMNK400_01063_SEQ_01,艾里克委托了两项工作。首先，和南萨纳兰小阿拉米格的维达盖尔特对话。
+1,TEXT_JOBMNK400_01063_SEQ_01,艾里克委托了两项工作。首先，和南萨纳兰小阿拉米格的维达盖尔特谈谈。
 2,TEXT_JOBMNK400_01063_SEQ_02,维达盖尔特的测量还没有结束，结束后，他会将<hex:022811FF0A>EventItem<hex:F61E87B30103>交给冒险者。下一份工作，前往南部林区的蛇蜕林，在指定地点设置<hex:022811FF0A>EventItem<hex:F61E87B20103>。
 3,TEXT_JOBMNK400_01063_SEQ_03,测量了以太。回收<hex:022811FF0A>EventItem<hex:F61E87B20103>。
 4,TEXT_JOBMNK400_01063_SEQ_04,维达盖尔特的目的，是从艾里克那里打听出古战场的情报，打开脉轮。将自己手里的<hex:022811FF0A>EventItem<hex:F61E87B20103>和维达盖尔特交予的<hex:022811FF0A>EventItem<hex:F61E87B20103>交给乌尔达哈雕金匠行会的艾里克。

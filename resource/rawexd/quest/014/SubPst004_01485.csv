@@ -4,7 +4,7 @@ offset,0,4
 int32,str,str
 0,TEXT_SUBPST004_01485_SEQ_00,邮差莫古力前辈有个送往邓斯坦哨塔的包裹要交给冒险者。
 1,TEXT_SUBPST004_01485_SEQ_01,接受了邮差莫古力前辈的委托，前去送包裹。前往中央林区的邓斯坦哨塔，将包裹交给在附近的博物学家马尔塞特。
-2,TEXT_SUBPST004_01485_SEQ_02,将包裹交给了马尔塞特。但是商品好像订错了。为了获取马尔塞特需求的<hex:022811FF0A>EventItem<hex:F61E89B20103>，前往中萨纳兰的王立娜娜莫菜园和园艺工对话。
+2,TEXT_SUBPST004_01485_SEQ_02,将包裹交给了马尔塞特。但是商品好像订错了。为了获取马尔塞特需求的<hex:022811FF0A>EventItem<hex:F61E89B20103>，前往中萨纳兰的王立娜娜莫菜园和园艺工谈谈。
 3,TEXT_SUBPST004_01485_SEQ_03,和园艺工佳佳莉进行了交谈。在王立娜娜莫菜园的<hex:02280CFF05>EObj<hex:F61E95340103>放上杂草。
 4,TEXT_SUBPST004_01485_SEQ_04,在<hex:02280CFF05>EObj<hex:F61E95340103>放上了<hex:022811FF0A>EventItem<hex:F61E89B10103>。用<hex:022811FF0A>EventItem<hex:F61E89B00103>点燃这捆杂草，将鼹鼠熏出来。
 5,TEXT_SUBPST004_01485_SEQ_05,将鼹鼠熏出来了。获取<hex:022811FF0A>EventItem<hex:F61E89B20103>。

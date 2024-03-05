@@ -3,7 +3,7 @@
 offset,0,4
 int32,str,str
 0,TEXT_HEAVNA106_01585_SEQ_00,隼巢的罗思还有一项工作想拜托给冒险者。
-1,TEXT_HEAVNA106_01585_SEQ_01,接受了罗思的委托，去帮助一个叫蒂耶蒙的石匠。和库尔札斯西部高地征龙像附近的蒂耶蒙对话。
+1,TEXT_HEAVNA106_01585_SEQ_01,接受了罗思的委托，去帮助一个叫蒂耶蒙的石匠。和库尔札斯西部高地征龙像附近的蒂耶蒙谈谈。
 2,TEXT_HEAVNA106_01585_SEQ_02,接受了蒂耶蒙的委托，去收集修复石像所用的<hex:022811FF0A>EventItem<hex:F61E8AA40103>。讨伐征龙像附近的<hex:02280FFF09>BNpcName<hex:F20D8F0103>，获取3个<hex:022811FF0A>EventItem<hex:F61E8AA40103>。
 3,TEXT_HEAVNA106_01585_SEQ_03,获得了3个<hex:022811FF0A>EventItem<hex:F61E8AA40103>。将<hex:022811FF0A>EventItem<hex:F61E8AA40103>交给征龙像附近的蒂耶蒙。
 4,TEXT_HEAVNA106_01585_SEQ_04,将<hex:022811FF0A>EventItem<hex:F61E8AA40103>交给了蒂耶蒙。<hex:022811FF0A>EventItem<hex:F61E8AA40103>原来是用来清除征龙像上的灰烬的。

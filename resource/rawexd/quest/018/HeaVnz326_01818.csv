@@ -3,7 +3,7 @@
 offset,0,4
 int32,str,str
 0,TEXT_HEAVNZ326_01818_SEQ_00,不洁三塔的格林坎比希望冒险者帮忙治疗龙族。
-1,TEXT_HEAVNZ326_01818_SEQ_01,和格林坎比进行了交谈。和不洁三塔的卡尔·米克对话。
+1,TEXT_HEAVNZ326_01818_SEQ_01,和格林坎比进行了交谈。和不洁三塔的卡尔·米克谈谈。
 2,TEXT_HEAVNZ326_01818_SEQ_02,和卡尔·米克进行了交谈。在龙堡参天高地的悲叹飞泉寻找<hex:022811FF0A>EventItem<hex:F61E8B5D0103>。
 3,TEXT_HEAVNZ326_01818_SEQ_03,获得了<hex:022811FF0A>EventItem<hex:F61E8B5D0103>。向不洁三塔的卡尔·米克报告。
 4,TEXT_HEAVNZ326_01818_SEQ_04,向卡尔·米克报告完毕，获得了另外一份<hex:022811FF0A>EventItem<hex:F61E8B5D0103>。在龙堡参天高地的陆行鸟之森寻找帮忙煮药的人，将2份<hex:022811FF0A>EventItem<hex:F61E8B5D0103>交给他。

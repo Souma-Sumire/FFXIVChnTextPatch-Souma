@@ -3,7 +3,7 @@
 offset,0,4
 int32,str,str
 0,TEXT_JOBPLD300_01055_SEQ_00,剑术师行会的露露茨，打算告诉冒险者一些值得一听的消息。
-1,TEXT_JOBPLD300_01055_SEQ_01,近卫兵团银胄团想将兵团内部传承下来的骑士战技公之于众。和乌尔达哈御道的银胄团总长杰林斯对话。
+1,TEXT_JOBPLD300_01055_SEQ_01,近卫兵团银胄团想将兵团内部传承下来的骑士战技公之于众。和乌尔达哈御道的银胄团总长杰林斯谈谈。
 2,TEXT_JOBPLD300_01055_SEQ_02,和杰林斯进行了交谈。去南萨纳兰，点燃<hex:02280CFF05>EObj<hex:F61E8DA80103>，讨伐随之出现的魔物。
 3,TEXT_JOBPLD300_01055_SEQ_03,成功讨伐了魔物。向<hex:02280CFF05>EObj<hex:F61E8DA80103>使用<hex:022811FF0A>EventItem<hex:F61E87B50103>。
 4,TEXT_JOBPLD300_01055_SEQ_04,得到了<hex:022811FF0A>EventItem<hex:F61E88340103>。将其交给乌尔达哈御道的杰林斯。

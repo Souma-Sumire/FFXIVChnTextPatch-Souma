@@ -10,8 +10,8 @@ int32,str,str
 5,TEXT_GAIUSE314_01455_SEQ_05,获得了<hex:02280CFF05>EObj<hex:F61E94B10103>。将<hex:022811FF0A>EventItem<hex:F61E89A20103>交给丧灵钟石之家的芙·拉敏。
 6,TEXT_GAIUSE314_01455_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E89A20103>交给了芙·拉敏。她很担心在摩杜纳采矿的塔塔露。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入包含“Tataru”的词句，在摩杜纳纠缠沼泽林东北的<hex:02280CFF05>EObj<hex:F61E94B50103>周围呼唤塔塔露。
 7,TEXT_GAIUSE314_01455_SEQ_07,呼唤塔塔露后，传来了惨叫声。打倒纠缠沼泽林东北方向塔塔露附近的<hex:02280FFF09>BNpcName<hex:F20B370103>。
-8,TEXT_GAIUSE314_01455_SEQ_08,打倒了<hex:02280FFF09>BNpcName<hex:F20B370103>。和纠缠沼泽林东北的塔塔露对话。
-9,TEXT_GAIUSE314_01455_SEQ_09,塔塔露一溜烟似的逃回了石之家。和石之家的塔塔露对话。
+8,TEXT_GAIUSE314_01455_SEQ_08,打倒了<hex:02280FFF09>BNpcName<hex:F20B370103>。和纠缠沼泽林东北的塔塔露谈谈。
+9,TEXT_GAIUSE314_01455_SEQ_09,塔塔露一溜烟似的逃回了石之家。和石之家的塔塔露谈谈。
 10,TEXT_GAIUSE314_01455_SEQ_10,和塔塔露进行了交谈，她很感谢冒险者帮她取回货物。塔塔露吸取了教训，再也不敢一个人去采矿了。但在把石之家变成黄金之家之前，她是不会放弃生财之道的。
 11,TEXT_GAIUSE314_01455_SEQ_11,无
 12,TEXT_GAIUSE314_01455_SEQ_12,无

@@ -3,7 +3,7 @@
 offset,0,4
 int32,str,str
 0,TEXT_SUBCTS818_00164_SEQ_00,丧灵钟的斯拉佛伯恩正在寻找冒险者。
-1,TEXT_SUBCTS818_00164_SEQ_01,据斯拉佛伯恩说，有人来找冒险者了。和丧灵钟秘密工房的杰西对话。丧灵钟的斯拉佛伯恩会带领冒险者前往秘密工房。
+1,TEXT_SUBCTS818_00164_SEQ_01,据斯拉佛伯恩说，有人来找冒险者了。和丧灵钟秘密工房的杰西谈谈。丧灵钟的斯拉佛伯恩会带领冒险者前往秘密工房。
 2,TEXT_SUBCTS818_00164_SEQ_02,接受了杰西的委托，去收集部件，以用来修理魔导装甲。调查摩杜纳帝国中央堡的<hex:02280CFF05>EObj<hex:F61E955A0103>，获取<hex:022811FF0A>EventItem<hex:F61E89BB0103>、<hex:022811FF0A>EventItem<hex:F61E89BC0103>和<hex:022811FF0A>EventItem<hex:F61E89BD0103>。
 3,TEXT_SUBCTS818_00164_SEQ_03,收集齐了修理魔导装甲的部件。将<hex:022811FF0A>EventItem<hex:F61E89BB0103>、<hex:022811FF0A>EventItem<hex:F61E89BC0103>和<hex:022811FF0A>EventItem<hex:F61E89BD0103>交给秘密工房的杰西。
 4,TEXT_SUBCTS818_00164_SEQ_04,将部件交给了杰西。魔导装甲上坏掉的魔导加农炮和魔导光子炮可以使用了。但由于没有正式的维修设备，因此无法用于战斗。杰西因此而越发有干劲，为研发新产品而摩拳擦掌。

@@ -4,7 +4,7 @@ offset,0,4
 int32,str,str
 0,TEXT_JOBBLM451_01077_SEQ_00,紫红瀑布的卡扎古·春，希望冒险者完成任务。
 1,TEXT_JOBBLM451_01077_SEQ_01,接受了卡扎古·春的委托。完成任务，收集黑魔法师装束。前往南萨纳兰的赞拉克侧翼阵，将<hex:022811FF0A>EventItem<hex:F61E87AC0103>铭刻于<hex:02280CFF05>EObj<hex:F61E8E020103>；前往北部林区的鸟人军采伐所，将<hex:022811FF0A>EventItem<hex:F61E883B0103>铭刻于<hex:02280CFF05>EObj<hex:F61E8E030103>；前往拉诺西亚外地的武伽玛罗武装矿山，将<hex:022811FF0A>EventItem<hex:F61E883C0103>铭刻于<hex:02280CFF05>EObj<hex:F61E8E040103>。
-2,TEXT_JOBBLM451_01077_SEQ_02,完成了指定的任务。前往东萨纳兰的紫红瀑布，和卡扎古·春对话。
+2,TEXT_JOBBLM451_01077_SEQ_02,完成了指定的任务。前往东萨纳兰的紫红瀑布，和卡扎古·春谈谈。
 3,TEXT_JOBBLM451_01077_SEQ_03,和卡扎古·春进行了交谈。前往东萨纳兰的札尔神祠，调查<hex:02280CFF05>EObj<hex:F61E8E050103>，并讨伐出现的妖异，获取<hex:022811FF0A>EventItem<hex:F61E883D0103>。
 4,TEXT_JOBBLM451_01077_SEQ_04,获得了<hex:022811FF0A>EventItem<hex:F61E883D0103>。在东萨纳兰的札尔神祠，将<hex:022811FF0A>EventItem<hex:F61E883D0103>铭刻于<hex:02280CFF05>EObj<hex:F61E8E050103>，并获取黑魔法师装束。
 5,TEXT_JOBBLM451_01077_SEQ_05,获得了黑魔法师装束。前往东萨纳兰的紫红瀑布，向卡扎古·春报告。
