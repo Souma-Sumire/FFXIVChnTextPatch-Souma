@@ -8,14 +8,14 @@ int32,str,str
 3,TEXT_JOBBLM001_01123_SEQ_03,将<hex:022811FF0A>EventItem<hex:F61E88600103>交给了盖罗尔特。将镶嵌了2个<hex:02280BFF05>Item<hex:F2162C0103>的<hex:02280BFF05>Item<hex:F208360103>交给北部林区林场水车的盖罗尔特。
 4,TEXT_JOBBLM001_01123_SEQ_04,将<hex:02280BFF05>Item<hex:F208360103>交给了盖罗尔特。调查库尔札斯中央高地圣人泪的<hex:02280CFF05>EObj<hex:F61E94190103>，开放死化奇美拉讨伐战。完成死化奇美拉讨伐战，获取<hex:022811FF0A>EventItem<hex:F61E88690103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。<hex:02100103>※此任务需要在成为黑魔法师的状态下完成。
 5,TEXT_JOBBLM001_01123_SEQ_05,获得了<hex:022811FF0A>EventItem<hex:F61E88690103>。将<hex:022811FF0A>EventItem<hex:F61E88690103>交给北部林区林场水车的盖罗尔特。
-6,TEXT_JOBBLM001_01123_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E88690103>交给了盖罗尔特。和摩杜纳丧灵钟的罗薇娜对话。
+6,TEXT_JOBBLM001_01123_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E88690103>交给了盖罗尔特。和摩杜纳丧灵钟的罗薇娜谈谈。
 7,TEXT_JOBBLM001_01123_SEQ_07,和罗薇娜进行了交谈。突破南部林区的邪教驻地无限城古堡，获取<hex:022811FF0A>EventItem<hex:F61E88720103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。<hex:02100103>※此任务需要在成为黑魔法师的状态下完成。
 8,TEXT_JOBBLM001_01123_SEQ_08,获得了<hex:022811FF0A>EventItem<hex:F61E88720103>。将<hex:022811FF0A>EventItem<hex:F61E88720103>交给摩杜纳丧灵钟的罗薇娜。
 9,TEXT_JOBBLM001_01123_SEQ_09,将<hex:022811FF0A>EventItem<hex:F61E88720103>交给了罗薇娜。将<hex:022811FF0A>EventItem<hex:F61E887B0103>交给北部林区林场水车的盖罗尔特。
 10,TEXT_JOBBLM001_01123_SEQ_10,将<hex:022811FF0A>EventItem<hex:F61E887B0103>交给了盖罗尔特。装备上<hex:02280BFF05>Item<hex:F208570103>，前往拉诺西亚外地的武伽玛罗武装矿山，讨伐<hex:02280FFF09>BNpcName<hex:F207290103>、<hex:02280FFF09>BNpcName<hex:F2072B0103>和<hex:02280FFF09>BNpcName<hex:F2072A0103>各8名。
-11,TEXT_JOBBLM001_01123_SEQ_11,成功讨伐了魔物。和北部林区林场水车的盖罗尔特对话。
+11,TEXT_JOBBLM001_01123_SEQ_11,成功讨伐了魔物。和北部林区林场水车的盖罗尔特谈谈。
 12,TEXT_JOBBLM001_01123_SEQ_12,和盖罗尔特进行了交谈。调查东萨纳兰日影地修炼所的<hex:02280CFF05>EObj<hex:F61E941A0103>，开放海德拉讨伐战。装备上<hex:02280BFF05>Item<hex:F208570103>，完成海德拉讨伐战。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。
-13,TEXT_JOBBLM001_01123_SEQ_13,成功讨伐了<hex:02280FFF09>BNpcName<hex:F208710103>。和北部林区林场水车的盖罗尔特对话。
+13,TEXT_JOBBLM001_01123_SEQ_13,成功讨伐了<hex:02280FFF09>BNpcName<hex:F208710103>。和北部林区林场水车的盖罗尔特谈谈。
 14,TEXT_JOBBLM001_01123_SEQ_14,和盖罗尔特进行了交谈。将<hex:02280BFF05>Item<hex:F208570103>交给北部林区林场水车的盖罗尔特。
 15,TEXT_JOBBLM001_01123_SEQ_15,将<hex:02280BFF05>Item<hex:F208570103>交给了盖罗尔特。参加伊弗利特歼灭战，从蛮神伊弗利特身上得到<hex:022811FF0A>EventItem<hex:F61E88840103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。<hex:02100103>※此任务需要在成为黑魔法师的状态下完成。
 16,TEXT_JOBBLM001_01123_SEQ_16,获得了<hex:022811FF0A>EventItem<hex:F61E88840103>。参加迦楼罗歼灭战，从蛮神迦楼罗身上得到<hex:022811FF0A>EventItem<hex:F61E888D0103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。<hex:02100103>※此任务需要在成为黑魔法师的状态下完成。

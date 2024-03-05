@@ -3,12 +3,12 @@
 offset,0,4
 int32,str,str
 0,TEXT_JOBDRK560_02062_SEQ_00,忘忧骑士亭的希德勒格有事想找冒险者商量。
-1,TEXT_JOBDRK560_02062_SEQ_01,希德勒格想要让龙族看看莉艾勒的情况。和龙堡参天高地不洁三塔的维德弗尼尔对话。
+1,TEXT_JOBDRK560_02062_SEQ_01,希德勒格想要让龙族看看莉艾勒的情况。和龙堡参天高地不洁三塔的维德弗尼尔谈谈。
 2,TEXT_JOBDRK560_02062_SEQ_02,和维德弗尼尔进行了交谈，接受了它提出的条件。和不洁三塔的希德勒格谈谈。
 3,TEXT_JOBDRK560_02062_SEQ_03,和希德勒格分头去寻找<hex:02280CFF05>EObj<hex:F61E9D480103>。在不洁三塔的南边寻找<hex:02280CFF05>EObj<hex:F61E9D480103>。
 4,TEXT_JOBDRK560_02062_SEQ_04,击退敌人，获得了<hex:022811FF0A>EventItem<hex:F61E8BD30103>。让不洁三塔的维德弗尼尔查看<hex:022811FF0A>EventItem<hex:F61E8BD30103>。
 5,TEXT_JOBDRK560_02062_SEQ_05,让维德弗尼尔查看<hex:022811FF0A>EventItem<hex:F61E8BD30103>后，将其交给别的龙族。前往龙堡参天高地的彻悟岩窟，将<hex:022811FF0A>EventItem<hex:F61E8BD30103>交给死期将至的老龙。
-6,TEXT_JOBDRK560_02062_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E8BD30103>交给了死期将至的老龙。莉艾勒身体里似乎混杂着老龙丈夫的血液。回到忘忧骑士亭，和希德勒格对话。
+6,TEXT_JOBDRK560_02062_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E8BD30103>交给了死期将至的老龙。莉艾勒身体里似乎混杂着老龙丈夫的血液。回到忘忧骑士亭，和希德勒格谈谈。
 7,TEXT_JOBDRK560_02062_SEQ_07,和希德勒格交谈时，正教的使者伊斯特里德出现了。她是下令追杀莉艾勒的主谋，更是莉艾勒的生母。为了参加接下来的决斗而磨练本领。<hex:02100103><hex:02100103>※暗黑骑士的等级达到58级以上时，可以从忘忧骑士亭的希德勒格那里领取下一个暗黑骑士任务。
 8,TEXT_JOBDRK560_02062_SEQ_08,无
 9,TEXT_JOBDRK560_02062_SEQ_09,无
@@ -27,7 +27,7 @@ int32,str,str
 22,TEXT_JOBDRK560_02062_SEQ_22,无
 23,TEXT_JOBDRK560_02062_SEQ_23,无
 24,TEXT_JOBDRK560_02062_TODO_00,和不洁三塔的维德弗尼尔对话
-25,TEXT_JOBDRK560_02062_TODO_01,和不洁三塔的希德勒格谈谈
+25,TEXT_JOBDRK560_02062_TODO_01,和不洁三塔的希德勒格对话
 26,TEXT_JOBDRK560_02062_TODO_02,寻找<hex:02280CFF05>EObj<hex:F61E9D480103>
 27,TEXT_JOBDRK560_02062_TODO_03,让维德弗尼尔查看<hex:022811FF0A>EventItem<hex:F61E8BD30103>
 28,TEXT_JOBDRK560_02062_TODO_04,将<hex:022811FF0A>EventItem<hex:F61E8BD30103>交给死期将至的老龙

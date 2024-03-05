@@ -5,7 +5,7 @@ int32,str,str
 0,TEXT_JOBBLM300_01073_SEQ_00,咒术师行会的雅雅凯，有事情想要委托给冒险者。
 1,TEXT_JOBBLM300_01073_SEQ_01,接受了雅雅凯的委托。前往东萨纳兰的跨天桥，调查<hex:02280CFF05>EObj<hex:F61E8DFD0103>，并讨伐出现的妖异，获取<hex:022811FF0A>EventItem<hex:F61E883A0103>。
 2,TEXT_JOBBLM300_01073_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E883A0103>。在东萨纳兰的跨天桥，将<hex:022811FF0A>EventItem<hex:F61E883A0103>铭刻于<hex:02280CFF05>EObj<hex:F61E8DFD0103>。
-3,TEXT_JOBBLM300_01073_SEQ_03,铭刻了<hex:022811FF0A>EventItem<hex:F61E883A0103>。前往乌尔达哈的咒术师行会，和雅雅凯对话。
+3,TEXT_JOBBLM300_01073_SEQ_03,铭刻了<hex:022811FF0A>EventItem<hex:F61E883A0103>。前往乌尔达哈的咒术师行会，和雅雅凯谈谈。
 4,TEXT_JOBBLM300_01073_SEQ_04,和雅雅凯进行了交谈。前往乌尔达哈的密尔瓦内斯礼拜堂，向菈菈伊报告。
 5,TEXT_JOBBLM300_01073_SEQ_05,向菈菈伊报告完毕。菈菈伊告诉冒险者库库鲁卡在礼拜堂里面进行冥想，她将会替库库鲁卡传言。<hex:02100103><hex:02100103>※黑魔法师的等级达到35级以上时，可以从菈菈伊那里领取下一个黑魔法师任务。
 6,TEXT_JOBBLM300_01073_SEQ_06,

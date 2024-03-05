@@ -5,7 +5,7 @@ int32,str,str
 0,TEXT_HEAVNZ313_01805_SEQ_00,自由脑窟穴的骨颌族离群者凝视着冒险者。
 1,TEXT_HEAVNZ313_01805_SEQ_01,骨颌族离群者委托冒险者去收集美味佳肴。前往龙堡参天高地的阿瓦隆尼亚古陆，讨伐<hex:02280FFF09>BNpcName<hex:F20DFA0103>，获得3份<hex:022811FF0A>EventItem<hex:F61E8ADB0103>。
 2,TEXT_HEAVNZ313_01805_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ADB0103>。将<hex:022811FF0A>EventItem<hex:F61E8ADB0103>交给自由脑窟穴的骨颌族离群者。
-3,TEXT_HEAVNZ313_01805_SEQ_03,将<hex:022811FF0A>EventItem<hex:F61E8ADB0103>交给了骨颌族离群者。看着讲故事美味地吃下了<hex:022811FF0A>EventItem<hex:F61E8ADB0103>，骨颌族离群者心满意足地踏上了旅途。和自由脑窟穴的讲故事对话。
+3,TEXT_HEAVNZ313_01805_SEQ_03,将<hex:022811FF0A>EventItem<hex:F61E8ADB0103>交给了骨颌族离群者。看着讲故事美味地吃下了<hex:022811FF0A>EventItem<hex:F61E8ADB0103>，骨颌族离群者心满意足地踏上了旅途。和自由脑窟穴的讲故事谈谈。
 4,TEXT_HEAVNZ313_01805_SEQ_04,送走了骨颌族离群者，讲故事才吐露心声，其实<hex:022811FF0A>EventItem<hex:F61E8ADB0103>并不好吃。但他说味觉异常也是一种个性的表现。
 5,TEXT_HEAVNZ313_01805_SEQ_05,无
 6,TEXT_HEAVNZ313_01805_SEQ_06,无
