@@ -6,28 +6,19 @@
 
 ### 傻瓜式
 
-  1. 请务必开启高清贴图，否则会导致 DirectX 崩溃。[设置方法](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
   1. 下载最新的 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/)
   1. 将压缩包中的文件覆盖到 `..\FINAL FANTASY XIV\game\sqpack\ffxiv\`
 
 ### 手动式
 
-  1. 请务必开启高清贴图，否则会导致 DirectX 崩溃。[设置方法](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)
-  1. 使用 Git 克隆本仓库到本地，新手可使用 Git 图形化工具 [Github Desktop](https://desktop.github.com/)
+  1. 克隆本仓库
+  1. 在每次汉化开始前，请保证游戏文件是原版客户端文件。
   1. 运行 `FFXIVChnTextPatchGP.exe`
       - 游戏路径：选择你的游戏安装目录（应包含 boot 和 game 文件夹）
       - 档案语言：选择CSV
       - 原始语言：根据你的客户端选择日文或英文
       - 勾选替换字体和替换文本
       - 点击确认
-
-在每次汉化开始前，请保证游戏文件是原版文件，再开始操作。
-
-#### CRLF问题
-
-`FFXIVChnTextPatchGP.exe` 似乎无法正确解析换行符为 LF 的 CSV 文件。而应是 CRLF 。
-
-如果你汉化过程中没有任何错误，但游戏文本却没有被汉化。可以检查一下CSV是否被设置成了LF换行符。同时在 `debug.log` 应该也会存在对应的 java 报错文本。
 
 ## 常见问题解答（QA）
 
@@ -42,21 +33,23 @@
 
 ### 使用汉化补丁是否安全？
 
-本程序采用修改客户端文件的方式加载中文资源，使用本程序即表示您已了解此操作违反了官方规定，并确认愿意自行承担由此可能带来的一切后果。
+本程序采用修改客户端文件的方式加载中文资源，使用本程序即表示你已了解此操作违反了官方规定，并确认愿意自行承担由此可能带来的一切后果。
 
-### 如何在游戏版本更新后更新汉化补丁？
+### 可以使用旧版本的傻瓜包吗？
 
-在游戏版本更新后，您应等待汉化补丁的新版本发布，并下载安装最新版本以确保兼容性。绝对不要继续使用旧版本的汉化补丁，因为这可能导致游戏崩溃和其他不稳定性问题。
+游戏版本更新后，应等待傻瓜包的新版本发布。
 
-### 在聊天对话框中使用汉化补丁是否安全？
+使用旧版本的傻瓜包会导致游戏崩溃、数据非法等问题。
 
-请注意，在发送 `展示道具属性`、`<pos>`、`<flag>` 时，将会发送中文字符。
+### 聊天对话框是否安全？
 
-### 使用汉化补丁后应该如何设置ACT？
+在发送 `展示道具属性`、`<pos>`、`<flag>` 时，将会发送中文字符。
 
-请确保 ACT 解析插件的语言设置与您的客户端语言版本相匹配。例如您的客户端语言版本为英文，则您应该将 ACT 解析插件的语言设置为英文。
+### 如何设置ACT解析插件？
 
-### 我希望更换汉化补丁自带的中文字体
+例如你的客户端语言版本为英文，则你应该将 ACT 解析插件的语言设置为英文。
+
+### 如何更换字体？
 
 请参考 [Wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93) 内容。
 
@@ -110,7 +103,7 @@
 ### 其他问题
 
 - 如有其他问题，请通过发起Issues或加入QQ群 `231937107` 寻求帮助。
-- 我并非您的保姆，因此提出过于愚蠢的问题将被无视。[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
+- 我并非你的保姆，因此提出过于愚蠢的问题将被无视。[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
 
 ## 捐赠
 
