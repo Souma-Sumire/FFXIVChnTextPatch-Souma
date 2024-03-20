@@ -100,7 +100,7 @@ int32,str,str,str,str,str
 163,/return,,/返回<hex:02100103>/return<hex:02100103>实行返回操作。,/返回,
 164,/emotelist,/elist,/情感动作<hex:02100103>/emotelist、/elist<hex:02100103>打开情感动作窗口。,/情感动作,
 165,/activehelp,,/新手指南(/指南)<hex:02100103>/activehelp<hex:02100103>打开新手指南。,/新手指南,/指南
-166,/supportdesk,,/帮助台(/support)<hex:02100103>打开帮助台菜单。,/帮助台,
+166,/supportdesk,/support,/帮助台(/support)<hex:02100103>打开帮助台菜单。,/帮助台,
 167,/characterconfig,/cconfig,/角色设置<hex:02100103>/characterconfig、/cconfig<hex:02100103>打开角色设置窗口。,/角色设置,
 168,/systemconfig,/sconfig,/系统设置<hex:02100103>/systemconfig、/sconfig<hex:02100103>打开系统设置窗口。,/系统设置,
 169,/keybind,/keyconfig,/键位设置<hex:02100103>/keybind、/keyconfig<hex:02100103>打开键位设置窗口。,/键位设置,
@@ -479,5 +479,5 @@ int32,str,str,str,str,str
 673,/sundering,/exodus,/众生离绝 子命令<hex:02100103>/sundering(/exodus) <hex:02100103>发动众生离绝。<hex:02100103>>>子命令<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>动作(motion)<hex:0249020103><hex:0248020103><hex:02100103>只做动作。<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>无子命令<hex:0249020103><hex:0248020103><hex:02100103>做出动作并显示文字提示。,/众生离绝,
 674,/slump,,/垂头丧气 子命令<hex:02100103>/slump <hex:02100103>做出垂头丧气的样子。<hex:02100103>>>子命令<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>动作(motion)<hex:0249020103><hex:0248020103><hex:02100103>只做动作。<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>无子命令<hex:0249020103><hex:0248020103><hex:02100103>做出动作并显示文字提示。,/垂头丧气,
 675,/loveheart,/heart,/比心 子命令<hex:02100103>/loveheart(/heart) <hex:02100103>通过比心传达爱意。<hex:02100103>>>子命令<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>动作(motion)<hex:0249020103><hex:0248020103><hex:02100103>只做动作。<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>无子命令<hex:0249020103><hex:0248020103><hex:02100103>做出动作并显示文字提示。,/比心,
-676,,,,,
-677,,,,,
+676,/humbletriumph,/waitforit,/humbletriumph 子命令<hex:02100103>/waitforit<hex:02100103>摆出自豪的姿势。<hex:02100103>>>子命令<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>动作(motion)<hex:0249020103><hex:0248020103><hex:02100103>只做动作。<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>无子命令<hex:0249020103><hex:0248020103><hex:02100103>做出动作并显示文字提示。,,
+677,/victoryreveal,/vreveal,/victoryreveal 子命令<hex:02100103>/vreveal<hex:02100103>自豪地展示胜利之豆。<hex:02100103>>>子命令<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>动作(motion)<hex:0249020103><hex:0248020103><hex:02100103>只做动作。<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>无子命令<hex:0249020103><hex:0248020103><hex:02100103>做出动作并显示文字提示。,,

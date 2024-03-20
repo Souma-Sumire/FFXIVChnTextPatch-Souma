@@ -1,4 +1,4 @@
-name: 错误反馈
+name: 运行错误
 description: 有些东西的工作方式与预期不符？在这里报告。
 labels: [bug]
 body:
