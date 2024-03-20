@@ -70,11 +70,9 @@
 - 副本进入、离开的提示语句
 - 部分情感动作（举手、鞠躬、告别等）语句
 
-### 被放弃汉化的新文本
+### 可能不会翻译的文本
 
-新版本更新时，精力有限，一些文本会被我跳过。
-
-#### 确定不做的新文本
+新版本更新时，精力有限，一些文本可能会被我跳过。
 
 - 全部捕鱼人相关新文本
 - 新成就说明文本（Achievement）
@@ -83,9 +81,6 @@
 - 新任务道具说明（EventItemHelp）
 - 新道具描述（Item）
 - 限定节日活动相关
-
-#### 工作量不大时会做的新文本
-
 - 对话台词（DefaultTalk、NpcYell、ContentTalk、InstanceContentTextData、Balloon、CustomTalk）
 - 见闻录相关（AkatsukiNoteString、MYCWarResultNotebook、Adventure、VVDNotebookContents）
 - 副本搜索器说明（ContentFinderConditionTransient）
@@ -97,13 +92,24 @@
 - 九宫幻卡相关（TripleTriadCard）
 - 木人挑战相关文本（DpsChallenge）
 - 传送相关（Warp）
+- 等等...
 
 即使大量跳过的情况下每次版本更新也需要数十个小时的工作量，请理解。
+
+之后如果有时间，会陆续补齐这些不重要的翻译。不保证质量，出现不符合语境的情况也属正常。
 
 ### 其他问题
 
 - 如有其他问题，请通过发起Issues或加入QQ群 `231937107` 寻求帮助。
 - 我并非你的保姆，因此提出过于愚蠢的问题将被无视。[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
+
+## 指令码
+
+我对于指令码的理解相当浅薄，只能做简单的文本修改。遇到复杂指令只能摆烂不翻译或是抄gp的。
+
+若有大佬比较了解这部分，还请多多指教。
+
+相关资料：[SaintCoinach](https://github.com/xivapi/SaintCoinach/blob/master/SaintCoinach/Text/XivStringDecoder.cs)
 
 ## 捐赠
 

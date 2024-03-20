@@ -1,4 +1,4 @@
-name: 反馈错误文本
+name: 翻译有误
 description: 如果您发现了翻译中的错误或问题，请在此处报告。
 labels: [error]
 body:
