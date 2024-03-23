@@ -103,6 +103,14 @@
 - 如有其他问题，请通过发起Issues或加入QQ群 `231937107` 寻求帮助。
 - 我并非你的保姆，因此提出过于愚蠢的问题将被无视。[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
 
+## 指令码
+
+我对于指令码的理解相当浅薄，只能做简单的文本修改。遇到复杂指令只能摆烂不翻译或是抄gp的。
+
+若有大佬比较了解这部分，还请多多指教。
+
+相关资料：[SaintCoinach](https://github.com/xivapi/SaintCoinach/blob/master/SaintCoinach/Text/XivStringDecoder.cs)
+
 ## 捐赠
 
 ![image](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/33b547e0-f8d4-41ba-9d76-a813a8053daa)
