@@ -66,15 +66,13 @@
 为了正常使用 Cactbot，以下文本未被翻译：
 
 - 敌人名称
-- 倒计时相关的提示语句
-- 副本进入、离开的提示语句
-- 部分情感动作（举手、鞠躬、告别等）语句
+- 倒计时相关的提示语句（近期 Cactbot 正在抛弃硬编码匹配，或许将来可以翻译这些文本了）
+- 副本进入、离开的提示语句 （近期 Cactbot 正在抛弃硬编码匹配，或许将来可以翻译这些文本了）
+- 部分情感动作（举手、鞠躬、告别等）语句（近期 Cactbot 正在抛弃硬编码匹配，或许将来可以翻译这些文本了）
 
-### 被放弃汉化的新文本
+### 可能不会翻译的文本
 
-新版本更新时，精力有限，一些文本会被我跳过。
-
-#### 确定不做的新文本
+新版本更新时，精力有限，一些文本可能会被我跳过。
 
 - 全部捕鱼人相关新文本
 - 新成就说明文本（Achievement）
@@ -83,9 +81,6 @@
 - 新任务道具说明（EventItemHelp）
 - 新道具描述（Item）
 - 限定节日活动相关
-
-#### 工作量不大时会做的新文本
-
 - 对话台词（DefaultTalk、NpcYell、ContentTalk、InstanceContentTextData、Balloon、CustomTalk）
 - 见闻录相关（AkatsukiNoteString、MYCWarResultNotebook、Adventure、VVDNotebookContents）
 - 副本搜索器说明（ContentFinderConditionTransient）
@@ -97,8 +92,11 @@
 - 九宫幻卡相关（TripleTriadCard）
 - 木人挑战相关文本（DpsChallenge）
 - 传送相关（Warp）
+- 等等...
 
 即使大量跳过的情况下每次版本更新也需要数十个小时的工作量，请理解。
+
+之后如果有时间，会陆续补齐这些不重要的翻译。不保证质量，出现不符合语境的情况也属正常。
 
 ### 其他问题
 
