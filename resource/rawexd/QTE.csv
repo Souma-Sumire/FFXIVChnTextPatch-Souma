@@ -22,5 +22,5 @@ int32,str,str,str,str,str
 17,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,死斗,快速连击按钮压制回去！
 18,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,曼德维尔横跳,按下按钮使出招式吧！
 19,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,脱离,快速连击按钮挣脱出来吧！
-20,,,,,
-21,,,,,
+20,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,,连续点击以保护克莱夫！
+21,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,,连续点击抵御攻击！
