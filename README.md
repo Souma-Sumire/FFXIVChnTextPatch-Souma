@@ -13,7 +13,6 @@
 ### 手动式
 
   1. 推荐 [开启高分辨率贴图](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)，否则可能会导致 DirectX 崩溃（未实测）
-
   1. 克隆本仓库
   1. 在每次汉化开始前，请保证游戏文件是原版客户端文件。
   1. 运行 `FFXIVChnTextPatchGP.exe`
