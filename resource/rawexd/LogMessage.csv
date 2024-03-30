@@ -106,7 +106,7 @@ int32,str
 101,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>对<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>发泄心中不满。
 102,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>对<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>十分生气。
 103,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>对<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>显出害羞的一面。
-104,
+104,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>恭敬地对<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>行礼。
 105,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>大声给<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>加油。
 106,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>向<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>送上掌声。
 107,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>对<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>招手。
@@ -1533,10 +1533,10 @@ int32,str
 1528,队伍中有队员没有满足进入条件。<hex:02100103>要再次挑战“<hex:022815FF10>InstanceContent<hex:E8040403>”需要等待一段时间。
 1529,服务器繁忙，无法<hex:020865E4E80301FF13>进入任务战场<hex:FF4B>开始<hex:02281DFF18>InstanceContentTextData<hex:E8020103>“<hex:022815FF10>InstanceContent<hex:E8030403>”任务<hex:03>。
 1530,全体队员都从特务队长那里领取到报酬或经过一段时间之后，行会令会结束并且全员返回。
-1531,
+1531,“<hex:022903EB3903>”任务开始。
 1532,距离“<hex:022903EB3903>”结束还有<hex:022003E80203>分钟。
 1533,限制时间已到，“<hex:022903EB3903>”任务结束。
-1534,
+1534,“<hex:022815FF10>InstanceContent<hex:E8020403>”任务结束了。
 1535,返回到出发点吧，以后也请协助我们进行讨伐。
 1536,封印结界消失了！
 1537,邪教宝珠失去了光芒……
@@ -2015,7 +2015,7 @@ int32,str
 2010,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>获得了“<hex:02280FFF0A>EventItem<hex:E8020103>”。
 2011,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>获得了“<hex:02280FFF0A>EventItem<hex:E8020103>”×<hex:022003E80303>。
 2012,
-2013,
+2013,<hex:02280FFF0A>PlaceName<hex:E8020103>已被封锁！
 2014,
 2015,深渊之中亮起了灯火，夫人手提灯出现了！
 2016,霸星蛛蝎的毒尾蜕皮了！
@@ -9801,7 +9801,7 @@ int32,str
 9796,在本任务中无法使用返回技能。
 9797,充斥在周围的压倒性的魔力消失了……
 9798,黑暗溢出，产生了波动云！
-9799,
+9799,“<hex:02281CFF17>ContentFinderCondition<hex:E8022A03>”任务结束了。
 9800,人造圣石系统生成了盖乌斯的幻影！
 9801,魔力穿过地面启动装置！
 9802,荀子开始准备攻击！
