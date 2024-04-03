@@ -328,7 +328,7 @@ int32,str,str,str,str,str
 323,影狼,,SE_Bt_Etc_Mount_KageOh_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_KageOh_bye
 324,魔法儿童床,,SE_Bt_Etc_Mount_BedKusocho_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_BedKusocho_bye
 325,暗影猞猁,,SE_Bt_Etc_Mount_Maju_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Maju_bye
-326,托尔加尔,,,,
+326,托加尔,,,,
 327,,,,,
 328,巴哈姆特·幽愿,,SE_Bt_Etc_Mount_FF4-Bahamut_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_FF4-Bahamut_bye
 329,弦月,,SE_Bt_Etc_Mount_Tsuki_to_Leporrit_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Tsuki_to_Leporrit_bye
