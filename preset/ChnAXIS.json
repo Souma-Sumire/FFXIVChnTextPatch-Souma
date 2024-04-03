@@ -2320,7 +2320,7 @@
 						}
 					],
 					"name": "AXIS_14_lobby",
-					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ 回避\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: 魔导神门巴别塔 古代人迷宫 1.97秒 2.46秒\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\nDiscover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ 回避&\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: 魔导神门巴别塔 古代人迷宫 1.97秒 2.46秒\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\nDiscover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
@@ -3294,6 +3294,10 @@
 								"codepointReplacements": {},
 								"codepoints": [
 									[
+										38,
+										38
+									],
+									[
 										19968,
 										40959
 									]
@@ -3304,7 +3308,7 @@
 						}
 					],
 					"name": "MiedingerMid_10_lobby",
-					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ 回避\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: 魔导神门巴别塔 古代人迷宫 1.97秒 2.46秒\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\nDiscover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ 回避&\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: 魔导神门巴别塔 古代人迷宫 1.97秒 2.46秒\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\nDiscover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
@@ -3395,6 +3399,10 @@
 								"baselineShift": 1,
 								"codepointReplacements": {},
 								"codepoints": [
+									[
+										38,
+										38
+									],
 									[
 										19968,
 										40959
@@ -3498,6 +3506,10 @@
 								"codepointReplacements": {},
 								"codepoints": [
 									[
+										38,
+										38
+									],
+									[
 										19968,
 										40959
 									]
@@ -3600,6 +3612,10 @@
 								"codepointReplacements": {},
 								"codepoints": [
 									[
+										38,
+										38
+									],
+									[
 										19968,
 										40959
 									]
@@ -3701,6 +3717,10 @@
 								"baselineShift": 0,
 								"codepointReplacements": {},
 								"codepoints": [
+									[
+										38,
+										38
+									],
 									[
 										19968,
 										40959
