@@ -36,6 +36,10 @@
 
 与原客户端语言保持同步，例如英文或日文
 
+### 喊话任务的处理？
+
+全部采用E端文本
+
 ### 如何更换字体？
 
 请参考 [Wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93) 内容
