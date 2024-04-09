@@ -23,7 +23,7 @@ int32,str,str
 18,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_038,我们将继续修复岛内传送网。<hex:02100103>我也很在意大家是否平安，<hex:02100103>而且我认为想要最终解决问题，还是需要进入总部塔才行。
 19,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_039,我想请你像上回那样继续进行探索，<hex:02100103>没问题吧？
 20,TEXT_CTSERKEUREKA2EVENTKRILE_00498_EJIKATSUNJIKA_000_040,哼……对于你们的这种方法我真想抱怨几句，<hex:02100103>但又没有其他的方案，那就随你们便好了。<hex:02100103>……我会抽空再来找你们的。
-21,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_041,……真是一点都没变啊。<hex:02100103>他难道就不能率直的认同别人吗？
+21,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_041,……真是一点都没变啊。<hex:02100103>他难道就不能率直地认同别人吗？
 22,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_042,好了，关于之后要做的事情，<hex:02100103>我先去调查一下恒冰地带的地脉<hex:02100103>是否存在异常的结节点。
 23,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_043,这可能会需要些时间，<hex:02100103>在我有什么发现之前，请你去据点的附近探索一下吧。<hex:02100103>这里跟常风地带的环境不一样，还请你多加小心。
 24,TEXT_CTSERKEUREKA2EVENTKRILE_00498_SYSTEM_000_044,想要推进下一阶段的剧情，<hex:02100103>需要将元素等级提升到21级。
@@ -91,7 +91,7 @@ int32,str,str
 86,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_371,那个……原来如此，是原型以太之光啊。<hex:02100103>那是大约在一千年前，<hex:02100103>在进行传送实验时设置的试制型以太之光。
 87,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_372,不过现在基本上没有用来进行传送，<hex:02100103>而是当做了在地脉进行实验时的观测装置。<hex:02100103>用这个的话，就能进行更详细的调查了。
 88,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_373,当然，现在传送用的功能应该还在运转。<hex:02100103>这也能帮助我们前往总部塔。<hex:02100103>真是一石二鸟呢。
-89,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_374,那就先确认一下周边还没有没别的魔素石，<hex:02100103>然后咱们再前往原型以太之光吧。<hex:02100103>在我确认完之前，请稍等一下。
+89,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_374,那就先确认一下周边还有没有别的魔素石，<hex:02100103>然后咱们再前往原型以太之光吧。<hex:02100103>在我确认完之前，请稍等一下。
 90,TEXT_CTSERKEUREKA2EVENTKRILE_00498_SYSTEM_000_375,想要推进下一阶段的剧情，<hex:02100103>需要将元素等级提升到35级。
 91,TEXT_CTSERKEUREKA2EVENTKRILE_00498_KRILE_000_380,我还在确认周边是否残留着魔素石，<hex:02100103>请稍等一下，<hex:02100103>之后咱们再前往原型以太之光。
 92,TEXT_CTSERKEUREKA2EVENTKRILE_00498_SYSTEM_000_381,想要推进下一阶段的剧情，<hex:02100103>需要将元素等级提升到35级。
