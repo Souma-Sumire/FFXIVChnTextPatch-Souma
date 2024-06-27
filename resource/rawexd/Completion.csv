@@ -714,8 +714,6 @@ int32,str,str,str
 1639,,护符,hufu
 1640,,传承录,chuanchenglu
 1642,,大地工票,dadigongpiao
-1647,,巧手黄票,qiaoshouhuangpiao
-1648,,大地黄票,dadihuangpiao
 1649,,巧手白票,qiaoshoubaipiao
 1650,,大地白票,dadibaipiao
 1651,,简易采集,jianyicaiji
@@ -730,6 +728,8 @@ int32,str,str,str
 1660,,谢尔达莱青船币,xieerdalaiqingchuanbi
 1661,,谢尔达莱绿岛币,xieerdalailvdaobi
 1662,,大地使者职能技能,dadishizhezhinengjineng
+1663,,工匠白票：橙货,
+1664,,大地白票：橙货,
 1900,@,【蛮神与蛮族】,manshenyumanzu.
 1901,,蛮神,manshen
 1902,,伊弗利特,yifulite
@@ -1011,7 +1011,6 @@ int32,str,str,str
 2905,,兽魂量谱,shouhunliangpu
 2906,,兽魂,shouhun
 2907,,龙血量谱,longxueliangpu
-2908,,龙眼,longyan
 2909,,战歌量谱,zhangeliangpu
 2910,,诗心,shixin
 2911,,百合花茎量谱,baihehuajingliangpu
@@ -1023,7 +1022,6 @@ int32,str,str,str
 2917,,同调量谱,tongdiaoliangpu
 2919,,异想量谱,yixiangliangpu
 2920,,异想以太,yixiangyitai
-2921,,风遁量谱,fengdunliangpu
 2922,,忍气量谱,renqiliangpu
 2923,,忍气,renqi
 2926,,枪管热度量谱,qiangguanreduliangpu
@@ -1060,7 +1058,6 @@ int32,str,str,str
 2959,,暗技,anji
 2960,,通晓,tongxiao
 2961,,剑压,jianya
-2962,,星标,xingbiao
 2963,,脉轮,mailun
 2964,,斗气,douqi
 2965,,魂衣,hunyi
@@ -1069,6 +1066,20 @@ int32,str,str,str
 2968,,虚无魂,xuwuhun
 2969,,夜游魂,yeyouhun
 2970,,灵魂之声,linghunzhisheng
+2971,,天龙眼,天龙眼
+2972,,功力,刈木
+2973,,风缠标志,风缠标志
+2974,,风缠,风缠
+2975,,星极标志,xingjibiaozhi
+2976,,星极魂,xingjihun
+2977,,毒蛇标志,dushebiaozhi
+2978,,飞蛇之魂,飞蛇之魂
+2979,,灵力槽,灵力槽
+2980,,灵气,灵力
+2981,,画布标志,huabubiaozhi
+2982,,调色板槽,tiaosebancao
+2983,,白色颜料,baiseyanliao
+2984,,黑色颜料,heiseyanliao
 3000,@,【金碟游乐场】,jindieyoulechang.
 3001,,陆行鸟竞赛,luxingniaojingsai
 3002,,竞赛陆行鸟,jingsailuxingniao
@@ -1187,6 +1198,7 @@ int32,str,str,str
 3545,,积累型强化,jileixingqianghua
 3546,,积累型弱化,jileixingruohua
 3547,,随机目标,suijimubiao
+3548,,距离衰减伤害,距离衰减伤害
 3600,@,【深层迷宫】,shencengmigong
 3601,,传送石冢,chuansongshizhong
 3602,,再生石冢,zaishengshizhong
@@ -1265,7 +1277,6 @@ int32,str,str,str
 4032,,义军武器,yijunwuqi
 4033,,博兹雅搜索器,boziyasousuoqi
 4034,,庆典,qingdian
-4036,,亚拉戈天文神典石,yalagetianwenshendianshi
 4037,,随身见闻录,suishenjianwenlu
 4038,,战利水晶,zhanlishuijing
 4039,,肖像,xiaoxiang
@@ -1275,6 +1286,7 @@ int32,str,str,str
 4043,,曼德维尔武器,mandeweierwuqi
 4044,,莫雯卓越工具,mowenzhuoyuegongju
 4045,,亚拉戈神曲神典石,yalageshenqushendianshi
+4046,,亚拉戈美学神典石,yalagemeixueshendianshi
 5000,,大型任务,daxingrenwu
 5001,,每日挑战,meiritiaozhan
 5002,,岩燕庙,yanyanmiao
@@ -1402,7 +1414,6 @@ int32,str,str,str
 5131,,阿罗阿罗岛,aluoaluodao
 5132,,异闻阿罗阿罗岛,yiwenaluoaluodao
 5133,,零式异闻阿罗阿罗岛,lingshiyiwenaluoaluodao
-5134,,圆桌骑士幻巧战,yuanzhuoqishihuanqiaozhan
 5135,,阿修罗歼灭战,axiuluojianmiezhan
 5136,,泽罗姆斯歼灭战,zeluomusijianmiezhan
 5137,,泽罗姆斯歼殛战,zeluomusijianjizhan
