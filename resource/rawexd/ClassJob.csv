@@ -1,4 +1,4 @@
-﻿key,0,1,2,27
+﻿key,0,1,2,29
 #,Name,Abbreviation,,Name{English}
 offset,0,4,8,16
 int32,str,str,str,str
@@ -43,5 +43,5 @@ int32,str,str,str,str
 38,舞者,DNC,舞,Dancer
 39,钐镰客,RPR,钐,Reaper
 40,贤者,SGE,贤,Sage
-41,,,,
-42,,,,
+41,蝰蛇剑士,VPR,蛇,Viper
+42,绘灵法师,PCT,绘,Pictomancer

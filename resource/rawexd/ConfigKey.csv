@@ -396,6 +396,9 @@ int32,str,str
 515,MENU_SDS,剧情辅助器
 516,MENU_CHARA_CARD,冒险者铭牌
 517,MENU_VVD,特殊迷宫探索器
+518,,面部饰品
+519,,静音列表
+520,,词语过滤器
 550,CMD_BEGINNER,临时切换到新人频道
 551,CMD_BEGINNER_ALWAYS,切换到新人频道
 552,PVPTEAM_CHAT,临时切换到战队频道
