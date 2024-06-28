@@ -24,3 +24,7 @@ int32,str,str,str,str,str
 19,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,脱离,快速连击按钮挣脱出来吧！
 20,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,守护,连续点击以保护克莱夫！
 21,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,对抗,连续点击抵御攻击！
+22,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,拼刀,快速连击按钮抗住攻击！
+23,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,脱离,快速连续按键，摆脱困境并救助奎奇！
+24,SE_Bt_Etc_QTE_Ready,SE_Bt_Etc_QTE_Success,SE_Bt_Etc_QTE_Fail,脱离,快速连续按键，躲避攻击！
+25,,,,,
