@@ -7,7 +7,10 @@
 1. 推荐 [开启高分辨率贴图](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)，否则可能会导致 DirectX 崩溃（未实测）
 1. 请从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载
 
-推荐搭配 [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048) 使用
+## 推荐搭配一起使用
+
+- 主线文本翻译：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
+- UI 标题图片翻译： [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
 
 ## 众所周知
 
@@ -16,15 +19,6 @@
 - 低调使用，不建议开直播、公开讨论、截图上传至社交媒体（尤其是境外平台）
 
 ## 常见问题解答（QA）
-
-### 该版本与 GpointChen 的汉化补丁有什么不同？
-
-| 项目 | FFXIVChnTextPatch-GP | FFXIVChnTextPatch-Souma |
-| :---: | :---: | :---: |
-| 显示语言 | 繁体中文、繁体机转简体中文 | 原生简体中文 |
-| 汉化国服已有的文本 | √ | √ |
-| 汉化新版本文本 | × | √ |
-| Cactbot 正常运行 | × | √ |
 
 ### 可以使用旧版本的 Release 吗？
 
@@ -38,7 +32,7 @@
 
 ### 喊话任务的处理？
 
-全部采用E端文本
+国服已有的内容会统一替换为E端文本，国服未更新的任务则以你的客户端原文为准。
 
 ### 如何更换字体？
 
@@ -54,9 +48,6 @@
 ### 与 Dalamud Plugins（卫月插件）的兼容性
 
 若在汉化后，发现个别 Dalamud 插件功能无法使用，可尝试更换汉化方式，也许就会解决。
-
-- 例如你在国际服使用国服的插件，则建议使用替换文件型汉化，这样可以解决 SelectString 不匹配导致的不工作，但无法解决 Sig 特征码不匹配导致的不工作。（本条仅7.0前有效，大版本更新后大概率需要更新特征码）
-- 例如你在国际服使用国际服插件，在替换文件型汉化后插件无法使用了，则建议使用 Mod 型汉化，这样汉化不会影响到该 Dalamud 插件的文本获取。
 
 ### 其他问题
 
