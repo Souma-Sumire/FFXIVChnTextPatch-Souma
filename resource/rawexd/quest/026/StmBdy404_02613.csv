@@ -53,6 +53,6 @@ int32,str,str
 48,TEXT_STMBDY404_02613_RODNEY_000_000,冒险者，封印术重新构筑完成了。<hex:02100103>为了方便攻入创神优雷卡所在的总部塔，<hex:02100103>作为前线基地的据点也搭建完了。
 49,TEXT_STMBDY404_02613_RODNEY_100_000,另外，调查队决定将据点所在的地区命名为丰水地带。<hex:02100103>……这将是在那座岛屿调查的最后的地区吧。
 50,TEXT_STMBDY404_02613_RODNEY_000_001,你要是准备好了，就前往丰水地带的据点，<hex:02100103>与那里的可露儿小姐汇合吧！<hex:02100103>祝你好运！
-51,TEXT_STMBDY404_02613_SYSTEM_000_010,和“<hex:02281CFF17>ContentFinderCondition<hex:E8022A03>”相同，<hex:02100103>从单人最多到满编小队（8人），<hex:02100103>可以以任意人数挑战“<hex:02281CFF17>ContentFinderCondition<hex:E8032A03>”了。
-52,TEXT_STMBDY404_02613_SYSTEM_000_011,和罗德尼对话，<hex:02100103>选择“<hex:02281CFF17>ContentFinderCondition<hex:E8032A03>”就可开始进行探索。
-53,TEXT_STMBDY404_02613_SYSTEM_000_012,另外“<hex:02281CFF17>ContentFinderCondition<hex:E8032A03>”设有品级同步限制，<hex:02100103>所有装备的性能将被调整到“<hex:02281CFF17>ContentFinderCondition<hex:E8021403>级”之下。
+51,TEXT_STMBDY404_02613_SYSTEM_000_010,和“<hex:02281CFF17>ContentFinderCondition<hex:E8022B03>”相同，<hex:02100103>从单人最多到满编小队（8人），<hex:02100103>可以以任意人数挑战“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”了。
+52,TEXT_STMBDY404_02613_SYSTEM_000_011,和罗德尼对话，<hex:02100103>选择“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”就可开始进行探索。
+53,TEXT_STMBDY404_02613_SYSTEM_000_012,另外“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”设有品级同步限制，<hex:02100103>所有装备的性能将被调整到“<hex:02281CFF17>ContentFinderCondition<hex:E8021503>级”之下。

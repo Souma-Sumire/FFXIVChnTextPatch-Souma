@@ -53,6 +53,6 @@ int32,str,str
 48,TEXT_STMBDY403_02612_RODNEY_000_000,冒险者！传送网终于重新设定完成了！<hex:02100103>先出发的人员已经在原型以太之光附近建立起了据点。
 49,TEXT_STMBDY403_02612_RODNEY_100_000,调查队决定将据点所在的这一区域命名为“涌火地带”。<hex:02100103>这个区域越往深处火属性之力就会变得越强。
 50,TEXT_STMBDY403_02612_RODNEY_000_001,你要是准备好了，就前往涌火地带的据点，<hex:02100103>与先出发的可露儿小姐汇合吧！
-51,TEXT_STMBDY403_02612_SYSTEM_000_010,和“<hex:02281CFF17>ContentFinderCondition<hex:E8022A03>”相同，<hex:02100103>从单人最多到满编小队（8人），<hex:02100103>可以以任意人数挑战“<hex:02281CFF17>ContentFinderCondition<hex:E8032A03>”了。
-52,TEXT_STMBDY403_02612_SYSTEM_000_011,和罗德尼对话，<hex:02100103>选择“<hex:02281CFF17>ContentFinderCondition<hex:E8032A03>”就可开始进行探索。
-53,TEXT_STMBDY403_02612_SYSTEM_000_012,另外“<hex:02281CFF17>ContentFinderCondition<hex:E8032A03>”设有品级同步限制，<hex:02100103>所有装备的性能将被调整到“<hex:02281CFF17>ContentFinderCondition<hex:E8021403>级”之下。
+51,TEXT_STMBDY403_02612_SYSTEM_000_010,和“<hex:02281CFF17>ContentFinderCondition<hex:E8022B03>”相同，<hex:02100103>从单人最多到满编小队（8人），<hex:02100103>可以以任意人数挑战“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”了。
+52,TEXT_STMBDY403_02612_SYSTEM_000_011,和罗德尼对话，<hex:02100103>选择“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”就可开始进行探索。
+53,TEXT_STMBDY403_02612_SYSTEM_000_012,另外“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”设有品级同步限制，<hex:02100103>所有装备的性能将被调整到“<hex:02281CFF17>ContentFinderCondition<hex:E8021503>级”之下。
