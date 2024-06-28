@@ -1,5 +1,5 @@
 ﻿key,0,1,2,29
-#,Name,Abbreviation,,Name{English}
+#,Name,Abbreviation,,
 offset,0,4,8,16
 int32,str,str,str,str
 0,冒险者,ADV,,Adventurer
