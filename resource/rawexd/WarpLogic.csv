@@ -18,4 +18,4 @@ int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str
 13,WarpInnOldSharlayan,,,,,,,,,,,,,
 14,WarpSEElpis,,,,,,,,,,,,是,否
 15,WarpSEUltimaThule,,,,,,,,,,,,是,否
-16,WarpInnTuliyollal,,,,,,,,,,,,,
+16,WarpInnTuliyollal,QST_SEQ_1,QST_SEQ_FINISH,QST_KINGMD108,QST_KINGME111,QST_KINGMF114,QST_SEQ_2,QST_KINGMB104,,,,,,
