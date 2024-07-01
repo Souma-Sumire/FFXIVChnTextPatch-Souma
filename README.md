@@ -2,21 +2,23 @@
 
 本项目修改自 [FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP)
 
-## 汉化说明
+## 使用须知
+
+- 修改客户端属于作弊行为，使用本汉化即表示你自愿承担一切后果。
+- 请不要在公共场合发送中文
+  - 注意！当你展示道具 `<item>` 时，别人会如实看到你所展示的物品名称中文（以发送者的语言显示）
+  - 这情况是安全的：`<t>` `<pos>` `<flag>` `<招募信息>` `<定型文>` `<系统情感动作>`（以接受者的语言显示）
+- 低调使用，不建议开直播、公开讨论、截图上传至社交媒体（尤其是境外平台）。
+
+## 下载与安装
 
 1. 推荐 [开启高分辨率贴图](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%BC%80%E5%90%AF%E9%AB%98%E6%B8%85%E8%B4%B4%E5%9B%BE)，否则可能会导致 DirectX 崩溃（未实测）
-1. 请从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本的汉化补丁
+1. 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本的汉化补丁
 
 ## 推荐搭配使用
 
 - 主线文本翻译：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
 - UI 标题图片翻译： [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
-
-## 使用须知
-
-- 修改客户端属于作弊行为，使用本汉化即表示你自愿承担一切后果。
-- 请不要在公共场合发送中文（当你展示道具 `<item>` 时，别人会如实看到你所展示的物品名称中文）。
-- 低调使用，不建议开直播、公开讨论、截图上传至社交媒体（尤其是境外平台）。
 
 ## 常见问题解答（QA）
 
