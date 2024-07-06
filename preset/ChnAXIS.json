@@ -1299,6 +1299,62 @@
 								"horizontalOffset": 0,
 								"letterSpacing": 0
 							}
+						},
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"name": "ChnAXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 16.0,
+							"transformationMatrix": [
+								1.0,
+								0.0,
+								0.0,
+								1.0
+							],
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										65281,
+										65281
+									],
+									[
+										65306,
+										65306
+									],
+									[
+										65311,
+										65311
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
 						}
 					],
 					"name": "Meidinger_16",
@@ -1402,6 +1458,62 @@
 									[
 										0,
 										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"name": "ChnAXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 40.0,
+							"transformationMatrix": [
+								1.0,
+								0.0,
+								0.0,
+								1.0
+							],
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										65281,
+										65281
+									],
+									[
+										65306,
+										65306
+									],
+									[
+										65311,
+										65311
 									]
 								],
 								"horizontalOffset": 0,
