@@ -24,7 +24,7 @@
 
 ### 可以使用旧版本的 Release 吗？
 
-游戏版本更新后，应等待新的 Release 发布。使用旧版本的 Release 可能会导致游戏崩溃或数据非法等问题。
+**不可以！** 这是**非常不安全**的行为，请使用最新版本的汉化补丁。
 
 ### 如何设置ACT解析插件语言？
 
@@ -38,18 +38,23 @@
 
 请参考 [Wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93) 内容
 
+### 只安装中文字体，但是不汉化游戏内容
+
+覆盖时只覆盖 `000000` 开头的3个文件
+
 ### 故意未汉化的文本
 
 为了正常使用 Cactbot，以下文本未被翻译：
 
 - 敌人名称
 - 倒计时相关的提示语句
+- 封锁区域的提示语句
 
 ### 与 Cactbot Radar 的兼容性问题
 
 由于 LogMessage.csv#1350 被汉化，导致 Cactbot Radar 在切线后不会清空之前找到的怪物列表。考虑到使用 Radar 的人较少，不做兼容性修复（也就是不翻译这句话）。
 
-如有车头有找怪需求的可以将 Radar 链接替换为我修改过源码实现兼容的这个链接：`https://souma.diemoe.net/cactbot/ui/radar/radar.html`
+如有 Radar 使用需求的可以将 Radar 链接替换为我修改过源码实现兼容的这个链接：`https://souma.diemoe.net/cactbot/ui/radar/radar.html`
 
 ### 与 Dalamud Plugins（卫月插件）的兼容性
 
@@ -63,10 +68,10 @@
 
 ## 贡献和支持
 
+如果这个项目对你有所帮助，欢迎打赏支持（微信）！
+
+![image](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/1fec3974-0b6d-43df-9afc-2d760c33f9b5)
+
 若你觉得本汉化项目对你有帮助，欢迎给予 Star 以示鼓励！
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Souma-Sumire/FFXIVChnTextPatch-Souma&type=Timeline)](https://star-history.com/#Souma-Sumire/FFXIVChnTextPatch-Souma&Timeline)
-
-如果这个项目对你有所帮助，欢迎打赏支持（微信支付）！
-
-![image](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/1fec3974-0b6d-43df-9afc-2d760c33f9b5)
