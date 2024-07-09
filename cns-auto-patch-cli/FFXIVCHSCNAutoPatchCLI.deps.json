@@ -1,0 +1,41 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "FFXIVCHSCNAutoPatchCLI/1.0.0": {
+        "dependencies": {
+          "Downloader": "3.1.2"
+        },
+        "runtime": {
+          "FFXIVCHSCNAutoPatchCLI.dll": {}
+        }
+      },
+      "Downloader/3.1.2": {
+        "runtime": {
+          "lib/net8.0/Downloader.dll": {
+            "assemblyVersion": "3.1.2.0",
+            "fileVersion": "3.1.2.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FFXIVCHSCNAutoPatchCLI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Downloader/3.1.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gcWDRWn5QEE/kVZulOOy57UpJOP7tKVHGoU/jc/Kwp36xdeKCs1RXjYr1S6D0o4FhAdsWaxtNdpjt5Pn6XTGuA==",
+      "path": "downloader/3.1.2",
+      "hashPath": "downloader.3.1.2.nupkg.sha512"
+    }
+  }
+}
