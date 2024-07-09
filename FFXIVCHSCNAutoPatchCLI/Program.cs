@@ -128,6 +128,10 @@ internal class Program
         using var stream = File.OpenRead(zipFilePath);
         var hash = md5.ComputeHash(stream);
         var hashString = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+
+        Console.WriteLine($"Expected MD5: {md5ToCheck}");
+        Console.WriteLine($"Real     MD5: {hashString}");
+
         if (hashString != md5ToCheck)
         {
             Console.WriteLine("MD5 校验失败，停止解压，请重新启动本程序。");
