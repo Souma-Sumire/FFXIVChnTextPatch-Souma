@@ -1,7 +1,9 @@
 ﻿using System.IO.Compression;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Downloader;
 
 internal class Config
 {
@@ -37,7 +39,7 @@ internal class Program
 {
     const string CacheDir = "./.cache";
     const string DefaultRemoteUpdateUrl = "";
-    
+
     public static void Main(string[] args)
     {
         Console.WriteLine("欢迎使用 FFXIV CNS Auto Patch 工具。输入 0 进入更新模式，输入 1 进入恢复模式。");
@@ -73,7 +75,7 @@ internal class Program
         var config = EnsureUpdateProperties();
         Console.WriteLine($"开始从远端获取更新信息: {config.UpdateUrl}");
 
-        var client = new HttpClient();
+        using var client = new HttpClient();
         var response = client.GetAsync(config.UpdateUrl).Result;
         var jsonString = response.Content.ReadAsStringAsync().Result;
 
@@ -95,7 +97,7 @@ internal class Program
 
         if (!recoverMode && config.UpdateVersion < remoteUpdateInfo.Version)
         {
-            Console.WriteLine($"发现新版本: {remoteUpdateInfo.Version}，开始下载更新包，无进度条提示，请耐心等待。");
+            Console.WriteLine($"发现新版本: {remoteUpdateInfo.Version}，开始下载更新包，请耐心等待。");
         }
         else
         {
@@ -103,10 +105,6 @@ internal class Program
             return;
         }
 
-        var packageResponse = client.GetAsync(urlToDownload).Result;
-        var packageBytes = packageResponse.Content.ReadAsByteArrayAsync().Result;
-
-        Console.WriteLine("更新包下载完成，开始写入磁盘。");
         if (!Directory.Exists(CacheDir))
         {
             Directory.CreateDirectory(CacheDir);
@@ -116,26 +114,62 @@ internal class Program
             Path.Combine(CacheDir, $"recover.zip") :
             Path.Combine(CacheDir, $"update_{remoteUpdateInfo.Version}.zip");
 
+        bool shouldDownload = true;
         if (File.Exists(zipFilePath))
         {
-            Console.WriteLine("发现缓存的同名更新包，删除该缓存。");
-            File.Delete(zipFilePath);
+            Console.WriteLine("发现缓存的同名更新包，检查 MD5 是否正常。");
+            
+            var md5 = GetMd5OfFile(zipFilePath);
+
+            Console.WriteLine($"Expected MD5: {md5ToCheck}");
+            Console.WriteLine($"Real     MD5: {md5}");
+            
+            if (md5 == md5ToCheck)
+            {
+                Console.WriteLine("缓存的更新包 MD5 正常，跳过下载。");
+                shouldDownload = false;
+            }
+            else
+            {
+                Console.WriteLine("缓存的更新包 MD5 不正常，删除缓存文件。");
+                // File.Delete(zipFilePath);
+            }
         }
-        File.WriteAllBytes(zipFilePath, packageBytes);
 
-        Console.WriteLine("更新包下载完成，开始校验MD5。");
-        using var md5 = MD5.Create();
-        using var stream = File.OpenRead(zipFilePath);
-        var hash = md5.ComputeHash(stream);
-        var hashString = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-
-        Console.WriteLine($"Expected MD5: {md5ToCheck}");
-        Console.WriteLine($"Real     MD5: {hashString}");
-
-        if (hashString != md5ToCheck)
+        if (!shouldDownload)
         {
-            Console.WriteLine("MD5 校验失败，停止解压，请重新启动本程序。");
-            throw new Exception("MD5 校验失败。");
+            var downloadOpt = new DownloadConfiguration()
+            {
+                ChunkCount = 8, // file parts to download, the default value is 1
+                ParallelDownload = true // download parts of the file as parallel or not. The default value is false
+            };
+            var downloader = new DownloadService(downloadOpt);
+            downloader.DownloadProgressChanged += (sender, args) =>
+            {
+                var current = args.ReceivedBytesSize;
+                var total = args.TotalBytesToReceive;
+
+                double number = (double)current / total;
+                string percentageString = $"{number * 100:F2}%";
+                Console.Write("\r{0}   ",
+                    $"Download progress: current {current / 1024.0 / 1024.0:F2} mb, total {total / 1024.0 / 1024.0:F2} mb, {percentageString}");
+            };
+
+            downloader.DownloadFileTaskAsync(urlToDownload, zipFilePath).Wait();
+
+            Console.WriteLine();
+            Console.WriteLine("更新包下载完成，开始校验MD5。");
+            
+            var hashString = GetMd5OfFile(zipFilePath);
+
+            Console.WriteLine($"Expected MD5: {md5ToCheck}");
+            Console.WriteLine($"Real     MD5: {hashString}");
+
+            if (hashString != md5ToCheck)
+            {
+                Console.WriteLine("MD5 校验失败，停止解压，请重新启动本程序。");
+                throw new Exception("MD5 校验失败。");
+            }
         }
 
         var extractPath = Path.Combine(config.GameRootPath!, "game", "sqpack", "ffxiv");
@@ -145,10 +179,24 @@ internal class Program
         File.Delete(zipFilePath);
 
         Console.WriteLine("更新 config.json。");
-        config.UpdateVersion = recoverMode? -1 : remoteUpdateInfo.Version;
+        config.UpdateVersion = recoverMode ? -1 : remoteUpdateInfo.Version;
         UpdateConfig(config);
 
         Console.WriteLine("更新完成，重启游戏客户端以应用更新。");
+    }
+
+    private static string GetMd5OfFile(string zipFilePath)
+    {
+        using var md5 = MD5.Create();
+        using var stream = File.OpenRead(zipFilePath);
+        var hash = md5.ComputeHash(stream);
+        StringBuilder sb = new StringBuilder();
+        foreach (var t in hash)
+        {
+            sb.Append(t.ToString("X2"));
+        }
+        var hashString = sb.ToString();
+        return hashString;
     }
 
     static Config EnsureUpdateProperties()
@@ -243,6 +291,7 @@ internal class Program
         {
             var file = File.OpenRead("./config.json");
             var json = JsonSerializer.Deserialize<Config>(file);
+            file.Close();
             return json!;
         }
         catch (Exception e)

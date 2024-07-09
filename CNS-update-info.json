@@ -1,7 +1,7 @@
 {
   "version": 6,
   "update_package_url": "https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.5/7.0-hotfix1-001-overwrite.zip",
-  "update_package_md5": "e3d3f2dc5b5fa8c05b48b5e47eec1053918ffa95",
+  "update_package_md5": "13099bff533b9eb539e4cb27d28ac307",
   "recover_package_url": "https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.5/7.0-hotfix1-backup.zip",
-  "recover_package_md5": "091ad094f7f6ab6ec4607605e1be710028d3de3e"
+  "recover_package_md5": "da1080094fc423b6556702b5df8bfda8"
 }
