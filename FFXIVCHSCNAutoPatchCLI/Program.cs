@@ -46,26 +46,38 @@ internal class Program
 
         var complete = false;
 
-        do
+        try
         {
-            var mode = Console.ReadLine();
-            switch (mode)
+            do
             {
-                case "0":
-                    ApplyUpdate(false);
-                    complete = true;
-                    break;
-                case "1":
-                    ApplyUpdate(true);
-                    complete = true;
-                    break;
-                default:
-                    Console.WriteLine("输入无效，请重新输入。");
-                    complete = false;
-                    continue;
+                var mode = Console.ReadLine();
+                switch (mode)
+                {
+                    case "0":
+                        ApplyUpdate(false);
+                        complete = true;
+                        break;
+                    case "1":
+                        ApplyUpdate(true);
+                        complete = true;
+                        break;
+                    default:
+                        Console.WriteLine("输入无效，请重新输入。");
+                        complete = false;
+                        continue;
+                }
             }
+            while (!complete);
         }
-        while (!complete);
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            Console.WriteLine("按任意键退出。");
+            Console.ReadKey();   
+        }
     }
 
     private static void ApplyUpdate(bool recoverMode)
@@ -94,8 +106,13 @@ internal class Program
 
         var urlToDownload = recoverMode ? remoteUpdateInfo.RecoverPackageUrl : remoteUpdateInfo.UpdatePackageUrl;
         var md5ToCheck = recoverMode ? remoteUpdateInfo.RecoverPackageMd5 : remoteUpdateInfo.UpdatePackageMd5;
+        md5ToCheck = md5ToCheck.ToUpper();
 
-        if (!recoverMode && config.UpdateVersion < remoteUpdateInfo.Version)
+        if (recoverMode)
+        {
+            Console.WriteLine("进入恢复模式，将下载恢复包。");
+        }
+        else if (config.UpdateVersion < remoteUpdateInfo.Version)
         {
             Console.WriteLine($"发现新版本: {remoteUpdateInfo.Version}，开始下载更新包，请耐心等待。");
         }
@@ -118,12 +135,12 @@ internal class Program
         if (File.Exists(zipFilePath))
         {
             Console.WriteLine("发现缓存的同名更新包，检查 MD5 是否正常。");
-            
+
             var md5 = GetMd5OfFile(zipFilePath);
 
             Console.WriteLine($"Expected MD5: {md5ToCheck}");
             Console.WriteLine($"Real     MD5: {md5}");
-            
+
             if (md5 == md5ToCheck)
             {
                 Console.WriteLine("缓存的更新包 MD5 正常，跳过下载。");
@@ -132,11 +149,11 @@ internal class Program
             else
             {
                 Console.WriteLine("缓存的更新包 MD5 不正常，删除缓存文件。");
-                // File.Delete(zipFilePath);
+                File.Delete(zipFilePath);
             }
         }
 
-        if (!shouldDownload)
+        if (shouldDownload)
         {
             var downloadOpt = new DownloadConfiguration()
             {
@@ -159,7 +176,7 @@ internal class Program
 
             Console.WriteLine();
             Console.WriteLine("更新包下载完成，开始校验MD5。");
-            
+
             var hashString = GetMd5OfFile(zipFilePath);
 
             Console.WriteLine($"Expected MD5: {md5ToCheck}");
@@ -195,7 +212,7 @@ internal class Program
         {
             sb.Append(t.ToString("X2"));
         }
-        var hashString = sb.ToString();
+        var hashString = sb.ToString().ToUpper();
         return hashString;
     }
 
