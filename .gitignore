@@ -2,3 +2,4 @@ backup/
 debug.*
 conf/global.properties
 *.properties
+*.properties
