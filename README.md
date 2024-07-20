@@ -12,7 +12,7 @@
 
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 overwrite.zip，并参考  Wiki：[通过覆盖文件汉化](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E9%80%9A%E8%BF%87%E8%A6%86%E7%9B%96%E6%96%87%E4%BB%B6%E6%B1%89%E5%8C%96)
 
-- 如果你需要恢复原文件，使用 backup.zip 文件即可
+- 如果你需要恢复原文件，使用 backup.zip 文件即可（仅在每个版本的 001 中发布一次，后续不再重复上传）
 
 ### 方法二：使用 Penumbra 加载
 
