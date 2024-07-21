@@ -81,9 +81,10 @@
 
 ### 其他问题
 
-- 我并非你的保姆，因此提出过于基础的问题将被无视
-- 为了更好的解决你的问题，请先浏览：[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md) / [如何有效地报告 Bug](https://www.chiark.greenend.org.uk/~sgtatham/bugs-cn.html)
-- 可以发起 Issues 或加入QQ群 `231937107` 寻求帮助
+- 请先浏览：[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md) / [如何有效地报告 Bug](https://www.chiark.greenend.org.uk/~sgtatham/bugs-cn.html)
+- 发起 Issues 或加入QQ群 `231937107` 寻求帮助
+
+谁他妈也不是你的保姆，**不要问文档里说过的问题**！
 
 ## 贡献和支持
 
