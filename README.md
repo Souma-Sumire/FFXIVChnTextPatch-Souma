@@ -16,7 +16,7 @@
 
 ### 方法二：使用 Penumbra 加载
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip，并参考 Wiki：[使用 Penumbra 加载](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/4%BD%BF%E7%94%A8-Penumbra-%E5%8A%A0%E8%BD%BD)
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip，并参考 Wiki：[使用 Penumbra 加载](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8-Penumbra-%E5%8A%A0%E8%BD%BD)
 
 ### 方法三：使用汉化器汉化
 
