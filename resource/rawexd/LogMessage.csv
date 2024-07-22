@@ -3886,7 +3886,7 @@ int32,str
 3881,无法发送。请从好友名单中更新目标信息后再次尝试。
 3882,将图像设置修改为了<hex:0208F0EDE4E94F04FF52><hex:02094EE802FF0F>Standard (Mac)<hex:FF0D>Middle (Mac)<hex:FF0B>High (Mac)<hex:FF11>Extra-High (Mac)<hex:FF0E>Maximum (Mac)<hex:03><hex:FF95><hex:020991E802FF22>标准品质（笔记本电脑）<hex:FF1F>标准品质（台式电脑）<hex:FF1F>高品质（笔记本电脑）<hex:FF1C>高品质（台式电脑）<hex:FF0D>最高品质<hex:03><hex:03>
 3883,“<hex:02095CE802FF0D>所有玩家<hex:FF07>自己<hex:FF0D>小队成员<hex:FF0D>团队队员<hex:FF07>他人<hex:FF07>好友<hex:FF16>水晶冲突的敌人<hex:03>”的名牌显示设置已更改为“<hex:020944E803FF0D>一直显示<hex:FF10>战斗时显示<hex:FF16>选为目标时显示<hex:FF0A>不显示<hex:03>”。
-3884,“<hex:02095CE802FF0D>所有玩家<hex:FF07>自己<hex:FF0D>小队成员<hex:FF0D>团队队员<hex:FF07>他人<hex:FF07>好友<hex:FF16>水晶冲突的敌人<hex:03>”的名牌姓名显示设置已更改为“<hex:02094AE803FF0D>显示全名<hex:FF10>只显示姓氏<hex:FF10>只显示名字<hex:FF16>姓和名同时显示<hex:03>”。
+3884,“<hex:02095CE802FF0D>所有玩家<hex:FF07>自己<hex:FF0D>小队成员<hex:FF0D>团队队员<hex:FF07>他人<hex:FF07>好友<hex:FF16>水晶冲突的敌人<hex:03>”的名牌姓名显示设置已更改为“<hex:02094AE803FF0D>显示全名<hex:FF10>只显示姓氏<hex:FF10>只显示名字<hex:FF16>全部使用首字母<hex:03>”。
 3885,当前的场景标记已保存到第<hex:022003E80203>格。
 3886,恢复了第<hex:022003E80203>格的场景标记。
 3887,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>掷出了<hex:0212024A03><hex:022003E80303>点！（最大<hex:022003E80403>）
