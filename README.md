@@ -84,7 +84,7 @@
 - 请先浏览：[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md) / [如何有效地报告 Bug](https://www.chiark.greenend.org.uk/~sgtatham/bugs-cn.html)
 - 发起 Issues 或加入QQ群 `231937107` 寻求帮助
 
-谁他妈也不是你的保姆，**不要问文档里说过的问题**！
+谁他妈也不是你的保姆，**不要问文档里说过的问题**！连中文都看不懂的话，就别玩国际服了行吗 QAQ
 
 ## 贡献和支持
 
