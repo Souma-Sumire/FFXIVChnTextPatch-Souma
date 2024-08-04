@@ -10,15 +10,25 @@
 
 ### 方法一：直接覆盖游戏文件
 
+- 优点：不需要额外插件
+- 缺点：文件大，更新麻烦，容易搞坏游戏文件
+
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 overwrite.zip，并参考  Wiki：[通过覆盖文件汉化](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E9%80%9A%E8%BF%87%E8%A6%86%E7%9B%96%E6%96%87%E4%BB%B6%E6%B1%89%E5%8C%96)
 
-- 如果你需要恢复原文件，使用 backup.zip 文件即可（仅在每个版本的 001 中发布一次，后续不再重复上传）
+如果你需要恢复原文件，使用 backup.zip 文件即可（仅在每个版本的 001 中发布一次，后续不再重复上传）
 
 ### 方法二：使用 Penumbra 加载
+
+- 优点：文件小，更新方便，不改动原始文件
+- 门槛：你需要会使用 Peanumbra
 
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip，并参考 Wiki：[使用 Penumbra 加载](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8-Penumbra-%E5%8A%A0%E8%BD%BD)
 
 ### 方法三：使用汉化器汉化
+
+- 优点：自定义程度高，可以选择性汉化
+- 门槛：你需要熟练使用 Git
+- 缺点：同样是覆盖文件，容易搞坏游戏文件
 
 参考 Wiki：[使用汉化器汉化](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8%E6%B1%89%E5%8C%96%E5%99%A8%E6%B1%89%E5%8C%96)
 
