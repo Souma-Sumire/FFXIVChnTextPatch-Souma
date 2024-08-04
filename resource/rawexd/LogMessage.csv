@@ -4337,7 +4337,7 @@ int32,str
 4332,雇员成功完成了“<hex:022003E80303>级 <hex:02280AFF05>Item<hex:E8020103>”的探险委托。
 4333,雇员成功完成了“<hex:020813E1E80301FF0B><hex:022003E80303>级 <hex:FF01><hex:03><hex:022818FF13>RetainerTaskRandom<hex:E8020103>”的探险委托。
 4334,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>交给<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403><hex:022003E80303>枚<hex:02280AFF05>Item<hex:E8020103>。
-4335,<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>已经升到了最高等级。
+4335,<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>已经升到了最高等级。雇员无法超过雇主的同职业等级。
 4336,撤销了雇员正在进行的“<hex:022003E80303>级 <hex:02280AFF05>Item<hex:E8020103>”的探险委托。
 4337,撤销了雇员正在进行的“<hex:020813E1E80301FF0B><hex:022003E80303>级 <hex:FF01><hex:03><hex:022818FF13>RetainerTaskRandom<hex:E8020103>”的探险委托。
 4338,无法完成委托，背包里需要至少2格空位。
