@@ -19,14 +19,15 @@
 
 ### 方法二：使用 Penumbra 加载
 
-- 优点：文件小，更新方便，不改动原始文件
+- 优点：文件小，更新方便，不改动原始文件，可以选择性汉化（尚未实装）
 - 门槛：你需要会使用 Peanumbra
+- 缺点：需要等 Penumbra 更新
 
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip，并参考 Wiki：[使用 Penumbra 加载](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8-Penumbra-%E5%8A%A0%E8%BD%BD)
 
 ### 方法三：使用汉化器汉化
 
-- 优点：自定义程度高，可以选择性汉化
+- 优点：可以选择性汉化
 - 门槛：你需要熟练使用 Git
 - 缺点：同样是覆盖文件，容易搞坏游戏文件
 
@@ -109,3 +110,25 @@
 若你觉得本汉化项目对你有帮助，欢迎给予 Star 以示鼓励！
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Souma-Sumire/FFXIVChnTextPatch-Souma&type=Timeline)](https://star-history.com/#Souma-Sumire/FFXIVChnTextPatch-Souma&Timeline)
+
+### 赞助名单
+
+感谢以下大佬的支持（仅统计2024年之后的赞赏码渠道）：
+
+- 2024年02月13日 匿名
+- 2024年06月28日 A******
+- 2024年06月29日 邱**
+- 2024年06月30日 匿名
+- 2024年06月30日 黑*
+- 2024年07月16日 L********
+- 2024年07月16日 匿名
+- 2024年07月21日 E*********
+- 2024年08月02日 面*
+- 2024年08月02日 匿名
+- 2024年08月02日 吉***
+- 2024年08月02日 C******
+- 2024年08月03日 匿名
+- 2024年08月04日 匿名
+- 2024年08月05日 匿名
+- 2024年08月05日 匿名
+- 2024年08月05日 匿名
