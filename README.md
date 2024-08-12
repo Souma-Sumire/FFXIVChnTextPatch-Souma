@@ -13,9 +13,23 @@
 - 优点：简单
 - 缺点：文件大，更新麻烦，需要额外备份原文件
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 overwrite.zip，并参考  Wiki：[通过覆盖文件汉化](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E9%80%9A%E8%BF%87%E8%A6%86%E7%9B%96%E6%96%87%E4%BB%B6%E6%B1%89%E5%8C%96)
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 overwrite.zip
 
-如果你需要恢复原文件，使用 backup.zip 文件即可（仅在每个版本的 001 中发布一次，后续不再重复上传）
+将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
+
+#### 负责字体部分
+
+- 000000.win32.dat0
+- 000000.win32.index
+- 000000.win32.index2
+
+#### 负责文本部分
+
+- 0a0000.win32.dat0
+- 0a0000.win32.index
+- 0a0000.win32.index2
+
+如果你需要恢复原文件，使用 backup.zip 文件即可（仅在每个 Release 版本的 001 中发布一次，后续不再重复上传）
 
 ### 方法二：使用 Penumbra 加载
 
@@ -23,7 +37,25 @@
 - 门槛：你需要会使用 Dalamud & Peanumbra
 - 缺点：需要依赖 Dalamud & Penumbra
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip，并参考 Wiki：[使用 Penumbra 加载](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8-Penumbra-%E5%8A%A0%E8%BD%BD)
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip
+
+#### 当你首次导入（使用 Penumbra 加载）
+
+1. 打开 Penumbra 的设置页面
+1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项
+1. 在 `Settings - Advanced` 开启 `Wait for Plugins on Startup` 选项
+1. 导入 `ChnAXIS.pmp` 文件，用于显示中文字体
+1. 导入 `Chinese Text Mod.pmp` 文件，用于改变游戏文本
+1. 切换到 `Mods` 页面，启用这两个模组（选中后勾选 `Enabled`）
+1. 重新启动游戏
+
+#### 以后更新（使用 Penumbra 加载）
+
+1. 下载更新包
+1. 无需处理字体模组
+1. 快捷方法：将 Chinese Text Mod.pmp 使用压缩软件进行解压，得到一个文件夹，直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），然后再上游戏即可直接加载为新版本。
+
+（如果你看不懂，那你就老老实实的用笨方法：上号、在插件里删掉旧 Mod、再添加新 Mod、再重启游戏吧）
 
 ### 方法三：使用汉化器汉化
 
@@ -31,7 +63,24 @@
 - 门槛：你需要熟练使用 Git
 - 缺点：同样是修改本地文件，需要额外备份原文件
 
-参考 Wiki：[使用汉化器汉化](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8%E6%B1%89%E5%8C%96%E5%99%A8%E6%B1%89%E5%8C%96)
+#### 当你首次导入（使用汉化器汉化）
+
+1. 克隆本仓库 `git clone https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma.git`
+1. 启动 `FFXIVChnTextPatchGP.exe`
+1. 点击右上角「设置」
+    1. 「游戏路径」：选择FFXIV游戏根目录（例如：D:\FFXIV\SquareEnix\FINAL FANTASY XIV - A Realm Reborn）
+    1. 「档案语言」：选择CSV
+    1. 「原始語言」：日文或英文，根据你的客户端语言选择
+    1. 勾选「替换字体」、「替换文本」
+    1. 点击确认
+
+#### 以后更新（使用汉化器汉化）
+
+1. 拉取最新代码 `git pull`
+1. 恢复备份文件（你可以只恢复 `0a0000` 开头的 **文本** 文件，保留 `000000` 开头的 **字库** 文件，这样执行时不勾选「替换字体」，只勾选「替换文本」，速度会快很多）
+1. 执行 `FFXIVChnTextPatchGP.exe`
+
+请注意，请不要重复汉化，因为每次执行都会覆盖backup文件夹里面的备份文件
 
 ### 推荐搭配
 
