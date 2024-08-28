@@ -8,7 +8,7 @@
 
 ## 下载 & 安装
 
-### 方法一：直接覆盖游戏文件
+### 方法一：覆盖游戏文件
 
 - 优点：简单
 - 缺点：文件大，更新麻烦，需要额外备份原文件
@@ -17,45 +17,29 @@
 
 将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
 
-#### 负责字体部分
+如果你需要恢复原文件，使用对应版本001中发布的 backup.zip 文件即可（仅在每个 Release 版本的 001 中发布一次，后续不再重复上传）
 
-- 000000.win32.dat0
-- 000000.win32.index
-- 000000.win32.index2
-
-#### 负责文本部分
-
-- 0a0000.win32.dat0
-- 0a0000.win32.index
-- 0a0000.win32.index2
-
-如果你需要恢复原文件，使用 backup.zip 文件即可（仅在每个 Release 版本的 001 中发布一次，后续不再重复上传）
-
-### 方法二：使用 Penumbra 加载
+### 方法二：Penumbra 热加载
 
 - 优点：文件小，更新方便，不改动原始文件，可以选择性汉化（尚未实装）
-- 门槛：你需要会使用 Dalamud & Peanumbra
 - 缺点：需要依赖 Dalamud & Penumbra
 
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip
 
-#### 当你首次导入（使用 Penumbra 加载）
+#### 第一次使用时
 
 1. 打开 Penumbra 的设置页面
-1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项
-1. 在 `Settings - Advanced` 开启 `Wait for Plugins on Startup` 选项
-1. 导入 `ChnAXIS.pmp` 文件，用于显示中文字体
-1. 导入 `Chinese Text Mod.pmp` 文件，用于改变游戏文本
-1. 切换到 `Mods` 页面，启用这两个模组（选中后勾选 `Enabled`）
+1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项，否则导入后的去重过程将十分耗时
+1. 在 `Settings - Advanced` 开启 `Wait for Plugins on Startup` 选项，否则无法正确加载汉化
+1. 导入任一字体模组，用于显示中文字体，例如本项目提供的 `ChnAXIS.pmp`
+1. 导入文本汉化模组 `Chinese Text Mod.pmp`
+1. 在 `Mods` 页面，启用这两个模组（选中后勾选 `Enabled`）
 1. 重新启动游戏
 
-#### 以后更新（使用 Penumbra 加载）
+#### 以后更新
 
-1. 下载更新包
-1. 无需处理字体模组
-1. 快捷方法：将 Chinese Text Mod.pmp 使用压缩软件进行解压，得到一个文件夹，直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），然后再上游戏即可直接加载为新版本。
-
-（如果你看不懂，那你就老老实实的用笨方法：上号、在插件里删掉旧 Mod、再添加新 Mod、再重启游戏吧）
+- 快捷更新方法：将 `Chinese Text Mod.pmp` 使用压缩软件进行解压，将得到文件夹的直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），即可直接更新为新版本
+- 笨比更新方法：如果你看不懂上一条，则你需要：上号、在插件里删掉旧 Mod、再添加新 Mod、再重启游戏
 
 ### 方法三：使用汉化器汉化
 
@@ -63,7 +47,7 @@
 - 门槛：你需要熟练使用 Git
 - 缺点：同样是修改本地文件，需要额外备份原文件
 
-#### 当你首次导入（使用汉化器汉化）
+#### 第一次使用时
 
 1. 克隆本仓库 `git clone https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma.git`
 1. 启动 `FFXIVChnTextPatchGP.exe`
@@ -74,18 +58,18 @@
     1. 勾选「替换字体」、「替换文本」
     1. 点击确认
 
-#### 以后更新（使用汉化器汉化）
+#### 以后更新
 
 1. 拉取最新代码 `git pull`
-1. 恢复备份文件（你可以只恢复 `0a0000` 开头的 **文本** 文件，保留 `000000` 开头的 **字库** 文件，这样执行时不勾选「替换字体」，只勾选「替换文本」，速度会快很多）
+1. 恢复至**最新版本**的**原版**游戏文件（如果你忘记备份，可以在 Release 页面下载 backup.zip 文件）
 1. 执行 `FFXIVChnTextPatchGP.exe`
 
 请注意，请不要重复汉化，因为每次执行都会覆盖backup文件夹里面的备份文件
 
 ### 推荐搭配
 
-- 主线文本翻译：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
-- UI 标题图片翻译： [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
+- 文本翻译工具：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
+- UI 标题图片翻译模组： [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
 
 ## 常见问题
 
@@ -111,10 +95,6 @@
 
 国服已有的内容会统一替换为E端文本，国服未更新的任务则以你的客户端原文为准
 
-### 我是工匠需要查外网攻略，不希望道具名称被汉化。我该怎么办？
-
-使用汉化器汉化，在详细设置中不勾选 `Item.csv` 即可。
-
 ### 任务文本有误？
 
 因为任务量极大，我不可能逐个检查每个任务文本。
@@ -133,22 +113,28 @@
 - 倒计时相关的提示语句
 - 封锁区域的提示语句
 
+### 我希望汉化敌人名称，该如何操作？
+
+若你不需要使用 Cactbot Raidboss 功能，可在使用汉化器汉化时，将 `resource\options\BNpcName.csv` 复制至 `resource\rawexd` 文件夹中，以实现对敌人名称的汉化。
+
+### 我不希望汉化道具名称，该如何操作？
+
+使用汉化器汉化，在详细设置中不勾选 `Item.csv` 即可。
+
 ### 与 Cactbot Radar 的兼容性问题
 
 由于 LogMessage.csv#1350 被汉化，导致 Cactbot Radar 在切线后不会清空之前找到的怪物列表。考虑到使用 Radar 的人较少，不做兼容性修复（也就是不翻译这句话）
 
 如有 Radar 使用需求的可以将 Radar 链接替换为我修改过源码实现兼容的这个链接：`https://souma.diemoe.net/cactbot/ui/radar/radar.html`
 
-### 与 Dalamud Plugins（卫月插件）的兼容性
+### 与 Dalamud Plugins（卫月插件）的兼容性题
 
-若在汉化后，发现个别 Dalamud 插件功能无法使用，可尝试更换汉化方式（Mod 式 / 覆盖式），也许能解决
+若在汉化后，发现个别 Dalamud 插件功能无法使用，可尝试更换汉化方式（Mod 式 / 覆盖式），**也许**能解决
 
 ### 其他问题
 
 - 请先浏览：[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md) / [如何有效地报告 Bug](https://www.chiark.greenend.org.uk/~sgtatham/bugs-cn.html)
-- 发起 Issues 或加入QQ群 `231937107` 寻求帮助
-
-谁他妈也不是你的保姆，**不要问文档里说过的问题**！连中文都看不懂的话，就别玩国际服了行吗 QAQ
+- 发起 Issues 或加入QQ群 `231937107` 寻求帮助（不要问文档里说过的问题）
 
 ## 贡献和支持
 
