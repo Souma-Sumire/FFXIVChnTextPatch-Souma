@@ -2,9 +2,9 @@
 #,,
 offset,0,4
 int32,str,str
-0,TEXT_SUBSEA165_01151_SEQ_00,北防波堤的黑涡团鲁汉斯副漩士想要委托冒险者讨伐魔物。
+0,TEXT_SUBSEA165_01151_SEQ_00,北防波堤的黑涡团员鲁汉斯副漩士想要委托冒险者讨伐魔物。
 1,TEXT_SUBSEA165_01151_SEQ_01,<hex:02280FFF09>BNpcName<hex:F202840103>在卫士军墓周围繁殖，鲁汉斯副漩士为此很头疼。讨伐4只<hex:02280FFF09>BNpcName<hex:F202840103>。
-2,TEXT_SUBSEA165_01151_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F202840103>。向黑涡团鲁汉斯副漩士报告。
+2,TEXT_SUBSEA165_01151_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F202840103>。向黑涡团员鲁汉斯副漩士报告。
 3,TEXT_SUBSEA165_01151_SEQ_03,坟墓周围安静了，鲁汉斯很满意。向骷髅谷营地的法尔克布瑞达报告，领取报酬。
 4,TEXT_SUBSEA165_01151_SEQ_04,向法尔克布瑞达报告完毕。身为鲁汉斯的上级，她对冒险者的工作也很满意。
 5,TEXT_SUBSEA165_01151_SEQ_05,
