@@ -8,7 +8,7 @@ int32,str,str
 3,TEXT_FESBKC002_03159_SEQ_03,和琪琵·嘉奇亚进行了交谈。在荆棘森进行监视的话便有可能见到机械士兵。追上诺克提斯，在东部林区荆棘森的<hex:02280CFF05>EObj<hex:F61EAA400103>等待。
 4,TEXT_FESBKC002_03159_SEQ_04,在<hex:02280CFF05>EObj<hex:F61EAA400103>等待时敌人出现，冒险者一行成功将其讨伐。和东部林区荆棘森的诺克提斯谈谈。
 5,TEXT_FESBKC002_03159_SEQ_05,和诺克提斯进行了交谈。和格里达尼亚的琪琵·嘉奇亚谈谈。
-6,TEXT_FESBKC002_03159_SEQ_06,和琪琵·嘉奇亚进行了交谈。琪琵·嘉奇亚再次向同事询问有没有新的情报。诺克提斯表示想要去周边转转便离开了。和格里达尼亚的诺克提斯谈谈。
+6,TEXT_FESBKC002_03159_SEQ_06,和琪琵·嘉奇亚进行了交谈。琪琵·嘉奇亚再次向同事询问有没有新的情报。诺克提斯表示想要去周边转转便离开了。和格里达尼亚水车十字广场的诺克提斯谈谈。
 7,TEXT_FESBKC002_03159_SEQ_07,和诺克提斯进行了交谈。诺克提斯打算继续在周边转转。等有空时再去找他吧。
 8,TEXT_FESBKC002_03159_SEQ_08,
 9,TEXT_FESBKC002_03159_SEQ_09,
@@ -138,4 +138,4 @@ int32,str,str
 133,TEXT_FESBKC002_03159_NOCTIS_BATTLETALK_002_001,又要来了！<hex:02100103>那边交给你了！
 134,TEXT_FESBKC002_03159_NOCTIS_BATTLETALK_CLEAR,轻松轻松。
 135,TEXT_FESBKC002_03159_NOCTIS_BATTLETALK_DEAD,不是吧……怎么能在这种地方……
-136,TEXT_FESBKC002_03159_KIPIHJAKKYA_000_003,希望能有些新发现……
+136,TEXT_FESBKC002_03159_KIPIHJAKKYA_000_003,
