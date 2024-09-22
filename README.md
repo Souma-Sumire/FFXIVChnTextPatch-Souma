@@ -10,10 +10,7 @@
 
 ### 方法一：覆盖游戏文件
 
-- 优点：简单
-- 缺点：文件大，更新麻烦，需要额外备份原文件
-
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 overwrite.zip
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *游戏版本-迭代版本-**overwrite**.zip*
 
 将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
 
@@ -21,24 +18,21 @@
 
 ### 方法二：Penumbra 热加载
 
-- 优点：文件小，更新方便，不改动原始文件，可以选择性汉化（尚未实装）
-- 缺点：需要依赖 Dalamud & Penumbra
-
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 penumbra.zip
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *游戏版本-迭代版本-**penumbra**.pmp*
 
 #### 第一次使用时
 
 1. 打开 Penumbra 的设置页面
-1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项，否则导入后的去重过程将十分耗时
+1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项，否则导入后的 *Deduplicate*（去重）过程将非常久
 1. 在 `Settings - Advanced` 开启 `Wait for Plugins on Startup` 选项，否则无法正确加载汉化
-1. 导入任一字体模组，用于显示中文字体，例如本项目提供的 `ChnAXIS.pmp`
-1. 导入文本汉化模组 `Chinese Text Mod.pmp`
-1. 在 `Mods` 页面，启用这两个模组（选中后勾选 `Enabled`）
-1. 重新启动游戏
+1. 导入任一字体模组，用于显示中文字体，例如本项目提供的 [国服同款字体.pmp](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.6/ChnAXIS.pmp)
+1. 导入文本汉化模组 `国际服汉化补丁.pmp`
+1. 在 `Mods` 页面，启用这两个模组（选中后勾选 `Enabled`），并可按需调整 Options 设置
+1. 重新启动游戏，才能生效
 
 #### 以后更新
 
-- 快捷更新方法：将 `Chinese Text Mod.pmp` 使用压缩软件进行解压，将得到文件夹的直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），即可直接更新为新版本
+- 快捷更新方法：将 `国际服汉化补丁.pmp` 使用压缩软件进行解压，将得到文件夹的直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），即可直接更新为新版本
 - 笨比更新方法：如果你看不懂上一条，则你需要：上号、在插件里删掉旧 Mod、再添加新 Mod、再重启游戏
 
 ### 方法三：使用汉化器汉化
@@ -73,19 +67,25 @@
 
 ## 常见问题
 
-### 可以使用旧版本的 Release 吗？
+### 可以使用上一个游戏版本的汉化吗？
 
-**不可以！** 这是 **非常不安全且傻逼** 的行为
+**不可以**，这会导致游戏文件不匹配，导致各种各样的 bug（包括但不限于看不见NPC、对象无法交互、物品效果错误、无法发动技能等），轻则游戏崩溃，重则封号。
 
-只要游戏有更新包了就是一个新的版本，即使是所谓的“热更新”，只要你启动的时候有更新，就算是新的版本。此时，以前的汉化全部作废，不可以使用。不要自作聪明。
+FF14的热更新也算是一个新版本。举例，以下版本均为互不兼容
+
+- 7.05-001
+- 7.05-hf1-002
+- 7.05-hf2-003
+
+若此时游戏处于 7.05-hf2（小版本为7.05 + 第二次热更新），此时你应当使用 **7.0-hf2** 开头的汉化补丁。
 
 ### 更新之前要还原吗？
 
-我不知道。我要负责发备份文件的，我肯定还原啊，你们用不用还原我哪知道……谁试出来了告诉我谢谢你
+不知道。可能不用，但我每次都会先还原。
 
 ### 如何设置ACT解析插件语言？
 
-与原客户端语言保持一致，例如英文或日文。设置后需要重启ACT才会生效（这是ACT的毛病）
+与原客户端语言保持一致，例如英文或日文。设置后需要重启ACT才会生效（这是解析插件的问题）
 
 ### 别人看得到我的汉化吗？
 
@@ -113,13 +113,15 @@
 - 倒计时相关的提示语句
 - 封锁区域的提示语句
 
-### 我希望汉化敌人名称，该如何操作？
+### 我希望汉化敌人名称
 
-若你不需要使用 Cactbot Raidboss 功能，可在使用汉化器汉化时，将 `resource\options\BNpcName.csv` 复制至 `resource\rawexd` 文件夹中，以实现对敌人名称的汉化。
+#### 若使用 Penumbra 热加载
 
-### 我不希望汉化道具名称，该如何操作？
+在 Mod 的 Options 设置界面，勾选 BNpcName 汉化即可
 
-使用汉化器汉化，在详细设置中不勾选 `Item.csv` 即可。
+#### 若使用汉化器汉化
+
+使用前将 `resource\options\BNpcName.csv` 复制至 `resource\rawexd` 文件夹中
 
 ### 与 Cactbot Radar 的兼容性问题
 
@@ -145,25 +147,3 @@
 若你觉得本汉化项目对你有帮助，欢迎给予 Star 以示鼓励！
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Souma-Sumire/FFXIVChnTextPatch-Souma&type=Timeline)](https://star-history.com/#Souma-Sumire/FFXIVChnTextPatch-Souma&Timeline)
-
-### 赞助名单
-
-感谢以下大佬的支持（仅统计2024年之后的赞赏码渠道）：
-
-- 2024年02月13日 匿名
-- 2024年06月28日 A******
-- 2024年06月29日 邱**
-- 2024年06月30日 匿名
-- 2024年06月30日 黑*
-- 2024年07月16日 L********
-- 2024年07月16日 匿名
-- 2024年07月21日 E*********
-- 2024年08月02日 面*
-- 2024年08月02日 匿名
-- 2024年08月02日 吉***
-- 2024年08月02日 C******
-- 2024年08月03日 匿名
-- 2024年08月04日 匿名
-- 2024年08月05日 匿名
-- 2024年08月05日 匿名
-- 2024年08月05日 匿名
