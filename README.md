@@ -8,26 +8,26 @@
 
 ### 方法一：Penumbra 热加载
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *游戏版本-迭代版本-**penumbra**.pmp*
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *\[兼容版本号\]-**penumbra**-\[第N版\]\.zip*
 
 #### 第一次使用时
 
 1. 打开 Penumbra 的设置页面
 1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项，否则导入后的 *Deduplicate* 过程将非常久
 1. 在 `Settings - Advanced` 开启 `Wait for Plugins on Startup` 选项，否则无法正确加载汉化
-1. 导入任一字体模组，用于显示中文字体，例如本项目提供的 [国服同款字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.6/ChnAXIS.pmp) / [其他字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93)
-1. 导入文本汉化模组 `国际服汉化补丁.pmp`
-1. 在 `Mods` 页面，启用这两个模组（选中后勾选 `Enabled`），并可按需调整 Options 设置
+1. 导入任一字体 Mod，用于显示中文字体，例如本项目提供的 [国服同款字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.6/ChnAXIS.pmp) / [其他字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93)
+1. 导入文本汉化 Mod （`.pmp` 文件）
+1. 在 `Mods` 页面，启用这两个 Mod（选中后勾选 `Enabled`），并可按需调整 Options 设置
 1. 重新启动游戏，才能生效
 
 #### 以后更新
 
-- 快捷更新方法：将 `国际服汉化补丁.pmp` 使用压缩软件进行解压，将得到文件夹的直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），即可直接更新为新版本
+- 快捷更新方法：将 `.pmp` 文件使用压缩软件进行解压，将得到文件夹的直接替换以前旧的 Mod 文件夹即可（存放在 Penumbra 设置的 Mod 目录中），即可直接更新为新版本
 - 笨比更新方法：如果你看不懂上一条，则你需要：上号、在插件里删掉旧 Mod、再添加新 Mod、再重启游戏
 
 ### 方法二：覆盖游戏文件
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *游戏版本-迭代版本-**overwrite**.zip*
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 `*\[兼容版本号\]-**overwrite**-\[第N版\]\.zip*
 
 将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
 
@@ -35,28 +35,18 @@
 
 ### 方法三：使用汉化器
 
-#### 第一次使用时
-
-1. 克隆本仓库 `git clone https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma.git`
-1. 启动 `FFXIVChnTextPatchGP.exe`
+1. 右上角绿色按钮下载本仓库ZIP
+1. 解压后，启动 `FFXIVChnTextPatchGP.exe`
 1. 点击右上角「设置」
-    1. 「游戏路径」：选择FFXIV游戏根目录（例如：D:\FFXIV\SquareEnix\FINAL FANTASY XIV - A Realm Reborn）
+    1. 「游戏路径」：选择FFXIV游戏根目录（例如：D:\SquareEnix\FINAL FANTASY XIV - A Realm Reborn）
     1. 「档案语言」：选择CSV
     1. 「原始語言」：日文或英文，根据你的客户端语言选择
     1. 勾选「替换字体」、「替换文本」
     1. 点击确认
 
-#### 以后更新
-
-1. 拉取最新代码 `git pull`
-1. 恢复至**最新版本**的**原版**游戏文件（如果你忘记备份，可以在 Release 页面下载 backup.zip 文件）
-1. 执行 `FFXIVChnTextPatchGP.exe`
-
-注意，不要重复汉化，因为每次执行都会覆盖backup文件夹里面的备份文件
-
 ## 推荐搭配
 
-- UI 标题图片翻译模组： [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
+- UI 标题图片翻译 Mod： [karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
 - 聊天文本翻译工具：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
 
 ## 常见问题
