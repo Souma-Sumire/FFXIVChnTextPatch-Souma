@@ -4,11 +4,23 @@
 
 使用汉化补丁是属于修改客户端的作弊行为，使用本汉化即表示你自愿承担一切后果
 
+## 可以使用上一个游戏版本的汉化吗？
+
+**不可以**，这会导致游戏文件不匹配，导致各种各样的 bug（包括但不限于看不见NPC、对象无法交互、物品效果错误、无法发动技能等），轻则游戏崩溃，重则封号。
+
+FF14的热更新也算是一个新版本。举例，以下版本均为互不兼容
+
+- 7.05-001
+- 7.05-hf1-002
+- 7.05-hf2-003
+
+若此时游戏处于 7.05-hf2（小版本为7.05 + 第二次热更新），此时你应当使用 **7.0-hf2** 开头的汉化补丁。
+
 ## 如何使用
 
-### 方法一：Penumbra 热加载
+### 方法一：借助 Dalamud 插件 Penumbra 进行热加载
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *\[兼容版本号\]-**penumbra**-\[第N版\]\.zip*
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *\[兼容版本号\]-**penumbra**-v\[第N版\]\.zip*
 
 #### 第一次使用时
 
@@ -27,7 +39,7 @@
 
 ### 方法二：覆盖游戏文件
 
-从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 `*\[兼容版本号\]-**overwrite**-\[第N版\]\.zip*
+从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *\[兼容版本号\]-**overwrite**-v\[第N版\]\.zip*
 
 将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
 
@@ -35,6 +47,7 @@
 
 ### 方法三：使用汉化器
 
+1. 版本更新后，需等待我更新，否则用了也报错。
 1. 右上角绿色按钮下载本仓库ZIP
 1. 解压后，启动 `FFXIVChnTextPatchGP.exe`
 1. 点击右上角「设置」
@@ -50,18 +63,6 @@
 - 聊天文本翻译工具：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
 
 ## 常见问题
-
-### 可以使用上一个游戏版本的汉化吗？
-
-**不可以**，这会导致游戏文件不匹配，导致各种各样的 bug（包括但不限于看不见NPC、对象无法交互、物品效果错误、无法发动技能等），轻则游戏崩溃，重则封号。
-
-FF14的热更新也算是一个新版本。举例，以下版本均为互不兼容
-
-- 7.05-001
-- 7.05-hf1-002
-- 7.05-hf2-003
-
-若此时游戏处于 7.05-hf2（小版本为7.05 + 第二次热更新），此时你应当使用 **7.0-hf2** 开头的汉化补丁。
 
 ### 更新之前要还原吗？
 
