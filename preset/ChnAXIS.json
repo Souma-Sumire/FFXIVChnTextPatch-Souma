@@ -994,7 +994,7 @@
 							"renderSpecific": {
 								"directwrite": {
 									"gridFitMode": 2,
-									"measureMode": 2,
+									"measureMode": 1,
 									"renderMode": 4
 								},
 								"empty": {
@@ -1022,8 +1022,20 @@
 								"codepointReplacements": {},
 								"codepoints": [
 									[
-										0,
-										1114111
+										48,
+										57
+									],
+									[
+										33,
+										33
+									],
+									[
+										46,
+										46
+									],
+									[
+										44,
+										44
 									]
 								],
 								"horizontalOffset": 0,
@@ -1226,7 +1238,7 @@
 							"renderSpecific": {
 								"directwrite": {
 									"gridFitMode": 2,
-									"measureMode": 2,
+									"measureMode": 1,
 									"renderMode": 4
 								},
 								"empty": {
@@ -1254,8 +1266,20 @@
 								"codepointReplacements": {},
 								"codepoints": [
 									[
-										0,
-										1114111
+										48,
+										57
+									],
+									[
+										33,
+										33
+									],
+									[
+										46,
+										46
+									],
+									[
+										44,
+										44
 									]
 								],
 								"horizontalOffset": 0,
