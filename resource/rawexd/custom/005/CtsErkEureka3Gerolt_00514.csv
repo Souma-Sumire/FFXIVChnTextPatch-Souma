@@ -88,7 +88,7 @@ int32,str,str
 83,TEXT_CTSERKEUREKA3GEROLT_00514_GEROLT_000_317,当然我也去问过原因，然后可露儿小姐给我讲了<hex:02100103>一堆专用术语和公式，说核心是最前沿的以太学。<hex:02100103>我最终也只能大致理解为原因是相同环境下的以太最合适。
 84,TEXT_CTSERKEUREKA3GEROLT_00514_GEROLT_000_318,就算我是天才，但是对于以太学我可真是不懂。<hex:02100103>……对了，说起来可露儿小姐好像说过她也不是专攻以太学的，<hex:02100103>但就算这样她也能熟知最前沿学科的知识，真不愧是研究者啊。
 85,TEXT_CTSERKEUREKA3GEROLT_00514_GEROLT_000_319,……哎呀，话题扯远了。<hex:02100103>先不管理论怎么样，总之你现在有办法制作触媒了。<hex:02100103>要想为武器赋予能力，那你就在涌火地带好好努力吧。
-86,TEXT_CTSERKEUREKA3GEROLT_00514_SYSTEM_000_320,在“<hex:02281CFF17>ContentFinderCondition<hex:E8022B03>”任务内讨伐敌人后，<hex:02100103>优雷卡以太壶将自动积蓄混合以太。
+86,TEXT_CTSERKEUREKA3GEROLT_00514_SYSTEM_000_320,在“<hex:02281CFF17>ContentFinderCondition<hex:E8022C03>”任务内讨伐敌人后，<hex:02100103>优雷卡以太壶将自动积蓄混合以太。
 87,TEXT_CTSERKEUREKA3GEROLT_00514_SYSTEM_000_321,通过涌火地带的<hex:02280CFF05>EObj<hex:F61EAA2E0103>，<hex:02100103>使用积蓄的混合以太，可以获得<hex:02280BFF05>Item<hex:F25E3A0103>。
 88,TEXT_CTSERKEUREKA3GEROLT_00514_SYSTEM_000_322,为“禁地兵装·涌火”赋予副属性时，<hex:02100103>会消耗一定数量的<hex:02280BFF05>Item<hex:F25E3A0103>。
 89,TEXT_CTSERKEUREKA3GEROLT_00514_SYSTEM_000_323,另外，可以通过<hex:02280CFF05>EObj<hex:F61EAA2F0103><hex:02100103>选择“赋予副属性”对武器进行副属性的赋予。

@@ -5,7 +5,7 @@ int32,str,str
 0,TEXT_FESANV2018_00497_ANVENTRANCE00497_000_000,你也想参加市区军事演习吗？<hex:02100103>那就让我来给你带路吧。
 1,TEXT_FESANV2018_00497_ANVENTRANCE00497_000_010,在乌尔达哈举行的恒辉队市区军事演习<hex:02100103>我们黑涡团也受理参加申请，并将参加者带到演习场。<hex:02100103>你也要参加吗？
 2,TEXT_FESANV2018_00497_ANVENTRANCE00497_000_020,在乌尔达哈举行的恒辉队市区军事演习<hex:02100103>我们双蛇党也受理参加申请，并将参加者带到演习场。<hex:02100103>你也要参加吗？
-3,TEXT_FESANV2018_00497_YESNO_CONTENT,确定要进入“<hex:02281CFF17>ContentFinderCondition<hex:E8022B03>”？
+3,TEXT_FESANV2018_00497_YESNO_CONTENT,确定要进入“<hex:02281CFF17>ContentFinderCondition<hex:E8022C03>”？
 4,TEXT_FESANV2018_00497_ANVENTRANCE00497_000_030,我们是在受理冒险者参加市区军事演习的申请……<hex:02100103>抱歉，请你积累些经验再来参加。
-5,TEXT_FESANV2018_00497_SYSTEM_000_031,只有在“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”已开放的前提下<hex:02100103>才能进入“<hex:02281CFF17>ContentFinderCondition<hex:E8022B03>”。
-6,TEXT_FESANV2018_00497_SYSTEM_000_032,“<hex:02281CFF17>ContentFinderCondition<hex:E8032B03>”<hex:02100103>将在完成任务“挑战沙斯塔夏之人”后开放。
+5,TEXT_FESANV2018_00497_SYSTEM_000_031,只有在“<hex:02281CFF17>ContentFinderCondition<hex:E8032C03>”已开放的前提下<hex:02100103>才能进入“<hex:02281CFF17>ContentFinderCondition<hex:E8022C03>”。
+6,TEXT_FESANV2018_00497_SYSTEM_000_032,“<hex:02281CFF17>ContentFinderCondition<hex:E8032C03>”<hex:02100103>将在完成任务“挑战沙斯塔夏之人”后开放。
