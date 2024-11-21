@@ -41,7 +41,9 @@ FF14的热更新也算是一个新版本。举例，以下版本均为互不兼�
 
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *\[兼容版本号\]-**overwrite**-v\[第N版\]\.zip*
 
-将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
+将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\` 
+
+MacOS的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv/"`
 
 如果你需要恢复原文件，使用对应版本001中发布的 backup.zip 文件即可（仅在每个 Release 版本的 001 中发布一次，后续不再重复上传）
 
