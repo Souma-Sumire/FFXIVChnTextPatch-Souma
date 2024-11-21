@@ -6,7 +6,7 @@
 
 ## 可以使用上一个游戏版本的汉化吗？
 
-**不可以**，这会导致游戏文件不匹配，导致各种各样的 bug（包括但不限于看不见NPC、对象无法交互、物品效果错误、无法发动技能等），轻则游戏崩溃，重则封号。
+**不可以**，这会导致游戏文件不匹配，导致各种各样的 bug（包括但不限于看不见 NPC、对象无法交互、物品效果错误、无法发动技能等），轻则游戏崩溃，重则封号。
 
 FF14的热更新也算是一个新版本。举例，以下版本均为互不兼容
 
@@ -14,7 +14,7 @@ FF14的热更新也算是一个新版本。举例，以下版本均为互不兼�
 - 7.05-hf1-002
 - 7.05-hf2-003
 
-若此时游戏处于 7.05-hf2（小版本为7.05 + 第二次热更新），此时你应当使用 **7.0-hf2** 开头的汉化补丁。
+若此时游戏处于 7.05-hf2（小版本为 7.05 + 第二次热更新），此时你应当使用 **7.0-hf2** 开头的汉化补丁。
 
 ## 如何使用
 
@@ -41,11 +41,11 @@ FF14的热更新也算是一个新版本。举例，以下版本均为互不兼�
 
 从 [Release](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/) 下载最新版本附件的 *\[兼容版本号\]-**overwrite**-v\[第N版\]\.zip*
 
-将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\` 
+将这6个文件覆盖到游戏目录下 `FINAL FANTASY XIV\game\sqpack\ffxiv\`
 
-MacOS的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv/"`
+macOS 的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv/"`
 
-如果你需要恢复原文件，使用对应版本001中发布的 backup.zip 文件即可（仅在每个 Release 版本的 001 中发布一次，后续不再重复上传）
+如果你需要恢复原文件，使用对应版本 001 中发布的 *backup.zip* 文件即可（仅在每个 Release 版本的 001 中发布一次，后续不再重复上传）
 
 ### 方法三：使用汉化器
 
@@ -53,8 +53,8 @@ MacOS的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/B
 1. 右上角绿色按钮下载本仓库ZIP
 1. 解压后，启动 `FFXIVChnTextPatchGP.exe`
 1. 点击右上角「设置」
-    1. 「游戏路径」：选择FFXIV游戏根目录（例如：D:\SquareEnix\FINAL FANTASY XIV - A Realm Reborn）
-    1. 「档案语言」：选择CSV
+    1. 「游戏路径」：选择 FFXIV 游戏根目录（例如：D:\SquareEnix\FINAL FANTASY XIV - A Realm Reborn）
+    1. 「档案语言」：选择 CSV
     1. 「原始語言」：日文或英文，根据你的客户端语言选择
     1. 勾选「替换字体」、「替换文本」
     1. 点击确认
@@ -108,7 +108,7 @@ MacOS的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/B
 
 ### 与 Cactbot Radar 的兼容性问题
 
-由于 LogMessage.csv#1350 被汉化，导致 Cactbot Radar 在切线后不会清空之前找到的怪物列表。考虑到使用 Radar 的人较少，不做兼容性修复（也就是不翻译这句话）
+由于 LogMessage.csv#1350 被汉化，导致 Cactbot Radar 在切线后不会清空之前找到的怪物列表。考虑到使用 Cactbot Radar 的人较少，不做兼容性修复（也就是不翻译这句话）
 
 ### 与 Dalamud Plugins（卫月插件）的兼容性题
 
@@ -117,7 +117,7 @@ MacOS的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/B
 ### 其他问题
 
 - 先浏览：[提问的智慧](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md) / [如何有效地报告 Bug](https://www.chiark.greenend.org.uk/~sgtatham/bugs-cn.html)
-- 发起 Issues 或加入QQ群 `231937107` 寻求帮助（不要问文档里说过的问题）
+- 发起 Issues 或加入 QQ 群 `231937107` 寻求帮助（不要问文档里说过的问题）
 
 ## 贡献和支持
 
