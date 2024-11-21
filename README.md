@@ -108,8 +108,6 @@ FF14的热更新也算是一个新版本。举例，以下版本均为互不兼�
 
 由于 LogMessage.csv#1350 被汉化，导致 Cactbot Radar 在切线后不会清空之前找到的怪物列表。考虑到使用 Radar 的人较少，不做兼容性修复（也就是不翻译这句话）
 
-如有 Radar 使用需求的可以将 Radar 链接替换为我修改过源码实现兼容的这个链接：`https://souma.diemoe.net/cactbot/ui/radar/radar.html`
-
 ### 与 Dalamud Plugins（卫月插件）的兼容性题
 
 若在汉化后，发现个别 Dalamud 插件功能无法使用，可尝试更换汉化方式，**也许**能解决
