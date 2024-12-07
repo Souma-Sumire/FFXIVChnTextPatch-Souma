@@ -27,7 +27,7 @@ FF14的热更新也算是一个新版本。举例，以下版本均为互不兼�
 1. 打开 Penumbra 的设置页面
 1. 在 `Settings - Advanced` 关闭 `Auto Deduplicate on Import` 选项，否则导入后的 *Deduplicate* 过程将非常久
 1. 在 `Settings - Advanced` 开启 `Wait for Plugins on Startup` 选项，否则无法正确加载汉化
-1. 导入任一字体 Mod，用于显示中文字体，例如本项目提供的 [国服同款字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.6/ChnAXIS.pmp) / [其他字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93)
+1. 导入任一字体 Mod，用于显示中文字体，[国服字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.1.6/ChnAXIS.pmp) / [华为鸿蒙字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.4.4/HarmonyOS.Sans.pmp) / [其他字体](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E8%87%AA%E5%88%B6%E6%B8%B8%E6%88%8F%E5%AD%97%E4%BD%93)
 1. 导入文本汉化 Mod （`.pmp` 文件）
 1. 在 `Mods` 页面，启用这两个 Mod（选中后勾选 `Enabled`），并可按需调整 Options 设置
 1. 重新启动游戏，才能生效
