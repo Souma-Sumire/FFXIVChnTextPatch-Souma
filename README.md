@@ -100,12 +100,6 @@ macOS 的目录在 `"$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/
 - 倒计时相关的提示语句
 - 封锁区域的提示语句
 
-### 我希望汉化敌人名称
-
-若使用 Penumbra 热加载，在 Mod 的 Options 设置界面，勾选 BNpcName 汉化即可
-
-若使用汉化器汉化，参考 `resource\options` 文件夹内说明
-
 ### 与 Cactbot Radar 的兼容性问题
 
 由于 LogMessage.csv#1350 被汉化，导致 Cactbot Radar 在切线后不会清空之前找到的怪物列表。考虑到使用 Cactbot Radar 的人较少，不做兼容性修复（也就是不翻译这句话）
