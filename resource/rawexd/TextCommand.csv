@@ -493,6 +493,7 @@ int32,str,str,str,str,str
 680,/attend,,,,
 681,/water,,,,
 682,/shakedrink,,,,
+683,/poseoftheunbound,/unbound,,,
 684,/bouquet,,,,
 685,/blowbubbles,,,,
 686,/ohokaliy,,,,
