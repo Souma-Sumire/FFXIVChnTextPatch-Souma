@@ -3,9 +3,9 @@
 offset,0,4
 int32,str,str
 0,TEXT_JOBREL401_02380_SEQ_00,田园郡的安费莉丝有些在意地看着冒险者。
-1,TEXT_JOBREL401_02380_SEQ_01,安费莉丝表示冒险者可以用3章历练冒险谭与她交换<hex:02280BFF05>Item<hex:F23EC00103>。完成“随机任务：练级”，获取<hex:022811FF0A>EventItem<hex:F61E8C620103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：练级”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C620103>。
-2,TEXT_JOBREL401_02380_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8C620103>。完成“随机任务：练级”，获取<hex:022811FF0A>EventItem<hex:F61E8C680103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：练级”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C680103>。
-3,TEXT_JOBREL401_02380_SEQ_03,获得了<hex:022811FF0A>EventItem<hex:F61E8C680103>。完成“随机任务：练级”，获取<hex:022811FF0A>EventItem<hex:F61E8C690103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：练级”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C690103>。
+1,TEXT_JOBREL401_02380_SEQ_01,安费莉丝表示冒险者可以用3章历练冒险谭与她交换<hex:02280BFF05>Item<hex:F23EC00103>。完成“随机任务：练级迷宫”，获取<hex:022811FF0A>EventItem<hex:F61E8C620103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：练级迷宫”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C620103>。
+2,TEXT_JOBREL401_02380_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8C620103>。完成“随机任务：练级迷宫”，获取<hex:022811FF0A>EventItem<hex:F61E8C680103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：练级迷宫”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C680103>。
+3,TEXT_JOBREL401_02380_SEQ_03,获得了<hex:022811FF0A>EventItem<hex:F61E8C680103>。完成“随机任务：练级迷宫”，获取<hex:022811FF0A>EventItem<hex:F61E8C690103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：练级迷宫”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C690103>。
 4,TEXT_JOBREL401_02380_SEQ_04,获得了<hex:022811FF0A>EventItem<hex:F61E8C690103>。将3章历练冒险谭交给田园郡的安费莉丝。
 5,TEXT_JOBREL401_02380_SEQ_05,将历练冒险谭交给了安费莉丝，获得了<hex:02280BFF05>Item<hex:F23EC00103>。安费莉丝是要参考历练冒险谭撰写诅咒诗集。在缺乏灵感时，她还会再次寻求冒险者的帮助。<hex:02100103><hex:02100103>※本任务可重复进行。本任务每周最多可完成1次。完成后，该周无法再次接受。如接受任务后拖延到下周完成，则会消耗掉完成周的任务受理限额。<hex:02100103><hex:02100103>※每周<hex:020603120303><hex:02093ADDFF07>周日<hex:FF07>周一<hex:FF07>周二<hex:FF07>周三<hex:FF07>周四<hex:FF07>周五<hex:FF07>周六<hex:03>的<hex:020821DBFF1D><hex:020919DB02030405060708090A0B0C0D0E0F10111213141516171803><hex:0103>点（地球时间）之后可以再次进行挑战。请在重置前耐心等待。
 6,TEXT_JOBREL401_02380_SEQ_06,
@@ -26,9 +26,9 @@ int32,str,str
 21,TEXT_JOBREL401_02380_SEQ_21,
 22,TEXT_JOBREL401_02380_SEQ_22,
 23,TEXT_JOBREL401_02380_SEQ_23,
-24,TEXT_JOBREL401_02380_TODO_00,完成随机任务：练级<hex:02100103>获取<hex:022811FF0A>EventItem<hex:F61E8C620103>
-25,TEXT_JOBREL401_02380_TODO_01,完成随机任务：练级<hex:02100103>获取<hex:022811FF0A>EventItem<hex:F61E8C680103>
-26,TEXT_JOBREL401_02380_TODO_02,完成随机任务：练级<hex:02100103>获取<hex:022811FF0A>EventItem<hex:F61E8C690103>
+24,TEXT_JOBREL401_02380_TODO_00,完成随机任务：练级迷宫<hex:02100103>获取<hex:022811FF0A>EventItem<hex:F61E8C620103>
+25,TEXT_JOBREL401_02380_TODO_01,完成随机任务：练级迷宫<hex:02100103>获取<hex:022811FF0A>EventItem<hex:F61E8C680103>
+26,TEXT_JOBREL401_02380_TODO_02,完成随机任务：练级迷宫<hex:02100103>获取<hex:022811FF0A>EventItem<hex:F61E8C690103>
 27,TEXT_JOBREL401_02380_TODO_03,将历练冒险谭交给田园郡的安费莉丝
 28,TEXT_JOBREL401_02380_TODO_04,
 29,TEXT_JOBREL401_02380_TODO_05,
@@ -56,9 +56,9 @@ int32,str,str
 51,TEXT_JOBREL401_02380_AMPHELICE_000_004,嘻嘻嘻，你的冒险谭……<hex:02100103>本小姐非常期待哟。
 52,TEXT_JOBREL401_02380_AMPHELICE_000_010,哎呀，你又来帮我做事啦。<hex:02100103>嘻嘻，来吧来吧，本小姐来者不拒。
 53,TEXT_JOBREL401_02380_AMPHELICE_000_011,还是和之前一样，给我拿3章你的历练冒险谭来，<hex:02100103>我会用<hex:02280BFF05>Item<hex:F23EC00103>与你交换。<hex:02100103>嘻嘻嘻，这次会是什么样的故事呢……
-54,TEXT_JOBREL401_02380_SYSTEM_000_000,完成“随机任务：练级”后，<hex:02100103>可以得到“历练冒险谭”。
+54,TEXT_JOBREL401_02380_SYSTEM_000_000,完成“随机任务：练级迷宫”后，<hex:02100103>可以得到“历练冒险谭”。
 55,TEXT_JOBREL401_02380_AMPHELICE_000_020,让淑女久等可不是什么好习惯哦。<hex:02100103>尽快拿3章历练冒险谭来给我吧。
-56,TEXT_JOBREL401_02380_SYSTEM_000_010,完成“随机任务：练级”后，<hex:02100103>可以得到“历练冒险谭”。
+56,TEXT_JOBREL401_02380_SYSTEM_000_010,完成“随机任务：练级迷宫”后，<hex:02100103>可以得到“历练冒险谭”。
 57,TEXT_JOBREL401_02380_AMPHELICE_000_040,欢迎回来。<hex:02100103>写出3章历练冒险谭了吗？
 58,TEXT_JOBREL401_02380_AMPHELICE_000_050,啊——这可真是令人兴奋不已的冒险故事……<hex:02100103>我甚至能听到被你击倒的敌人们死前悔恨与绝望的叫喊！<hex:02100103>嘻嘻嘻，不错不错，能给我的诅咒诗集带来很多新灵感。
 59,TEXT_JOBREL401_02380_AMPHELICE_000_051,我啊，其实正在创作诅咒诗集。<hex:02100103>那些想要诅咒别人，<hex:02100103>希望别人能从心底产生恐惧的家伙总是会需要它的帮助。

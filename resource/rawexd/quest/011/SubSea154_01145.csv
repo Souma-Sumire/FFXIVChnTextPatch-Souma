@@ -53,7 +53,7 @@ int32,str,str
 48,TEXT_SUBSEA154_01145_AHLDFOET_000_000,你是冒险者吧？<hex:02100103>能请你去狩猎<hex:02280FFF09>BNpcName<hex:F2016B0103>，<hex:02100103>拿来5个<hex:022811FF0A>EventItem<hex:F61E88480103>吗？
 49,TEXT_SUBSEA154_01145_AHLDFOET_000_001,可以的吧？<hex:02100103>对大叔来说，那东西是护身品。<hex:02100103>就当是助人为乐，拜托你了……好吗？
 50,TEXT_SUBSEA154_01145_AHLDFOET_000_010,怎样？<hex:02100103>拿到大叔拜托你的东西了吗？
-51,TEXT_SUBSEA154_01145_AHLDFOET_000_011,……啊，就是这个就是这个。<hex:02100103>谢谢你，<hex:02099CE948FF17><hex:020813E905FF07>小姐<hex:FF07>小哥<hex:03><hex:FF17><hex:020813E905FF07>姑娘<hex:FF07>兄弟<hex:03><hex:FF0A>小不点<hex:FF1D><hex:020819E905FF0A>小猫咪<hex:FF0A>小猫哥<hex:03><hex:FF17><hex:020813E905FF07>大姐<hex:FF07>大哥<hex:03><hex:FF17><hex:020813E905FF07>小姐<hex:FF07>小哥<hex:03><hex:FF07>小哥<hex:FF07>小姐<hex:03>。
+51,TEXT_SUBSEA154_01145_AHLDFOET_000_011,……啊，就是这个就是这个。<hex:02100103>谢谢你，<hex:0209BCE948FF17><hex:020813E905FF07>小姐<hex:FF07>小哥<hex:03><hex:FF17><hex:020813E905FF07>姑娘<hex:FF07>兄弟<hex:03><hex:FF0A>小不点<hex:FF1D><hex:020819E905FF0A>小猫咪<hex:FF0A>小猫哥<hex:03><hex:FF17><hex:020813E905FF07>大姐<hex:FF07>大哥<hex:03><hex:FF17><hex:020813E905FF07>小姐<hex:FF07>小哥<hex:03><hex:FF17><hex:020813E905FF07>姑娘<hex:FF07>小哥<hex:03><hex:FF17><hex:020813E905FF07>姑娘<hex:FF07>兄弟<hex:03><hex:03>。
 52,TEXT_SUBSEA154_01145_AHLDFOET_000_012,蝙蝠既不是鸟类也不是兽类。<hex:02100103>所以常有人认为它是不伦不类的异类，<hex:02100103>其实并不是那样。
 53,TEXT_SUBSEA154_01145_AHLDFOET_000_013,它能够临机应变，根据状况采取分属鸟兽的行动。<hex:02100103>在大叔看来……<hex:02100103>它的判断力和决断力值得学习。
 54,TEXT_SUBSEA154_01145_AHLDFOET_000_014,幻影群岛就位于这附近的近海区域，礁石很多。<hex:02100103>虽然为了防止船只触礁设有灯塔，<hex:02100103>但最要紧的天狼星灯塔故障了，灯光很暗。

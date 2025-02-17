@@ -71,8 +71,8 @@ int32,str,str
 66,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_000_48,请从部队储物柜中取出所有道具和金币后，<hex:02100103>再和所属大国防联军的部队管理负责人对话。
 67,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_100_48,要想解散部队，<hex:02100103>就必须要确保部队拥有的土地已废弃。
 68,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_101_48,请在舍弃拥有的土地之后，<hex:02100103>再和所属大国防联军的部队管理负责人对话。
-69,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_102_48,要想解散部队，<hex:02100103>就必须要确保住宅区管理人那里，<hex:02100103>没有代为保管的已撤除的房屋装潢配件。
-70,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_103_48,请收回由住宅区管理人保管的已撤除的房屋装潢配件后，<hex:02100103>再和所属大国防联军的部队管理负责人对话。
+69,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_102_48,要想解散部队，<hex:02100103>就必须要确保住宅区管理人那里，<hex:02100103>没有代为保管的已拆除的房屋装潢配件。
+70,TEXT_COMDEFFREECOMPANY_00076_SYSTEM_103_48,请收回由住宅区管理人保管的已拆除的房屋装潢配件后，<hex:02100103>再和所属大国防联军的部队管理负责人对话。
 71,TEXT_COMDEFFREECOMPANY_00076_FCSEAOFFICER_000_50,这份组建书不是由黑涡团发行的。<hex:02100103>请将组建书交给发行城邦的部队管理负责人。
 72,TEXT_COMDEFFREECOMPANY_00076_FCFSTOFFICER_100_50,这份组建书不是由双蛇党发行的。<hex:02100103>请将组建书交给发行城邦的部队管理负责人。
 73,TEXT_COMDEFFREECOMPANY_00076_FCWILOFFICER_200_50,这份组建书不是由恒辉队发行的。<hex:02100103>请将组建书交给发行城邦的部队管理负责人。

@@ -8,7 +8,7 @@ int32,str,str
 3,TEXT_CLSHRV680_02623_SEQ_03,调查了<hex:02280CFF05>EObj<hex:F61EA4750103>。再次调查绿地菜园的<hex:02280CFF05>EObj<hex:F61EA4750103>。
 4,TEXT_CLSHRV680_02623_SEQ_04,获得了<hex:022811FF0A>EventItem<hex:F61E8CF60103>。将<hex:022811FF0A>EventItem<hex:F61E8CF60103>交给绿地菜园的艾德姬丝。
 5,TEXT_CLSHRV680_02623_SEQ_05,将<hex:022811FF0A>EventItem<hex:F61E8CF60103>交给了艾德姬丝。她好像察觉到了什么，拜托冒险者购买用于确认原因的试剂。将<hex:022811FF0A>EventItem<hex:F61E8CF70103>交给斯提克奇克斯工房的戈尔德奥克斯。
-6,TEXT_CLSHRV680_02623_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E8CF70103>交给了戈尔德奥克斯。但制作<hex:022811FF0A>EventItem<hex:F61E8CF80103>的材料似乎不够。将20个<hex:02280BFF05>Item<hex:F2461B0103>交给斯提克奇克斯工房的戈尔德奥克斯。可以在红玉海螺旋海峡的草场上采到<hex:02280BFF05>Item<hex:F2461B0103>。
+6,TEXT_CLSHRV680_02623_SEQ_06,将<hex:022811FF0A>EventItem<hex:F61E8CF70103>交给了戈尔德奥克斯。但制作<hex:022811FF0A>EventItem<hex:F61E8CF80103>的材料似乎不够。将20个<hex:02280BFF05>Item<hex:F2461B0103>交给斯提克奇克斯工房的戈尔德奥克斯。可以在红玉海螺旋海峡西北边的草场上采到<hex:02280BFF05>Item<hex:F2461B0103>。
 7,TEXT_CLSHRV680_02623_SEQ_07,将<hex:02280BFF05>Item<hex:F2461B0103>交给了戈尔德奥克斯，获得了<hex:022811FF0A>EventItem<hex:F61E8CF80103>。将<hex:022811FF0A>EventItem<hex:F61E8CF80103>交给绿地菜园的艾德姬丝。
 8,TEXT_CLSHRV680_02623_SEQ_08,将<hex:022811FF0A>EventItem<hex:F61E8CF80103>交给了艾德姬丝。使用试剂检测后，发现杂交第一代作物枯死的原因是一种叫线虫的虫子。在弗弗茶他们调查的时候，以防万一继续磨练园艺工的技术。<hex:02100103><hex:02100103>※园艺工的等级达到70级以上时，可以从田园郡绿地菜园的艾德姬丝那里领取下一个园艺工任务。
 9,TEXT_CLSHRV680_02623_SEQ_09,
