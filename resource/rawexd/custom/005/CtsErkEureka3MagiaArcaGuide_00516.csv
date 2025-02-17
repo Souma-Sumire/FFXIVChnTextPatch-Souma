@@ -93,7 +93,7 @@ int32,str,str
 88,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_DRAKE_000_520,如果你在探索中发现了“文理碎晶”的话，<hex:02100103>请先交给我看看。<hex:02100103>我会为你鉴定出碎晶中寄宿着什么样的记忆。
 89,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_SYSTEM_000_521,通过“鉴定文理碎晶”<hex:02100103>可以辨别出“未鉴定的文理碎晶”中寄宿的记忆的种类。<hex:02100103>只有经过鉴定的文理碎晶才可以放入“文理融合器”。
 90,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_SYSTEM_000_522,另外，经过鉴定的“文理碎晶”<hex:02100103>可以通过界面上显示的“魔素板”进行确认。
-91,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_SYSTEM_000_523,经过鉴定的“文理碎晶”每种的持有上限为200个。<hex:02100103>当持有数量超过200个时，超出的部分将会被自动舍弃。
+91,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_SYSTEM_000_523,经过鉴定的“文理碎晶“每种的持有上限为200个。<hex:02100103>当持有数量超过200个时，超出的部分将会被自动舍弃。
 92,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_DRAKE_000_530,提取记忆什么的，师父大人的想法真的是很厉害啊。<hex:02100103>说实在的，我最初听他说起这个的时候，<hex:02100103>都怀疑能不能行得通。
 93,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_SYSTEM_000_531,通过“提取记忆”可以从设置的“文理碎晶”中<hex:02100103>获得相应的“文理技能”。
 94,TEXT_CTSERKEUREKA3MAGIAARCAGUIDE_00516_SYSTEM_100_531,另外，分别在“星极融合器”和“灵极融合器”设置文理碎晶，<hex:02100103>进行“提取记忆”后，可以获得拥有2种技能的“文理技能”。
