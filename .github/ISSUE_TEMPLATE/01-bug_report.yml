@@ -6,42 +6,26 @@ body:
     id: bug-description
     attributes:
       label: 描述
-      description: 对错误的清晰而简洁的描述。
-      placeholder: 描述错误
+      placeholder: 描述错误或问题
     validations:
       required: true
   - type: textarea
     id: bug-details
     attributes:
       label: 附加详情/重现步骤
-      description: 包括任何附加细节和我们可以遵循的步骤来重现错误。
-      placeholder: 在此处添加详细信息
     validations:
       required: true
   - type: textarea
     id: bug-support-info
     attributes:
-      label: 配置信息
-      description: 在此处粘贴您的汉化配置信息。
-      placeholder: "傻瓜包用户提供release版本号（你用的是最新版，对吧？），手动用户填写git分支哈希值"
+      label: 发布版本号
+      placeholder: "你用的是最新版，对吧？"
     validations:
       required: true
   - type: textarea
     id: bug-attachments
     attributes:
       label: 日志和截图
-      description: "日志文件或显示错误的截图。"
-      placeholder: 点击此处，然后拖放您的日志和/或截图。
-  - type: checkboxes
-    id: bug-confirmations
-    attributes:
-      label: 确认
-      description: "在提交错误报告之前，请确认以下内容："
-      options:
-        - label: "我已经审阅了<a href='/Souma-Sumire/FFXIVChnTextPatch-Souma?tab=readme-ov-file#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E7%AD%94qa'>常见问题解答</a>，并验证了我的设置是正确的。"
-          required: true
-        - label: 我使用了搜索功能确认此问题是否已经存在。
-          required: true
   - type: markdown
     attributes:
       value: |
