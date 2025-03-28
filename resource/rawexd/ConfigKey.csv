@@ -37,7 +37,7 @@ int32,str,str
 66,IDLING_CAMERA,观景视角
 103,TARGET_NEXT,从最近的敌人开始从左至右切换所选目标
 104,TARGET_PREV,从最近的敌人开始从右至左切换所选目标
-105,TARGET_P1,选中队员列表第1位队员（自己）
+105,TARGET_P1,选中队员列表第1位队员
 106,TARGET_P2,选中队员列表第2位队员
 107,TARGET_P3,选中队员列表第3位队员
 108,TARGET_P4,选中队员列表第4位队员
@@ -85,6 +85,11 @@ int32,str,str
 158,TARGET_ALLIANCE2_7,选中团队2的7号队员
 159,TARGET_ALLIANCE2_8,选中团队2的8号队员
 160,BUDDY_TARGET,选中自己的搭档
+161,TARGET_PVP_OPP_P1,选中敌人小队的1号队员
+162,TARGET_PVP_OPP_P2,选中敌人小队的2号队员
+163,TARGET_PVP_OPP_P3,选中敌人小队的3号队员
+164,TARGET_PVP_OPP_P4,选中敌人小队的4号队员
+165,TARGET_PVP_OPP_P5,选中敌人小队的5号队员
 171,CMD_CHAT,开始输入聊天内容
 172,CMD_COMMAND,开始输入文本指令
 173,CMD_REPLY,临时回复（顺序）
