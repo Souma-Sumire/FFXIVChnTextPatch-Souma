@@ -1,8 +1,8 @@
 ﻿key,0,1,2,29
-#,Name,Abbreviation,,
+#,Name,Abbreviation,,Name{English}
 offset,0,4,8,16
 int32,str,str,str,str
-0,冒险者,ADV,,Adventurer
+0,,,,Adventurer
 1,剑术师,GLA,剑,Gladiator
 2,格斗家,PGL,格,Pugilist
 3,斧术师,MRD,斧,Marauder
