@@ -11,9 +11,7 @@
 
 ## 使用
 
-[下载发行版本](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)
-
-更多说明请 [跳转 Wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
+[使用步骤](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
 
 ## 免责声明
 
