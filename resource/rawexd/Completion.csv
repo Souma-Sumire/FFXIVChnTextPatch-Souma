@@ -737,6 +737,8 @@ int32,str,str,str
 1662,,大地使者职能技能,dadishizhezhinengjineng
 1663,,巧手橙票,qiaoshouchengpiao
 1664,,大地橙票,dadichengpiao
+1665,,,
+1666,,,
 1900,@,【蛮神与蛮族】,manshenyumanzu.
 1901,,蛮神,manshen
 1902,,伊弗利特,yifulite
@@ -1302,7 +1304,12 @@ int32,str,str,str
 4044,,莫雯卓越工具,mowenzhuoyuegongju
 4046,,亚拉戈美学神典石,yalagemeixueshendianshi
 4047,,亚拉戈天道神典石,yalagetiandaoshendianshi
+4048,,,
+4049,,,
+4050,,,
 4056,,亚拉戈数理神典石,yalageshulishendianshi
+4057,,,
+4058,,,
 5000,,大型任务,daxingrenwu
 5001,,每日挑战,meiritiaozhan
 5002,,岩燕庙,yanyanmiao
@@ -1454,8 +1461,8 @@ int32,str,str,str
 5156,,朱诺：第一巡行,zhunuodiyixunxing
 5158,,永恒女王忆想歼灭战,yonghengnvwangyixiangjianmiezhan
 5159,,玉韦亚瓦塔实验站,yuweiyawatashiyanzhan
-5160,,暗黑之云破灭战,anheizhiyunpomiezhan
-5161,,,
+5160,,暗黑之云诛灭战,anheizhiyunzhumiezhan
+5161,,诛灭战,zhumiezhan
 5162,,,
 5163,,,
 5164,,,
