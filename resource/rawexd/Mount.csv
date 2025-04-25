@@ -362,11 +362,11 @@ int32,str,str,str,str,str
 357,,,SE_Bt_Etc_Mount_Arikui_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Arikui_bye
 358,海牛,,SE_Bt_Etc_Mount_BigManatee_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_BigManatee_bye
 359,,,,,
-360,,,SE_Bt_Etc_Mount_KurayamiKumo_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_KurayamiKumo_bye
-361,,,SE_Bt_Etc_Mount_AnkokuTenku_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_AnkokuTenku_bye
+360,暗黑羽衣,,SE_Bt_Etc_Mount_KurayamiKumo_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_KurayamiKumo_bye
+361,暗黑领域,,SE_Bt_Etc_Mount_AnkokuTenku_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_AnkokuTenku_bye
 362,风火锅,,SE_Bt_Etc_Mount_Hinabe_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Hinabe_bye
 363,永恒之翼,,SE_Bt_Etc_Mount_Wing_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Wing_bye
-364,,,,,
+364,,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
 365,商贾神威,,SE_Bt_Etc_InugamiWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_InugamiBye
 366,,,,,
 367,,,,,
@@ -376,7 +376,7 @@ int32,str,str,str,str,str
 371,,,,,
 372,,,,,
 373,,,,,
-374,彩带雪人,,SE_Bt_Etc_SnowmanWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_SnowmanBye
+374,陪伴雪人,,SE_Bt_Etc_SnowmanWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_SnowmanBye
 375,,,,,
 376,,,,,
 377,,,,,
@@ -387,7 +387,7 @@ int32,str,str,str,str,str
 382,,,SE_Bt_Etc_Mount_SolutionNineCar_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_SolutionNineCar_bye
 383,,,,,
 384,,,,,
-385,,,,,
+385,,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
 386,,,,,
 387,,,,,
 388,,,SE_Bt_Etc_Mount_Mandragora_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Mandragora_bye
