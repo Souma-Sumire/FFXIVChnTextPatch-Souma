@@ -1,7 +1,7 @@
 ﻿key,0,2,4,12,13
-#,,,,,
+#,,Icon,Singular,Description,Name
 offset,24,28,0,8,12
-int32,uint32,int32,str,str,str
+int32,uint32,Image,str,str,str
 0,0,0,,,
 1,71037,200049,椭圆眼镜,基础色的面部配饰。,椭圆眼镜
 2,136573,200053,银框椭圆眼镜,银色的面部配饰。,银框椭圆眼镜

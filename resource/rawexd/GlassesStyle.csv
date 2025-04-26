@@ -1,7 +1,7 @@
 ﻿key,1,15,23
-#,,,
+#,Icon,Singular,Name
 offset,20,0,8
-int32,int32,str,str
+int32,Image,str,str
 0,200049,椭圆眼镜,椭圆眼镜
 1,200085,金边墨镜,金边墨镜
 2,200061,经典眼镜,经典眼镜
