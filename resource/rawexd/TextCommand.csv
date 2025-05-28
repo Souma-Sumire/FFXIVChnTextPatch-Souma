@@ -500,6 +500,7 @@ int32,str,str,str,str,str
 687,/visage,,,,
 689,/photograph,,/拍照 子命令<hex:02100103>/photograph<hex:02100103>拍一张照片。<hex:02100103>>>子命令<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>动作(motion)<hex:0249020103><hex:0248020103><hex:02100103>只做动作。<hex:02100103><hex:024804F201FA03><hex:024904F201FB03>无子命令<hex:0249020103><hex:0248020103><hex:02100103>做出动作并显示文字提示。,/拍照,
 692,/overreact,,,,
+693,/twirl,,,,
 694,/dazed,,,,
 695,/rage,,,,
 696,/tomescroll,,,,

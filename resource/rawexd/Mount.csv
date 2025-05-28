@@ -374,8 +374,8 @@ int32,str,str,str,str,str
 369,,,SE_Bt_Etc_Mount_BigManatee_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_BigManatee_bye
 370,,,,,
 371,,,,,
-372,,,,,
-373,,,,,
+372,恶魔石板,,SE_Bt_Etc_Mount_DemonWallMKD_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_DemonWallMKD_call_bye
+373,瓣齿鲨,,SE_Bt_Etc_Mount_SameNingen_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_SameNingen_bye
 374,陪伴雪人,,SE_Bt_Etc_SnowmanWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_SnowmanBye
 375,,,,,
 376,,,,,
@@ -383,9 +383,9 @@ int32,str,str,str,str,str
 378,,,,,
 379,,,,,
 380,,,,,
-381,,,,,
+381,拟鸟枝,,SE_Bt_Etc_Mount_ShinpiTori_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_ShinpiTori_bye
 382,空气轮车C9,,SE_Bt_Etc_Mount_SolutionNineCar_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_SolutionNineCar_bye
-383,,,,,
+383,古式魔导船,,SE_Bt_Etc_Mount_MKDHikousen_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_MKDHikousen_bye
 384,,,,,
 385,高机动型动力装载机,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
 386,,,,,
@@ -393,7 +393,7 @@ int32,str,str,str,str,str
 388,游行好脑袋大王,,SE_Bt_Etc_Mount_Mandragora_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Mandragora_bye
 389,骑士之翼,,SE_Bt_Etc_Mount_Wing_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Wing_bye
 390,魔导螳螂,,SE_Bt_Etc_Mount_KamakiriMech_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_KamakiriMech_bye
-391,,,,,
+391,,,SE_Bt_Etc_Mount_ShinpiTori_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_ShinpiTori_bye
 392,,,,,
 393,,,,,
 394,,,,,

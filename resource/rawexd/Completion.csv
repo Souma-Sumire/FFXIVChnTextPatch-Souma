@@ -1022,6 +1022,8 @@ int32,str,str,str
 2219,"Action[12958-13007,14476-14481]",【文理技能】,wenlijineng
 2220,"Action[11383-11431,18295-18325,23264-23267,23269-23273,23275-23288,23290-23290,34563-34582]",【青魔法】,qingmofa
 2221,"Action[20701-20770,22344-22356,23907-23922]",【失传技能】,shichuanjineng
+2222,MKDSupportJob[0-12],【辅助职业】,fuzhuzhiye
+2223,"Action[41588-41592,41594-41612,41619-41631,41633-41636,41641-41651]",【辅助技能】,fuzhujineng
 2900,@,【职业量谱】,zhiyeliangpu
 2901,,忠义量谱,zhongyiliangpu
 2902,,忠义,zhongyi
@@ -1307,9 +1309,17 @@ int32,str,str,str
 4048,,宇宙探索,yuzhoutansuo
 4049,,宇宙工具,yuzhougongju
 4050,,宇宙任务,yuzhourenwu
+4051,,知识见闻,zhishijianwen
+4052,,知识等级,zhishidengji
+4053,,辅助职业,fuzhuzhiye
+4054,,辅助技能,fuzhujineng
+4055,,幻界武器,huanjiewuqi
 4056,,亚拉戈数理神典石,yalageshulishendianshi
 4057,,联合施工作业,lianheshigongzuoye
 4058,,机甲作战,jijiazuozhan
+4059,,十二都市银币,shierdushiyinbi
+4060,,十二都市金币,shierdushijinbi
+4061,,魔纹启动凭证：力量之塔,mowenqidongpingzhengliliangzhita
 5000,,大型任务,daxingrenwu
 5001,,每日挑战,meiritiaozhan
 5002,,岩燕庙,yanyanmiao
@@ -1468,3 +1478,7 @@ int32,str,str,str
 5164,,泽莱妮娅歼灭战,zelainiyajianmiezhan
 5165,,泽莱妮娅歼殛战,zelainiyajianjizhan
 5166,,下层防卫,xiacengfangwei
+5167,,蜃景幻界 新月岛,shenjinghuanjiexinyuedao
+5168,,新月岛：南征篇,xinyuedaonanzhengpian
+5170,,关键遭遇战,guanjianzaoyuzhan
+5171,,歧路之塔：力量之塔,qiluzhitaliliangzhita
