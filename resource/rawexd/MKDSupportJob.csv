@@ -2,16 +2,16 @@
 #,,,,,
 offset,0,4,8,12,16
 int32,str,str,str,str,str
-0,自由职业者,Ph. Freelancer,,某位冒险者的起点亦是终点的记忆。<hex:02100103>习得便于探索的自由职业者技能。,Phantom Freelancer
+0,无职冒险者,Ph. Freelancer,,某位冒险者的起点亦是终点的记忆。<hex:02100103>习得便于探索的无职冒险者技能。,Phantom Freelancer
 1,辅助骑士,Ph. Knight,,某位骑士的忠诚与荣耀的记忆。<hex:02100103>习得能减轻我方伤害的辅助骑士技能。,Phantom Knight
 2,辅助狂战士,Ph. Berserker,,某位狂战士的蛮勇与狂热的记忆。<hex:02100103>习得高风险高回报的辅助狂战士技能。,Phantom Berserker
 3,辅助武僧,Ph. Monk,,某位僧侣的修行与冥想的记忆。<hex:02100103>习得擅长进攻的辅助武僧技能。,Phantom Monk
 4,辅助猎人,Ph. Ranger,,某位猎人的自豪与仁慈的记忆。<hex:02100103>习得借助动物之力的辅助猎人技能。,Phantom Ranger
 5,辅助武士,Ph. Samurai,,某位武士的武士道与锤炼的记忆。<hex:02100103>习得一击必杀的辅助武士技能。,Phantom Samurai
 6,辅助吟游诗人,Ph. Bard,,某位吟游诗人的诗心与热唱的记忆。<hex:02100103>习得多彩歌声的辅助吟游诗人技能。,Phantom Bard
-7,辅助风水士,Ph. Geomancer,,某位风水士的自然与理气的记忆。<hex:02100103>习得随天气变化效果的辅助风水士技能。,Phantom Geomancer
-8,辅助时魔导师,Ph. Time Mage,,某位时魔导师的法则与定理的记忆。<hex:02100103>习得操控时间的辅助时魔法技能。,Phantom Time Mage
-9,辅助炮击士,Ph. Cannoneer,,某位炮击士的弹道学与战术的记忆。<hex:02100103>习得可发射多种效果弹药的辅助炮击士技能。,Phantom Cannoneer
-10,辅助药师,Ph. Chemist,,某位药师的调合与药理的记忆。<hex:02100103>习得使用高效药品的辅助药师技能。,Phantom Chemist
-11,辅助预言者,Ph. Oracle,,某位预言者的灵感与启示的记忆。<hex:02100103>习得具有延时效果的辅助预言者技能。,Phantom Oracle
+7,辅助风水师,Ph. Geomancer,,某位风水师的自然与理气的记忆。<hex:02100103>习得随天气变化效果的辅助风水师技能。,Phantom Geomancer
+8,辅助时魔法师,Ph. Time Mage,,某位时魔法师的法则与定理的记忆。<hex:02100103>习得操控时间的辅助时魔法师技能。,Phantom Time Mage
+9,辅助炮术士,Ph. Cannoneer,,某位炮术士的弹道学与战术的记忆。<hex:02100103>习得可发射多种效果弹药的辅助炮术士技能。,Phantom Cannoneer
+10,辅助药剂师,Ph. Chemist,,某位药剂师的调合与药理的记忆。<hex:02100103>习得使用高效药品的辅助药剂师技能。,Phantom Chemist
+11,辅助预言师,Ph. Oracle,,某位预言师的灵感与启示的记忆。<hex:02100103>习得具有延时效果的辅助预言师技能。,Phantom Oracle
 12,辅助盗贼,Ph. Thief,,某位盗贼的侠义与绝技的记忆。<hex:02100103>习得包含特殊探索术的辅助盗贼技能。,Phantom Thief
