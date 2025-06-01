@@ -1,5 +1,5 @@
 {
-	"exportMapFontLobbyToFont": false,
+	"exportMapFontLobbyToFont": true,
 	"fontSets": [
 		{
 			"discardStep": 1,
@@ -61,7 +61,7 @@
 								"name": "HarmonyOS Sans SC",
 								"stretch": 5,
 								"style": 0,
-								"weight": 400
+								"weight": 500
 							},
 							"mergeMode": 1,
 							"renderSpecific": {
@@ -83,7 +83,7 @@
 								}
 							},
 							"renderer": 3,
-							"size": 12.0,
+							"size": 9.600000381469727,
 							"transformationMatrix": [
 								1.0,
 								0.0,
@@ -91,7 +91,7 @@
 								1.0
 							],
 							"wrapModifiers": {
-								"baselineShift": 1,
+								"baselineShift": 0,
 								"codepointReplacements": {},
 								"codepoints": [
 									[
@@ -125,7 +125,7 @@
 						}
 					],
 					"name": "AXIS_96",
-					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "感觉此区域中存在2个银宝箱与17个铜宝箱……！\r\n！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
@@ -247,7 +247,7 @@
 						}
 					],
 					"name": "AXIS_12",
-					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "感觉此区域中存在2个银宝箱与17个铜宝箱……！\r\n！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
@@ -369,7 +369,7 @@
 						}
 					],
 					"name": "AXIS_14",
-					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "感觉此区域中存在2个银宝箱与17个铜宝箱……！\r\n！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
@@ -457,7 +457,7 @@
 								1.0
 							],
 							"wrapModifiers": {
-								"baselineShift": -1,
+								"baselineShift": 0,
 								"codepointReplacements": {},
 								"codepoints": [
 									[
@@ -491,7 +491,7 @@
 						}
 					],
 					"name": "AXIS_18",
-					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "感觉此区域中存在2个银宝箱与17个铜宝箱……！\r\n！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
@@ -613,7 +613,7 @@
 						}
 					],
 					"name": "AXIS_36",
-					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "感觉此区域中存在2个银宝箱与17个铜宝箱……！\r\n！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
