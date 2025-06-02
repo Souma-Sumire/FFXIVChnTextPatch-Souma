@@ -1,5 +1,5 @@
 {
-	"exportMapFontLobbyToFont": true,
+	"exportMapFontLobbyToFont": false,
 	"fontSets": [
 		{
 			"discardStep": 1,
