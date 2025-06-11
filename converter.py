@@ -2,9 +2,8 @@ import os
 import argparse
 from opencc import OpenCC
 import time
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
-from concurrent.futures import as_completed
 
 cc = None
 
@@ -29,22 +28,29 @@ def convert_file(file_path):
         return False, f"{file_path} -> {e}"
 
 def main():
-    parser = argparse.ArgumentParser(description='CSV 转台湾繁体工具')
+    parser = argparse.ArgumentParser(description='CSV 簡體轉臺灣繁體工具')
     parser.add_argument('-d', '--directory', default='resource/rawexd',
-                        help='要处理的根目录路径')
+                        help='要處理的資料夾路徑')
     parser.add_argument('-p', '--processes', type=int, default=os.cpu_count(),
-                        help='并行进程数')
+                        help='並行處理的進程數')
     args = parser.parse_args()
 
+    # 確認提示
+    print(f"準備開始轉換目錄：{os.path.abspath(args.directory)}")
+    confirm = input("是否繼續？輸入 Y 確認，其他鍵取消：")
+    if confirm.strip().lower() != 'y':
+        print("操作已取消。")
+        return
+
     if not os.path.exists(args.directory):
-        print(f"错误：目录不存在 {os.path.abspath(args.directory)}")
+        print(f"錯誤：目錄不存在 {os.path.abspath(args.directory)}")
         return
 
     file_list = [os.path.join(root, f)
                  for root, _, files in os.walk(args.directory)
                  for f in files if f.lower().endswith('.csv')]
 
-    print(f"找到 {len(file_list)} 个 CSV 文件 | 使用 {args.processes} 个进程")
+    print(f"共找到 {len(file_list)} 個 CSV 檔案 | 使用 {args.processes} 個處理程序")
     start = time.time()
 
     with ProcessPoolExecutor(max_workers=args.processes, initializer=init_opencc) as executor:
@@ -54,10 +60,14 @@ def main():
             results.append(future.result())
 
     total_time = time.time() - start
-    print(f"\n转换完成 | 耗时: {total_time:.1f}s | 速度: {len(file_list)/total_time:.1f} 文件/秒")
+    print(f"\n轉換完成 | 耗時：{total_time:.1f} 秒 | 速度：{len(file_list)/total_time:.1f} 檔案/秒")
     for status, msg in results:
         if not status:
-            print(f"× {msg}")
+            print(f"× 轉換失敗：{msg}")
+
+    input("\n請按任意鍵結束...")
 
 if __name__ == '__main__':
+    from multiprocessing import freeze_support
+    freeze_support()
     main()
