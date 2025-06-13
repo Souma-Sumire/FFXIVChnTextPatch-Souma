@@ -6,8 +6,6 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 
-# pyinstaller --onefile --add-data "C:\Users\55346\AppData\Local\Programs\Python\Python311\Lib\site-packages\opencc\config\t2tw.json;." converter.py
-
 cc = None
 
 charjt = (
@@ -39,14 +37,9 @@ def to_huoxingwen(text: str) -> str:
                 out.append(ch)
     return ''.join(out)
 
-def resource_path(relative_path):
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    return os.path.join(base_path, relative_path)
-
 def init_opencc():
     global cc
-    config_path = resource_path("t2tw.json")
-    cc = OpenCC(config_path)
+    cc = OpenCC('s2tw')
 
 def convert_file(file_path, mode):
     global cc
