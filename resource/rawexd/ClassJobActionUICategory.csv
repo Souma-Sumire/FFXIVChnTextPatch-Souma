@@ -8,21 +8,21 @@ int32,str,str
 3,PET,
 4,COMBO WEAPONSKILL,
 5,COMBO MAGIC,
-6,FORM WEAPONSKILL,<hex:024804F201FA03><hex:024904F201FB03>需要特定类型的发动条件或附加效果的技能。<hex:0249020103><hex:0248020103>
+6,FORM WEAPONSKILL,<hex:024804F201FA03><hex:024904F201FB03>发动条件或触发追加效果需要特定身形的技能。<hex:0249020103><hex:0248020103>
 7,WEAPONSKILL,
 8,MAGIC,
 9,ABILITY,
-10,GATHERING,
-11,COLLECTABLE,用于收集品采集的技能。
-12,OTHERS,
-13,FISHING - BASIC,
-14,FISHING - SETUP,在进行抛竿之前使用的钓鱼专用技能。
-15,FISHING - LURE & HOOK,进行抛竿并在钓起鱼之前使用的钓鱼专用技能。
-16,SPEARFISHING,
-17,OTHERS,
-18,PROGRESS,推进工作或提高工作效率的技能。
-19,QUALITY,提高品质或提高品质提升效率的技能。
-20,CRAFT SUPPORT,与制作物品的耐久度或CP等相关的辅助型技能。
-21,MEISTER,在装备“专家之证”时可使用的技能。
+10,GATHERING,采集用技能。
+11,COLLECTABLE,采集收藏品用技能。
+12,OTHERS,采集之外也可使用的大地使者共通技能。
+13,FISHING - BASIC,钓鱼用基础技能。
+14,FISHING - SETUP,抛竿前使用的钓鱼专用技能。
+15,FISHING - LURE & HOOK,抛竿后，在将鱼钓上之前使用的钓鱼专用技能。
+16,SPEARFISHING,刺鱼用技能。
+17,OTHERS,钓鱼与刺鱼共通的技能。
+18,PROGRESS,推动作业进展或提高作业效率的技能。
+19,QUALITY,提升品质或品质提升效率的技能。
+20,CRAFT SUPPORT,与制作力或耐久等相关的辅助技能。
+21,MEISTER,装备“专家之证”时可使用的技能。
 22,,
 23,,
