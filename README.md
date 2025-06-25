@@ -4,7 +4,7 @@
 
 ---
 
-## 汉化游戏
+## 汉化文本 & 中文字体
 
 无论使用下列哪种方法，都需要高分辨率贴图，否则游戏会因字体渲染问题导致DX崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
 
@@ -40,13 +40,13 @@
 ## 与第三方插件的兼容性
 
 - 如果你需要将 ACT 日志上传至 FFLOGS 网站，则不要汉化敌人名称（BNpcName），否则会影响 ACT 日志的生成。
-- 如果你需要使用 Cactbot - Raidboss 自带触发器，则不要汉化敌人名称（BNpcName），否则无法使用。
+- 如果你需要使用 Cactbot - Raidboss 自带触发器，则不要汉化敌人名称（BNpcName），否则无法使用，且需将解析插件的语言设置为原本的语言（英语或日语）。
 - 如果你需要使用 Cactbot - Rader 雷达，则不要对系统日志（LogMessage）、敌人名称（BNpcName）进行汉化，否则无法使用。
 
 ## 推荐搭配
 
-- UI 标题翻译：[karaipsum/Simplified Chinese UI Replacement Mod](https://www.nexusmods.com/finalfantasy14/mods/2048)
-- 聊天翻译工具：[Tataru Assistant](https://home.gamer.com.tw/artwork.php?sn=5323128)
+- [Simplified Chinese UI Replacement Mod | 简体中文 UI 文字替换](https://heliosphere.app/mod/e74r2qz4m52n714t05r1555gam)
+- [Tataru Assistant | FFXIV / FF14國際服劇情字幕翻譯程式](https://home.gamer.com.tw/artwork.php?sn=5323128)
 
 ## 修改游戏字体
 
