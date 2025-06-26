@@ -45,6 +45,7 @@
 
 ## 推荐搭配
 
+- [Chinese Voice Replacement Mod | 中文配音替换](https://heliosphere.app/mod/zr5qx0jqdd61q37ajpnsv98h6m)
 - [Simplified Chinese UI Replacement Mod | 简体中文 UI 文字替换](https://heliosphere.app/mod/e74r2qz4m52n714t05r1555gam)
 - [Tataru Assistant | FFXIV / FF14國際服劇情字幕翻譯程式](https://home.gamer.com.tw/artwork.php?sn=5323128)
 
