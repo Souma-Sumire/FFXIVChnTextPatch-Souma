@@ -49,6 +49,12 @@
 - [Simplified Chinese UI Replacement Mod | 简体中文 UI 文字替换](https://heliosphere.app/mod/e74r2qz4m52n714t05r1555gam)
 - [Tataru Assistant | FFXIV / FF14國際服劇情字幕翻譯程式](https://home.gamer.com.tw/artwork.php?sn=5323128)
 
+## 卸载汉化
+
+- 使用工具汉化的用户：进入 `backup/` 文件夹，将原始文件手动还原。
+- 使用 Penumbra 的用户：可直接禁用或删除对应 Mod。
+- 使用文件覆盖的用户：建议提前手动备份原始文件，或在发布版 v1 中找到备份文件进行还原。
+
 ## 修改游戏字体
 
 ### 现成字体 Mod
@@ -64,12 +70,27 @@
 
 ## 捐赠支持
 
-如果你觉得项目有帮助，**点个 Star** 同样意义重大！
-
 ![捐赠二维码](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/1fec3974-0b6d-43df-9afc-2d760c33f9b5)
 
+如果你觉得项目有帮助，**点个 Star** 同样意义重大！
 
----
+## 许可证相关
+
+本项目遵循 [GPL-3.0 License](https://www.gnu.org/licenses/gpl-3.0.html)，基于原项目 [FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP) 进行修改与扩展。
+
+其中，以下部分与原项目保持完全一致：
+
+- `jre/` Java 运行环境
+- `FFXIVChnTextPatchGP.exe`：汉化工具主程序
+
+以下内容为本项目原创或自行维护：
+
+- `preset/`：字体文件预设JSON文件
+- `resource/font/`：由本人制作的中文字体资源
+- `resource/rawexd/`：由本人翻译及维护的游戏数据 CSV 文件
+- `converter.exe`：由本人编写的 CSV 繁体转换工具
+
+## 免责声明
 
 ```text
 此项目仅供学习技术以及技术交流使用
