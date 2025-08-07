@@ -1,4 +1,3 @@
 backup/
 debug.*
 /.vs
-conf/global.properties
