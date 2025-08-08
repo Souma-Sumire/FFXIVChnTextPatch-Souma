@@ -1,0 +1,24 @@
+name: 汉化文本问题
+description: 报告翻译错误、错别字或术语不一致问题
+title: "[翻译] "
+labels: ["translation"]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: 当前翻译
+      description: 项目中目前的译文
+    validations:
+      required: true
+
+  - type: textarea
+    id: original
+    attributes:
+      label: 日端原文
+      description: 请提供截图或完整文本
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 建议翻译
+      description: 你建议替换成的译文（请说明理由，例如术语一致性、官方译名等）

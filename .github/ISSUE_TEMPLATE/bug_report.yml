@@ -1,0 +1,38 @@
+name: Bug 反馈
+description: 报告在使用汉化工具、字体 Mod 或覆盖文件时遇到的技术问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: method
+    attributes:
+      label: 使用的汉化方式
+      options:
+        - 汉化工具 (FFXIVChnTextPatchGP.exe)
+        - Penumbra Mod (.pmp)
+        - 文件覆盖 (overwrite.zip)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 使用的补丁版本
+      placeholder: 例如 7.30 hotfix1 v1
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 请描述你是如何触发问题的（例如：运行工具 → 进入游戏 → 某功能失效）
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 错误信息 / 日志
+      description: 请粘贴错误提示、崩溃日志或截图（如有）
+      render: shell
