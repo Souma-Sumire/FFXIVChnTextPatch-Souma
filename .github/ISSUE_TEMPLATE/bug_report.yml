@@ -14,11 +14,20 @@ body:
     validations:
       required: true
 
+  - type: checkboxes
+    id: confirm_clean
+    attributes:
+      label: 使用汉化工具时，我承诺：
+      options:
+        - label: 我遵循了指南，确保在使用汉化器前，游戏文件是最新版本、原版、未修改过的。
+          required: true
+
   - type: input
     id: version
     attributes:
       label: 使用的补丁版本
-      placeholder: 例如 7.30 hotfix1 v1
+      placeholder: 例如 7.25 hotfix2 v3
+      description: 如果我发现你的版本号是乱填的，我会直接关闭 Issues。
     validations:
       required: true
 
