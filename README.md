@@ -15,9 +15,6 @@
 1. 运行 `FFXIVChnTextPatchGP.exe`，按界面提示操作。
    - 如需漢化為繁體中文，請先執行根目錄下的 `converter.exe` 並輸入 `1` 對 CSV 檔案進行轉換，再執行 `FFXIVChnTextPatchGP.exe`。
 
-  > 汉化执行后，原始文件会自动备份至 backup 文件夹内。
-  > ⚠️ 请勿重复执行汉化，否则备份文件也会被覆盖。
-
 ### 方式二：Penumbra 热加载
 
 1. 在 [最新发行版](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)，下载 `Assets` 中的 `mod.pmp` 文件
@@ -28,32 +25,22 @@
 1. 导入 Mod 并重启游戏
    > 或手动解压 `.pmp`，在启动游戏前将其复制至 Penumbra 的 Mod 文件夹中
 
-### 方式三：覆盖文件
-  >
-  > 注意，此版本汉化了敌人名称。
-
-1. 在 [最新发行版](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)，下载 `Assets` 中的 `overwrite.zip` 文件
-1. 文件覆盖到图示位置（建议提前备份原文件）![image](https://github.com/user-attachments/assets/7e87c0ff-4ad8-4c2f-ba67-d605fec0619f)
-
-  > macOS路径：`$HOME/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv/`
-
 ## 与第三方插件的兼容性
 
-- 如果你需要将 ACT 日志上传至 FFLOGS 网站，则不要汉化敌人名称（BNpcName），否则会影响 ACT 日志的生成。
-- 如果你需要使用 Cactbot - Raidboss 自带触发器，则不要汉化敌人名称（BNpcName），否则无法使用，且需将解析插件的语言设置为原本的语言（英语或日语）。
-- 如果你需要使用 Cactbot - Rader 雷达，则不要对系统日志（LogMessage）、敌人名称（BNpcName）进行汉化，否则无法使用。
+| 第三方插件                    | 不要汉化                        | 说明                                 |
+| -------------------------- | ------------------------------- | ---------------------------------- |
+| **FFLOGS 日志上传**              | 敌人名称（BNpcName）                  | 否则会影响 ACT 日志生成   |
+| **Cactbot - Raidboss 触发器** | 敌人名称（BNpcName）                  | 否则无法匹配正则表达式；且解析插件语言需保持原本的语言（英语或日语）。 |
+| **Cactbot - Radar 雷达**     | 敌人名称（BNpcName）、系统日志（LogMessage） | 否则雷达无法正常识别目标、识别副本区切换。                      |
+| **Lifestream**             | 登录大厅（Lobby）                     | 否则自动登录等功能无法使用。                      |
+
+表中未提及的插件，可自行举一反三，将相关字段保持为原文。[查询CSV文本范围](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV%E6%96%87%E4%BB%B6)
 
 ## 推荐搭配
 
 - [Chinese Voice Replacement Mod | 中文配音替换](https://heliosphere.app/mod/zr5qx0jqdd61q37ajpnsv98h6m)
 - [Simplified Chinese UI Replacement Mod | 简体中文 UI 文字替换](https://heliosphere.app/mod/e74r2qz4m52n714t05r1555gam)
 - [Tataru Assistant | FFXIV / FF14國際服劇情字幕翻譯程式](https://home.gamer.com.tw/artwork.php?sn=5323128)
-
-## 卸载汉化
-
-- 使用工具汉化的用户：进入 `backup/` 文件夹，将原始文件手动还原。
-- 使用 Penumbra 的用户：可直接禁用或删除对应 Mod。
-- 使用文件覆盖的用户：建议提前手动备份原始文件，或在发布版 v1 中找到备份文件进行还原。
 
 ## 修改游戏字体
 
