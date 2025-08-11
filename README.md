@@ -11,7 +11,12 @@
 ### 方式一：使用汉化工具
 
 1. 在 [最新发行版](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)，下载 `Assets` 中的 `Source code (zip)` 文件
-1. 确保游戏文件为 **最新版本的、原版的、未修改过的纯净游戏文件**
+1. 确保游戏文件为 **最新版本的、原版的、未修改过的纯净游戏文件**。
+
+> [!CAUTION]
+> Hotfix 前后的游戏文件 **不能混用**！它们属于两个完全不同的版本。  
+> 汉化前，必须确认游戏文件与当前游戏版本 **完全一致**。
+
 1. 运行 `FFXIVChnTextPatchGP.exe`，按界面提示操作。
    - 如需漢化為繁體中文，請先執行根目錄下的 `converter.exe` 並輸入 `1` 對 CSV 檔案進行轉換，再執行 `FFXIVChnTextPatchGP.exe`。
 
