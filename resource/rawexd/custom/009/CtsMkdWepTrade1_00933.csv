@@ -2,9 +2,9 @@
 #,,
 offset,0,4
 int32,str,str
-0,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_000,好，素材都齐了啊。<hex:02100103>那就用这把附有半魂以太的锻冶工具，<hex:02100103>让你见识一下这座岛上独有的加工技艺吧！
-1,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_001,怎么样，不错吧？<hex:02100103>由以太构筑出的重重虚像，<hex:02100103>最终全部收束于武器本体，凝为真实的形态……
-2,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_002,我倾尽全力打造的幻境武器，<hex:02100103><hex:02280AFF05>Item<hex:E8020103>完成啦！
-3,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_003,我倾尽全力打造的幻境武器，<hex:02100103><hex:02280AFF05>Item<hex:E8020103>还有……<hex:02100103><hex:02280AFF05>Item<hex:E8030103>都完成啦！
-4,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_004,虽然不用我说你也知道，武器的真正价值，只有在战斗中才能体现。<hex:02100103>在那之前嘛……它也只是个虚像，犹如蜃景幻界般存在罢了。
-5,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_005,别把它塞进包里就放着让它成为幻影！<hex:02100103>要亲手紧握它、好好用起来才行！
+0,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_000,准备好素材了啊，<hex:02100103>那我就用附着了半魂晶的锻铁工具，<hex:02100103>为你展现一下只有这里才能实现的加工方法！
+1,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_001,怎么样？很棒吧！<hex:02100103>将以太生成的虚影化作实影，<hex:02100103>并附着在了武器之上……
+2,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_002,这就是我倾注全力制作出的幻境武器——<hex:02280AFF05>Item<hex:E8020103>！
+3,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_003,这就是我倾注全力制作出的幻境武器——<hex:02100103><hex:02280AFF05>Item<hex:E8020103>和<hex:02280AFF05>Item<hex:E8030103>！
+4,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_004,不用我说你也知道，<hex:02100103>武器只有在使用的时候才能发挥其真正的价值，<hex:02100103>否则……就如同虚像的幻境一样毫无用处。
+5,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_005,为了不让幻境就此消散，<hex:02100103>需要你拿在手中多多使用才行！

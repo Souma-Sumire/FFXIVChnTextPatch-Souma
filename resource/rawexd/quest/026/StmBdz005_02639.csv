@@ -51,10 +51,10 @@ int32,str,str
 46,TEXT_STMBDZ005_02639_TODO_22,
 47,TEXT_STMBDZ005_02639_TODO_23,
 48,TEXT_STMBDZ005_02639_LOEZKIRZ_000_000,哦哦，<hex:022903EB0203><hex:020849E1E93501FF41><hex:02083DE3E93580FF35><hex:020831E1E93501FF29><hex:020825E3E93580FF1D><hex:022819FF14>GCRankLimsaMaleText<hex:E9350103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:02084CE1E93601FF44><hex:020840E3E93680FF38><hex:020834E1E93601FF2C><hex:020828E3E93680FF20><hex:02281CFF17>GCRankGridaniaMaleText<hex:E9360103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:020849E1E93701FF41><hex:02083DE3E93780FF35><hex:020831E1E93701FF29><hex:020825E3E93780FF1D><hex:022819FF14>GCRankUldahMaleText<hex:E9370103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03>，来得正好！<hex:02100103>发生了紧急状况，能为我们的任务出一份力吗？
-49,TEXT_STMBDZ005_02639_LOEZKIRZ_000_001,我们在调查从长城缴获的帝国军无人兵器的时候，<hex:02100103>有几架兵器突然暴走，飞向了东边。<hex:02100103>为了防止对一般民众造成危害，必须迅速处理此事。
+49,TEXT_STMBDZ005_02639_LOEZKIRZ_000_001,我们在调查从长城缴获的帝国军无人兵器的时候，<hex:02100103>有几架兵器突然失控，飞向了东边。<hex:02100103>为了防止对一般民众造成危害，必须迅速处理此事。
 50,TEXT_STMBDZ005_02639_LOEZKIRZ_000_002,听说你与魔导兵器战斗的经验十分丰富。<hex:02100103>我想请你去协助指挥追击作战的古·妮布妮帕协漩尉，<hex:02100103>追击无人兵器！
 51,TEXT_STMBDZ005_02639_LOEZKIRZ_000_003,详细的作战计划请去询问古·妮布妮帕协漩尉。
-52,TEXT_STMBDZ005_02639_GNIBNPHA_000_010,感谢你的帮助！<hex:02100103>那么事不宜迟，我来向你说明暴走无人兵器的相关事宜……<hex:02100103>我们已确认上述机体是使用了新型装甲材料的试验机。
+52,TEXT_STMBDZ005_02639_GNIBNPHA_000_010,感谢你的帮助！<hex:02100103>那么事不宜迟，我来向你说明失控无人兵器的相关事宜……<hex:02100103>我们已确认上述机体是使用了新型装甲材料的试验机。
 53,TEXT_STMBDZ005_02639_GNIBNPHA_000_011,因此，普通兵器的攻击想必很难凑效吧。<hex:02100103>所以我们在加隆德炼铁厂的协助下，<hex:02100103>准备了能够烧断无人驾驶机关的特殊能量弹。
 54,TEXT_STMBDZ005_02639_GNIBNPHA_000_012,我们已将这种对抗无人兵器的武器搭载到缴获的魔导装甲上了，<hex:02100103><hex:022903EB0203><hex:020849E1E93501FF41><hex:02083DE3E93580FF35><hex:020831E1E93501FF29><hex:020825E3E93580FF1D><hex:022819FF14>GCRankLimsaMaleText<hex:E9350103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:02084CE1E93601FF44><hex:020840E3E93680FF38><hex:020834E1E93601FF2C><hex:020828E3E93680FF20><hex:02281CFF17>GCRankGridaniaMaleText<hex:E9360103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:020849E1E93701FF41><hex:02083DE3E93780FF35><hex:020831E1E93701FF29><hex:020825E3E93780FF1D><hex:022819FF14>GCRankUldahMaleText<hex:E9370103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:02100103>这架魔导装甲的驾驶就交给你了。
 55,TEXT_STMBDZ005_02639_GNIBNPHA_000_013,以前你在帝国南方堡战斗的时候，<hex:02100103>有过驾驶魔导装甲的经验对吧？<hex:02100103>请将你的技术为我们一用！
@@ -62,6 +62,6 @@ int32,str,str
 57,TEXT_STMBDZ005_02639_GNIBNPHA_000_015,攻击目标在东境混交林东部<hex:02100103>和威罗迪纳河西北沿岸进入了警戒态势。<hex:02100103>请搭乘捕获的魔导装甲，火速前往并破坏目标。
 58,TEXT_STMBDZ005_02639_LOEZKIRZ_000_020,噢噢，<hex:02084FE1E93501FF47><hex:020843E3E93580FF3B><hex:022903EB0203><hex:020831E1E93501FF29><hex:020825E3E93580FF1D><hex:022819FF14>GCRankLimsaMaleText<hex:E9350103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:020852E1E93601FF4A><hex:020846E3E93680FF3E><hex:022903EB0203><hex:020834E1E93601FF2C><hex:020828E3E93680FF20><hex:02281CFF17>GCRankGridaniaMaleText<hex:E9360103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:02084FE1E93701FF47><hex:020843E3E93780FF3B><hex:022903EB0203><hex:020831E1E93701FF29><hex:020825E3E93780FF1D><hex:022819FF14>GCRankUldahMaleText<hex:E9370103><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03><hex:FF01><hex:03>！<hex:02100103>你已经顺利破坏掉无人兵器了啊！<hex:02100103>我代表部队感谢你！
 59,TEXT_STMBDZ005_02639_LOEZKIRZ_000_021,拥有魔导装甲驾驶经验的你<hex:02100103>正好在这里真是得救了……<hex:02100103>这片区域怕是会成为今后的难题。
-60,TEXT_STMBDZ005_02639_LOEZKIRZ_000_022,不过话说回来，帝国还真是造出了麻烦的东西。<hex:02100103>在巴埃萨长城那里好像还有一些已经停止了活动的无人兵器，<hex:02100103>说不定还会出现暴走的情况。
+60,TEXT_STMBDZ005_02639_LOEZKIRZ_000_022,不过话说回来，帝国还真是造出了麻烦的东西。<hex:02100103>在巴埃萨长城那里好像还有一些已经停止了活动的无人兵器，<hex:02100103>说不定还会出现失控的情况。
 61,TEXT_STMBDZ005_02639_LOEZKIRZ_000_023,我们会和加隆德炼铁厂联手，<hex:02100103>继续慎重地调查下去。
 62,TEXT_STMBDZ005_02639_GNIBNPHA_000_024,你成功破坏了无人兵器啊。<hex:02100103>请去向鲁兹奇厄兹正漩尉报告！
