@@ -40,7 +40,7 @@ int32,str
 35,第6名
 36,第7名
 37,第8名
-38,<hex:022818FF13>GoldSaucerTextData<hex:E8030103>　<hex:022818FF13>GoldSaucerTextData<hex:E8020103>
+38,
 39,进度：<hex:022003E80203>%
 40,排名：<hex:022903EA0203>
 41,
@@ -107,7 +107,7 @@ int32,str
 102,
 103,
 104,<hex:022818FF13>GoldSaucerTextData<hex:E8020103> <hex:02082FE1E80301FF27>[出赛条件：羽力<hex:022003E80303>～<hex:022003E80403>]<hex:FF01><hex:03>
-105,<hex:022818FF13>GoldSaucerTextData<hex:E8020103>
+105,
 106,<hex:02281AFF15>ChocoboRaceChallenge<hex:E8020103> <hex:020829E1E80301FF21>[出赛条件：羽力<hex:022003E80303>～]<hex:FF01><hex:03>
 107,
 108,
@@ -115,7 +115,7 @@ int32,str
 110,欢迎来到竞赛教学！
 111,完成各个项目！
 112,竞赛教学完毕！
-113,???
+113,
 114,加速
 115,加速到体力耗尽
 116,全力加速后减速

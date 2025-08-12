@@ -10,7 +10,7 @@ int32,str,str
 5,TEXT_REGSEANOVVTRAININGGROUND_00155_A1_000_003,取消
 6,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_010,呼嘶……我叫库鲁。<hex:02100103>是诺布老爹的第五个儿子。
 7,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_011,栖息在诺布养育场的鱼人族都是我的兄弟，<hex:02100103>大家都是拥有血缘关系的同族。
-8,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_012,鱼人族把血缘关系看得比一切都重……<hex:02100103>我们诺布一伙之间的羁绊，<hex:02100103>比海沟还要深，比贝壳还要坚固……呼嘶！
+8,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_012,鱼人族把血缘关系看得比一切都重……<hex:02100103>我们诺布一伙之间的情谊比海沟还要深，<hex:02100103>比贝壳还要坚固……呼嘶！
 9,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_020,这里是诺布养育场……呼嘶。<hex:02100103>是我们老爹诺布率领的诺布一伙栖息的养育场。
 10,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_021,呼嘶……顾名思义，“养育场”就是我们养育子嗣的地方。
 11,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_022,我们鱼人族大多是生活在深海城市中的。<hex:02100103>但是，在成为独当一面的大人，长出强壮的鳃之前，<hex:02100103>我们都要在陆地上生活。
@@ -23,7 +23,7 @@ int32,str,str
 18,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_110,呼嘶……虽然珊瑚尖枪老实了一些，<hex:02100103>不过年轻人里好多血气方刚的家伙。<hex:02100103>依然会发生些小摩擦……
 19,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_111,不管怎么说，两方都是期望血族繁盛。<hex:02100103>在诺布老爹的领导下，我们也稳步、和睦地生活着。<hex:02100103>这都是因为你为我们找到了可能性，非常感谢。
 20,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_112,鱼人族把血缘关系看得比一切都重……<hex:02100103>栖息在诺布养育场的鱼人族都是我的兄弟，<hex:02100103>大家都是拥有血缘关系的同族。
-21,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_113,但是，我们诺布一伙更加重视羁绊。<hex:02100103><hex:022903EB0203>，你也是我们的家人，<hex:02100103>欢迎你随时过来……呼嘶。
+21,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_113,但是，我们诺布一伙更加重视情谊。<hex:02100103><hex:022903EB0203>，你也是我们的家人，<hex:02100103>欢迎你随时过来……呼嘶。
 22,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_120,这里是诺布养育场……呼嘶。<hex:02100103>你也知道，<hex:02100103>这是我们老爹诺布率领的诺布一伙栖息的养育场。
 23,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_121,呼嘶……顾名思义，“养育场”就是我们养育子嗣的地方。
 24,TEXT_REGSEANOVVTRAININGGROUND_00155_QULL_000_122,我们鱼人族大多是生活在深海城市中的。<hex:02100103>但是，在成为独当一面的大人，长出强壮的鳃之前，<hex:02100103>我们都要在陆地上生活。

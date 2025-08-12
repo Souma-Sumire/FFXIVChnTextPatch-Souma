@@ -84,7 +84,7 @@ int32,str,str
 79,TEXT_REGSEAPVPCOLOSSEUM_00102_SYSTEM_000_091,升格战是为了晋升到更高段位而进行的比赛。<hex:02100103>段位积分超过一定数值后即可参加。
 80,TEXT_REGSEAPVPCOLOSSEUM_00102_SYSTEM_000_092,升格战分为5局，取得3局以上的胜利后即可晋级。
 81,TEXT_REGSEAPVPCOLOSSEUM_00102_SYSTEM_000_093,在升格战举行期间，段位赛会被视为升格战。<hex:02100103>通过任务搜索器参加群狼盛宴（段位赛），<hex:02100103>取得更高的段位！
-82,TEXT_REGSEAPVPCOLOSSEUM_00102_BERKOEYA_000_100,不管是怎样的狂欢都有结束的时候！<hex:02100103>来吧，成为宣告宴会终焉的王者吧！
+82,TEXT_REGSEAPVPCOLOSSEUM_00102_BERKOEYA_000_100,不管是怎样的狂欢都有结束的时候！<hex:02100103>来吧，成为宣告宴会结束的王者吧！
 83,TEXT_REGSEAPVPCOLOSSEUM_00102_SYSTEM_000_101,赛季是群狼盛宴的参加者相互竞争段位积分和段位的期间。
 84,TEXT_REGSEAPVPCOLOSSEUM_00102_SYSTEM_000_102,当赛季结束时，会获得与自身段位相符的报酬。<hex:02100103>达到特定条件的参加者还会获得特别的赛季奖励。
 85,TEXT_REGSEAPVPCOLOSSEUM_00102_SYSTEM_000_103,关于赛季奖励的详情可以询问狼狱停船场的赛季奖励发放员。

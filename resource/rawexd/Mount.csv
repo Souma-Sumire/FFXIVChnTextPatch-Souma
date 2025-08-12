@@ -374,7 +374,7 @@ int32,str,str,str,str,str
 369,,,SE_Bt_Etc_Mount_BigManatee_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_BigManatee_bye
 370,,,,,
 371,,,,,
-372,恶魔石板,,SE_Bt_Etc_Mount_DemonWallMKD_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_DemonWallMKD_call_bye
+372,恶魔板,,SE_Bt_Etc_Mount_DemonWallMKD_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_DemonWallMKD_call_bye
 373,瓣齿鲨,,SE_Bt_Etc_Mount_SameNingen_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_SameNingen_bye
 374,陪伴雪人,,SE_Bt_Etc_SnowmanWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_SnowmanBye
 375,,,,,
@@ -385,7 +385,7 @@ int32,str,str,str,str,str
 380,,,,,
 381,拟鸟枝,,SE_Bt_Etc_Mount_ShinpiTori_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_ShinpiTori_bye
 382,飞梭C9,,SE_Bt_Etc_Mount_SolutionNineCar_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_SolutionNineCar_bye
-383,古式魔导船,,SE_Bt_Etc_Mount_MKDHikousen_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_MKDHikousen_bye
+383,古代魔法船,,SE_Bt_Etc_Mount_MKDHikousen_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_MKDHikousen_bye
 384,,,,,
 385,高机动型强力机兵,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
 386,,,,,
