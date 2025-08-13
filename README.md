@@ -41,6 +41,12 @@
 
 表中未提及的插件，可自行举一反三，将相关字段保持为原文。[查询CSV文本范围](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV%E6%96%87%E4%BB%B6)
 
+## 注意事项
+
+- 当你 `展示道具` 时，别人看到的也是中文！
+- 当你 `<t>` 时，别人看到的有可能是中文，目前尚未确定机制。[此Issues](https://github.com/GpointChen/FFXIVChnTextPatch-GP/issues/526)，可能的表有 BNpcname（大概率安全）、EObjName（怀疑）、Treasure（未经过测试）。我没有时间测试，欢迎 PR。
+- `<pos>`、`<flag>`可以安全使用。
+
 ## 推荐搭配
 
 - [Chinese Voice Replacement Mod | 中文配音替换](https://heliosphere.app/mod/zr5qx0jqdd61q37ajpnsv98h6m)
