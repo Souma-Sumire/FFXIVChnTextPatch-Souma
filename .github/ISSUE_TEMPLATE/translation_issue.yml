@@ -22,3 +22,5 @@ body:
     attributes:
       label: 建议翻译
       description: 你建议替换成的译文（请说明理由，例如术语一致性、官方译名等）
+    validations:
+      required: true
