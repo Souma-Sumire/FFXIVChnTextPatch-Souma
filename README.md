@@ -26,7 +26,7 @@
 1. 首次使用前，需要对 Penumbra 进行设置：
    - ❌ 关闭 `Advanced` - `Auto Deduplicate on Import`
    - ✅ 启用 `Advanced` - `Wait for Plugins on Startup`
-   - 安装任一 [字体 Mod](#现成字体-mod)
+   - 安装任一 [字体 Mod](#现成字体-mod)，并且参考[#80](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/issues/80)操作，避免 Penumbra 的导入 Bug。
 1. 导入 Mod 并重启游戏
    > 或手动解压 `.pmp`，在启动游戏前将其复制至 Penumbra 的 Mod 文件夹中
 
