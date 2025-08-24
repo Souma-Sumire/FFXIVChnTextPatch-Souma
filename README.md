@@ -26,7 +26,7 @@
 1. 首次使用前，需要对 Penumbra 进行设置：
    - ❌ 关闭 `Advanced` - `Auto Deduplicate on Import`
    - ✅ 启用 `Advanced` - `Wait for Plugins on Startup`
-   - 安装任一 [字体 Mod](#现成字体-mod)，并且参考[#80](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/issues/80)操作，避免 Penumbra 的导入 Bug。
+   - 安装任一 [字体 Mod](#现成字体-mod)
 1. 导入 Mod 并重启游戏
    > 或手动解压 `.pmp`，在启动游戏前将其复制至 Penumbra 的 Mod 文件夹中
 
@@ -57,8 +57,8 @@
 
 ### 现成字体 Mod
 
-- [HarmonyOS Sans](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.11.5/HarmonyOS.Sans.pmp)
-- [ChnAXIS](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.4.4/ChnAXIS.pmp)
+- [HarmonyOS Sans](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.16.2/HarmonyOS.Sans.pmp)
+- [ChnAXIS](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.16.2/ChnAXIS.pmp)
 - [四款替换用 UI 字体(黑|宋|圆) 国际服国服双版本](https://bbs.tggfl.com/topic/221/%E5%9B%9B%E6%AC%BE%E6%9B%BF%E6%8D%A2%E7%94%A8-ui-%E5%AD%97%E4%BD%93-%E9%BB%91-%E5%AE%8B-%E5%9C%86-%E5%9B%BD%E9%99%85%E6%9C%8D%E5%9B%BD%E6%9C%8D%E5%8F%8C%E7%89%88%E6%9C%AC)
 
 ### 自制字体工具
