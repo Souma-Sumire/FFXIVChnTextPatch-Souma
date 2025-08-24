@@ -17,9 +17,11 @@ body:
   - type: checkboxes
     id: confirm_clean
     attributes:
-      label: 使用汉化工具时，我承诺：
+      label: 我承诺，已遵循指南：
       options:
-        - label: 我遵循了指南，在汉化前，游戏文件是最新版本、原版、未修改过的。
+        - label: 启用了高分辨率贴图。
+          required: true
+        - label: 在汉化前，游戏文件是最新版本、原版、未修改过的。
           required: true
 
   - type: input
