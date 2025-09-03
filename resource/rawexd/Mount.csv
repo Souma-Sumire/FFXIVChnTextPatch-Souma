@@ -388,7 +388,7 @@ int32,str,str,str,str,str
 383,古代魔法船,,SE_Bt_Etc_Mount_MKDHikousen_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_MKDHikousen_bye
 384,,,,,
 385,高机动型强力机兵,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
-386,,,,,
+386,轮式工程车,,SE_Bt_Etc_Mount_WKSMech2_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech2_bye
 387,,,,,
 388,进击的好脑袋,,SE_Bt_Etc_Mount_Mandragora_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Mandragora_bye
 389,骑士之翼,,SE_Bt_Etc_Mount_Wing_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Wing_bye
@@ -403,8 +403,8 @@ int32,str,str,str,str,str
 398,,,,,
 399,,,,,
 400,羊,,SE_Bt_Etc_Mount_FF9_Yarn_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_FF9_Yarn_bye
-401,,,,,
-402,,,,,
+401,宇宙达鸟,,SE_Bt_Etc_Mount_Dhalmel_WKS_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_Dhalmel_WKS_bye
+402,宇宙飞板,,SE_Bt_Etc_Mount_WKS_ZipLine_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKS_ZipLine_bye
 403,,,,,
 404,,,,,
 405,,,,,
