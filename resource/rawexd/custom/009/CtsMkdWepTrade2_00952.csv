@@ -2,10 +2,10 @@
 #,,
 offset,0,4
 int32,str,str
-0,,
-1,,
-2,,
-3,,
-4,,
-5,,
-6,,
+0,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_000,喔，那该本大爷我出场了！<hex:02100103>就让你好好看看，经过“属性压缩锻造法”强化的力量！
+1,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_001,喝啊啊啊啊啊啊啊啊！
+2,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_002,嘿，连我自己都为之倾倒。浓密四属性的以太，没有被蜃景所迷惑，完美地调和在一起了……。
+3,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_003,这就是经过属性压缩锻造法强化的幻境武器！<hex:02100103>“<hex:02280AFF05>Item<hex:E8020103>”！
+4,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_004,这就是经过属性压缩锻造法强化的幻境武器！<hex:02100103>“<hex:02280AFF05>Item<hex:E8020103>”和……<hex:02100103>“<hex:02280AFF05>Item<hex:E8030103>”完成了！
+5,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_005,和积蓄以太到魔导球里相比，<hex:02100103>凑齐<hex:02280BFF05>Item<hex:F2B7020103>可能要轻松一些。<hex:02100103>但话虽如此，如果把它收在包里可就是明珠暗投了。
+6,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_006,为了找出可以进一步改良的空间，<hex:02100103>就尽情地挥舞它吧，让它在你手中更加得心应手！
