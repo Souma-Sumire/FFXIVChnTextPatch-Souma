@@ -1,8 +1,8 @@
-﻿key,1
-#,Format
+﻿key,2
+#,
 offset,0
 int32,str
-0,
+0,<hex:021306FEFFCCCCCC03><hex:022903EA0303><hex:021302EC03>
 1,
 2,
 3,

@@ -739,7 +739,7 @@ int32,str,str,str
 1664,,大地橙票,dadichengpiao
 1665,,宇宙信用点,yuzhouxinyongdian
 1666,,月球信用点,yueqiuxinyongdian
-1667,,法恩娜星点,faennaxingdian
+1667,,法恩娜信用点,faennaxinyongdian
 1900,@,【蛮神与蛮族】,manshenyumanzu.
 1901,,蛮神,manshen
 1902,,伊弗利特,yifulite
@@ -1483,8 +1483,8 @@ int32,str,str,str
 5170,,紧急遭遇战,jinjizaoyuzhan
 5171,,两歧塔力之塔,liangqitalizhita
 5172,,青龙幻巧战,qinglonghuanqiaozhan
-5175,,永恒之暗歼灭战,yonghengzhianjianmiezhan
-5176,,永恒之暗歼殛战,yonghengzhizhanjianjizhan
+5175,,永远之暗歼灭战,yongyuanzhianjianmiezhan
+5176,,永远之暗悲惶歼灭战,yongyuanzhianbeihuangjianmiezhan
 5177,,桑多利亚：第二巡行,sangduoliyadierxunxing
 5178,,中央终端,zhongyangzhongduan
-5181,,海湾战场,haiwanzhanchang
+5181,,海岸斗场,haiandouchang
