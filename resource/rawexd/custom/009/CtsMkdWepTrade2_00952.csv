@@ -2,10 +2,10 @@
 #,,
 offset,0,4
 int32,str,str
-0,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_000,喔，那该本大爷我出场了！<hex:02100103>就让你好好看看，经过“属性压缩锻造法”强化的力量！
-1,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_001,喝啊啊啊啊啊啊啊啊！
-2,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_002,嘿，连我自己都为之倾倒。浓密四属性的以太，没有被蜃景所迷惑，完美地调和在一起了……。
-3,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_003,这就是经过属性压缩锻造法强化的幻境武器！<hex:02100103>“<hex:02280AFF05>Item<hex:E8020103>”！
-4,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_004,这就是经过属性压缩锻造法强化的幻境武器！<hex:02100103>“<hex:02280AFF05>Item<hex:E8020103>”和……<hex:02100103>“<hex:02280AFF05>Item<hex:E8030103>”完成了！
-5,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_005,和积蓄以太到魔导球里相比，<hex:02100103>凑齐<hex:02280BFF05>Item<hex:F2B7020103>可能要轻松一些。<hex:02100103>但话虽如此，如果把它收在包里可就是明珠暗投了。
-6,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_006,为了找出可以进一步改良的空间，<hex:02100103>就尽情地挥舞它吧，让它在你手中更加得心应手！
+0,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_000,又到本大爷出场的时候了吗？<hex:02100103>那就让你见识见识经过属性压缩锻造法强化后的力量吧！
+1,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_001,哈啊啊啊——！
+2,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_002,我都佩服我自己！<hex:02100103>4种属性的浓厚以太得到了完美调和，<hex:02100103>以太没有就此消散，也都是多亏了这座岛……
+3,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_003,完成了！这就是通过属性压缩锻造法强化的幻境武器——<hex:02100103><hex:02280AFF05>Item<hex:E8020103>！！
+4,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_004,完成了！这就是通过属性压缩锻造法强化的幻境武器——<hex:02100103><hex:02280AFF05>Item<hex:E8020103>和<hex:02280AFF05>Item<hex:E8030103>！！
+5,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_005,相比为魔法球积蓄以太，<hex:02100103>收集<hex:02280BFF05>Item<hex:F2B7020103>可能会轻松很多，<hex:02100103>不过你别因为轻松，就冷落武器将它放包里。
+6,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_006,为了改良武器让它变得更强，<hex:02100103>希望你能一直拿在手中，熟悉它的所有特性！

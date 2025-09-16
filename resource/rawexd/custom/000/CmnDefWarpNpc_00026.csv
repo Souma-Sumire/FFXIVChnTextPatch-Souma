@@ -8,5 +8,5 @@ int32,str,str
 3,TEXT_CMNDEFWARPNPC_00026_YESNO_YES,是
 4,TEXT_CMNDEFWARPNPC_00026_YESNO_NO,否
 5,TEXT_CMNDEFWARPNPC_00026_LOCK,此船前往东部林区花蜜栈桥……<hex:02100103>但是看来你是刚到格里达尼亚的冒险者。
-6,TEXT_CMNDEFWARPNPC_00026_LOCK2,那么我劝你先在格里达尼亚城市内转一转，<hex:02100103>熟悉城市的地理和冒险者的工作。<hex:02100103>之后再出城也不晚。
+6,TEXT_CMNDEFWARPNPC_00026_LOCK2,那么我劝你先在格里达尼亚转一转，<hex:02100103>熟悉熟悉城邦的构造和冒险者的工作。<hex:02100103>之后再出城也不晚。
 7,TEXT_CMNDEFWARPNPC_00026_LOCK3,不需要
