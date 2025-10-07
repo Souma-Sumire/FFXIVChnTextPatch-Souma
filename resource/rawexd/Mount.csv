@@ -381,7 +381,7 @@ int32,str,str,str,str,str
 376,,,,,
 377,,,,,
 378,CHL W-0001,,,,
-379,,,,,
+379,巡礼卫士,,SE_Bt_Etc_Mount_GorillaDragon_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_GorillaDragon_bye
 380,,,,,
 381,拟鸟枝,,SE_Bt_Etc_Mount_ShinpiTori_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_ShinpiTori_bye
 382,飞梭C9,,SE_Bt_Etc_Mount_SolutionNineCar_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_SolutionNineCar_bye
@@ -395,22 +395,22 @@ int32,str,str,str,str,str
 390,魔导螳螂,,SE_Bt_Etc_Mount_KamakiriMech_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_KamakiriMech_bye
 391,,,SE_Bt_Etc_Mount_ShinpiTori_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_ShinpiTori_bye
 392,,,,,
-393,,,,,
+393,岩兵沃格尔,,SE_Bt_Etc_Mount_IsekiGolem_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_IsekiGolem__bye
 394,,,,,
-395,,,,,
+395,得到宽恕的模仿,,SE_Bt_Etc_Mountt_ShokubutsuTsumikui_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mountt_ShokubutsuTsumikui_bye
 396,南瓜行者,,SE_Bt_Etc_Mount_Mandragora_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Mandragora_bye
 397,长绒猫,,SE_Bt_Etc_Mount_Neko_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Neko_bye
-398,,,,,
-399,,,,,
+398,赛克雷特,,SE_Bt_Etc_Mount_KGKBird_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_KGKBird_bye
+399,艾露猫手推车,,SE_Bt_Etc_Mount_KGKTanka_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_KGKTanka_bye
 400,羊,,SE_Bt_Etc_Mount_FF9_Yarn_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_FF9_Yarn_bye
 401,宇宙长颈驼,,SE_Bt_Etc_Mount_Dhalmel_WKS_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_Dhalmel_WKS_bye
 402,宇宙滑板,,SE_Bt_Etc_Mount_WKS_ZipLine_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKS_ZipLine_bye
-403,,,,,
+403,首光吊灯,,SE_Bt_Etc_Mount_Chandelier_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Chandelier_bye
 404,CHL P-0006,,,,
 405,CHL W-0002,,,,
 406,,,SE_Bt_Etc_Mount_Mandragora_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Mandragora_bye
 407,死暗之翼,,SE_Bt_Etc_Mount_Wing_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Wing_bye
-408,,,,,
+408,花人,,SE_Bt_Etc_Mount_GrassFace_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_GrassFace_bye
 409,,,,,
 410,,,,,
 411,,,,,
