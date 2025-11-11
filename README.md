@@ -10,7 +10,7 @@
 
 1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致DX崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
 1. 下载本项目到本地
-1. 确保游戏文件为 **最新版本的、原版的、未修改过的纯净游戏文件**。必须确认游戏文件与当前游戏版本 **完全一致**，包括 Hotfix 版本！
+1. 确保游戏文件为 **最新版本的、原版的、未修改过的纯净游戏文件**。必须确认游戏文件与当前游戏版本 **完全一致**，包括 Hotfix 版本！若不小心搞丢了原始文件，可到 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 中下载原始文件。
 1. 运行 `FFXIVChnTextPatchGP.exe`，按界面提示操作。
    - 如需漢化為繁體中文，請先執行根目錄下的 `converter.exe` 並輸入 `1` 對 CSV 檔案進行轉換，再執行 `FFXIVChnTextPatchGP.exe`。
 
