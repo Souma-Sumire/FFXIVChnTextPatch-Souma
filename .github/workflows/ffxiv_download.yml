@@ -3,19 +3,43 @@ name: FFXIV Data Downloader
 on:
   workflow_dispatch:
 
+  push:
+    tags:
+      - "v*"
+
 jobs:
   download_files:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download EXD Files
+        id: download
         uses: WorkingRobot/ffxiv-downloader@v8
         with:
           output-path: exd-data
+
           regex: '^sqpack\/ffxiv\/0a0000\..+$'
+
+      - name: Create GitHub Release if updated and triggered by tag
+
+        if: |
+          startsWith(github.ref, 'refs/tags/') && 
+          steps.download.outputs.updated == 'true'
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+
+          name: FFXIV 原始文件备份 Version ${{ steps.download.outputs.version }}
+
+          files: exd-data/**
+
+          draft: false
+          prerelease: false
 
       - name: Upload Downloaded Artifact
         uses: actions/upload-artifact@v4
