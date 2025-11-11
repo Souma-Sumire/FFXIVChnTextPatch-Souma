@@ -1,0 +1,25 @@
+name: FFXIV Data Downloader
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download_files:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download EXD Files
+        uses: WorkingRobot/ffxiv-downloader@v8
+        with:
+          output-path: exd-data
+          regex: '^sqpack\/ffxiv\/0a0000\..+$'
+
+      - name: Upload Downloaded Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffxiv-exd-files
+          path: exd-data
+          retention-days: 7
