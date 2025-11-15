@@ -29,6 +29,10 @@
 
 - 当你 `<t>` 时，别人看到的有可能是中文，目前尚未确定机制。[可至此Issues讨论](https://github.com/GpointChen/FFXIVChnTextPatch-GP/issues/526)，可能的表有 BNpcname（大概率安全）、EObjName（怀疑）、Treasure（未经过测试）。我没有时间测试，欢迎 PR。
 
+### 制作PMP版本
+
+[查看wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%88%B6%E4%BD%9CPMP%E7%89%88%E6%9C%AC)
+
 ## 修改中文字体
 
 ### 使用社区分享的成品
