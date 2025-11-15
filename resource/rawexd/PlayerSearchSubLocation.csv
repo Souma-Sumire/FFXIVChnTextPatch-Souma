@@ -2,7 +2,7 @@
 #,,,
 offset,0,4,8
 int32,str,str,str
-0,無効,無効,無効
+0,,無効,
 1,ワールド全体,world,全世界
 2,利姆萨·罗敏萨,Limsa Lominsa,利姆萨·罗敏萨
 3,拉诺西亚,La Noscea,拉诺西亚

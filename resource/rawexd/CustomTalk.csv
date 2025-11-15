@@ -183,7 +183,7 @@ int32,str,str,str
 721074,CmnDefHousingPersonalRoomEntrance_00178,进行谈话,
 721075,CmnDefHousingPersonalRoomExit_00179,进行谈话,
 721076,ComDefMobOfficer_00180,进行谈话,
-721077,,,
+721077,,进行谈话,
 721078,ComDefFrontLine_00182,进行谈话,
 721079,RegSeaNotoriousMonsterHintF1_00183,进行谈话,
 721080,RegSeaNotoriousMonsterHintF2_00184,进行谈话,
