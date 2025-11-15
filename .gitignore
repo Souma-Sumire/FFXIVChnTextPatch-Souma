@@ -1,3 +1,7 @@
 backup/
 debug.*
 /.vs
+/node_modules
+/scripts/Chinese Text Patch
+/scripts/exd
+hashPaths.txt
