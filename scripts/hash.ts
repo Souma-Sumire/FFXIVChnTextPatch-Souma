@@ -34,6 +34,8 @@ const langHashPaths = [
   ...hashPaths.map((v) => v.replace("_0_en.exd", "_0_ja.exd")),
   ...hashPaths.map((v) => v.replace("_0_en.exd", "_0_de.exd")),
   ...hashPaths.map((v) => v.replace("_0_en.exd", "_0_fr.exd")),
+  ...hashPaths.map((v) => v.replace("_0_en.exd", "_0_ko.exd")),
+  ...hashPaths.map((v) => v.replace("_0_en.exd", "_0_tc.exd")),
 ];
 
 fs.writeFileSync(

@@ -115,7 +115,7 @@ function traverseAndCopyFiles(currentDir: string, stack = 0) {
     if (stat.isDirectory()) {
       // 如果是目录，则递归遍历
       traverseAndCopyFiles(filePath, stack + 1);
-    } else if (stat.isFile() && (file.includes("_ja") || file.includes("_en"))) {
+    } else if (stat.isFile() && (file.includes("_ja") || file.includes("_en") || file.includes("_ko") || file.includes("_tc"))) {
       const rawName = file.replace(/^([^_]+).*?_.+$/, "$1");
       const relativePath = path.relative(sourceDir, filePath);
       const targetPath = path.join(targetDir, relativePath);
@@ -163,7 +163,7 @@ function traverseAndCopyFiles(currentDir: string, stack = 0) {
         }
         FolderOptionsGroup.Options.find((v) => v.Name === key).Files[`exd/${relativePath.replace(/\\/g, "/")}`] = `exd\\${relativePath}`;
       } else {
-        jsonDefaultMod.Files[(`exd/${relativePath.replace(/\\/g, "/")}`)] = `exd\\${relativePath}`;
+        jsonDefaultMod.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = `exd\\${relativePath}`;
       }
 
       // 确保目标目录存在，如果不存在则创建
