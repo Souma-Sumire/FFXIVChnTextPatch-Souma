@@ -5,3 +5,4 @@ debug.*
 /scripts/Chinese Text Patch
 /scripts/exd
 hashPaths.txt
+conf/global.properties
