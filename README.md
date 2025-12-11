@@ -54,17 +54,13 @@
 
 本项目遵循 [GPL-3.0 License](https://www.gnu.org/licenses/gpl-3.0.html)，基于原项目 [FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP) 进行修改与扩展。
 
-其中，以下部分与原项目保持完全一致：
+修改的部分：
 
-- `jre/` Java 运行环境
-- `FFXIVChnTextPatchGP.exe`：汉化工具主程序
-
-以下内容为本项目原创或自行维护：
-
-- `preset/`：字体文件预设JSON文件
-- `resource/font/`：由本人制作的中文字体资源
-- `resource/rawexd/`：由本人翻译及维护的游戏数据 CSV 文件
-- `converter.exe`：由本人编写的 CSV 繁体转换工具
+- `FFXIVChnTextPatchGP.exe`：汉化器本体。UI简体中文化，并添加韩服、繁中服支持。源码 [Souma-Sumire/FFXIVChnTextPatch-GP](https://github.com/Souma-Sumire/FFXIVChnTextPatch-GP)
+- `preset/`：中文字体预设JSON文件，用于更好的中文显示效果。
+- `resource/font/`：中文字体资源，用于更好的中文显示效果。
+- `resource/rawexd/`：汉化后的 CSV 文件，以国服文本为基准的改编。
+- `converter.exe`：CSV 繁体转换脚本，用于某些特殊需要。
 
 ## 免责声明
 
