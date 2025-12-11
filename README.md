@@ -8,7 +8,7 @@
 
 ### 汉化步骤
 
-1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致DX崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
+1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致 DX 崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
 1. 下载本项目到本地
 1. 确保游戏文件为 **最新原版文件**。若不小心搞丢了原始文件，可到 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 中下载国际服原始文件，不提供繁中服与韩服。
 1. 运行 `FFXIVChnTextPatchGP.exe`
@@ -20,7 +20,7 @@
       - 韩服请选择 `韩文`。
    1. 替换字体：如果你没有通过其他插件加载中文字体，则需要勾选，否则无法正常显示中文。
    1. 替换文本：请勾选，否则不会执行汉化动作。
-   1. 通过”详细设定“，可以选择汉化的范围，文件具体含义可查询[WIKI](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV文件)
+   1. 通过”详细设定“，可以选择汉化的范围，文件具体含义可查询 [WIKI](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV文件)
    1. 点击确认按钮。
    1. 点击汉化按钮。
 
@@ -29,11 +29,11 @@
 | 第三方插件                    | 不要汉化                        | 说明                                 |
 | -------------------------- | ------------------------------- | ---------------------------------- |
 | **FFLOGS 日志上传**              | 敌人名称（BNpcName）                  | 否则会影响 ACT 日志生成   |
-| **Cactbot - Raidboss 触发器** | 敌人名称（BNpcName）                  | 否则无法匹配正则表达式；且解析插件语言需保持原本的语言（英语或日语）。 |
+| **Cactbot - Raidboss 触发器** | 敌人名称（BNpcName）                  | 否则无法运行；且 ACT 解析插件语言需保持原本的语言（英语或日语）。 |
 | **Cactbot - Radar 雷达**     | 敌人名称（BNpcName）、系统日志（LogMessage） | 否则雷达无法正常识别目标、识别副本区切换。                      |
 | **Lifestream**             | 登录大厅（Lobby）                     | 否则自动登录等功能无法使用。                      |
 
-表中未提及的插件，可自行举一反三，将相关字段保持为原文。[查询CSV文本范围](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV%E6%96%87%E4%BB%B6)
+表中未提及的插件，可自行举一反三，将相关字段保持为原文。
 
 ### 额外注意事项
 
