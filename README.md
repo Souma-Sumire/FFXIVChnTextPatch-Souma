@@ -10,9 +10,19 @@
 
 1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致DX崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
 1. 下载本项目到本地
-1. 确保游戏文件为 **最新版本的、原版的、未修改过的纯净游戏文件**。必须确认游戏文件与当前游戏版本 **完全一致**，包括 Hotfix 版本！若不小心搞丢了原始文件，可到 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 中下载原始文件。
-1. 运行 `FFXIVChnTextPatchGP.exe`，按界面提示操作。
-   - 如需漢化為繁體中文，請先執行根目錄下的 `converter.exe` 並輸入 `1` 對 CSV 檔案進行轉換，再執行 `FFXIVChnTextPatchGP.exe`。
+1. 确保游戏文件为 **最新原版文件**。若不小心搞丢了原始文件，可到 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 中下载国际服原始文件，不提供繁中服与韩服。
+1. 运行 `FFXIVChnTextPatchGP.exe`
+   1. 游戏路径：选择含有 `ffxiv_dx11.exe` 的 FFXIV 客户端目录。
+   1. 文件语言：固定选择 `CSV`。
+   1. 原始语言：
+      - 国际服请选择 `日文` 或 `英文` ，取决于你设置的界面语言。
+      - 繁中服请选择 `繁体中文（TC）`，注意是 **TC** 不是 CHS。
+      - 韩服请选择 `韩文`。
+   1. 替换字体：如果你没有通过其他插件加载中文字体，则需要勾选，否则无法正常显示中文。
+   1. 替换文本：请勾选，否则不会执行汉化动作。
+   1. 通过”详细设定“，可以选择汉化的范围，文件具体含义可查询[WIKI](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV文件)
+   1. 点击确认按钮。
+   1. 点击汉化按钮。
 
 ### 与第三方插件的兼容性
 
