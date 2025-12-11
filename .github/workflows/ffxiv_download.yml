@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          name: FFXIV 原始文件备份 Version ${{ steps.download.outputs.version }}
+          name: 国际服原文件备份 ${{ steps.download.outputs.version }}
           files: exd-data/**
           draft: false
           prerelease: false
