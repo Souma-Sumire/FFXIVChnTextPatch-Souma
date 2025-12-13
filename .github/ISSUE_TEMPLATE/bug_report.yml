@@ -8,7 +8,7 @@ body:
     attributes:
       label: 使用的汉化方式
       options:
-        - 汉化工具 (FFXIVChnTextPatchGP.exe)
+        - 汉化工具 (FFXIVChnTextPatch-SM.exe)
         - Penumbra Mod (.pmp)
         - 文件覆盖 (overwrite.zip)
     validations:

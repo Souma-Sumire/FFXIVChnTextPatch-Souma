@@ -11,7 +11,7 @@
 1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致 DX 崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
 1. 下载本项目到本地
 1. 确保游戏文件为 **最新原版文件**。若不小心搞丢了原始文件，可到 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 中下载国际服原始文件，不提供繁中服与韩服。
-1. 运行 `FFXIVChnTextPatchGP.exe`
+1. 运行 `FFXIVChnTextPatch-SM.exe`
    1. 游戏路径：选择含有 `ffxiv_dx11.exe` 的 FFXIV 客户端目录。
    1. 文件语言：固定选择 `CSV`。
    1. 原始语言：
@@ -66,7 +66,7 @@
 
 修改的部分：
 
-- `FFXIVChnTextPatchGP.exe`：汉化器本体。UI简体中文化，并添加韩服、繁中服支持。源码 [Souma-Sumire/FFXIVChnTextPatch-GP](https://github.com/Souma-Sumire/FFXIVChnTextPatch-GP)
+- `FFXIVChnTextPatch-SM.exe`：汉化器本体。UI简体中文化，并添加韩服、繁中服支持。源码 [Souma-Sumire/FFXIVChnTextPatch-GP](https://github.com/Souma-Sumire/FFXIVChnTextPatch-GP)
 - `preset/`：中文字体预设JSON文件，用于更好的中文显示效果。
 - `resource/font/`：中文字体资源，用于更好的中文显示效果。
 - `resource/rawexd/`：汉化后的 CSV 文件，以国服文本为基准的改编。
