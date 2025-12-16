@@ -32,6 +32,7 @@ jobs:
         with:
           output-path: exd-data
           regex: '^sqpack\/ffxiv\/0a0000\..+$'
+          verbose: true
 
       - name: Create GitHub Release if updated and triggered by tag
         if: |
