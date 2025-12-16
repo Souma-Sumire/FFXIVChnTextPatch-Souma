@@ -14,6 +14,8 @@ int32,str,str
 9,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_U5F1,哦，是你啊。<hex:02100103>需要用我的月球车吗？
 10,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W1,要乘坐银河威号前往其他星球吗？
 11,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W2,要乘坐银河威号前往其他星球吗？
-12,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W1,乘坐银河威号的感觉如何？<hex:02100103>就用这应用了诸神黄昏号技术的宙脉跳跃，<hex:02100103>尽情享受在宇宙航行吧！
-13,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W2,除了受中控水晶控制的这一带以外，<hex:02100103>法恩娜行星基本上都漂浮着能下起玻璃雨的硅云。<hex:02100103>能安全向大气圈外出发的只有这里！
-14,TEXT_CTSWKSENTRANCE_00921_SYSTEM_000_008,移动到其他探索场景
+12,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W3,ギャラクティックウェイ号に乗って、<hex:02100103>他の星に向かわれますか？
+13,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W1,乘坐银河威号的感觉如何？<hex:02100103>就用这应用了诸神黄昏号技术的宙脉跳跃，<hex:02100103>尽情享受在宇宙航行吧！
+14,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W2,除了受中控水晶控制的这一带以外，<hex:02100103>法恩娜行星基本上都漂浮着能下起玻璃雨的硅云。<hex:02100103>能安全向大气圈外出发的只有这里！
+15,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W3,惑星オイジュスへの着陸は、緊張しますね……！<hex:02100103>星外の環をくぐるも、もし上空の重力球に近づきすぎてしまえば、<hex:02100103>船が推力を大きく崩して、不時着しかねませんから。
+16,TEXT_CTSWKSENTRANCE_00921_SYSTEM_000_008,移动到其他探索场景
