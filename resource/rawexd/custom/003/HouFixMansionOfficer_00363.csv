@@ -35,7 +35,7 @@ int32,str,str
 30,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_005_002,在持有家具的状态下，<hex:02100103>在购入的房间内打开“房屋”菜单，<hex:02100103>选择“布置家具”，即可对家具进行布置。
 31,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_005_003,家具中有可以装饰在桌上的物品，<hex:02100103>也有壁挂、地毯等可以随意布置的物品。
 32,TEXT_HOUFIXMANSIONOFFICER_00363_TALK_006_006_001,你可以调节房屋内的照明亮度，打造舒适的环境！
-33,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_006_002,在“房屋”菜单中选择“调整照明”即可调节亮度。<hex:02100103>照明亮度可以进行5个等级的调节。
+33,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_006_002,在“房屋”菜单中选择“室内环境设置”即可调节亮度。<hex:02100103>照明亮度可以从0到5进行6个等级的调节。
 34,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_007_001,家具一经布置后，<hex:02100103>便无法再进行交易或拿到市场上出售。
 35,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_007_002,另外，有一部分家具一经布置后，<hex:02100103>在撤除时会被废弃。
 36,TEXT_HOUFIXMANSIONOFFICER_00363_SYSTEM_006_007_003,在布置、撤除这些物品时会有警示语出现，<hex:02100103>请多加留意。
@@ -55,10 +55,10 @@ int32,str,str
 50,TEXT_HOUFIXMANSIONOFFICER_00363_ASK_005_003,是
 51,TEXT_HOUFIXMANSIONOFFICER_00363_ASK_005_004,否
 52,TEXT_HOUFIXMANSIONOFFICER_00363_KUGANE_NOT_OPENED_1,欢迎来到“红梅御殿”公寓！<hex:02100103>为了能在不久的将来将公寓开放给广大冒险者们居住，<hex:02100103>现在我们正在努力准备中。
-53,TEXT_HOUFIXMANSIONOFFICER_00363_KUGANE_NOT_OPENED_2,红梅御殿现还处于售前展示状态。<hex:02100103>在土地正式对外销售前，请您耐心等待。
+53,TEXT_HOUFIXMANSIONOFFICER_00363_KUGANE_NOT_OPENED_2,红梅御殿现还处于售前展示状态。<hex:02100103>在房间正式对外销售前，请您耐心等待。
 54,TEXT_HOUFIXMANSIONOFFICER_00363_KUGANE_NOT_ARROWED_TO_BUY,要想购买公寓“红梅御殿”的房间，<hex:02100103>需要先完成主线任务“乘风破浪”。
 55,TEXT_HOUFIXMANSIONOFFICER_00363_ISHGARD_NOT_OPENED_1,欢迎来到皓天炉舍！<hex:02100103>为了正式向广大冒险者开放，<hex:02100103>现在这里正紧锣密鼓地进行着准备工作。
-56,TEXT_HOUFIXMANSIONOFFICER_00363_ISHGARD_NOT_OPENED_2,皓天炉舍现还处于售前展示状态。<hex:02100103>在土地正式对外销售前，请您耐心等待。
+56,TEXT_HOUFIXMANSIONOFFICER_00363_ISHGARD_NOT_OPENED_2,皓天炉舍现还处于售前展示状态。<hex:02100103>在房间正式对外销售前，请您耐心等待。
 57,TEXT_HOUFIXMANSIONOFFICER_00363_ISHGARD_NOT_ARROWED_TO_BUY,要想购买公寓“皓天炉舍”的房间，<hex:02100103>需要先完成主线任务“绝命怒嚎”。
-58,TEXT_HOUFIXMANSIONOFFICER_00363_TC_NOT_OPENED_1,アパルトメント「<hex:020964E802FF13>トップマスト<hex:FF13>リリーヒルズ<hex:FF13>ナナモ大風車<hex:FF0D>紅梅御殿<hex:FF16>イングルサイド<hex:03>」へようこそ！<hex:02100103>こちらでは現在、冒険者のみなさんに開放するため、<hex:02100103>準備を進めているところです。
-59,TEXT_HOUFIXMANSIONOFFICER_00363_TC_NOT_OPENED_2,現在、「<hex:020964E802FF13>トップマスト<hex:FF13>リリーヒルズ<hex:FF13>ナナモ大風車<hex:FF0D>紅梅御殿<hex:FF16>イングルサイド<hex:03>」は先行公開期間中となります。<hex:02100103>部屋の販売開始まで、今しばらくお待ちください。
+58,TEXT_HOUFIXMANSIONOFFICER_00363_TC_NOT_OPENED_1,欢迎来到“<hex:020949E802FF0A>中桅塔<hex:FF0A>百合岭<hex:FF13>娜娜莫大风车<hex:FF0D>红梅御殿<hex:FF0D>皓天炉舍<hex:03>”公寓！<hex:02100103>为了能在不久的将来将公寓开放给广大冒险者们居住，<hex:02100103>现在我们正在努力准备中。
+59,TEXT_HOUFIXMANSIONOFFICER_00363_TC_NOT_OPENED_2,<hex:020949E802FF0A>中桅塔<hex:FF0A>百合岭<hex:FF13>娜娜莫大风车<hex:FF0D>红梅御殿<hex:FF0D>皓天炉舍<hex:03>现还处于售前展示状态。<hex:02100103>在房间正式对外销售前，请您耐心等待。
