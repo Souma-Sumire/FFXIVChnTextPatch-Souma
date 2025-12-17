@@ -9,7 +9,7 @@
 ### 汉化步骤
 
 1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致 DX 崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
-1. 下载本项目到本地
+1. 下载本项目到本地。[【手把手教学】3分钟学会下载GitHub项目到本地！](https://www.bilibili.com/video/BV1ifawzYEUb/)
 1. 确保游戏文件为 **最新原版文件**。若不小心搞丢了原始文件，可到 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 中下载国际服原始文件，不提供繁中服与韩服。
 1. 运行 `FFXIVChnTextPatch-SM.exe`
    1. 游戏路径：选择含有 `ffxiv_dx11.exe` 的 FFXIV 客户端目录。
