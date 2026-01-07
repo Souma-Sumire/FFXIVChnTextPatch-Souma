@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,部队储物柜,可以使用部队储物柜。
 2,编辑队徽,可以编辑队徽的样式。

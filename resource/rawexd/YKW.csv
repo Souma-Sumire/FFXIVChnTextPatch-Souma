@@ -1,7 +1,7 @@
 ﻿key,8
-#,
+#,Transient
 offset,0
-int32,str
+Int32,String
 0,
 1,　喵　
 2,萌给

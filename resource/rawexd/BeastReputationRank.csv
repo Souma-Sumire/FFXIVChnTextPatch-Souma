@@ -1,7 +1,7 @@
 ﻿key,1,2
 #,Name,AlliedNames
 offset,0,4
-int32,str,str
+Int32,String,String
 0,无,无
 1,中立,中立
 2,承认,承认

@@ -1,7 +1,7 @@
 ﻿key,0
 #,Category
 offset,0
-int32,str
+Int32,String
 0,植物
 1,照明
 2,功能庭具

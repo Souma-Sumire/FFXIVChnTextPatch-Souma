@@ -1,7 +1,7 @@
 ﻿key,1
 #,Text
 offset,0
-int32,str
+Int32,String
 0,
 1,讨伐敌人
 2,迷宫探险

@@ -1,7 +1,7 @@
 ﻿key,1
 #,Expac
 offset,0
-int32,str
+Int32,String
 0,
 1,苍穹之禁城
 2,红莲之狂潮

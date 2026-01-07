@@ -1,7 +1,7 @@
 ﻿key,8,10
 #,Singular,Plural
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,阳伞,
 2,天蓝阳伞,

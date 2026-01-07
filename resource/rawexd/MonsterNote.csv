@@ -1,7 +1,7 @@
 ﻿key,9
 #,Name
 offset,0
-int32,str
+Int32,String
 10001,剑术师01
 10002,剑术师02
 10003,剑术师03

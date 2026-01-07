@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,回收,收回已经招出的召唤兽
 2,跟随,让召唤兽跟随自己

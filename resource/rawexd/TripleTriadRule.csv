@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,天选,出现什么规则完全交给命运女神来决定。
 2,全明牌,互相公开手中所有的卡片进行游戏。

@@ -1,7 +1,7 @@
 ﻿key,7
-#,Text
+#,
 offset,12
-int32,uint32
+Int32,UInt32
 0,
 1,
 2,

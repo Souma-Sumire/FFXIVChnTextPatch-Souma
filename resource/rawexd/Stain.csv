@@ -1,7 +1,7 @@
 ﻿key,3,4
-#,Name,Name2
+#,InlineName,Name
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,无染色
 1,素雪白,素雪白
 2,苍白灰,苍白灰

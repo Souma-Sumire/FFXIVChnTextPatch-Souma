@@ -1,7 +1,7 @@
 ﻿key,2,3,4
-#,Text[Long],Text[Short],Text[Commentary]
+#,TextLong,TextShort,TextCommentary
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 3604480,,,
 3604481,,,
 3604482,多玛方城战解说,MAHJONG,多玛方城战解说

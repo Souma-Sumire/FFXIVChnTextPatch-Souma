@@ -1,7 +1,7 @@
 ﻿key,10,11
 #,Name,Question
 offset,0,4
-int32,str,str
+Int32,String,String
 131072,,
 131073,,
 131074,,要进入神勇队司令室吗？

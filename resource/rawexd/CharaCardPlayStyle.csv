@@ -1,7 +1,7 @@
 ﻿key,2
 #,Name
 offset,0
-int32,str
+Int32,String
 0,未设置
 1,迷宫挑战
 2,讨伐歼灭战

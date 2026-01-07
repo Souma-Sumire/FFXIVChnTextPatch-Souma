@@ -1,7 +1,7 @@
 ﻿key,0,1
-#,,
+#,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,变身泥球,变身为泥球
 2,变身爆弹之母,变身为爆弹之母

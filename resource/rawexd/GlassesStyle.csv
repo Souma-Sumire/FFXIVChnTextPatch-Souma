@@ -1,7 +1,7 @@
 ﻿key,15,17,23
 #,Singular,Plural,Name
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,椭圆眼镜,,椭圆眼镜
 1,金边墨镜,,金边墨镜
 2,经典眼镜,,经典眼镜

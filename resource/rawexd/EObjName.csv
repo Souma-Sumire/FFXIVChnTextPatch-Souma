@@ -1,7 +1,7 @@
 ﻿key,0,2
 #,Singular,Plural
 offset,0,4
-int32,str,str
+Int32,String,String
 2000000,,
 2000001,,
 2000002,,

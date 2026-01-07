@@ -1,7 +1,7 @@
 ﻿key,3
 #,Text
 offset,0
-int32,str
+Int32,String
 0,
 1,主线任务
 2,支线任务

@@ -1,7 +1,7 @@
 ﻿key,0,9
 #,Name,Instrument
 offset,16,4
-int32,str,str
+Int32,String,String
 0,,
 1,047harp,竖琴
 2,001grandpiano,钢琴

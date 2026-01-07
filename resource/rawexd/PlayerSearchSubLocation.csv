@@ -1,7 +1,7 @@
 ﻿key,3,4,5
-#,,,
+#,Name0,Name1,Name2
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,,無効,
 1,ワールド全体,world,全世界
 2,利姆萨·罗敏萨,Limsa Lominsa,利姆萨·罗敏萨

@@ -1,7 +1,7 @@
 ﻿key,0
 #,Text
 offset,0
-int32,str
+Int32,String
 0,
 1,组建成了新部队！
 2,部队等级提升为<hex:022003E80203>级！

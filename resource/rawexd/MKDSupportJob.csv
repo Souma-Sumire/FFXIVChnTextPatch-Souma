@@ -1,7 +1,7 @@
 ﻿key,0,1,2,3,4
-#,,,,,
+#,Name,NameShort,NameFemale,Description,NameEnglish
 offset,0,4,8,12,16
-int32,str,str,str,str,str
+Int32,String,String,String,String,String
 0,辅助自由人,辅助自由人,,源自某位冒险者的起点与终点的记忆。<hex:02100103>能够习得利于探索的辅助技能。,
 1,辅助骑士,辅助骑士,,源自某位骑士的忠心与名誉的记忆。<hex:02100103>能够习得减轻伙伴受伤程度的辅助技能。,
 2,辅助狂战士,辅助狂战士,,源自某位狂战士的蛮勇与狂热的记忆。<hex:02100103>能够习得高风险高收益的辅助技能。,

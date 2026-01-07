@@ -1,7 +1,7 @@
 ﻿key,6,7
 #,Name,Example
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,说话,斯考尔：无所谓了……
 2,喊话,巴兹：有人一起冒险吗？

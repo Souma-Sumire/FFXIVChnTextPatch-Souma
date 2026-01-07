@@ -1,7 +1,7 @@
 ﻿key,3,4,5
 #,Text,,
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,,,
 1,开始游戏,,
 2,功能设置,,

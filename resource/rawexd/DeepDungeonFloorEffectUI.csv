@@ -1,7 +1,7 @@
 ﻿key,1,2
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,魔法效果：失明,我方全员命中率降低
 2,魔法效果：最大体力减少,我方全员最大体力降低

@@ -1,7 +1,7 @@
 ﻿key,2
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,宇宙探索
 2,宇宙探索

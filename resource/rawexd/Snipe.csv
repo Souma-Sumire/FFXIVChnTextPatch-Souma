@@ -1,7 +1,7 @@
 ﻿key,11,12,13,14,93,94,95,96,97,98,99,100,101,102,103,104
-#,VFX{Fire},VFX{Hit},VFX{Miss},VFX{Additional},Objective[0],Hint[0],Objective[1],Hint[1],,,,,,,,ActionText
+#,VFXFire,VFXHit,VFXMiss,VFXAdditional,Objective0,Hint0,Objective1,Hint1,,,,,,,,ActionText
 offset,244,248,252,256,192,196,200,204,208,212,216,220,224,228,232,236
-int32,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str
+Int32,String,String,String,String,String,String,String,String,String,String,String,String,String,String,String,String
 1,,,,,,,,,,,,,,,,
 2,,,,,,,,,,,,,,,,
 3,,,,,,,,,,,,,,,,

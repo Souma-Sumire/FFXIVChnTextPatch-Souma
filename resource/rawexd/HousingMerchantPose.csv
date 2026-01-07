@@ -1,7 +1,7 @@
 ﻿key,1
 #,Pose
 offset,0
-int32,str
+Int32,String
 0,普通站姿
 1,服装模特
 2,双手抱胸

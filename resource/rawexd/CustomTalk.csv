@@ -1,7 +1,7 @@
 ﻿key,2,64,65
 #,Name,MainOption,SubOption
 offset,248,240,244
-int32,str,str,str
+Int32,String,String,String
 720896,,进行谈话,
 720897,,,
 720898,CmnDefMogLetter_00002,进行谈话,

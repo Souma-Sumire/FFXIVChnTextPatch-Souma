@@ -1,7 +1,7 @@
 ﻿key,8,9
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,巡逻城内,命令队员在<hex:020938E802FF15>利姆萨·罗敏萨<hex:FF10>格里达尼亚<hex:FF0D>乌尔达哈<hex:03>城内定期巡逻。巡逻指定地点，确保城内安全。
 2,向附近据点传令,命令队员到<hex:020933E802FF10>德内维尔关<hex:FF10>烤饼练兵所<hex:FF0D>撒沟厉关<hex:03>传令。将军方文件交给该地驻扎部队。

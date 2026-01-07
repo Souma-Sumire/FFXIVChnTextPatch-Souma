@@ -1,7 +1,7 @@
 ﻿key,17,18,19,20,21,22,23,24,25,26,27
-#,,,,,,,,,,,
+#,Message,ChoicesText[0],ChoicesText[1],ChoicesText[2],ChoicesText[3],ChoicesText[4],ChoicesText[5],ChoicesText[6],ChoicesText[7],ChoicesText[8],ChoicesText[9]
 offset,0,4,8,12,16,20,24,28,32,36,40
-int32,str,str,str,str,str,str,str,str,str,str,str
+Int32,String,String,String,String,String,String,String,String,String,String,String
 0,,,,,,,,,,,
 1,,,,,,,,,,,
 2,,,,,,,,,,,

@@ -1,7 +1,7 @@
 ﻿key,1
 #,SongName
 offset,0
-int32,str
+Int32,String
 0,
 1,辉光飞散
 2,走向世界

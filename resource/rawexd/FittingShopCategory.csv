@@ -1,7 +1,7 @@
 ﻿key,1
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,推荐商品
 51,特典时装

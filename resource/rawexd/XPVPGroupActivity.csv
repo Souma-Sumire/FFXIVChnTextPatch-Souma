@@ -1,7 +1,7 @@
 ﻿key,0
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,战队“<hex:020816E909FF10><hex:02280CFF07>ObjStr<hex:E9090103><hex:EB0403>”成立了。
 2,<hex:020816E908FF10><hex:02280CFF07>ObjStr<hex:E9080103><hex:EB0303>加入了战队。

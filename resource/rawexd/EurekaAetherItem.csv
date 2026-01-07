@@ -1,7 +1,7 @@
 ﻿key,0,2,8
 #,Singular,Plural,Name
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,,,
 1,,,优雷卡以太壶
 2,,,优雷卡以太壶【火】

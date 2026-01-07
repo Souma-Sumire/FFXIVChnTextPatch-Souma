@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,讨伐经验值提高,24小时内（地球时间），打倒敌人时获得的经验增加5%。
 2,采集经验值提高,24小时内（地球时间），采集时获得的经验增加5%。

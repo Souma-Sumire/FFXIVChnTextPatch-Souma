@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Title,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,JOB HUD INFO,职业量谱说明
 2,,

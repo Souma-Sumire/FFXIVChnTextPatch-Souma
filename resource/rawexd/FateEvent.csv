@@ -1,7 +1,7 @@
 ﻿key,56,57,58,59,60,61,62,63
 #,Text[0],Text[1],Text[2],Text[3],Text[4],Text[5],Text[6],Text[7]
 offset,160,164,168,172,176,180,184,188
-int32,str,str,str,str,str,str,str,str
+Int32,String,String,String,String,String,String,String,String
 0,,,,,,,,
 1,,,,,,,,
 2,,,,,,,,

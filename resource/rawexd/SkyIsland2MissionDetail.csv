@@ -1,7 +1,7 @@
 ﻿key,7,8,9,10
 #,Objective,,,
 offset,0,4,8,12
-int32,str,str,str,str
+Int32,String,String,String,String
 0,,,,
 1,,,,
 2,,,,

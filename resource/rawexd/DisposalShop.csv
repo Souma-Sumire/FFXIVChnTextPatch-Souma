@@ -1,7 +1,7 @@
 ﻿key,0
 #,ShopName
 offset,0
-int32,str
+Int32,String
 3473408,
 3473409,特殊商品交易员
 3473410,交换证书

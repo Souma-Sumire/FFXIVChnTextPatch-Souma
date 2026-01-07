@@ -1,7 +1,7 @@
 ﻿key,0,1,2
-#,,,
+#,Message,YesButton,NoButton
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,土豆土豆我是大米,大米你好,大米是啥……
 1,要收取魔导感光器吗？,是,否
 2,,,

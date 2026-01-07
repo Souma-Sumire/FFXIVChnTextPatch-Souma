@@ -1,7 +1,7 @@
 ﻿key,0,2
 #,,
 offset,4,0
-int32,str,str
+Int32,String,String
 0,,
 1,BGM_SCORE_001,走向世界
 2,BGM_SCORE_002,水车低鸣

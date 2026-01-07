@@ -1,7 +1,7 @@
 ﻿key,0
 #,Text
 offset,0
-int32,str
+Int32,String
 0,
 1,连锁 <hex:022003E80203>以上
 2,力量 <hex:022003E80203>以上

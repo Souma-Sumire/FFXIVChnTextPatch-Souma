@@ -1,7 +1,7 @@
 ﻿key,0,2,17
 #,Singular,Plural,
 offset,0,4,16
-int32,str,str,str
+Int32,String,String,String
 0,以太之光,,Aetheryte
 1,城内以太之晶,,Aetheryte
 2,,,Aetheryte

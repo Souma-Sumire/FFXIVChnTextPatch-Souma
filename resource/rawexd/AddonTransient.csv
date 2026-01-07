@@ -1,7 +1,7 @@
 ﻿key,0
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,<hex:021E020B03>收回物品
 2,<hex:021E020D03>+ <hex:021E020E03>粘贴 <hex:021E020B03>删除 <hex:020836E95FFF2C><hex:020828E4E94F64FF0F><hex:021E020C03>软键盘<hex:FF12><hex:021E020C03>屏幕键盘<hex:03><hex:FF05><hex:021D0103><hex:03>

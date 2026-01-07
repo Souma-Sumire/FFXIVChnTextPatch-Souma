@@ -1,7 +1,7 @@
 ﻿key,2,3,4
 #,LookupTable,Text,GroupTitle
 offset,8,0,4
-int32,str,str,str
+Int32,String,String,String
 100,@,【语言】,yuyan.
 101,,请使用定型文翻译系统。,qingshiyongdingxingwenfanyixitong
 102,,日语,riyu
