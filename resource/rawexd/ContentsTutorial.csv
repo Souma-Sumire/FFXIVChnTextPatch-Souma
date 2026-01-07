@@ -1,7 +1,7 @@
 ﻿key,9,10
-#,Description,
+#,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,南方博兹雅战线,
 2,迷宫挑战,

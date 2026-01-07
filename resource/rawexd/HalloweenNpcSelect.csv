@@ -1,7 +1,7 @@
 ﻿key,6
-#,
+#,Description
 offset,0
-int32,str
+Int32,String
 0,
 1,温文尔雅，内心强大的女性角尊
 2,信念坚定，充满自信的鲁加族女性

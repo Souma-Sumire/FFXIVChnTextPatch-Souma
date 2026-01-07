@@ -1,7 +1,7 @@
 ﻿key,0
 #,Name
 offset,0
-int32,str
+Int32,String
 0,
 1,格斗武器
 2,单手剑

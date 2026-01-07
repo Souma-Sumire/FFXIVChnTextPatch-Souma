@@ -1,7 +1,7 @@
 ﻿key,36,37,38,39,40,41
 #,Talk[0],Talk[1],Talk[2],Talk[3],Talk[4],Talk[5]
 offset,72,76,80,84,88,92
-int32,str,str,str,str,str,str
+Int32,String,String,String,String,String,String
 0,,,,,,
 1,带来了吗？,谢谢！,哦……真遗憾……,,,
 2,我的委托完成了？,太好了！,还没有吗……,还能再多给我点吗？,那到时候再和我说一下吧！,已经足够了！非常感谢你！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,自动攻击,以一定时间为间隔自动进行普通攻击。
 2,跳跃,通过跳跃可以跃过较小的高低差。

@@ -1,7 +1,7 @@
 ﻿key,0,1,2,3,4
-#,Description,Description{Enhanced},Tooltip,SpecialAction{Name},SpecialAction{Description}
+#,Description,DescriptionEnhanced,Tooltip,SpecialActionName,SpecialActionDescription
 offset,0,4,8,12,16
-int32,str,str,str,str,str
+Int32,String,String,String,String,String
 0,,,,,
 1,召唤出宠物“爆弹仔”。<hex:02100103>人工孵化的爆弹怪幼体，基本上应该不会自行爆炸。,爆弹怪的幼体。爆弹怪是来自虚无界的气体生物，利用炼金术的技术可以对它们进行人工孵化。喜欢以木炭、青磷水、火属性水晶等各种燃料作为食物。基本上应该不会自行爆炸。,嘿嘿嘿　人家的小可爱<hex:02100103>爆弹怪<hex:02100103>　　　　　　　——巴戈,自爆,对范围内的敌人造成300攻击力的伤害。不过使用特殊技点数之后宠物会被强制回收。
 2,召唤出宠物“自走人偶001号”。<hex:02100103>炼金术士行会与雕金匠行会联手制作的机关人偶。,乌尔达哈的雕金匠行会在炼金术士行会的协力下开发制造的魔法人偶，这是其正式贩卖型。001号是泛用的基本型号，以此为基础衍生出了各种各样的改良版本。,魔法人偶明明连味觉都<hex:02100103>没有啊！<hex:02100103>　　　　——赛伦蒂碧提,分解,可以拆除敌人设置的陷阱。

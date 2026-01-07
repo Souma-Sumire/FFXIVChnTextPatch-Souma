@@ -1,7 +1,7 @@
 ﻿key,1
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,钓到水母或螃蟹
 2,钓到★★★以上的鱼

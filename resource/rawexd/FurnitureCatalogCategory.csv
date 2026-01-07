@@ -1,7 +1,7 @@
 ﻿key,0
 #,Category
 offset,0
-int32,str
+Int32,String
 0,桌子
 1,架子·柜子
 2,其他

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Objective,Requirement
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,千鱼祝福,达成条件：获得的渔分超过2500。
 2,万鱼贺喜,达成条件：获得的渔分超过5000。

@@ -1,7 +1,7 @@
 ﻿key,0
 #,
 offset,0
-int32,str
+Int32,String
 0,
 10000,
 10001,

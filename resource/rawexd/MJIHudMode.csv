@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Title
 offset,0,4
-int32,str,str
+Int32,String,String
 0,自由,
 1,收获,收获模式
 2,播种,播种模式

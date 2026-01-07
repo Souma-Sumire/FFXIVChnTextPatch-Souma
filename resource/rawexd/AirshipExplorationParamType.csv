@@ -1,7 +1,7 @@
 ﻿key,0
 #,Name
 offset,0
-int32,str
+Int32,String
 0,探索性能
 1,收集性能
 2,巡航速度

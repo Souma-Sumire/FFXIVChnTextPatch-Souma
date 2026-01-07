@@ -1,7 +1,7 @@
 ﻿key,0,2
 #,Singular,Plural
 offset,0,4
-int32,str,str
+Int32,String,String
 262144,,
 262145,木制海滨小屋,
 262146,混合制海滨小屋,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Destination,Location
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,A　洁白浅滩,A
 2,B　溺没海1,B

@@ -1,7 +1,7 @@
 ﻿key,0
 #,Category
 offset,0
-int32,str
+Int32,String
 0,
 1,显示所有物品
 2,隐去套装中的物品

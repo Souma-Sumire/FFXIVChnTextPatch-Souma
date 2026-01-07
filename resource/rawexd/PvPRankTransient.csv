@@ -1,7 +1,7 @@
 ﻿key,0,1,2,3,4,5
 #,,,,,,
 offset,0,4,8,12,16,20
-int32,str,str,str,str,str,str
+Int32,String,String,String,String,String,String
 0,碧海幼狼,密林幼狼,黄沙幼狼,碧海幼狼,密林幼狼,黄沙幼狼
 1,碧海幼狼,密林幼狼,黄沙幼狼,碧海幼狼,密林幼狼,黄沙幼狼
 2,碧海幼狼,密林幼狼,黄沙幼狼,碧海幼狼,密林幼狼,黄沙幼狼

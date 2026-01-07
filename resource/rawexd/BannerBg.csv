@@ -1,7 +1,7 @@
 ﻿key,8
 #,Name
 offset,0
-int32,str
+Int32,String
 0,无
 1,灰色
 2,四边形

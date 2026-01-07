@@ -1,7 +1,7 @@
 ﻿key,0
 #,Description
 offset,0
-int32,str
+Int32,String
 0,
 1,耐力值增加8点
 2,耐力值增加16点

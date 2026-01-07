@@ -1,7 +1,7 @@
 ﻿key,3
 #,Name
 offset,0
-int32,str
+Int32,String
 0,
 1,场景标记A
 2,场景标记B

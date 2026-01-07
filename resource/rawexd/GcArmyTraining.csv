@@ -1,7 +1,7 @@
 ﻿key,4,5
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,基础训练：体能,综合体能＋40
 2,基础训练：心智,综合心智＋40

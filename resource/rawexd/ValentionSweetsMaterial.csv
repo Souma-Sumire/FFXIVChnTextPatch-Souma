@@ -1,7 +1,7 @@
 ﻿key,0
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,奶油糖霜
 2,巧克力糖霜

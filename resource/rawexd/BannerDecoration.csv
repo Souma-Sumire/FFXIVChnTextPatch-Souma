@@ -1,7 +1,7 @@
 ﻿key,8
-#,
+#,Name
 offset,0
-int32,str
+Int32,String
 0,无
 1,无
 2,月桂叶

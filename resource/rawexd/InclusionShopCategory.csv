@@ -1,7 +1,7 @@
 ﻿key,0
 #,Name
 offset,0
-int32,str
+Int32,String
 0,
 1,防护职业装备
 2,近战职业装备（龙骑士·钐镰客）

@@ -1,7 +1,7 @@
 ﻿key,6
 #,Name
 offset,0
-int32,str
+Int32,String
 0,
 1,游戏测试
 2,游戏管理员

@@ -1,7 +1,7 @@
 ﻿key,0
 #,Category
 offset,0
-int32,str
+Int32,String
 0,开拓素材
 1,稀少开拓素材
 2,开拓作物

@@ -1,7 +1,7 @@
 ﻿key,0
 #,Data
 offset,0
-int32,str
+Int32,String
 0,
 1000,<hex:0212024C03> 已共鸣的乱风脉泉
 1001,完成下列中的3种目标

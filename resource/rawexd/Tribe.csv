@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Masculine,Feminine
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,中原之民,中原之民
 2,高地之民,高地之民

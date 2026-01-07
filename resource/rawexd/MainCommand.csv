@@ -1,7 +1,7 @@
 ﻿key,5,6
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,切换行动状态,在拔出武器与收回武器的状态间切换。
 2,角色,查看角色的各项状态参数，也可以进行变更装备、修改称号等操作。

@@ -1,7 +1,7 @@
 ﻿key,0,1,2,3,4,5
 #,Name,Description,Objective,StatusText[0],StatusText[1],StatusText[2]
 offset,0,4,8,12,16,20
-int32,str,str,str,str,str,str
+Int32,String,String,String,String,String,String
 0,,,,,,
 1,,,,,,
 2,,,,,,

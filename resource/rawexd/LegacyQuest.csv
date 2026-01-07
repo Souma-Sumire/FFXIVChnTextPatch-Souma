@@ -1,7 +1,7 @@
 ﻿key,1,2
 #,Text,String
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,无形之声,
 2,碧海之宝,

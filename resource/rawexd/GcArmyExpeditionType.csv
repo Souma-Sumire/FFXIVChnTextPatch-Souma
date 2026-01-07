@@ -1,7 +1,7 @@
 ﻿key,0
 #,Name
 offset,0
-int32,str
+Int32,String
 0,
 1,简单任务
 2,普通任务

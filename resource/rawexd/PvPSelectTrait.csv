@@ -1,7 +1,7 @@
 ﻿key,0
 #,Effect
 offset,0
-int32,str
+Int32,String
 0,
 1,最大体力提高
 2,行动速度提高

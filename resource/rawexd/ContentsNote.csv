@@ -1,7 +1,7 @@
 ﻿key,11,12
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,挑战随机任务,使用随机任务成功挑战迷宫3次。
 2,挑战迷宫次数,成功挑战迷宫5次。

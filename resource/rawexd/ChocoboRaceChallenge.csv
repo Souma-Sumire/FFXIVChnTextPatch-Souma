@@ -1,7 +1,7 @@
 ﻿key,0
 #,
 offset,0
-int32,str
+Int32,String
 0,
 1,第1关：抢占内圈赛道
 2,第2关：躲避范围攻击

@@ -1,7 +1,7 @@
 ﻿key,0,2,18,19,20
 #,Singular,Plural,,,
 offset,0,4,16,20,24
-int32,str,str,str,str,str
+Int32,String,String,String,String,String
 0,,,,,
 1,专属陆行鸟,,SE_Bt_Etc_ChocoboWhistle,SE_Bt_Etc_ChocoboWhistle_only,SE_Bt_Etc_ChocoboBye
 2,,,,,SE_Bt_Etc_ChocoboBye

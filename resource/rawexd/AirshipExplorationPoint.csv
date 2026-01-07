@@ -1,7 +1,7 @@
 ﻿key,0,1
-#,Name,Name{Short}
+#,Name,NameShort
 offset,0,4
-int32,str,str
+Int32,String,String
 0,云海01,云海01
 1,云海02,云海02
 2,云海03,云海03

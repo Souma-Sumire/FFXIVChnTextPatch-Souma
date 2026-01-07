@@ -1,7 +1,7 @@
 ﻿key,0
-#,
+#,Name
 offset,0
-int32,str
+Int32,String
 0,
 1, 制作通用型纤维板
 2, 筹备据点外工作所需的燃料

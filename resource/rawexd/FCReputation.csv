@@ -1,7 +1,7 @@
 ﻿key,4
 #,Name
 offset,0
-int32,str
+Int32,String
 0,
 1,中立
 2,承认

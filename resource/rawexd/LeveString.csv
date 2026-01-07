@@ -1,7 +1,7 @@
 ﻿key,0
 #,Objective
 offset,0
-int32,str
+Int32,String
 0,
 1,讨伐敌人
 2,寻找道具

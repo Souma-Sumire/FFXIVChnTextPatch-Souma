@@ -1,7 +1,7 @@
 ﻿key,1,2
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,,
 2,大型任务搜索器说明,

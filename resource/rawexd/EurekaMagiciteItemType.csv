@@ -1,7 +1,7 @@
 ﻿key,0
 #,Type
 offset,0
-int32,str
+Int32,String
 0,
 1,攻势
 2,守势

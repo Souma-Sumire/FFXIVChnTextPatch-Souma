@@ -1,7 +1,7 @@
 ﻿key,1
 #,Name
 offset,0
-int32,str
+Int32,String
 0,无
 1,宠物
 2,气泡

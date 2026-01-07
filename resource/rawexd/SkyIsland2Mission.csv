@@ -1,7 +1,7 @@
 ﻿key,21,22,23,24,25
 #,,,,,
 offset,0,4,8,12,16
-int32,str,str,str,str,str
+Int32,String,String,String,String,String
 0,,,,,
 1,,,,,
 2,,,,,

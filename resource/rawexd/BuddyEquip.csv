@@ -1,7 +1,7 @@
 ﻿key,0,2,8
 #,Singular,Plural,Name
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,皮革陆行鸟鞍,,皮革陆行鸟鞍
 1,碧海陆行鸟鞍,,碧海陆行鸟鞍
 2,碧海陆行鸟半装甲,,碧海陆行鸟半装甲

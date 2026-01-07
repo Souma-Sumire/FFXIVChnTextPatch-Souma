@@ -1,7 +1,7 @@
 ﻿key,0
-#,
+#,Text
 offset,0
-int32,str
+Int32,String
 0,
 1,已达成探索任务的目标！
 2,已达成探索任务的目标！

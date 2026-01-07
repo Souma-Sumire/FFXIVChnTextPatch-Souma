@@ -1,7 +1,7 @@
 ﻿key,2,3
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,高速通关,在挑战时间内通关
 2,标速通关,在标准时间内通关

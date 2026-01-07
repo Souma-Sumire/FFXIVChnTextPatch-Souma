@@ -1,7 +1,7 @@
 ﻿key,0
-#,
+#,Text
 offset,0
-int32,str
+Int32,String
 0,
 1,塔塔露
 2,塔塔露·塔露

@@ -1,7 +1,7 @@
 ﻿key,0
 #,Name
 offset,0
-int32,str
+Int32,String
 1769472,
 1769473,季节活动
 1769474,测试：交换货币

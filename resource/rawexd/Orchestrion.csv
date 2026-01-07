@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,Name,Description
 offset,0,4
-int32,str,str
+Int32,String,String
 0,,
 1,雪风,金碟游乐场交换
 2,水车低鸣,格里达尼亚出售

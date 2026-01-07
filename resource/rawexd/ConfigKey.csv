@@ -1,7 +1,7 @@
 ﻿key,0,7
 #,Label,Text
 offset,4,0
-int32,str,str
+Int32,String,String
 0,,
 1,,
 2,,

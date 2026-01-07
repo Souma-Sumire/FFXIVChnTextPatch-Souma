@@ -1,7 +1,7 @@
 ﻿key,20,21,22
 #,Text[0],Text[1],Text[2]
 offset,24,28,32
-int32,str,str,str
+Int32,String,String,String
 589824,,,
 589825,,,
 589826,,,

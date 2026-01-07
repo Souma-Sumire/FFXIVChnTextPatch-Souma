@@ -1,7 +1,7 @@
 ﻿key,11,19
-#,Adjective,
+#,Name,NameRelation
 offset,0,8
-int32,str,str
+Int32,String,String
 0,,
 1,蜥蜴人族：灰党,蜥蜴人族友好度
 2,妖精族：暂留地妖精,妖精族友好度

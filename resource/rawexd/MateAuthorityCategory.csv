@@ -1,7 +1,7 @@
 ﻿key,0
 #,
 offset,0
-int32,str
+Int32,String
 1,房屋装潢
 2,栽培管理
 3,鸟栏管理

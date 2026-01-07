@@ -1,7 +1,7 @@
 ﻿key,0,1,2
-#,Description,Description{Enhanced},Tooltip
+#,Description,DescriptionEnhanced,Tooltip
 offset,0,4,8
-int32,str,str,str
+Int32,String,String,String
 0,,,
 1,骑上专属陆行鸟。<hex:02100103>大国防联军对士兵们统一配备的军用陆行鸟。,伊修加德产军用陆行鸟。除常见的旅行种以外，还有能够承载鲁加族的大型狩猎种以及专门为拉拉菲尔族改良的贝拉哈迪亚小型种等种类。,陆行鸟是一种很坚强的<hex:02100103>生物，不过它们也是有<hex:02100103>极限的。<hex:02100103>　　　　　——米米古恩
 2,,,

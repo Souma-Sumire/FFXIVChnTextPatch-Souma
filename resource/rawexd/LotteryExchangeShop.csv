@@ -1,7 +1,7 @@
 ﻿key,0,129
-#,,Lua
+#,Name,Script
 offset,0,388
-int32,str,str
+Int32,String,String
 3407872,,
 3407873,,
 3407874,鉴定上锁的宝箱,

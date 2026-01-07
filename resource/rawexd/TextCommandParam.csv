@@ -1,7 +1,7 @@
 ﻿key,0
 #,Param
 offset,0
-int32,str
+Int32,String
 0,on
 1,开
 2,off

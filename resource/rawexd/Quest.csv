@@ -1,7 +1,7 @@
 ﻿key,0,1
-#,Name,Id
+#,Name,
 offset,0,2676
-int32,str,str
+Int32,String,String
 65536,,
 65537,招募冒险者,SubFst010_00001
 65538,,

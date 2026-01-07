@@ -1,7 +1,7 @@
 ﻿key,0
 #,Race
 offset,0
-int32,str
+Int32,String
 0,人族
 1,精灵族
 2,拉拉菲尔族

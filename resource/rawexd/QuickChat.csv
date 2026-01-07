@@ -1,7 +1,7 @@
 ﻿key,0
-#,Name{Action}
+#,NameAction
 offset,0
-int32,str
+Int32,String
 0,已失效的快捷发言
 1,大家好！
 2,辛苦了！
