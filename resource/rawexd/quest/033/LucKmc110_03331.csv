@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC110_03331_SEQ_00,结誓洞窟前的雅·修特拉达成了眼前的目标。
 1,TEXT_LUCKMC110_03331_SEQ_01,和雅·修特拉等人一同返回蛇行枝。和拉凯提卡大森林蛇行枝的鲁纳尔谈谈。
 2,TEXT_LUCKMC110_03331_SEQ_02,和鲁纳尔进行了交谈。在蛇行枝的篝火附近的<hex:02280CFF05>EObj<hex:F61EAB160103>等待。

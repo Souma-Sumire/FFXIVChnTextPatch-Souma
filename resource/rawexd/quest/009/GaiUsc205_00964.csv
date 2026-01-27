@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC205_00964_SEQ_00,天狼星灯塔的奥坦·雅拉坦，看上去对死灵充满了畏惧。
 1,TEXT_GAIUSC205_00964_SEQ_01,奥坦·雅拉坦十分惧怕死灵。打倒5个<hex:02280FFF09>BNpcName<hex:F2073E0103>。
 2,TEXT_GAIUSC205_00964_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F2073E0103>。返回天狼星灯塔，向奥坦·雅拉坦报告。

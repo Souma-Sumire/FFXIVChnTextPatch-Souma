@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC806_01030_SEQ_00,骷髅谷营地的爱伊利斯，有件事想要委托给冒险者。
 1,TEXT_GAIUSC806_01030_SEQ_01,接受了讨伐鱼人族的委托。讨伐占据防波堤的<hex:02280FFF09>BNpcName<hex:F201820103>、<hex:02280FFF09>BNpcName<hex:F201800103>和<hex:02280FFF09>BNpcName<hex:F201850103>共4名。
 2,TEXT_GAIUSC806_01030_SEQ_02,成功讨伐了鱼人族。回到骷髅谷营地，向爱伊利斯报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMH107_03767_SEQ_00,结誓洞窟的雅·修特拉想要出发前往黑风海。
 1,TEXT_LUCKMH107_03767_SEQ_01,
 2,TEXT_LUCKMH107_03767_SEQ_02,

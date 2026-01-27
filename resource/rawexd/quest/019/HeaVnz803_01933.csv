@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ803_01933_SEQ_00,萨雷安精制区的费尔茨默克斯看起来十分沮丧。
 1,TEXT_HEAVNZ803_01933_SEQ_01,费尔茨默克斯因为钓不上鱼而非常失落，正在散步解烦。费尔茨默克斯委托冒险者为她找来<hex:022811FF0A>EventItem<hex:F61E8B1B0103>。在萨雷安精制区讨伐<hex:02280FFF09>BNpcName<hex:F20E0C0103>，获取3个<hex:022811FF0A>EventItem<hex:F61E8B1B0103>。
 2,TEXT_HEAVNZ803_01933_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B1B0103>。将<hex:022811FF0A>EventItem<hex:F61E8B1B0103>交给萨雷安精制区的费尔茨默克斯。

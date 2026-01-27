@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ508_02759_SEQ_00,重逢集市的托格奈正在寻找好心人。
 1,TEXT_STMBDZ508_02759_SEQ_01,
 2,TEXT_STMBDZ508_02759_SEQ_02,

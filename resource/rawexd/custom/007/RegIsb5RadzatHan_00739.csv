@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGISB5RADZATHAN_00739__FAHRUNNAH_000_001,哟，外国的客人！真是少见。<hex:02100103>毕竟为了加强防守，这里已经封城了嘛。<hex:02100103>要是你有什么不懂的地方，请尽管问我。
 1,TEXT_REGISB5RADZATHAN_00739__FAHRUNNAH_100_001,刚、刚才、有什么可怕的东西……！
 2,TEXT_REGISB5RADZATHAN_00739__FAHRUNNAH_000_002,异形之兽奔过来的时候我差点被吓得忘记喘气了。<hex:02100103>想必大伙也一定很不安……现在得团结起来互相帮助才行。<hex:02100103>有什么事情是我可以帮忙的吗？

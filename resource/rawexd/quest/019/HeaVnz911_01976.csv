@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ911_01976_SEQ_00,瓦纳温杜集落的库普利·库奇在思考走散的同伴会去哪里。
 1,TEXT_HEAVNZ911_01976_SEQ_01,库普利·库奇希望冒险者寻找同伴莫古力的线索。在阿巴拉提亚云海的亨格坩埚收集走散的森林莫古力的线索。
 2,TEXT_HEAVNZ911_01976_SEQ_02,收集到了走散的森林莫古力的线索。将<hex:022811FF0A>EventItem<hex:F61E8B760103>和<hex:022811FF0A>EventItem<hex:F61E8B770103>交给瓦纳温杜集落的库普利·库奇。

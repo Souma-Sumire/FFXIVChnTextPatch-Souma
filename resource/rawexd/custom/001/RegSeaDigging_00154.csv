@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEADIGGING_00154_BAGO_000_200,嘿嘿嘿……你 是谁？<hex:02100103>这里 什么都没有哟……<hex:02100103>我劝你快回去 嘿嘿嘿……
 1,TEXT_REGSEADIGGING_00154_BAGO_000_000,嘿嘿嘿……<hex:02100103>你找人家 有什么事呀？
 2,TEXT_REGSEADIGGING_00154_Q1_000_000,想了解什么？

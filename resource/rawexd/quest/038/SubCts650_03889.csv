@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS650_03889_SEQ_00,圣罗埃勒广场的艾尔·图正在以期待的目光看着冒险者。
 1,TEXT_SUBCTS650_03889_SEQ_01,
 2,TEXT_SUBCTS650_03889_SEQ_02,

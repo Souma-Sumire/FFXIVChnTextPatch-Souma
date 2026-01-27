@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSD016_01309_SEQ_00,拉莱娜想要采购蛮神的祭器。
 1,TEXT_GAIUSD016_01309_SEQ_01,将要去筹备蛮神祭器的事情告诉了拉莱娜。讨伐以下被再次召唤出的蛮神，获取3种祭器。打倒蛮神迦楼罗可以获取<hex:022811FF0A>EventItem<hex:F61E88F90103>。打倒蛮神泰坦可以获取<hex:022811FF0A>EventItem<hex:F61E88FA0103>。打倒蛮神伊弗利特可以获取<hex:022811FF0A>EventItem<hex:F61E88FB0103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。
 2,TEXT_GAIUSD016_01309_SEQ_02,收集齐了所有蛮神祭器。交给丧灵钟的拉莱娜。

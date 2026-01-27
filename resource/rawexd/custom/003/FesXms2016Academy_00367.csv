@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESXMS2016ACADEMY_00367_REAUVERRE_000_000,……
 1,TEXT_FESXMS2016ACADEMY_00367_REAUVERRE_000_010,……呼……呼……<hex:02100103>呜呜……爸……爸……<hex:02100103>呼……
 2,TEXT_FESXMS2016ACADEMY_00367_REAUVERRE_000_020,冒险者，谢谢你帮我把爸爸的礼物带回来。<hex:02100103>你可真厉害啊，就像圣人的追随者似的！<hex:02100103>我一定会努力把病治好的！

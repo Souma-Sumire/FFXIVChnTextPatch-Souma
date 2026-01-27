@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ415_01833_SEQ_00,赎罪天廊的莫古索恩在沉思。
 1,TEXT_HEAVNZ415_01833_SEQ_01,和莫古索恩进行了交谈。在翻云雾海的四臂广场获取3个<hex:022811FF0A>EventItem<hex:F61E8AE40103>。
 2,TEXT_HEAVNZ415_01833_SEQ_02,取得了<hex:022811FF0A>EventItem<hex:F61E8AE40103>。将<hex:022811FF0A>EventItem<hex:F61E8AE40103>交给翻云雾海莫古力之家附近的莫古咪尔。

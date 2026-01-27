@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ906_01971_SEQ_00,玛托雅的洞穴的萨罗·罗格一直在唉声叹气。
 1,TEXT_HEAVNZ906_01971_SEQ_01,萨罗·罗格觉得自己一定会变回青蛙，所以委托冒险者讨伐在水边肆虐的魔物。在龙堡内陆低地的玛托雅的洞穴前的3处<hex:02280CFF05>EObj<hex:F61E9C410103>等待，讨伐出现的<hex:02280FFF09>BNpcName<hex:F20FE60103>。
 2,TEXT_HEAVNZ906_01971_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20FE60103>。向玛托雅的洞穴的萨罗·罗格报告。

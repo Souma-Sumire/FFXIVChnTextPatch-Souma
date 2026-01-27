@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBNIN650_02950_SEQ_00,黄金港的胧在等人。
 1,TEXT_JOBNIN650_02950_SEQ_01,从胧口中得知本应前来汇合的小雪一直没有到。在黄金港的小金街寻找雪。
 2,TEXT_JOBNIN650_02950_SEQ_02,找到了雪，但赤城追在她身后。和小金街的赤城谈谈。

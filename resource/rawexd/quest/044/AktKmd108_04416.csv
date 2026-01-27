@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMD108_04416_SEQ_00,圣仙阿迦玛之墓的埃斯蒂尼安安静地等待着。
 1,TEXT_AKTKMD108_04416_SEQ_01,
 2,TEXT_AKTKMD108_04416_SEQ_02,

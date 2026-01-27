@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGKD004_05312_SEQ_00,调查队营地的柯坦拉姆正在环顾四周。
 1,TEXT_KINGKD004_05312_SEQ_01,和柯坦拉姆进行了交谈。和调查队营地的档案谈谈。
 2,TEXT_KINGKD004_05312_SEQ_02,档案给了冒险者装有古代知识的结晶。试着装备一下吧。

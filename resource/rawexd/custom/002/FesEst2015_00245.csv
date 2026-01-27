@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESEST2015_00245_EGGHUNTINGSTAFFA_000_000,彩蛋～彩蛋～大彩蛋～<hex:02100103>关于季节活动“彩蛋狩猎”，<hex:02100103>有什么想要了解的吗？
 1,TEXT_FESEST2015_00245_Q1_000_000,想了解什么？
 2,TEXT_FESEST2015_00245_A1_000_001,什么是“彩蛋狩猎”？

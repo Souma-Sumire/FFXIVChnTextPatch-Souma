@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2HILDA_00648_Q1_000_000,想要问些什么？
 1,TEXT_REGROC2HILDA_00648_A1_000_001,最近怎么样？
 2,TEXT_REGROC2HILDA_00648_A1_000_002,关于伊修加德火枪队

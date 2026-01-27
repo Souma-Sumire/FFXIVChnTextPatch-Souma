@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDD102_03071_SEQ_00,多玛飞地的飞燕有事想拜托冒险者。
 1,TEXT_STMBDD102_03071_SEQ_01,
 2,TEXT_STMBDD102_03071_SEQ_02,

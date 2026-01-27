@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWDK010_00539_SEQ_00,刻木匠行会的贝亚坦心慌意乱。
 1,TEXT_CLSWDK010_00539_SEQ_01,接受了贝亚坦的委托。和格里达尼亚橡子乐园的尼科利奥谈谈。
 2,TEXT_CLSWDK010_00539_SEQ_02,和尼科利奥进行了交谈。制作1个<hex:022813FF07>ItemHQ<hex:FF08>　5376<hex:0103>，让格里达尼亚刻木匠行会的贝亚坦查看。

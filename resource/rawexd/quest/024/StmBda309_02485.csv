@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA309_02485_SEQ_00,翠水乡的莉瑟想要开始寻找八尺琼勾玉。
 1,TEXT_STMBDA309_02485_SEQ_01,
 2,TEXT_STMBDA309_02485_SEQ_02,

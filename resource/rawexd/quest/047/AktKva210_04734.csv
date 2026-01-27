@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKVA210_04734_SEQ_00,望海泉附近的椿有事想告诉冒险者。
 1,TEXT_AKTKVA210_04734_SEQ_01,
 2,TEXT_AKTKVA210_04734_SEQ_02,

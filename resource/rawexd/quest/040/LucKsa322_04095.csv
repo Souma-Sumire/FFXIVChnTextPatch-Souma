@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKSA322_04095_SEQ_00,甘戈斯的梅尔吉恩想要在第四军团的重要据点找东西。
 1,TEXT_LUCKSA322_04095_SEQ_01,
 2,TEXT_LUCKSA322_04095_SEQ_02,

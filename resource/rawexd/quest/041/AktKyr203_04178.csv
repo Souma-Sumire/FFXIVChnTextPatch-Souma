@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKYR203_04178_SEQ_00,旧萨雷安的诺尔拖塔对哲学家议会发表的内容感到惊讶。
 1,TEXT_AKTKYR203_04178_SEQ_01,
 2,TEXT_AKTKYR203_04178_SEQ_02,

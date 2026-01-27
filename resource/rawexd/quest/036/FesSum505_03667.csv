@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESSUM505_03667_SEQ_00,※本任务是特定期间内的任务。<hex:02100103><hex:02100103>太阳海岸的红莲节钓鱼负责人嘉·喃歌正在等待着钓鱼大会的参加者。
 1,TEXT_FESSUM505_03667_SEQ_01,※本任务只有在季节活动开放期间才能接受和进行。<hex:02100103>　季节活动结束后无法进行，敬请注意。<hex:02100103>　详情请参见官方网站。<hex:02100103><hex:02100103>听嘉·喃歌讲解钓鱼大会的规则，并提出钓来3条<hex:022811FF0A>EventItem<hex:F61E8FB50103>的要求。<hex:022811FF0A>EventItem<hex:F61E8FB50103>可从永夏岛北钓得。
 2,TEXT_FESSUM505_03667_SEQ_02,钓到<hex:022811FF0A>EventItem<hex:F61E8FB50103>了。把3条<hex:022811FF0A>EventItem<hex:F61E8FB50103>交给在太阳海岸的红莲节钓鱼负责人嘉·喃歌。

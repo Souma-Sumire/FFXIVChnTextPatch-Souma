@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKLA302_03234_SEQ_00,中庸工艺馆的贝斯里克有事想和冒险者谈谈。
 1,TEXT_LUCKLA302_03234_SEQ_01,
 2,TEXT_LUCKLA302_03234_SEQ_02,

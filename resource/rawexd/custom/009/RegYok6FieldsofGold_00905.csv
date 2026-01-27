@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6FIELDSOFGOLD_00905_DANUHALI_000_000,旅行者，欢迎光临……<hex:02100103>现在暂时没什么活力，请见谅……
 1,TEXT_REGYOK6FIELDSOFGOLD_00905_DANUHALI_000_001,旅行者，欢迎光临。<hex:02100103>芦苇如今都已经恢复了活力！<hex:02100103>需要我给你介绍一下这片水田的情况吗？
 2,TEXT_REGYOK6FIELDSOFGOLD_00905_DANUHALI_000_002,旅行者，欢迎光临。<hex:02100103>托你的福，自那之后芦苇的状态一直保持得很不错。<hex:02100103>要跟你聊聊这片水田的事吗？

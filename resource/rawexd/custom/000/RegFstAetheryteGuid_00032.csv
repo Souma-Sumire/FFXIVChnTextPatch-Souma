@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTAETHERYTEGUID_00032_NICIA_000_1,哦，冒险者。<hex:02100103>需要我给你讲解一下“传送魔法”和“以太之光”吗？
 1,TEXT_REGFSTAETHERYTEGUID_00032_Q1_000_1,想了解什么？
 2,TEXT_REGFSTAETHERYTEGUID_00032_A1_000_1,什么是传送魔法？

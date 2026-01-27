@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL203_01269_SEQ_00,妖精暂留地的颇妮希亚对森林的空气变差感到很困扰。
 1,TEXT_BANSYL203_01269_SEQ_01,为了阻止瘴气的产生，对产生瘴气的妖精领的<hex:02280CFF05>EObj<hex:F61E912A0103>使用<hex:022811FF0A>EventItem<hex:F61E891C0103>。
 2,TEXT_BANSYL203_01269_SEQ_02,阻止了瘴气的产生。向妖精暂留地的颇妮希亚报告。

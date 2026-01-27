@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESXMS2022OMAKE_00800_LAURENSSEN_000_000,冒险者，谢谢你愿意帮忙。<hex:02100103>你能来真是帮大忙啦。
 1,TEXT_FESXMS2022OMAKE_00800_LAURENSSEN_000_001,我其实就是想拜托你带着闪电四处走走，<hex:02100103>把闪电的幻影带给城里的孩子们看看。
 2,TEXT_FESXMS2022OMAKE_00800_LAURENSSEN_000_002,现在正在以星芒节执行委员会的各位为中心，<hex:02100103>召集了众多志愿者来给孩子们分发礼物。<hex:02100103>我想在这个时候为大家展示幻影，做个余兴节目形式的表演。

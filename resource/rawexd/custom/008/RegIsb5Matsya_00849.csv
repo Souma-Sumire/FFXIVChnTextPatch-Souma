@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGISB5MATSYA_00849_Q1_000_000,要说什么？
 1,TEXT_REGISB5MATSYA_00849_A1_000_000,最近怎么样？
 2,TEXT_REGISB5MATSYA_00849_A2_000_000,关于阿罗阿罗岛

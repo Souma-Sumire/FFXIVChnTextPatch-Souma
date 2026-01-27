@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB309_00850_SEQ_00,葡萄酒港的夏马尼·洛马尼，有件事一定要委托给冒险者。
 1,TEXT_GAIUSB309_00850_SEQ_01,夏马尼·洛马尼得知本已放弃的最棒的葡萄酒仍然存在，非常兴奋。将<hex:022811FF0A>EventItem<hex:F61E88320103>交给断弦亭的德雷斯特。
 2,TEXT_GAIUSB309_00850_SEQ_02,德雷斯特有见过<hex:022811FF0A>EventItem<hex:F61E88320103>的印象。那好像是生长在森林中的魔物头上。在断弦亭东南方的<hex:02280CFF05>EObj<hex:F61E8C8E0103>等待，打倒<hex:02280FFF09>BNpcName<hex:F207D20103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGKD006_05314_SEQ_00,调查队营地的柯坦拉姆正在思考调查方针。
 1,TEXT_KINGKD006_05314_SEQ_01,
 2,TEXT_KINGKD006_05314_SEQ_02,

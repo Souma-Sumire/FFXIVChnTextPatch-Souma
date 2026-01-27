@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDE104_03146_SEQ_00,归燕馆的飞燕想要立即前往太阳神草原。
 1,TEXT_STMBDE104_03146_SEQ_01,
 2,TEXT_STMBDE104_03146_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ427_02750_SEQ_00,无二江流域的鱼鳞似乎丧失了信心。
 1,TEXT_STMBDZ427_02750_SEQ_01,和鱼鳞进行了交谈。这次，鱼鳞打算捕捉魔物，售卖魔物的翅膀或者鳞片，于是委托冒险者准备诱饵。在无二江流域讨伐3只<hex:02280FFF09>BNpcName<hex:F216820103>。
 2,TEXT_STMBDZ427_02750_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F216820103>。将<hex:022811FF0A>EventItem<hex:F61E8D980103>交给无二江流域的鱼鳞。

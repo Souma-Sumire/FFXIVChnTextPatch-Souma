@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ506_02757_SEQ_00,重逢集市的善知正在寻找旅行者。
 1,TEXT_STMBDZ506_02757_SEQ_01,
 2,TEXT_STMBDZ506_02757_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6WORLARSECHO_00870_TAHRAFAHR_000_000,啊，欢迎光临。<hex:02100103>这里是尤卡巨人族居住的沃拉的回响……<hex:02100103>已经好久没有佩鲁佩鲁族以外的客人来到这里了。
 1,TEXT_REGYOK6WORLARSECHO_00870_TAHRAFAHR_000_001,啊，艳翼蛇鸟被释放出来了啊……<hex:02100103>至少让我跟你讲讲这片土地的事情。<hex:02100103>这样我们就可以一直活在你的记忆当中了……
 2,TEXT_REGYOK6WORLARSECHO_00870_TAHRAFAHR_000_002,我们绝不会忘记客人做出的贡献。<hex:02100103>关于生活在这里的我们的记忆还将会延续下去……<hex:02100103>方便的话，希望你也能多了解一些关于我们的事。

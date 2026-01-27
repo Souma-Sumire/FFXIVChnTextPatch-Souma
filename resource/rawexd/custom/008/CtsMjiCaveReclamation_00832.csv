@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMJICAVERECLAMATION_00832_TALK_ACTOR,0
 1,TEXT_CTSMJICAVERECLAMATION_00832_TANKEN_033_000,我听猫耳小员说过啦！<hex:02100103>我自己也看过啦，就像你调查到的一样，<hex:02100103>这里头好像有个很大的空洞呢！
 2,TEXT_CTSMJICAVERECLAMATION_00832_TANKEN_033_005,如果有推倒岩壁的工具，就能进到里头去了！<hex:02100103>我教你制作工具的方法吧，能请你帮我做这个吗？

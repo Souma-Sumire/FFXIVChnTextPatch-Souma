@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3REISEN_00452_SENRI_000_001,什么嘛，又是你啊喵。<hex:02100103>有什么想知道的喵？
 1,TEXT_REGOTH3REISEN_00452_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3REISEN_00452_A1_000_001,关于瑞兽

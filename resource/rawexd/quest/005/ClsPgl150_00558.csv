@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSPGL150_00558_SEQ_00,格斗家行会的哈蒙， 将要给予冒险者新的课题。
 1,TEXT_CLSPGL150_00558_SEQ_01,从哈蒙处学到了打倒大块头敌人的窍门。打倒邪嗣的毒蟾蜍，获取5块毒蟾蜍腿肉。
 2,TEXT_CLSPGL150_00558_SEQ_02,获取了毒蟾蜍腿肉。向黑尘驿站中的哈蒙报告。

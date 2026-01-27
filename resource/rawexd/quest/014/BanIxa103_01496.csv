@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANIXA103_01496_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>※本任务的推荐等级为：<hex:02100103>　制作职业1级以上、战斗职业41级以上。<hex:02100103><hex:02100103>长风实验场的劳动者雅泽尔·阿华坦，想委托冒险者处理紧急的工作。
 1,TEXT_BANIXA103_01496_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>接受了劳动者雅泽尔·阿华坦的委托，去制作<hex:022811FF05>Item<hex:FF08>　8093<hex:0103>。首先前往私语巨木，击退<hex:02280FFF09>BNpcName<hex:F20BA90103>，并从被夺走的<hex:02280CFF05>EObj<hex:F61E95E80103>中获取<hex:022811FF0A>EventItem<hex:F61E89E30103>。
 2,TEXT_BANIXA103_01496_SEQ_02,成功夺回了<hex:022811FF0A>EventItem<hex:F61E89E30103>。前往私语巨木鸟栏，将<hex:022811FF0A>EventItem<hex:F61E89E30103>交给内勒蒙，并获取制作设施的使用权。

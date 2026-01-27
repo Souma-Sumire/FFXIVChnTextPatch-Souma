@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKVA110_04649_SEQ_00,流沙屋附近的珂珂苏有事想通知冒险者。
 1,TEXT_AKTKVA110_04649_SEQ_01,
 2,TEXT_AKTKVA110_04649_SEQ_02,

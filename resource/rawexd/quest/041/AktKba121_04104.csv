@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKBA121_04104_SEQ_00,蛇巢司令部的白蛇守护人有急事要告诉冒险者。
 1,TEXT_AKTKBA121_04104_SEQ_01,和白蛇守护人进行了交谈。格莱普尼尔在中央林区再度现身。在中央林区酸模避风港的<hex:02280CFF05>EObj<hex:F61EB2570103>张望，和嘉恩·艾·神纳汇合。
 2,TEXT_AKTKBA121_04104_SEQ_02,遭遇异形野兽袭击，讨伐了异形野兽。调查<hex:02280CFF05>EObj<hex:F61EB2520103>。

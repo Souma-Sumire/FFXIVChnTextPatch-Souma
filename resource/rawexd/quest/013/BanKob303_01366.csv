@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB303_01366_SEQ_00,第789洞穴团采矿地的第789团清洁工博布，有事情要委托冒险者。
 1,TEXT_BANKOB303_01366_SEQ_01,第789团清洁工博布告诉冒险者，他宝贵的盘子被第789团辅祭巴戈拿去当炸弹的材料了。为了寻找替代的盘子，前往武伽玛罗武装矿山，在<hex:02280CFF05>EObj<hex:F61E92F10103>使用<hex:022811FF0A>EventItem<hex:F61E894E0103>，讨伐出现的<hex:02280FFF09>BNpcName<hex:F20A920103>，获取<hex:022811FF0A>EventItem<hex:F61E894D0103>。
 2,TEXT_BANKOB303_01366_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E894D0103>。前往第789洞穴团采矿地，将<hex:022811FF0A>EventItem<hex:F61E894D0103>交给第789团清洁工博布。

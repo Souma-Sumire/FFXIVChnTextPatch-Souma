@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA907_00802_SEQ_00,奇约·莫伊牙兵长可以提供白狼门的通行许可证。
 1,TEXT_GAIUSA907_00802_SEQ_01,听说了冒险者的活跃事迹，奇约·莫伊愿意给冒险者提供白狼门的通行许可。将<hex:022811FF0A>EventItem<hex:F61E87970103>交给白狼门的弗朗舍蒙蒂奥。
 2,TEXT_GAIUSA907_00802_SEQ_02,可以通过白狼门了。要通过白狼门时就和弗朗舍蒙蒂奥打声招呼。

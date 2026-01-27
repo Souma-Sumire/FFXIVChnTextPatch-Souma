@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGGYR3RHALGRSREACHJTANDHAA_00509_JTANDHAA_000_001,啊，你是协助阿拉米格解放军的冒险者吧？<hex:02100103>我们这里是解放军的后勤部门，<hex:02100103>你可以拿不用的装备在这换成其他装备。
 1,TEXT_REGGYR3RHALGRSREACHJTANDHAA_00509_SYSTEM_000_002,将能通过制作职业制作获得的特定装备交给嘉·谭妲<hex:02100103>可以获得相应数量的票据。
 2,TEXT_REGGYR3RHALGRSREACHJTANDHAA_00509_SYSTEM_000_003,将一定数量的票据和特定道具交给嘉·谭妲<hex:02100103>可以换取装备等级更高的装备。

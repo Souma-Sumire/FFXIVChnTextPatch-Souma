@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA106_01227_SEQ_00,灰阵营的菲布布·夏看中冒险者的实力，有事相托。
 1,TEXT_BANAMA106_01227_SEQ_01,接受了菲布布·夏的委托。对赞拉克的<hex:02280CFF05>EObj<hex:F61E90740103>使用<hex:022811FF0A>EventItem<hex:F61E890C0103>。
 2,TEXT_BANAMA106_01227_SEQ_02,对<hex:02280CFF05>EObj<hex:F61E90740103>使用了<hex:022811FF0A>EventItem<hex:F61E890C0103>。向灰阵营的菲布布·夏报告。

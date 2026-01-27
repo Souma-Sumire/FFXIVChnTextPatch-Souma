@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2FALCONSNEST_00281_FALCONSNESTGUIDE_000_000,并无异常情况……<hex:02100103>嗯，你找我有什么事吗？
 1,TEXT_REGROC2FALCONSNEST_00281_FALCONSNESTGUIDE_000_001,你这个时候来找我是有什么事吗？<hex:02100103>如果想要问关于暴动的事，那还是找别人吧。
 2,TEXT_REGROC2FALCONSNEST_00281_FALCONSNESTGUIDE_000_002,你想要趁现在学习一下有关隼巢的事情吗？<hex:02100103>或许可以加深你对庆典的理解！

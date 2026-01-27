@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA302_01243_SEQ_00,灰阵营的雅德夫·夏想要告诉冒险者机会来了。
 1,TEXT_BANAMA302_01243_SEQ_01,接受了雅德夫·夏的委托。讨伐不悔战阵的<hex:02280FFF09>BNpcName<hex:F207300103>及其护卫<hex:02280FFF09>BNpcName<hex:F2072F0103>各3名。
 2,TEXT_BANAMA302_01243_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F2072F0103>和<hex:02280FFF09>BNpcName<hex:F207300103>。向灰阵营的雅德夫·夏报告。

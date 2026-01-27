@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESSUM103_02126_SEQ_00,※本任务是特定期间内的任务。<hex:02100103><hex:02100103>红莲节食品专员艾斯潘非常忙碌。
 1,TEXT_FESSUM103_02126_SEQ_01,※本任务只有在季节活动开放期间才能接受和进行。<hex:02100103>　季节活动结束后无法进行，敬请注意。<hex:02100103>　详情请参见官方网站。<hex:02100103><hex:02100103>艾斯潘委托冒险者垂钓<hex:022811FF0A>EventItem<hex:F61E8BE10103>。和码头的船头对话，前往海上的大型船垂钓<hex:022811FF0A>EventItem<hex:F61E8BE10103>。<hex:022811FF0A>EventItem<hex:F61E8BE10103>可以在罗塔诺海（船首）钓到。<hex:02100103><hex:02100103>※和码头的船头对话可以移动到海上的大型船。<hex:022811FF0A>EventItem<hex:F61E8BE10103>可以在船首钓到。
 2,TEXT_FESSUM103_02126_SEQ_02,钓到了<hex:022811FF0A>EventItem<hex:F61E8BE10103>。将<hex:022811FF0A>EventItem<hex:F61E8BE10103>交给太阳海岸的红莲节食品专员艾斯潘。

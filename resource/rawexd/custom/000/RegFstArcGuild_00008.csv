@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTARCGUILD_00008_LUCIANE_000_1,你好，我们来聊聊“弓术”如何？
 1,TEXT_REGFSTARCGUILD_00008_Q1_000_1,想了解什么？
 2,TEXT_REGFSTARCGUILD_00008_A1_000_1,你是做什么的？

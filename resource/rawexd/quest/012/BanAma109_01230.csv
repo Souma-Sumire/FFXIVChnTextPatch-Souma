@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA109_01230_SEQ_00,灰阵营的菲布布·夏遇到了难以原谅的事。
 1,TEXT_BANAMA109_01230_SEQ_01,接受了菲布布·夏的委托。调查不悔战阵西边的<hex:02280CFF05>EObj<hex:F61E90C00103>，获取<hex:022811FF0A>EventItem<hex:F61E89140103>；然后讨伐<hex:02280FFF09>BNpcName<hex:F2056C0103>，获取<hex:022811FF0A>EventItem<hex:F61E89150103>；再讨伐<hex:02280FFF09>BNpcName<hex:F2056D0103>，获取<hex:022811FF0A>EventItem<hex:F61E89160103>。
 2,TEXT_BANAMA109_01230_SEQ_02,获得了猫魅族的武器。将收集到的猫魅族的武器交给灰阵营的菲布布·夏。

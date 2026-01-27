@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06003_000010_EMETSELCH,看哪 那些兽被解放了出来
 1,TEXT_VOICEMAN_06003_000020_EMETSELCH,它们杀害世人 烧毁城镇
 2,TEXT_VOICEMAN_06003_000030_EMETSELCH,我们的明天已化为余烬

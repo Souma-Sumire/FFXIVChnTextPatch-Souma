@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB913_00936_SEQ_00,白云崖前哨的富斯克内非常苦恼。
 1,TEXT_GAIUSB913_00936_SEQ_01,要塞中到处都有大老鼠出没。调查<hex:02280CFF05>EObj<hex:F61E8CF60103>，打倒<hex:02280FFF09>BNpcName<hex:F201A10103>。
 2,TEXT_GAIUSB913_00936_SEQ_02,成功地讨伐了<hex:02280FFF09>BNpcName<hex:F201A10103>。向白云崖前哨的富斯克内报告。

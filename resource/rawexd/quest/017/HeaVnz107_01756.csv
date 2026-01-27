@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ107_01756_SEQ_00,玫瑰园的吉尔登一直在为那块瓦努族掉落的骨头烦恼。
 1,TEXT_HEAVNZ107_01756_SEQ_01,吉尔登希望冒险者在周围问问其他人对骨头的看法。将<hex:022811FF0A>EventItem<hex:F61E8B510103>展示给阿巴拉提亚云海云顶营地和玫瑰园的骑兵们看看。
 2,TEXT_HEAVNZ107_01756_SEQ_02,向骑兵们收集了情报。将<hex:022811FF0A>EventItem<hex:F61E8B510103>交给玫瑰园的吉尔登，向他报告结果。

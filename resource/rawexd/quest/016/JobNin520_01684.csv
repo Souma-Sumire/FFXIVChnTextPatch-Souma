@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBNIN520_01684_SEQ_00,码头小屋的胧收到了赤城的来信。
 1,TEXT_JOBNIN520_01684_SEQ_01,赤城在信上说，雪准备侵入猎犬同盟的据点。前往高地拉诺西亚的梅梅卢恩交易站和赤城谈谈。
 2,TEXT_JOBNIN520_01684_SEQ_02,在向赤城了解情况时，雪悄悄向猎犬同盟的据点出发了。决定帮她进行佯攻。对高地拉诺西亚贫女材场附近的<hex:02280CFF05>EObj<hex:F61E9BA50103>使用<hex:022811FF0A>EventItem<hex:F61E8B3B0103>，讨伐出现的敌人。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFSCH_00098_ALKAZOLKA_000_010,我叫阿尔卡·佐尔卡，<hex:02100103>是生于新时代的斧术师。<hex:02100103>目前在研究古代的“尼姆海兵团”。
 1,TEXT_JOBDEFSCH_00098_ALKAZOLKA_000_011,斧术师行会的那些肌肉棒子嘲笑我光说不练……<hex:02100103>但是，他们错了。
 2,TEXT_JOBDEFSCH_00098_ALKAZOLKA_000_012,我的目标是让威尔恩兹恩老师传授的斧术技巧更上一层楼。<hex:02100103>为此，必须开动脑筋，好好想法子才行。

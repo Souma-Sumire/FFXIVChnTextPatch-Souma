@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA508_00760_SEQ_00,恒辉队的安娜贝尔，有件特殊的工作想要委托给冒险者。
 1,TEXT_GAIUSA508_00760_SEQ_01,在小阿拉米格南方的遗迹中，似乎有贝拉哈迪亚时代的死灵出没。对<hex:02280FFF09>BNpcName<hex:F207CE0103>和<hex:02280FFF09>BNpcName<hex:F207CF0103>使用从安娜贝尔处得到的<hex:022811FF0A>EventItem<hex:F61E86DE0103>，待其变弱后，分别打倒1名。
 2,TEXT_GAIUSA508_00760_SEQ_02,成功讨伐了死灵们。向小阿拉米格的安娜贝尔报告。

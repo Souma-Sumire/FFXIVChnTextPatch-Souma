@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTLITTLESOLACE_00128_KNOLEXIA_000_000,你是冒险者吗呼啾？<hex:02100103>找我有什么事啊呼啾？
 1,TEXT_REGFSTLITTLESOLACE_00128_KNOLEXIA_000_010,我是妖精族的诺蕾克希亚呼啾。<hex:02100103>我的工作就是为大家做针线活呼啾。
 2,TEXT_REGFSTLITTLESOLACE_00128_KNOLEXIA_000_011,妖精族都很擅长针线活呼啾。<hex:02100103>这个暂留地的帐篷也是我们自己缝制的呼啾。

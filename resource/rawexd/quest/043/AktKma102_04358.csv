@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMA102_04358_SEQ_00,知识神海港的可露儿正在观望着同伴们的情况。
 1,TEXT_AKTKMA102_04358_SEQ_01,
 2,TEXT_AKTKMA102_04358_SEQ_02,

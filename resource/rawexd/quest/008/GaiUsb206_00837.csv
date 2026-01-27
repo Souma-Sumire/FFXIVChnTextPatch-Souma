@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB206_00837_SEQ_00,太阳海岸的管家佩·艾巴罗，还有一件事想要委托给冒险者。
 1,TEXT_GAIUSB206_00837_SEQ_01,<hex:02280FFF09>BNpcName<hex:F202830103>在房屋下面的支柱中安家了。对结实的支柱使用<hex:022811FF0A>EventItem<hex:F61E87DF0103>，打倒所有现身的<hex:02280FFF09>BNpcName<hex:F202830103>。
 2,TEXT_GAIUSB206_00837_SEQ_02,打倒了所有的<hex:02280FFF09>BNpcName<hex:F202830103>。向太阳海岸的佩·艾巴罗报告。

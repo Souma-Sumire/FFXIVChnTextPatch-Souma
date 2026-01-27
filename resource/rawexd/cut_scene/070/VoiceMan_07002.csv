@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07002_000010_ERENVILLE,广袤的亚克特尔树海<hex:02100103>在灵豹之民的语言中意为“蓝色的森林”
 1,TEXT_VOICEMAN_07002_000020_ERENVILLE,古时的陨石为这里带来了特殊的地貌<hex:02100103>天坑与蓝色的植物成为了这片森林的最大象征
 2,TEXT_VOICEMAN_07002_000030_ERENVILLE,曾经纷争不断的灵豹之民与辉鳞族<hex:02100103>将会一同见证继位仪式的最高潮

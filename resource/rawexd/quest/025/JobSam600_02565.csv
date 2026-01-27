@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBSAM600_02565_SEQ_00,云雾街的莫莫吉格非常慌张。
 1,TEXT_JOBSAM600_02565_SEQ_01,从莫莫吉格口中得知无双斋悄悄离开了旅馆。前往伊修加德圣瓦勒鲁瓦扬广场的<hex:02280CFF05>EObj<hex:F61EA5070103>张望，寻找无双斋。
 2,TEXT_JOBSAM600_02565_SEQ_02,在<hex:02280CFF05>EObj<hex:F61EA5070103>张望时没能发现无双斋的身影。前往伊修加德以太之光广场附近的<hex:02280CFF05>EObj<hex:F61EA5080103>再次张望。

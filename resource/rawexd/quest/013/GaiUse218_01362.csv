@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSE218_01362_SEQ_00,工事大厅的赞特海尔有话要对冒险者说。
 1,TEXT_GAIUSE218_01362_SEQ_01,赞特海尔向冒险者介绍了地下组织的人。前往利姆萨·罗敏萨下层甲板的南面广场，把<hex:022811FF0A>EventItem<hex:F61E89400103>交给眼光敏锐的男人。
 2,TEXT_GAIUSE218_01362_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E89400103>交给了眼光敏锐的男人，获得了地下组织的认可。夕雾为了学习他们的流派技巧，接下来会和地下组织一起行动。

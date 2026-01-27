@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMF108_04953_SEQ_00,土之终端前的喀赫奇瓦准备前往下一个区域。
 1,TEXT_KINGMF108_04953_SEQ_01,
 2,TEXT_KINGMF108_04953_SEQ_02,

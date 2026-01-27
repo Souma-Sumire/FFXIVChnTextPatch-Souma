@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB411_00867_SEQ_00,石绿湖营地疗养院的阿·伦琳嘉，有事情想要委托给冒险者。
 1,TEXT_GAIUSB411_00867_SEQ_01,接受了制作<hex:022811FF0A>EventItem<hex:F61E87230103>的委托。将<hex:022811FF0A>EventItem<hex:F61E87220103>放置在<hex:02280CFF05>EObj<hex:F61E8CB00103>处。
 2,TEXT_GAIUSB411_00867_SEQ_02,加热了葡萄酒。从<hex:02280CFF05>EObj<hex:F61E8CB00103>处获得<hex:022811FF0A>EventItem<hex:F61E87230103>。

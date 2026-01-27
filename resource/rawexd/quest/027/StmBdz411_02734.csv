@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ411_02734_SEQ_00,茨菰村的落实想找人送东西。
 1,TEXT_STMBDZ411_02734_SEQ_01,
 2,TEXT_STMBDZ411_02734_SEQ_02,

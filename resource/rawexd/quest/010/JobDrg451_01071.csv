@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDRG451_01071_SEQ_00,雅伯里克想要确认冒险者的决心。
 1,TEXT_JOBDRG451_01071_SEQ_01,接受了雅伯里克的委托。在库尔札斯中央高地的<hex:02280CFF05>EObj<hex:F61E8DF90103>吹<hex:022811FF0A>EventItem<hex:F61E87B80103>，讨伐随之出现的魔物。 
 2,TEXT_JOBDRG451_01071_SEQ_02,成功讨伐了魔物。将<hex:022811FF0A>EventItem<hex:F61E87B80103>交给库尔札斯中央高地阿德内尔占星台的雅伯里克。

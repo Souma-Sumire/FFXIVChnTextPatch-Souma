@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH108_01386_SEQ_00,诺布养育场的菲乌很愤怒。
 1,TEXT_BANSAH108_01386_SEQ_01,接受了菲乌的委托，向控制了商船的珊瑚尖枪和其手下海蛇之舌展现冒险者的实力，挫败他们的气焰。登上商船，讨伐<hex:02280FFF09>BNpcName<hex:F209E60103>、<hex:02280FFF09>BNpcName<hex:F209E70103>和<hex:02280FFF09>BNpcName<hex:F209E80103>中的任意3名，并打倒被引出来的<hex:02280FFF09>BNpcName<hex:F20AA40103>。诺布养育场的海兽驯养人帕阿会为冒险者准备前往海上的商船的水龙蜥。
 2,TEXT_BANSAH108_01386_SEQ_02,成功讨伐了被引出的<hex:02280FFF09>BNpcName<hex:F20AA40103>。向诺布养育场的菲乌报告。

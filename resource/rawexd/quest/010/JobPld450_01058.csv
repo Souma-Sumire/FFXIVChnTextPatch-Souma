@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBPLD450_01058_SEQ_00,近卫兵团银胄团的总长杰林斯，将要授予冒险者白银骑士甲胄。
 1,TEXT_JOBPLD450_01058_SEQ_01,杰林斯告诉了冒险者白银骑士甲胄的所在地。调查南萨纳兰喀恩埋没圣堂里的4个<hex:02280CFF05>EObj<hex:F61E8DAC0103>，获取白银骑士甲胄。
 2,TEXT_JOBPLD450_01058_SEQ_02,调查完<hex:02280CFF05>EObj<hex:F61E8DAC0103>，获得了白银骑士甲胄。向乌尔达哈御道的杰林斯报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL013_00571_SEQ_00,剑术师行会的沃尔坎正因过度增殖的花甲虫而烦恼，想拜托冒险者讨伐花甲虫。
 1,TEXT_SUBWIL013_00571_SEQ_01,讨伐4只生活在西萨纳兰的花甲虫。
 2,TEXT_SUBWIL013_00571_SEQ_02,成功讨伐了花甲虫。向剑术师行会的沃尔坎报告。

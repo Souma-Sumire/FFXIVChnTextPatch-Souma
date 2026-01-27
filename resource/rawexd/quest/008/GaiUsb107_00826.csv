@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB107_00826_SEQ_00,牛魔里程的商人利利德斯，有东西想要冒险者代为传递。
 1,TEXT_GAIUSB107_00826_SEQ_01,闭塞的乌氏拒绝了利利德斯到遗忘绿洲开店的请求。将<hex:022811FF0A>EventItem<hex:F61E87D30103>交给工艺神击的奥迪内尔。
 2,TEXT_GAIUSB107_00826_SEQ_02,乌氏之外的人们在互帮互助中勉强生活着。乌氏现任族长执行的方针，在外人中颇受非议。

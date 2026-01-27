@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSMIN550_02082_SEQ_00,忘忧骑士亭的哈伊姆里克有事想找冒险者帮忙。
 1,TEXT_CLSMIN550_02082_SEQ_01,哈伊姆里克委托冒险者去调查一下关于采掘<hex:02280BFF05>Item<hex:F230F90103>的矿脉。前往乌尔达哈，将<hex:022811FF0A>EventItem<hex:F61E8B3F0103>拿给采矿工行会的阿达尔博塔查看。
 2,TEXT_CLSMIN550_02082_SEQ_02,从阿达尔博塔与韦德·格利的谈话来看，龙堡参天高地很可能存在着优质矿脉。将<hex:022811FF0A>EventItem<hex:F61E8B3F0103>交给忘忧骑士亭的哈伊姆里克。

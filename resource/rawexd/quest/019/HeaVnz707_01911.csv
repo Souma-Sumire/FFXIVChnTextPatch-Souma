@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ707_01911_SEQ_00,蓝天窗的古努瓦努为了通过仪式有事情想委托冒险者。
 1,TEXT_HEAVNZ707_01911_SEQ_01,古努瓦努希望冒险者来帮忙。和蓝天窗深处的古努瓦努谈谈。
 2,TEXT_HEAVNZ707_01911_SEQ_02,和古努瓦努进行了交谈，不知为何冒险者被委托前去狩猎。在蓝天窗的<hex:02280CFF05>EObj<hex:F61E9C110103>吹响口哨，讨伐出现的<hex:02280FFF09>BNpcName<hex:F20FDC0103>获取<hex:022811FF0A>EventItem<hex:F61E8B600103>。

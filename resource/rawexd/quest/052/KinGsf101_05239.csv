@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGSF101_05239_SEQ_00,海岸鸟群市场的铁路公司的员工为了寻找冒险者来到了图莱尤拉。
 1,TEXT_KINGSF101_05239_SEQ_01,
 2,TEXT_KINGSF101_05239_SEQ_02,

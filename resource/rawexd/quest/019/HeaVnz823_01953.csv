@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ823_01953_SEQ_00,田园郡的诺奇德·伯恩饿得动不了了。
 1,TEXT_HEAVNZ823_01953_SEQ_01,诺奇德·伯恩宁可挨饿也不愿食用从哥布林族那里得到的食物。接受了诺奇德·伯恩的委托，获取<hex:022811FF0A>EventItem<hex:F61E8B6D0103>并将其烤好。从龙堡内陆低地萨雷安治学区的<hex:02280FFF09>BNpcName<hex:F20E130103>身上获取<hex:022811FF0A>EventItem<hex:F61E8B6D0103>。
 2,TEXT_HEAVNZ823_01953_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B6D0103>。使用萨雷安治学区的<hex:02280CFF05>EObj<hex:F61E9C580103>将<hex:022811FF0A>EventItem<hex:F61E8B6D0103>烤好。

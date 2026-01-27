@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC505_00993_SEQ_00,圣寇伊纳克调查地的旺达凌·布里兹，有件事想要委托给冒险者。
 1,TEXT_GAIUSC505_00993_SEQ_01,向南面调查的队伍受到了某些魔物的阻碍。前往圣寇伊纳克调查地的南面，与犯愁的调查员交谈。
 2,TEXT_GAIUSC505_00993_SEQ_02,打倒袭来的<hex:02280FFF09>BNpcName<hex:F202860103>。返回圣寇伊纳克调查地，向旺达凌·布里兹报告。

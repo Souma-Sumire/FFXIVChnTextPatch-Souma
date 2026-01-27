@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ301_01793_SEQ_00,自由脑窟穴的啥都吃正在遥望南方。
 1,TEXT_HEAVNZ301_01793_SEQ_01,啥都吃委托冒险者去捡<hex:022811FF0A>EventItem<hex:F61E8AD40103>。在龙堡参天高地的阿瓦隆尼亚古陆获取4块<hex:022811FF0A>EventItem<hex:F61E8AD40103>。
 2,TEXT_HEAVNZ301_01793_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AD40103>。将<hex:022811FF0A>EventItem<hex:F61E8AD40103>交给自由脑窟穴的啥都吃。

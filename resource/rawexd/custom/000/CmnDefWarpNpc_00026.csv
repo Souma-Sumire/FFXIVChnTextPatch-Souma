@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFWARPNPC_00026_TALK_ACTOR0,此船前往东部林区“花蜜栈桥”。<hex:02100103>要乘坐吗？
 1,TEXT_CMNDEFWARPNPC_00026_TALK_ACTOR1,此船前往格里达尼亚。<hex:02100103>要乘坐吗？
 2,TEXT_CMNDEFWARPNPC_00026_YESNO_QUESTION,出发吗？

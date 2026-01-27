@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ815_01945_SEQ_00,田园郡的哈夫西克斯因检修作业没有进展而十分头疼。
 1,TEXT_HEAVNZ815_01945_SEQ_01,和哈夫西克斯进行了交谈。维护以太之光需要的零件不够了。前往龙堡内陆低地的宗匠大工房，从<hex:02280CFF05>EObj<hex:F61E9B750103>中获取<hex:022811FF0A>EventItem<hex:F61E8B200103>。
 2,TEXT_HEAVNZ815_01945_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B200103>。将<hex:022811FF0A>EventItem<hex:F61E8B200103>交给田园郡的哈夫西克斯。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMD103_04411_SEQ_00,梅丽德酒房的弥利尔打算为冒险者指路。
 1,TEXT_AKTKMD103_04411_SEQ_01,
 2,TEXT_AKTKMD103_04411_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFWHM_00095_RAYAOSENNA_000_010,我是拉雅·奥·神纳。<hex:02100103>如你所见，我是格里达尼亚的角尊。
 1,TEXT_JOBDEFWHM_00095_RAYAOSENNA_000_011,你多少应该也听说过神纳一家吧？<hex:02100103>我的姐姐嘉恩·艾·神纳是格里达尼亚的领导者，<hex:02100103>也是双蛇党的党首。
 2,TEXT_JOBDEFWHM_00095_RAYAOSENNA_000_012,我还有个弟弟叫阿·卢恩·神纳，<hex:02100103>我们三人被称为“幻术三皇”。

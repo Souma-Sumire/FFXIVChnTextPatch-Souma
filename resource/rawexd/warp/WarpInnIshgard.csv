@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_WARPINNISHGARD_BAMPONCET_000_1,这里是九霄云舍。<hex:02100103>不过很抱歉，现在我们还没开始营业……
 1,TEXT_WARPINNISHGARD_BAMPONCET_000_2,请您等开店后再来吧。
 2,TEXT_WARPINNISHGARD_00061_Q1_000_1,想了解什么？

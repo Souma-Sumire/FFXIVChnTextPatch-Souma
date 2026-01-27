@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA308_01249_SEQ_00,灰阵营的雅德夫·夏想要冒险者解除后顾之忧。
 1,TEXT_BANAMA308_01249_SEQ_01,接受了雅德夫·夏的委托。在不悔战阵的<hex:02280CFF05>EObj<hex:F61E908F0103>等待，讨伐出现的<hex:02280EFF09>BNpcName<hex:F1090103>，获取3个<hex:022811FF0A>EventItem<hex:F61E89120103>。
 2,TEXT_BANAMA308_01249_SEQ_02,讨伐了<hex:02280EFF09>BNpcName<hex:F1090103>，获得了<hex:022811FF0A>EventItem<hex:F61E89120103>。对赞拉克的<hex:02280CFF05>EObj<hex:F61E908B0103>和<hex:02280CFF05>EObj<hex:F61E90960103>使用<hex:022811FF0A>EventItem<hex:F61E89120103>。

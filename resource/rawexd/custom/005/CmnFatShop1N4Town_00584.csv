@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNFATSHOP1N4TOWN_00584_GRAMSOL_000_001,哈哈，店还没开呢<hex:020813E905FF07>妹子<hex:FF07>兄弟<hex:03>！
 1,TEXT_CMNFATSHOP1N4TOWN_00584_GRAMSOL_001_001,哈哈，现在还没法做生意呢<hex:020813E905FF07>妹子<hex:FF07>兄弟<hex:03>！<hex:02100103>订的货全不到，这店简直没法开了！
 2,TEXT_CMNFATSHOP1N4TOWN_00584_SYSTEM_001_002,需要将“暗影之逆焰主线任务”推进到特定的阶段<hex:02100103>才能开始与当前地区的广域交易商进行交易。

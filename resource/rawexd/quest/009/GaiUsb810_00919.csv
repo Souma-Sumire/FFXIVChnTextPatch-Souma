@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB810_00919_SEQ_00,蓝玉大街国际市场的商人辛特戈特好像有什么麻烦。
 1,TEXT_GAIUSB810_00919_SEQ_01,辛特戈特需要的<hex:022811FF0A>EventItem<hex:F61E874A0103>也没能准时到货。前往蓝雾营地，和艾玛吉娜矿山公司的负责人帕帕瓦兹谈谈。
 2,TEXT_GAIUSB810_00919_SEQ_02,和帕帕瓦兹进行了交谈。和辛特戈特一样，他好像也有什么困难。

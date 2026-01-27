@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ613_01881_SEQ_00,飞龙港的玛艾娜有个地方想让冒险者去。
 1,TEXT_HEAVNZ613_01881_SEQ_01,接受了玛艾娜的委托。玛艾娜想让冒险者去支援一下前往东方眼目的侦察队。前往翻云雾海的东方眼目，和附近的东北侦察队的龙骑士汇合。
 2,TEXT_HEAVNZ613_01881_SEQ_02,据东北侦察队的龙骑士所说，他们被<hex:02280FFF09>BNpcName<hex:F20E2E0103>袭击了。为了支援他们完成任务，在东方眼目讨伐3只<hex:02280FFF09>BNpcName<hex:F20E2E0103>。

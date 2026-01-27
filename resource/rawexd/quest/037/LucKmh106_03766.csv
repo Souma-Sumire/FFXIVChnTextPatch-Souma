@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMH106_03766_SEQ_00,法诺村的雅·修特拉想要顺路去个地方。
 1,TEXT_LUCKMH106_03766_SEQ_01,
 2,TEXT_LUCKMH106_03766_SEQ_02,

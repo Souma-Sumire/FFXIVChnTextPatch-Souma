@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOT5THAUMAZEIN_00745_EVERILDA_000_000,你就是那个冒险者吧。<hex:02100103>事情我都听说了，是遇到了什么麻烦吗？
 1,TEXT_REGNOT5THAUMAZEIN_00745_EVERILDA_000_001,我们研究员已经做了自己的力所能及之事。<hex:02100103>诸神黄昏号魔导船就交给你们了……<hex:02100103>祝你们旅途平安！
 2,TEXT_REGNOT5THAUMAZEIN_00745_EVERILDA_000_002,多亏了你们，如今星球成功摆脱了危机。<hex:02100103>我们这么多年的辛苦也得到了回报，感慨万千。<hex:02100103>我代表广大研究员向你们表示感谢……

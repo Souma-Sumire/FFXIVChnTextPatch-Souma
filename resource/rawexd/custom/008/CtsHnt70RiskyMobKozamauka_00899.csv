@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT70RISKYMOBKOZAMAUKA_00899_BOLDUXUN_000_001,给你个忠告，克扎玛乌卡湿地中栖息着许多色彩鲜艳的野生动物。<hex:02100103>那大多是威胁敌人的警戒色。<hex:02100103>你可不要被那鲜艳的外表骗了，误以为它们没什么威胁。
 1,TEXT_CTSHNT70RISKYMOBKOZAMAUKA_00899_BOLDUXUN_000_002,哟，你终于来了。<hex:02100103>波尔·欧伽让我告诉你一些狩猎的信息。<hex:02100103>如果你想了解这片区域中危险的魔物，尽管来问我。
 2,TEXT_CTSHNT70RISKYMOBKOZAMAUKA_00899_BOLDUXUN_Q1_000_000,想了解什么？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSB503_03867_SEQ_00,圣阿达玛·兰达玛教会的马尔克斯正在寻找修理所需的工具。
 1,TEXT_XXAUSB503_03867_SEQ_01,接受了马尔克斯的委托，他希望冒险者能够去进行交涉，买到用于修理怀表所需的工具。将<hex:022811FF0A>EventItem<hex:F61E90460103>交给东萨纳兰的枯骨营地的旅行雕金匠。
 2,TEXT_XXAUSB503_03867_SEQ_02,从旅行的雕金匠那里买到了2种工具。将<hex:022811FF0A>EventItem<hex:F61E90440103>和<hex:022811FF0A>EventItem<hex:F61E90450103>交给圣阿达玛·兰达玛教会的马尔克斯。

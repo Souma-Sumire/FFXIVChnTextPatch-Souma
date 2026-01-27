@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ220_01789_SEQ_00,自由脑窟穴的吃不够很在意这片森林。
 1,TEXT_HEAVNZ220_01789_SEQ_01,吃不够拜托冒险者讨伐<hex:02280FFF09>BNpcName<hex:F20DF00103>。前往龙堡参天高地的荒烟野地，讨伐4只<hex:02280FFF09>BNpcName<hex:F20DF00103>。
 2,TEXT_HEAVNZ220_01789_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20DF00103>。向自由脑窟穴的吃不够报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST055_00161_SEQ_00,弯枝牧场的吕凯洛，希望冒险者去寻找消失的陆行鸟蛋。
 1,TEXT_SUBFST055_00161_SEQ_01,消失的陆行鸟蛋对吕凯洛来说十分重要。为了寻找线索，询问一下弯枝牧场的人。
 2,TEXT_SUBFST055_00161_SEQ_02,询问完了牧场的人。向吕凯洛报告。

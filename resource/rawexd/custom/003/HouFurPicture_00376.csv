@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HOUFURPICTURE_00376_Q1_000_000,【绘画作品：<hex:02280AFF05>Item<hex:E8020103>】
 1,TEXT_HOUFURPICTURE_00376_Q1_000_001,【绘画作品：无】
 2,TEXT_HOUFURPICTURE_00376_A1_000_002,添加绘画作品

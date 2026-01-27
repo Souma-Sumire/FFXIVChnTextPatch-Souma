@@ -1,5 +1,5 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03201_000010_KRILE,我要解除魔神的束缚！<hex:02100103>大家准备好！

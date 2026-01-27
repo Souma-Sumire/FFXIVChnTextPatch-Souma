@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKME118_04436_SEQ_00,忘海的希斯拉德若有所思。
 1,TEXT_AKTKME118_04436_SEQ_01,
 2,TEXT_AKTKME118_04436_SEQ_02,

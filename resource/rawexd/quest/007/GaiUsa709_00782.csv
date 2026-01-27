@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA709_00782_SEQ_00,小阿拉米格的古恩德巴尔德有事情要和冒险者谈。
 1,TEXT_GAIUSA709_00782_SEQ_01,少女博特里阿娜遭到了骸旅团的袭击。得知此事的威尔雷德等小阿拉米格的青年们怒不可遏，随时都可能爆发。调查他们的动向。
 2,TEXT_GAIUSA709_00782_SEQ_02,威尔雷德好像决定了要实行他所说的“作战”。将<hex:022811FF0A>EventItem<hex:F61E884D0103>和<hex:022811FF0A>EventItem<hex:F61E884E0103>交给小阿拉米格的古恩德巴尔德，并向他报告。

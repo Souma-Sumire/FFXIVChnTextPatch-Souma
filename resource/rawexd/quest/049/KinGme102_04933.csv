@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGME102_04933_SEQ_00,地中天道秘密基地的乌克·拉玛特正准备启程前往永护塔。
 1,TEXT_KINGME102_04933_SEQ_01,
 2,TEXT_KINGME102_04933_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT40KUGANE1_00426_WLVEVA_000_000,虽然东方文化非常吸引人，<hex:02100103>但这附近的海域有强劲的魔物徘徊，<hex:02100103>必须要多加小心才行。
 1,TEXT_CTSHNT40KUGANE1_00426_WLVEVA_000_001,这不是正式兵团成员<hex:022903EB0203>嘛。<hex:02100103>你想要了解一下出没在附近海域的强劲怪物吗？
 2,TEXT_CTSHNT40KUGANE1_00426_WLVEVA_Q1_000_000,想了解什么？

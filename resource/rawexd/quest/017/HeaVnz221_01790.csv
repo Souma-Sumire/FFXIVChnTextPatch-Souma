@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ221_01790_SEQ_00,自由脑窟穴的跑得快正看着武器库发愁。
 1,TEXT_HEAVNZ221_01790_SEQ_01,跑得快拜托冒险者准备<hex:022811FF0A>EventItem<hex:F61E8ACE0103>。讨伐龙堡参天高地唯一脑窟穴的<hex:02280FFF09>BNpcName<hex:F20DF50103>，获取2把<hex:022811FF0A>EventItem<hex:F61E8ACE0103>。
 2,TEXT_HEAVNZ221_01790_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ACE0103>。将<hex:022811FF0A>EventItem<hex:F61E8ACE0103>交给自由脑窟穴的跑得快。

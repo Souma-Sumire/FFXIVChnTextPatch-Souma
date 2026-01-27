@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ635_01903_SEQ_00,云顶营地的法布雷耶好像在思考着什么。
 1,TEXT_HEAVNZ635_01903_SEQ_01,法布雷耶委托冒险者前去取回<hex:022811FF0A>EventItem<hex:F61E8AFA0103>。前往阿巴拉提亚云海的牧牛台，调查<hex:02280CFF05>EObj<hex:F61E9B130103>获取<hex:022811FF0A>EventItem<hex:F61E8AFA0103>。
 2,TEXT_HEAVNZ635_01903_SEQ_02,获取了<hex:022811FF0A>EventItem<hex:F61E8AFA0103>。将<hex:022811FF0A>EventItem<hex:F61E8AFA0103>交给云顶营地的法布雷耶。

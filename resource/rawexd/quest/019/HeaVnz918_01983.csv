@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ918_01983_SEQ_00,第三传送环的研究系统安静地伫立着。
 1,TEXT_HEAVNZ918_01983_SEQ_01,研究系统向亚拉戈帝国军兵将请求协助。在阿济兹拉的贝塔管区讨伐2只<hex:02280FFF09>BNpcName<hex:F20DD40103>。
 2,TEXT_HEAVNZ918_01983_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20DD40103>。向第三传送环的研究系统报告。

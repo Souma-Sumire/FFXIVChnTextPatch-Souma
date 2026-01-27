@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ207_01776_SEQ_00,尾羽集落的卢帕尔得到了一个好消息。
 1,TEXT_HEAVNZ207_01776_SEQ_01,卢帕尔收到了有易捕获的陆行鸟出没的情报。和龙堡参天高地尾羽集落的奇·扬塔对话，协助她的初次作战。
 2,TEXT_HEAVNZ207_01776_SEQ_02,向奇·扬塔了解了陆行鸟捕获计划。在尾羽集落北方陆行鸟之森的<hex:02280CFF05>EObj<hex:F61E9C720103>设置<hex:022811FF0A>EventItem<hex:F61E8B7E0103>。

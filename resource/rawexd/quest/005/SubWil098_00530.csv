@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL098_00530_SEQ_00,无望流民街的布雷夫斯很担心生病的朋友。
 1,TEXT_SUBWIL098_00530_SEQ_01,为了给朋友治病需要毒蟾蜍的毒液。打倒栖息在邪嗣的毒蟾蜍，取得2个蟾蜍的毒液。
 2,TEXT_SUBWIL098_00530_SEQ_02,成功取得了蟾蜍的毒液。交给无望流民街的布雷夫斯。

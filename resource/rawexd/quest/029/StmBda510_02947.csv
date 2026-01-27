@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA510_02947_SEQ_00,草刈家的贯傻笑着看着冒险者等人。
 1,TEXT_STMBDA510_02947_SEQ_01,
 2,TEXT_STMBDA510_02947_SEQ_02,

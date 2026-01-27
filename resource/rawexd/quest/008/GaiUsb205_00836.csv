@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB205_00836_SEQ_00,太阳海岸的管家佩·艾巴罗，有事想要委托给冒险者。
 1,TEXT_GAIUSB205_00836_SEQ_01,佩·艾巴罗的家主格格鲁玖，坚称这一带近来的地震诱因都是<hex:02280FFF09>BNpcName<hex:F205210103>。讨伐6只<hex:02280FFF09>BNpcName<hex:F205210103>。
 2,TEXT_GAIUSB205_00836_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F205210103>。向太阳海岸的佩·艾巴罗报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4WRENRIC_00631_WRENRIC_000_000,住在上路客店的只有患者和辅助患者的职工而已。<hex:02100103>所以才需要警戒周围的情况。<hex:02100103>像我们这样的看守就是为此而来的。
 1,TEXT_REGNOR4WRENRIC_00631_WRENRIC_000_010,你问我哈尔里克有没有经过这里吗？<hex:02100103>抱歉……因为光顾着聊天了，没注意过。
 2,TEXT_REGNOR4WRENRIC_00631_WRENRIC_000_020,在这么危险的地方工作，<hex:02100103>也不是没有心理准备……但是！

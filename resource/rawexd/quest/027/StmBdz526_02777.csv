@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ526_02777_SEQ_00,晨曦王座的布都嘎部战士有事想委托传闻中的战士。
 1,TEXT_STMBDZ526_02777_SEQ_01,
 2,TEXT_STMBDZ526_02777_SEQ_02,

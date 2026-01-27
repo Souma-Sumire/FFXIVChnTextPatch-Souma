@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ008_01733_SEQ_00,隼巢的奥莉安娜好像有什么烦恼。
 1,TEXT_HEAVNZ008_01733_SEQ_01,和奥莉安娜进行了对话。前往库尔札斯西部高地的交汇河，击退异端者，回收<hex:022811FF0A>EventItem<hex:F61E8B460103>。
 2,TEXT_HEAVNZ008_01733_SEQ_02,发现并夺回了<hex:022811FF0A>EventItem<hex:F61E8B460103>。将<hex:022811FF0A>EventItem<hex:F61E8B460103>交给隼巢的奥莉安娜。

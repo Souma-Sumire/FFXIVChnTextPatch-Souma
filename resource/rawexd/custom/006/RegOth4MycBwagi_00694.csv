@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH4MYCBWAGI_00694_BWAGI_000_000,幸好成功撤退了……不过真是吓了我一跳啊。<hex:02100103>大姐头命令我将情报送到这里，<hex:02100103>没想到在博兹雅也能看到那种“异形怪物”……
 1,TEXT_REGOTH4MYCBWAGI_00694_BWAGI_000_001,虽然不知道是怎么回事，但看来事情变得复杂了啊。<hex:02100103>我会作为联络员暂时留在博兹雅。<hex:02100103>又要请你多关照了。
 2,TEXT_REGOTH4MYCBWAGI_00694_BWAGI_000_002,话说回来，你有什么事想问我吗？

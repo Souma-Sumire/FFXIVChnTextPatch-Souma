@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKYB002_03598_SEQ_00,水晶都的哈尔多开始逐渐认可冒险者的实力。
 1,TEXT_LUCKYB002_03598_SEQ_01,
 2,TEXT_LUCKYB002_03598_SEQ_02,

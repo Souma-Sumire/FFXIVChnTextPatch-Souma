@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF101_03644_SEQ_00,悬挂公馆的管理员似乎很惊讶。
 1,TEXT_LUCKMF101_03644_SEQ_01,
 2,TEXT_LUCKMF101_03644_SEQ_02,

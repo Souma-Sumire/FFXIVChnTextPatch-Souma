@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKYR202_04177_SEQ_00,旧萨雷安的诺尔拖塔很钦佩冒险者。
 1,TEXT_AKTKYR202_04177_SEQ_01,
 2,TEXT_AKTKYR202_04177_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBPLD350_01056_SEQ_00,近卫兵团银胄团的总长杰林斯，想要传授给冒险者新的战技。
 1,TEXT_JOBPLD350_01056_SEQ_01,从杰林斯处习得了战技。去拉诺西亚外地的隐者庵，点燃<hex:02280CFF05>EObj<hex:F61E8DAA0103>，讨伐随之出现的魔猿。
 2,TEXT_JOBPLD350_01056_SEQ_02,成功讨伐了魔猿。向乌尔达哈御道的杰林斯报告。

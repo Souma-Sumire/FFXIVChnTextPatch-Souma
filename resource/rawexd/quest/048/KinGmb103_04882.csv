@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMB103_04882_SEQ_00,釉药工房的柯纳还有话要说。
 1,TEXT_KINGMB103_04882_SEQ_01,
 2,TEXT_KINGMB103_04882_SEQ_02,

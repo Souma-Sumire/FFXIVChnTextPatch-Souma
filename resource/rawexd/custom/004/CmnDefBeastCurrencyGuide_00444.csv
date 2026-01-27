@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFBEASTCURRENCYGUIDE_00444_SYSTEM_000_010,兽人货币证书可以在失物管理人或者各兽人部落的商店人员处<hex:02100103>换成能够使用的兽人货币。
 1,TEXT_CMNDEFBEASTCURRENCYGUIDE_00444_SYSTEM_000_011,交换后的兽人货币持有数量，<hex:02100103>可以在货币一览中进行确认。

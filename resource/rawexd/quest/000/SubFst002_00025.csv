@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST002_00025_SEQ_00,枪术师行会的布瓦瑟隆，想委托新来的冒险者去驱除松鼠。
 1,TEXT_SUBFST002_00025_SEQ_01,枪术师行会的柱子遭到了松鼠的啃食。去讨伐6只栖息于中央林区的松鼠。
 2,TEXT_SUBFST002_00025_SEQ_02,成功讨伐了松鼠。向枪术师行会的布瓦瑟隆报告。

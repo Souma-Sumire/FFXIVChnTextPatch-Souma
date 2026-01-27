@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGWZ204_05414_SEQ_00,玻璃匠基地的姆姆珂想为手有余闲的真诚之人介绍一个人。
 1,TEXT_KINGWZ204_05414_SEQ_01,
 2,TEXT_KINGWZ204_05414_SEQ_02,

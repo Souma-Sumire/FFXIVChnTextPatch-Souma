@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKSA107_03947_SEQ_00,乌特亚前哨的水琴似乎找到了第三个观测地点。
 1,TEXT_LUCKSA107_03947_SEQ_01,
 2,TEXT_LUCKSA107_03947_SEQ_02,

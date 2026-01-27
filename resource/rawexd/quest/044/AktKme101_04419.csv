@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKME101_04419_SEQ_00,阿尔扎达尔大街的古·拉哈·提亚有东西想要交给冒险者。
 1,TEXT_AKTKME101_04419_SEQ_01,
 2,TEXT_AKTKME101_04419_SEQ_02,

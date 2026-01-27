@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEATHEDROWNINGWENCH_00158_BADERON_000_000,哟，你来得正好。<hex:02100103>欢迎来到巴德龙的酒馆“沉溺海豚亭”！<hex:02100103>这里是冒险者们的故乡！
 1,TEXT_REGSEATHEDROWNINGWENCH_00158_BADERON_000_001,来者不拒，往者不追。<hex:02100103>这也正是这条街上的“自由风气”的体现。<hex:02100103>你也尽可放轻松。
 2,TEXT_REGSEATHEDROWNINGWENCH_00158_BADERON_000_002,但是，灵灾所造成的创伤还残留在各处。<hex:02100103>需要你们冒险者帮忙的地方有很多。<hex:02100103>我很期待着看到你的活跃。

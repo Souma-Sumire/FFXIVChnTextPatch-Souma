@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOT5LOGISTIKONALPHA_00743_DRENIELDAN_000_000,你是……来自异国的人吧？<hex:02100103>如果有什么不明白的，尽管问我好了。
 1,TEXT_REGNOT5LOGISTIKONALPHA_00743_DRENIELDAN_000_001,我们的未来就托付给你们了。<hex:02100103>愿大家此行平安顺遂。
 2,TEXT_REGNOT5LOGISTIKONALPHA_00743_DRENIELDAN_000_002,你们能平安归来，我和职员们都非常开心。<hex:02100103>那么如果有什么不明白的，尽管问我好了。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMA112_04368_SEQ_00,正厅的桑克瑞德打算出发前往萨维奈岛。
 1,TEXT_AKTKMA112_04368_SEQ_01,和桑克瑞德等人一起准备前往萨维奈岛。和旧萨雷安传送魔法研究所的琪特谈谈。
 2,TEXT_AKTKMA112_04368_SEQ_02,琪特为冒险者等人介绍了新型以太之光。在旧萨雷安以太之光广场的<hex:02280CFF05>EObj<hex:F61EB32B0103>等待。

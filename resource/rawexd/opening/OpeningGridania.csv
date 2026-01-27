@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_OPENINGGRIDANIA_BERTENNANT_000_01,喂，我说你！过来这边！
 1,TEXT_OPENINGGRIDANIA_BERTENNANT_000_02,等一下！你要去哪里？<hex:02100103>我说过来这边，你没听到吗？！
 2,TEXT_OPENINGGRIDANIA_ULTA_000_03,等一下！你要去哪里？<hex:02100103>你得去魔女咖啡馆和缪恩打招呼。

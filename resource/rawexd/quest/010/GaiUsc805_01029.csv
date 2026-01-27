@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC805_01029_SEQ_00,骷髅谷营地的阿茶特拉哈，有件事想要委托给冒险者。
 1,TEXT_GAIUSC805_01029_SEQ_01,阿茶特拉哈说，在攻打海蛇巢穴前，先要削减敌人的数量。讨伐<hex:02280FFF09>BNpcName<hex:F2015B0103>、<hex:02280FFF09>BNpcName<hex:F201590103>和<hex:02280FFF09>BNpcName<hex:F2022F0103>共5名。
 2,TEXT_GAIUSC805_01029_SEQ_02,成功打倒了海蛇之舌。回到骷髅谷营地，向阿茶特拉哈报告。

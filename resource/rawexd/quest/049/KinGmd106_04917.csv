@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD106_04917_SEQ_00,胡萨塔伊驿镇前的埃伦维尔总算是放心了。
 1,TEXT_KINGMD106_04917_SEQ_01,
 2,TEXT_KINGMD106_04917_SEQ_02,

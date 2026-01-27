@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ811_01941_SEQ_00,田园郡的劳德乔克斯的商品已经售罄了。
 1,TEXT_HEAVNZ811_01941_SEQ_01,和劳德乔克斯进行了交谈。他为了补充商品，希望得到<hex:022811FF0A>EventItem<hex:F61E8B1D0103>。在龙堡内陆低地的萨雷安精制区讨伐<hex:02280FFF09>BNpcName<hex:F20E0D0103>，获取6枚<hex:022811FF0A>EventItem<hex:F61E8B1D0103>。
 2,TEXT_HEAVNZ811_01941_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B1D0103>。将<hex:022811FF0A>EventItem<hex:F61E8B1D0103>交给田园郡的劳德乔克斯。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ209_02681_SEQ_00,痉挛寨的淡海看起来很吃惊。
 1,TEXT_STMBDZ209_02681_SEQ_01,
 2,TEXT_STMBDZ209_02681_SEQ_02,

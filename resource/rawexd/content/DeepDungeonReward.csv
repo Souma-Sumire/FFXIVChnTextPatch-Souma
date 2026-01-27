@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_DEEPDUNGEONREWARD_EUNAKOTOR_000_001,我的名字是艾·乌纳·科特罗……如你所见我是个“角尊”。<hex:02100103>最近黑衣森林不是很太平，我过来也是为了帮忙解决问题。<hex:02100103>你也请多加小心。
 1,TEXT_DEEPDUNGEONREWARD_EUNAKOTOR_000_010,我的名字是艾·乌纳·科特罗……如你所见我是个“角尊”。<hex:02100103>我正驻留在这里协助死者宫殿的调查活动。
 2,TEXT_DEEPDUNGEONREWARD_EUNAKOTOR_000_020,我稍后也会前往空居，<hex:02100103>希望你能先过去。<hex:02100103>如果我的推测没错，这件事还需要借助你的力量……

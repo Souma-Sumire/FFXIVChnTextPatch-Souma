@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06006_000010_YSHTOLA,塔塔露找你的那件事已经解决了？
 1,TEXT_VOICEMAN_06006_000020_YSHTOLA,这真是一个意外惊喜啊，<hex:02100103>她可真是个好姑娘。
 2,TEXT_VOICEMAN_06006_000030_THANCRED,塔塔露说的没错，回首这段经历，<hex:02100103>真是波澜起伏啊……

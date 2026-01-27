@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ813_02841_SEQ_00,阿拉基利的高地之民母亲好像在担心什么。
 1,TEXT_STMBDZ813_02841_SEQ_01,
 2,TEXT_STMBDZ813_02841_SEQ_02,

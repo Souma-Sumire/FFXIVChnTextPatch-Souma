@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESHLX2025WITCH_00948_PUMPKIN_000_000,……呼呼……有什么想跟我聊聊的吗？
 1,TEXT_FESHLX2025WITCH_00948_Q1_000_000,想了解什么？
 2,TEXT_FESHLX2025WITCH_00948_A1_000_001,这里是什么地方？

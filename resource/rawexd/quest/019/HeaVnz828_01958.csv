@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ828_01958_SEQ_00,萨雷安治学区的布姆肖克斯看起来快哭了。
 1,TEXT_HEAVNZ828_01958_SEQ_01,和布姆肖克斯进行了交谈。她因为害怕生息在水源的<hex:02280FFF09>BNpcName<hex:F20E150103>而无法进行调查。在龙堡内陆低地的圣茉夏娜植物园讨伐3只<hex:02280FFF09>BNpcName<hex:F20E150103>。
 2,TEXT_HEAVNZ828_01958_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E150103>。向萨雷安治学区的布姆肖克斯报告。

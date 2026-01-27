@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY701_03131_SEQ_00,渔村的滨风有事情想要告诉冒险者。
 1,TEXT_STMBDY701_03131_SEQ_01,和滨风进行了交谈。得知罗生正在寻找冒险者，好像有事情想要委托。前往红玉海的痉挛寨，和负责人九星谈谈。
 2,TEXT_STMBDY701_03131_SEQ_02,和九星进行了交谈。在天之御柱附近的<hex:02280CFF05>EObj<hex:F61EA9AA0103>等待。

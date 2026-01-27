@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD117_03622_SEQ_00,南琥珀丘的琳十分担心。
 1,TEXT_LUCKMD117_03622_SEQ_01,
 2,TEXT_LUCKMD117_03622_SEQ_02,

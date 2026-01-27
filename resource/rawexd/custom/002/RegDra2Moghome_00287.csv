@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGDRA2MOGHOME_00287_MOGGIE_000,库啵啵！<hex:02100103>你找莫古力之家第二博识的莫古琪有什么事吗库啵？
 1,TEXT_REGDRA2MOGHOME_00287_MOGGIE_001,希望希德勒格能早日康复库啵。<hex:02100103>为此他所需要的，果然还是爱吧库啵？
 2,TEXT_REGDRA2MOGHOME_00287_MOGGIE_002,咦，今天莉艾勒他们没跟着你库啵？<hex:02100103>别哭别哭，莫古力之家第二博识的莫古琪来陪你说话库啵！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ703_01907_SEQ_00,尊杜集落的寇努瓦努很想要某样东西。
 1,TEXT_HEAVNZ703_01907_SEQ_01,寇努瓦努委托冒险者拿回<hex:022811FF0A>EventItem<hex:F61E8B040103>。从阿巴拉提亚云海蓝天窗的<hex:02280FFF09>BNpcName<hex:F20DB60103>身上获取5个<hex:022811FF0A>EventItem<hex:F61E8B040103>。
 2,TEXT_HEAVNZ703_01907_SEQ_02,获得了5个<hex:022811FF0A>EventItem<hex:F61E8B040103>。将<hex:022811FF0A>EventItem<hex:F61E8B040103>交给尊杜集落的寇努瓦努。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFMATERIASLOT_00174_MUTAMIX_000_000,呼哧……呼哧……<hex:02100103>那么 你想要 合成吗？<hex:02100103>5个 魔晶石 给我！
 1,TEXT_CMNDEFMATERIASLOT_00174_MUTAMIX_000_020,闪闪发亮 魔晶石 混在一起！<hex:02100103>合成出 新的 魔晶石！<hex:02100103>会是 什么样 好期待！
 2,TEXT_CMNDEFMATERIASLOT_00174_MUTAMIX_000_030,嘿咻嘿咻 合成完了！<hex:02100103>新的 魔晶石 合成好了！

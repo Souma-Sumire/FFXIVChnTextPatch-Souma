@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESYKWMEDALEXCHANGE_00348_HINOSHIN_000_000,啊，是你啊……<hex:02100103>要用妖怪徽章来交换妖怪宠物吗？<hex:02100103>还是想换点别的？
 1,TEXT_FESYKWMEDALEXCHANGE_00348_HINOSHIN_100_000,哎呀，你不是那个武器收藏家嘛！<hex:02100103>今天是来看我的吗？<hex:02100103>还是说还有什么想要的东西？
 2,TEXT_FESYKWMEDALEXCHANGE_00348_Q1_000_001,要做什么？

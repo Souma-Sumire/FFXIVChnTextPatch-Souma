@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ630_01898_SEQ_00,圣菲内雅连队露营地的多米尼亚克想和冒险者谈谈关于引诱龙族一事。
 1,TEXT_HEAVNZ630_01898_SEQ_01,"冒险者打倒的<hex:02280CFF05>EObj<hex:F61E9CA50103>被偷走了。向圣菲内雅连队露营地的玛吉特打声招呼,与多米尼亚克一起谈谈。"
 2,TEXT_HEAVNZ630_01898_SEQ_02,向玛吉特询问了偷走<hex:02280CFF05>EObj<hex:F61E9CA50103>的犯人的信息。和圣菲内雅连队露营地的多米尼亚克谈谈，听听他的意见。

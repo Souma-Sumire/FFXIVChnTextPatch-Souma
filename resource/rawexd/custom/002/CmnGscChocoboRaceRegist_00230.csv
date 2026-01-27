@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCCHOCOBORACEREGIST_00230_TALK_ACTOR,你是准备登记新的竞赛陆行鸟吧！<hex:02100103>想将哪一只新陆行鸟登记为竞赛陆行鸟呢？
 1,TEXT_CMNGSCCHOCOBORACEREGIST_00230_TALK_ACTOR_02,你已经学习到了陆行鸟竞赛的基本规则吗？<hex:02100103>那接下来为你介绍培育竞赛陆行鸟的方法吧！
 2,TEXT_CMNGSCCHOCOBORACEREGIST_00230_TALK_ACTOR_03,竞赛陆行鸟可以通过“训练”这一手段获得成长。<hex:02100103>另外，还可以让它学习名为“竞赛能力”的陆行鸟专用技能。

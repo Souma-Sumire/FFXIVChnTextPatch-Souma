@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ423_02746_SEQ_00,弓束官邸的鲶鱼精老师正在寻找靠谱的人类。
 1,TEXT_STMBDZ423_02746_SEQ_01,
 2,TEXT_STMBDZ423_02746_SEQ_02,

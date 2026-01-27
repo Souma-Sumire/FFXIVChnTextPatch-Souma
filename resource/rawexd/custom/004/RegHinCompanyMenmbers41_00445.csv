@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGHINCOMPANYMENMBERS41_00445_RAMZALEXENTALE_000_050,现在我们正依靠记忆解读«杜莱白书»中未被解读的部分，<hex:02100103>特别是与那块被盗贼邦加莫南夺走的度玛圣石相关的内容。
 1,TEXT_REGHINCOMPANYMENMBERS41_00445_RAMZALEXENTALE_000_051,幸好父亲的研究资料和我的笔记还留着。<hex:02100103>请再给我们一点时间！
 2,TEXT_REGHINCOMPANYMENMBERS41_00445_ALMALEXENTALE_000_050,我有些不安……虽说这是我们一族代代相传的愿望，<hex:02100103>但假如你们当时在拉巴纳斯塔遇到的魔物更多一些，<hex:02100103>也许父亲和哥哥就再也回不来了……

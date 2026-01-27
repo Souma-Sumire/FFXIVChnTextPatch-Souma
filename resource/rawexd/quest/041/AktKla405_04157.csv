@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKLA405_04157_SEQ_00,屯集堂的雏芥子正在享受研究的乐趣。
 1,TEXT_AKTKLA405_04157_SEQ_01,在第二防波堤的<hex:02280CFF05>EObj<hex:F61EB2470103>等待
 2,TEXT_AKTKLA405_04157_SEQ_02,和断金对话

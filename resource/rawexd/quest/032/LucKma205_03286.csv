@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMA205_03286_SEQ_00,工匠村的阿尔菲诺收下了画笔并思考了起来。
 1,TEXT_LUCKMA205_03286_SEQ_01,决定和阿尔菲诺以画家的身份争取进入游末邦。在珂露西亚岛门前区的<hex:02280CFF05>EObj<hex:F61EAB6C0103>等待。
 2,TEXT_LUCKMA205_03286_SEQ_02,等待了一会之后，两个小丑来到了门前区。进入游末邦。

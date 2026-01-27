@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBBRD500_01090_SEQ_00,让泰尔想要把最后一件吟游诗人战装交给冒险者。
 1,TEXT_JOBBRD500_01090_SEQ_01,接受了让泰尔的委托。在库尔札斯中央高地阿德内尔占星台西边的<hex:02280CFF05>EObj<hex:F61E8DC50103>使用<hex:022811FF0A>EventItem<hex:F61E88390103>。
 2,TEXT_JOBBRD500_01090_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E8DC50103>使用了<hex:022811FF0A>EventItem<hex:F61E88390103>。向库尔札斯中央高地的让泰尔报告。

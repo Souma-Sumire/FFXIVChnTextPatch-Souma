@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_000,又到本大爷出场的时候了吗？<hex:02100103>那就让你见识见识经过属性压缩锻造法强化后的力量吧！
 1,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_001,哈啊啊啊——！
 2,TEXT_CTSMKDWEPTRADE2_00952_GEROLT_000_002,我都佩服我自己！<hex:02100103>4种属性的浓厚以太得到了完美调和，<hex:02100103>以太没有就此消散，也都是多亏了这座岛……

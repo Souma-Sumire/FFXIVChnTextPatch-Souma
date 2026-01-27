@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA909_00804_SEQ_00,邓斯坦哨塔的马尔塞特正在寻找可以协助自己研究的人。
 1,TEXT_GAIUSA909_00804_SEQ_01,打倒<hex:02280DFF09>BNpcName<hex:310103>，获取<hex:022811FF0A>EventItem<hex:F61E86F70103>。
 2,TEXT_GAIUSA909_00804_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E86F70103>交给邓斯坦哨塔的马尔塞特。

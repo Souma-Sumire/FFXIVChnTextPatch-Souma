@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMB111_04890_SEQ_00,卡辽扎神殿前的阿尔菲诺想要收集情报。
 1,TEXT_KINGMB111_04890_SEQ_01,
 2,TEXT_KINGMB111_04890_SEQ_02,

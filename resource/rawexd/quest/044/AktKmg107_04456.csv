@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMG107_04456_SEQ_00,瓦铭丙的阿尔菲诺领会了同伴的苦心。
 1,TEXT_AKTKMG107_04456_SEQ_01,
 2,TEXT_AKTKMG107_04456_SEQ_02,

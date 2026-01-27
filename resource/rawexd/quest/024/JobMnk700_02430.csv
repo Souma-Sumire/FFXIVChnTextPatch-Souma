@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBMNK700_02430_SEQ_00,阿拉加纳的维达盖尔特下定了决心。
 1,TEXT_JOBMNK700_02430_SEQ_01,维达盖尔特决定向泰奥巴尔德发起决斗。前往基拉巴尼亚山区的红锈岩山，将<hex:022811FF0A>EventItem<hex:F61E8D550103>交给泰奥巴尔德。
 2,TEXT_JOBMNK700_02430_SEQ_02,泰奥巴尔德接受了维达盖尔特的决斗邀请。和基拉巴尼亚边区开宗堂的维达盖尔特谈谈。

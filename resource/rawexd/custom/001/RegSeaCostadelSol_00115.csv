@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_000,欢迎，请问找我有什么事吗？
 1,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_010,我是格格鲁玖大人的随从，他是这太阳海岸的主人。
 2,TEXT_REGSEACOSTADELSOL_00115_PEBALOH_000_011,我的主人……格格鲁玖大人是走在潮流前线的富豪，<hex:02100103>论赚钱的话无人能出其右。<hex:02100103>但是，除此之外就……不太好说了。

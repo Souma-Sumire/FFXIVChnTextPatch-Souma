@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBREL500_02396_SEQ_00,<hex:024804F201F603><hex:024904F201F703>特殊规则： 职业固定<hex:0249020103><hex:0248020103><hex:02100103>阿尔达希尔有个好消息要告诉冒险者。
 1,TEXT_JOBREL500_02396_SEQ_01,※本任务为<hex:024804F201F603><hex:024904F201F703><hex:0249020103><hex:0248020103> 职业固定任务，<hex:02100103>　需要与接受任务时的职业相同才可继续进行任务。<hex:02100103>※另外，本任务无法直接从日志放弃。<hex:02100103>　需要放弃时请和阿尔达希尔进行对话。<hex:02100103><hex:02100103>盖罗尔特委托冒险者收集<hex:022811FF0A>EventItem<hex:F61E8C6E0103>、<hex:022811FF0A>EventItem<hex:F61E8C6F0103>、<hex:022811FF0A>EventItem<hex:F61E8C700103>。突破神圣遗迹无限城市街古迹可获得<hex:022811FF0A>EventItem<hex:F61E8C6E0103>，突破秘本宝库迦巴勒幻想图书馆可获得<hex:022811FF0A>EventItem<hex:F61E8C6F0103>，突破天山深境索姆阿尔灵峰可获得<hex:022811FF0A>EventItem<hex:F61E8C700103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。
 2,TEXT_JOBREL500_02396_SEQ_02,集齐了3种材料。使用接受任务时的职业并将元灵武器装备上或放在兵装库、背包中，将<hex:022811FF0A>EventItem<hex:F61E8C6E0103>、<hex:022811FF0A>EventItem<hex:F61E8C6F0103>、<hex:022811FF0A>EventItem<hex:F61E8C700103>交给螺旋港的盖罗尔特。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC007_00944_SEQ_00,白云崖前哨的丹伯特，正为弟弟的事情感到苦恼万分。
 1,TEXT_GAIUSC007_00944_SEQ_01,接受了丹伯特的委托，帮助他的弟弟劳伦斯进行越狱。从打瞌睡的狱卒费尔蒂埃身上获得<hex:022811FF0A>EventItem<hex:F61E87600103>。
 2,TEXT_GAIUSC007_00944_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E87600103>交给监狱中的劳伦斯。

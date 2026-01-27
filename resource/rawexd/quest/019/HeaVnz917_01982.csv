@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ917_01982_SEQ_00,第二传送环附近的镇压系统安静地伫立着。
 1,TEXT_HEAVNZ917_01982_SEQ_01,镇压系统开始评估对人压制兵器。在阿济兹拉的阿尔法管区讨伐<hex:02280FFF09>BNpcName<hex:F20DCF0103>和<hex:02280FFF09>BNpcName<hex:F20DCE0103>各3个。
 2,TEXT_HEAVNZ917_01982_SEQ_02,讨伐了对人压制兵器。向第二传送环附近的镇压系统报告。

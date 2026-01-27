@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH4MYCLILJA_00693_LILJA_000_000,我是新人机械师兼业务员莉莉娅！<hex:02100103>你好啊，英雄！<hex:02100103>在我的强烈要求下，杰西大姐终于肯派我来执行这项任务了！
 1,TEXT_REGOTH4MYCLILJA_00693_LILJA_000_001,有什么我能做到的事就尽管吩咐吧！<hex:02100103>反正事已至此，你就放宽心把一切都交给我吧！
 2,TEXT_REGOTH4MYCLILJA_00693_LILJA_000_002,那么，你有什么想问的吗？

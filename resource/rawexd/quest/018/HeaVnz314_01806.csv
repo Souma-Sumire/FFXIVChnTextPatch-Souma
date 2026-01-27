@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ314_01806_SEQ_00,自由脑窟穴的有心理阴影的骨颌族正在仰望天空。
 1,TEXT_HEAVNZ314_01806_SEQ_01,有心理阴影的骨颌族委托冒险者去寻找声音的主人。在龙堡参天高地的阿瓦隆尼亚古陆寻找。
 2,TEXT_HEAVNZ314_01806_SEQ_02,找到了彷徨的骨颌族。他委托冒险者去讨伐<hex:02280FFF09>BNpcName<hex:F20DF80103>。讨伐阿瓦隆尼亚古陆的<hex:02280FFF09>BNpcName<hex:F20DF80103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3KAMAITACHI_00456_KAMAITACHI_100_000,在东方活得最久的瑞兽是玄武大人。<hex:02100103>玄武大人是四圣兽之一，<hex:02100103>拥有我无法企及的妖力。
 1,TEXT_REGOTH3KAMAITACHI_00456_KAMAITACHI_000_000,喂，我说你呢！<hex:02100103>不许对白虎大人失礼！
 2,TEXT_REGOTH3KAMAITACHI_00456_KAMAITACHI_000_001,没想到你这家伙竟然能成功为白虎大人镇魂……<hex:02100103>那个，我可不是坏瑞兽，请不要打我啊？

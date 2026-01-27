@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGLAKSAINTCOINACHSFIND_00113_RAMMBROES_000_000,嗯，这些水晶……嗯？<hex:02100103>你找我有什么事吗？
 1,TEXT_REGLAKSAINTCOINACHSFIND_00113_RAMMBROES_000_001,哎呀，今天过来有什么事吗？<hex:02100103>不管是以召唤师身份也好，还是以冒险者身份也好……<hex:02100103>我都欢迎你。
 2,TEXT_REGLAKSAINTCOINACHSFIND_00113_RAMMBROES_000_002,有你加入新的水晶塔调查计划，<hex:02100103>我也觉得更有把握了。<hex:02100103>有什么问题尽管问我就可以。

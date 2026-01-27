@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA702_01664_SEQ_00,螺旋港的西德有一个想法。
 1,TEXT_HEAVNA702_01664_SEQ_01,决定先寻找连接中枢设施的情报终端。在螺旋港周边的3处<hex:02280CFF05>EObj<hex:F61E9CDC0103>进行张望。
 2,TEXT_HEAVNA702_01664_SEQ_02,没有找到看上去能够操作的装置。和螺旋港的西德谈谈。

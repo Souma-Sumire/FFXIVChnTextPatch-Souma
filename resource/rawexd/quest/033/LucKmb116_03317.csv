@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB116_03317_SEQ_00,普拉恩尼茸洞的卫德·拉德十分喜悦。
 1,TEXT_LUCKMB116_03317_SEQ_01,从卫德·拉德处得知长老已经回来了。和普拉恩尼茸洞的卫德·因克谈谈。
 2,TEXT_LUCKMB116_03317_SEQ_02,从卫德·因克手中接过了石权杖。和伊尔美格云村的大型阿马罗谈谈。

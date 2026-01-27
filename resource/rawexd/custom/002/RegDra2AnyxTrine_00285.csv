@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGDRA2ANYXTRINE_00285_SEHNYTOH_000_000,竟然有人类踏足这片大地，很是罕见……<hex:02100103>你有什么事吗？
 1,TEXT_REGDRA2ANYXTRINE_00285_Q1_000_000,想了解什么？
 2,TEXT_REGDRA2ANYXTRINE_00285_A1_000_001,你是做什么的？

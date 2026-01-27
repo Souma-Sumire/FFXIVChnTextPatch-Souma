@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC507_00995_SEQ_00,圣寇伊纳克调查地的旺达凌·布里兹，有件事想要委托给冒险者。
 1,TEXT_GAIUSC507_00995_SEQ_01,旺达凌·布里兹想要对基迦巨人族的生活状态及习性进行研究。讨伐<hex:02280FFF09>BNpcName<hex:F202870103>、<hex:02280FFF09>BNpcName<hex:F202860103>或<hex:02280FFF09>BNpcName<hex:F202880103>共4只，获得<hex:022811FF0A>EventItem<hex:F61E877A0103>。
 2,TEXT_GAIUSC507_00995_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E877A0103>。将其交给圣寇伊纳克调查地的旺达凌·布里兹。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMA108_04364_SEQ_00,第三十三期扩建坑道前的阿莉塞正在等待出发。
 1,TEXT_AKTKMA108_04364_SEQ_01,
 2,TEXT_AKTKMA108_04364_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ702_02805_SEQ_00,烈士庵的矢比有事想拜托冒险者。
 1,TEXT_STMBDZ702_02805_SEQ_01,
 2,TEXT_STMBDZ702_02805_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKLA102_03228_SEQ_00,中庸工艺馆的伊奥拉正在思考事情。
 1,TEXT_LUCKLA102_03228_SEQ_01,
 2,TEXT_LUCKLA102_03228_SEQ_02,

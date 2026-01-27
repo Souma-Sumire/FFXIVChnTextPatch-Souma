@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ606_01874_SEQ_00,福尔唐伯爵府附近的艾因哈特家的骑兵有东西想要交给冒险者。
 1,TEXT_HEAVNZ606_01874_SEQ_01,艾因哈特家的骑兵想让冒险者把战旗交给未能参加克罗德班的忌辰追悼仪式的蔷薇骑兵团。前往阿巴拉提亚云海的云顶营地，将<hex:022811FF0A>EventItem<hex:F61E8B8F0103>拿给鲁特勒蒙查看。
 2,TEXT_HEAVNZ606_01874_SEQ_02,鲁特勒蒙查看了<hex:022811FF0A>EventItem<hex:F61E8B8F0103>，他回想起了在钢卫塔的激战与克罗德班的事。在那之后，他希望将战旗拿给拉妮艾特。前往阿巴拉提亚云海的玫瑰园，将<hex:022811FF0A>EventItem<hex:F61E8B8F0103>交给拉妮艾特。

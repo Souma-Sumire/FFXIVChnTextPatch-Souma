@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ809_01939_SEQ_00,田园郡的德莱德克斯面对着破烂堆惊慌不已。
 1,TEXT_HEAVNZ809_01939_SEQ_01,和德莱德克斯进行了交谈。收集装袋的废品似乎被人偷走了。在龙堡内陆低地的萨雷安精制区寻找4个<hex:022811FF0A>EventItem<hex:F61E8B1C0103>。
 2,TEXT_HEAVNZ809_01939_SEQ_02,获得了4个<hex:022811FF0A>EventItem<hex:F61E8B1C0103>。将<hex:022811FF0A>EventItem<hex:F61E8B1C0103>交给田园郡的德莱德克斯。

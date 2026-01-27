@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ926_01991_SEQ_00,德尔塔管区的管理系统安静地伫立着。
 1,TEXT_HEAVNZ926_01991_SEQ_01,访问了管理系统。发现了系统内未登记的龙族个体。在德尔塔管区讨伐4只<hex:02280FFF09>BNpcName<hex:F20DE50103>。
 2,TEXT_HEAVNZ926_01991_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20DE50103>。向德尔塔管区的管理系统报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKBA411_03624_SEQ_00,鼹灵集市的凯瑞格有情报想告诉冒险者。
 1,TEXT_LUCKBA411_03624_SEQ_01,凯瑞格想利用机械人偶去尝试测量空洞的危险范围。想要驱动机械人偶需要收集必要的材料。在安穆·艾兰的琥珀原的<hex:02280CFF05>EObj<hex:F61EAC360103>张望，打倒出现的<hex:02280FFF09>BNpcName<hex:F220D50103>，获得<hex:022811FF0A>EventItem<hex:F61E8EEC0103>。
 2,TEXT_LUCKBA411_03624_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8EEC0103>。将<hex:022811FF0A>EventItem<hex:F61E8EEC0103>交给鼹灵集市的凯瑞格。

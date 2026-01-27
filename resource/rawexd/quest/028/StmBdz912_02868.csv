@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ912_02868_SEQ_00,神拳痕的拉努尔夫正在寻找协助者。
 1,TEXT_STMBDZ912_02868_SEQ_01,
 2,TEXT_STMBDZ912_02868_SEQ_02,

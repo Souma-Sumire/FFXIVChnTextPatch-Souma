@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDOMRECONCOLLECTIONBOX_00484_SYSTEM_000_000,好像是用来放置物品的地方……
 1,TEXT_CTSDOMRECONCOLLECTIONBOX_00484_KOZAKURA_000_001,感谢你提供物资！<hex:02100103>这是这回的谢礼，请你拿好。
 2,TEXT_CTSDOMRECONCOLLECTIONBOX_00484_KOZAKURA_000_002,感谢你提供物资！<hex:02100103>多亏了你的帮助，这周的预算已经全部用光了。<hex:02100103>请你过些日子再来吧！

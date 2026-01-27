@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEABEGINNERTANKGUIDE_00337_TANKCOACH00337_000_000,这里是冒险者行会的初学者学堂！<hex:02100103>会教授如何与同伴共同战斗等知识……<hex:02100103>不过你需要积累些经验再来。
 1,TEXT_REGSEABEGINNERTANKGUIDE_00337_SYSTEM_000_001,只有15级以上的战斗精英或魔法导师<hex:02100103>才能接受初学者学堂的训练。
 2,TEXT_REGSEABEGINNERTANKGUIDE_00337_TANKCOACH00337_000_010,这里是冒险者行会的初学者学堂！<hex:02100103>如果想学习如何与同伴共同战斗，<hex:02100103>可以去找里面的冒险者指导教官。

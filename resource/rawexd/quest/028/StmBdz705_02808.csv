@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ705_02808_SEQ_00,烈士庵的勇猛的战士有事想委托冒险者。
 1,TEXT_STMBDZ705_02808_SEQ_01,
 2,TEXT_STMBDZ705_02808_SEQ_02,

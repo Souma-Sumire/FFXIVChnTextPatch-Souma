@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA612_02538_SEQ_00,御制监望塔的阿尔菲诺悔恨地站在那里。
 1,TEXT_STMBDA612_02538_SEQ_01,
 2,TEXT_STMBDA612_02538_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBPLD630_02572_SEQ_00,剑术师行会的密拉有事情想要告诉冒险者。
 1,TEXT_JOBPLD630_02572_SEQ_01,和密拉进行了交谈。为了参加大会，在剑术师行会的<hex:02280CFF05>EObj<hex:F61EA4250103>等待。
 2,TEXT_JOBPLD630_02572_SEQ_02,在<hex:02280CFF05>EObj<hex:F61EA4250103>等待后，第一战的对手巴塞洛缪出现了。做好战斗的准备，和剑术师行会的斗技大会的接待员对话，参加预赛。

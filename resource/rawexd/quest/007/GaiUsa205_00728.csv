@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA205_00728_SEQ_00,巴斯卡隆酒家的伊安娜，有事想要委托给冒险者。
 1,TEXT_GAIUSA205_00728_SEQ_01,伊安娜表示，聚集在巴斯卡隆酒家的人都要对森林表达敬意。为了供奉枯朽的树精，从<hex:02280DFF09>BNpcName<hex:040103>身上得到4份<hex:022811FF0A>EventItem<hex:F61E86C60103>，还要从<hex:02280DFF09>BNpcName<hex:180103>身上得到2朵<hex:022811FF0A>EventItem<hex:F61E86C70103>。
 2,TEXT_GAIUSA205_00728_SEQ_02,获得供奉的东西了。首先，向<hex:02280CFF05>EObj<hex:F61E8C0A0103>献上4份<hex:022811FF0A>EventItem<hex:F61E86C60103>。

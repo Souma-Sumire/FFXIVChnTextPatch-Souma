@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07003_000010_ERENVILLE,我们出发吧。
 1,TEXT_VOICEMAN_07003_000020_ERENVILLE,走过大桥 前方便是一望无际的夏劳尼荒野<hex:02100103>它在古语中的含义是——太阳指引的地方
 2,TEXT_VOICEMAN_07003_000030_ERENVILLE,炎炎的烈日造成了大片的干燥土地<hex:02100103>为这里的生命带来了严峻的考验

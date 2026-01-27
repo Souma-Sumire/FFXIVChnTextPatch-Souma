@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILVESPERBAY_00124_WILFRID_000_000,你是什么人啊？<hex:02100103>找我有事吗？
 1,TEXT_REGWILVESPERBAY_00124_WILFRID_000_010,你问我啊？我是这里的管理者。<hex:02100103>这座港湾每天都会有很多船只靠岸，<hex:02100103>如果没有个管理者的话，可是会变得一团糟的。
 2,TEXT_REGWILVESPERBAY_00124_WILFRID_000_011,不过，这样热热闹闹的才好。<hex:02100103>因为有些港湾因为栈桥的修建不够完善，<hex:02100103>导致无人问津啊。

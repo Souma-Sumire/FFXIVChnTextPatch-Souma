@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA1EVENTINVESTIGATORS1_00462_INV00462_000_000,我负责整理向赞助商汇报所需要的记录。<hex:02100103>你的调查活动我也会认真记录的，<hex:02100103>就请你放心吧。
 1,TEXT_CTSERKEUREKA1EVENTINVESTIGATORS1_00462_INV00462_000_010,常风地带的调查辛苦你了！<hex:02100103>我已经记录了你的调查活动。<hex:02100103>要确认一下吗？
 2,TEXT_CTSERKEUREKA1EVENTINVESTIGATORS1_00462_INV00462_100_010,恒冰地带的调查辛苦你了！<hex:02100103>我已经记录了你的调查活动。<hex:02100103>要确认一下吗？

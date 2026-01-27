@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA306_02482_SEQ_00,痉挛寨的罗生想要继续进行谈话。
 1,TEXT_STMBDA306_02482_SEQ_01,
 2,TEXT_STMBDA306_02482_SEQ_02,

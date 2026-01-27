@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ219_02691_SEQ_00,碧玉水的葛笼正在认真的盯着甲壳清洁用品。
 1,TEXT_STMBDZ219_02691_SEQ_01,
 2,TEXT_STMBDZ219_02691_SEQ_02,

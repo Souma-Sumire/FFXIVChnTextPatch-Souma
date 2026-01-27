@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ908_02864_SEQ_00,寒炉村的贝蕾塔想要读儿子写下的信。
 1,TEXT_STMBDZ908_02864_SEQ_01,和贝蕾塔阅读了艾拉特写的信。信中说，他为母亲留下了礼物。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入含有“rekindle the flames of hope.”的词句，向基拉巴尼亚山区阿拉基利的嘉·雅拉妮说暗号。
 2,TEXT_STMBDZ908_02864_SEQ_02,向嘉·雅拉妮说了暗号，领取了礼物。把<hex:022811FF0A>EventItem<hex:F61E8D9B0103>交给寒炉村的贝蕾塔。

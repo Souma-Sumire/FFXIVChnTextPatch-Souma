@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_TSTPLNCMPFCCOUNTER_00035_FCINFO_000_1,フリーカンパニー受付窓口へようこそ！<hex:02100103>用件を伺います。
 1,TEXT_TSTPLNCMPFCCOUNTER_00035_FCINFO_Q1_000_1,用件は？
 2,TEXT_TSTPLNCMPFCCOUNTER_00035_FCINFO_A1_000_1,フリーカンパニーについて教えて？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04401_000010_YUGIRI,这里就是终末焦土地带了！
 1,TEXT_VOICEMAN_04401_000020_HIEN,这风！<hex:02100103>大家能听到吗？！我们降落下去躲一阵子！
 2,TEXT_VOICEMAN_04401_000050_SUZAKU,荒魂……解放……<hex:02100103>啊……啊——

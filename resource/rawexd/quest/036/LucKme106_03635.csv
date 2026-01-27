@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME106_03635_SEQ_00,友好村的阿莉塞正在看着阿尔菲诺等人。
 1,TEXT_LUCKME106_03635_SEQ_01,
 2,TEXT_LUCKME106_03635_SEQ_02,

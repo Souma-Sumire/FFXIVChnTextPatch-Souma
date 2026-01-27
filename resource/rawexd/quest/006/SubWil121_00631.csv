@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL121_00631_SEQ_00,枯骨营地的凯特琳好像很烦恼。
 1,TEXT_SUBWIL121_00631_SEQ_01,听说本尼格尔委托凯特琳准备些土针鼹肉。将土针鼹肉交给黄金集市的本尼格尔。
 2,TEXT_SUBWIL121_00631_SEQ_02,获得了土针鼹肉。将其交给黄金集市的本尼格尔。

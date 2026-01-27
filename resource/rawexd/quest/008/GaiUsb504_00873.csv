@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB504_00873_SEQ_00,圣阿达玛·兰达玛教会的伊琉德，有东西想要冒险者代为传递。
 1,TEXT_GAIUSB504_00873_SEQ_01,伊琉德想保护流民街的人们免受传播传染疫病的虫类影响。将<hex:022811FF0A>EventItem<hex:F61E87290103>交给无望流民街的塞塞瓦卡。
 2,TEXT_GAIUSB504_00873_SEQ_02,从塞塞瓦卡处接受了撒放<hex:022811FF0A>EventItem<hex:F61E87290103>的委托。在无望流民街中的<hex:02280CFF05>EObj<hex:F61E8CB10103>处，撒下<hex:022811FF0A>EventItem<hex:F61E87290103>。

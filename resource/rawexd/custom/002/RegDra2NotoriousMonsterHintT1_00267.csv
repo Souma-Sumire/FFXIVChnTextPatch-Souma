@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGDRA2NOTORIOUSMONSTERHINTT1_00267_YLOISE_000_000,你不要把我跟入室盗窃的寻宝猎人相提并论。<hex:02100103>别看我这样，怎么说也是堂堂怪物猎人。
 1,TEXT_REGDRA2NOTORIOUSMONSTERHINTT1_00267_YLOISE_000_001,哎呀，没想到在田园郡会遇到兵团的人，<hex:02100103>真是令人开心。<hex:02100103>我可以告诉你有关恶名精英的情报哦！
 2,TEXT_REGDRA2NOTORIOUSMONSTERHINTT1_00267_YLOISE_Q1_000_000,想了解什么？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA503_00755_SEQ_00,札尔神祠的祭司巧巧佐，有东西想送往跨天桥。
 1,TEXT_GAIUSA503_00755_SEQ_01,从巧巧佐那里获得了<hex:022811FF0A>EventItem<hex:F61E86DB0103>。将其交给跨天桥的希希巴鲁。
 2,TEXT_GAIUSA503_00755_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E86DB0103>交给了希希巴鲁。要是跨天桥能够开通飞空艇的定期航班的话，这附近也会充满活力的吧。

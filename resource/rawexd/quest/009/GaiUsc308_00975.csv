@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC308_00975_SEQ_00,赫丁想要将<hex:022811FF0A>EventItem<hex:F61E87710103>交还给冒险者。
 1,TEXT_GAIUSC308_00975_SEQ_01,所需的偏属性水晶全部集齐了。将<hex:022811FF0A>EventItem<hex:F61E87710103>交给格里达尼亚飞艇坪的西德。利翁内莱会带领冒险者前往登艇大厅内部。
 2,TEXT_GAIUSC308_00975_SEQ_02,将偏属性水晶交给了西德。这下子，不论什么样的暴风都挡不住飞空艇企业号了。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ809_02837_SEQ_00,阿拉基利的兹兹戴斯有事想委托冒险者。
 1,TEXT_STMBDZ809_02837_SEQ_01,
 2,TEXT_STMBDZ809_02837_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT50RISKYMOBRAKTIKA_00618_INGVAR_000,拉凯提卡大森林中有很多自古就栖息于此的魔物。<hex:02100103>身为一名卫士，我必须支起耳朵收集情报，<hex:02100103>不放过任何可能会威胁到蛇行枝的信息。
 1,TEXT_CTSHNT50RISKYMOBRAKTIKA_00618_INGVAR_001,拉凯提卡大森林中有很多自古就栖息于此的魔物。<hex:02100103>身为守护集落的卫士，我一直在努力收集情报。<hex:02100103>你要帮忙狩猎这里的怪物吗？
 2,TEXT_CTSHNT50RISKYMOBRAKTIKA_00618_INGVAR_Q1_000_000,想了解什么？

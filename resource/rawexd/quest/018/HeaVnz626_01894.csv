@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ626_01894_SEQ_00,圣菲内雅连队露营地的博尼富瓦心情很不愉快。
 1,TEXT_HEAVNZ626_01894_SEQ_01,博尼富瓦拜托冒险者回收他伙伴的遗物。在库尔札斯西部高地的红沿回收<hex:022811FF0A>EventItem<hex:F61E8B150103>。
 2,TEXT_HEAVNZ626_01894_SEQ_02,回收了全部<hex:022811FF0A>EventItem<hex:F61E8B150103>。将<hex:022811FF0A>EventItem<hex:F61E8B150103>交给圣菲内雅连队露营地的博尼富瓦。

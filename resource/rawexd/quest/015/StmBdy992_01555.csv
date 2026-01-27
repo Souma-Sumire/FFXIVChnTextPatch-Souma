@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY992_01555_SEQ_00,乐座街的对手怪物猎人心中有句话不知当讲不当讲。
 1,TEXT_STMBDY992_01555_SEQ_01,
 2,TEXT_STMBDY992_01555_SEQ_02,

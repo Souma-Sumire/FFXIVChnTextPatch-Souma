@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB505_00874_SEQ_00,圣阿达玛·兰达玛教会的巴尔林，为遇难者家属的遭遇感到痛心不已。
 1,TEXT_GAIUSB505_00874_SEQ_01,前去摘花的遇难者家属遭到了魔物的袭击。为了不再发生这样的惨剧，前往被植物簇拥着的古菩猩猩附近调查<hex:02280CFF05>EObj<hex:F61E8CB50103>，打倒随后现身的魔物。
 2,TEXT_GAIUSB505_00874_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F208860103>。向圣阿达玛·兰达玛教会的巴尔林报告。

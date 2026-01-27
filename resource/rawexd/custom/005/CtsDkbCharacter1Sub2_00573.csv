@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDKBCHARACTER1SUB2_00573_COLANA_000_001,多亏了你，我才能回到了这里。<hex:02100103>就算是用千言万语也无法完全传达我对你的感谢。
 1,TEXT_CTSDKBCHARACTER1SUB2_00573_COLANA_100_001,没想到就连素·任德也请回来了。<hex:02100103>我们几个聚在一起真的感觉很怀念呢，<hex:02100103>就像是回到了遥远过去的那时候一样。
 2,TEXT_CTSDKBCHARACTER1SUB2_00573_COLANA_000_050,说到我能做的事，<hex:02100103>那就只有集中精力做好眼前的工作！

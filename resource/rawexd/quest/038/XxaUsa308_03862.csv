@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSA308_03862_SEQ_00,巴斯卡隆酒家的巴斯卡隆，有事想要委托给冒险者。
 1,TEXT_XXAUSA308_03862_SEQ_01,突然变得手头宽裕的劳伦修斯十分可疑。前往南面的森林，和劳伦修斯谈谈。
 2,TEXT_XXAUSA308_03862_SEQ_02,劳伦修斯走开了。追上去，再次和他对话。

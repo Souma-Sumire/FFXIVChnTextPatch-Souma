@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4LYDHALRAN_00599_BEQTHON_000_000,我认识你，你就是于里昂热的朋友吧！<hex:02100103>非常欢迎你来这边！请慢慢享受吧。<hex:02100103>不管是1天还是2天……不论待到多久都行。
 1,TEXT_REGNOR4LYDHALRAN_00599_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4LYDHALRAN_00599_A1_000_001,你是做什么的？

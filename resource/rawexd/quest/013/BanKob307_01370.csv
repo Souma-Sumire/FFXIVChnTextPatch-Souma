@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB307_01370_SEQ_00,第789洞穴团采矿地的第789团清洁工博布，对一件事情无法容忍。
 1,TEXT_BANKOB307_01370_SEQ_01,第13洞穴团打算通过<hex:02280CFF05>EObj<hex:F61E93C20103>提高功绩，而第789团清洁工博布对此很不爽。在第789洞穴团采矿地，向第789团辅祭巴戈询问破坏<hex:02280CFF05>EObj<hex:F61E93C20103>的方法。
 2,TEXT_BANKOB307_01370_SEQ_02,和第789团辅祭巴戈交谈后，他告诉了冒险者用<hex:022811FF0A>EventItem<hex:F61E897F0103>破坏<hex:02280CFF05>EObj<hex:F61E93C20103>的方法。首先在武伽玛罗武装矿山，将<hex:022811FF0A>EventItem<hex:F61E897E0103>设置在<hex:02280CFF05>EObj<hex:F61E93C20103>上。

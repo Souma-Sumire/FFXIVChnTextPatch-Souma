@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA325_02934_SEQ_00,多玛起义军门卫已经从豪雪那里了解到了情况。
 1,TEXT_STMBDA325_02934_SEQ_01,和同伴们对话
 2,TEXT_STMBDA325_02934_SEQ_02,和夕雾对话

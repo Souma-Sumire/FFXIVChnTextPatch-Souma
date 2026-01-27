@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3HOUSEOFTHEFIERCE_00413_SUBARU_000_000,欢迎来到烈士庵。<hex:02100103>您有什么想要知道的尽管问，我会知无不答的。
 1,TEXT_REGOTH3HOUSEOFTHEFIERCE_00413_SUBARU_000_001,<hex:022903EB0203>阁下，您没事就好。<hex:02100103>我听说您前去暗杀皇太子，甚是担心……<hex:02100103>那么，关于烈士庵您有什么想要了解的吗？
 2,TEXT_REGOTH3HOUSEOFTHEFIERCE_00413_SUBARU_000_002,没想到我能等到飞燕大人回来的这一天！<hex:02100103>这样一来，解放祖国的胜算就更多一筹……<hex:02100103>那么，关于烈士庵您有什么想要了解的吗？

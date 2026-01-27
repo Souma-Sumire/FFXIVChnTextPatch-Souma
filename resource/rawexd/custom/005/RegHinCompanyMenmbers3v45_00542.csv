@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGHINCOMPANYMENMBERS3V45_00542_GOODLOOKINGMEMBER_000_000,前几天我在小金街的无地鼓座看了一场演出，<hex:02100103>见识到了远东之国特有的戏剧形式。<hex:02100103>剧中独特的唱腔和旋律非常有意思，令我印象深刻。
 1,TEXT_REGHINCOMPANYMENMBERS3V45_00542_GOODLOOKINGMEMBER_000_001,它的剧情大致讲的是13名浪人武士为了给亡君报仇而四处流浪，<hex:02100103>最后成功报得大仇这样一个故事。
 2,TEXT_REGHINCOMPANYMENMBERS3V45_00542_GOODLOOKINGMEMBER_000_002,从我这原帝国国民的角度来看，<hex:02100103>这13人四处流浪的生活方式极为不符合常理，看得我目瞪口呆。<hex:02100103>不过本地观众却都感动得一塌糊涂，全含着泪鼓掌喝彩。

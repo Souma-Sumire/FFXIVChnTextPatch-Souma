@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ712_02815_SEQ_00,黄金港的强硬的搬运工好像伤到了肩膀。
 1,TEXT_STMBDZ712_02815_SEQ_01,
 2,TEXT_STMBDZ712_02815_SEQ_02,

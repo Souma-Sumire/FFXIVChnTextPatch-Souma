@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA204_02473_SEQ_00,乌尔达哈商会馆的阿尔菲诺有一个提议。
 1,TEXT_STMBDA204_02473_SEQ_01,
 2,TEXT_STMBDA204_02473_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSHRV530_02049_SEQ_00,以太之光广场的穆吉·缪里拉收到了委托。
 1,TEXT_CLSHRV530_02049_SEQ_01,收到了伊修加德的园艺工巴吉勒的委托。和阿巴拉提亚云海云顶营地的巴吉勒谈谈。
 2,TEXT_CLSHRV530_02049_SEQ_02,接受了巴吉勒的委托，去采集有可能适合在该地生存的物种——<hex:02280BFF05>Item<hex:F2324E0103>。采集10个<hex:02280BFF05>Item<hex:F2324E0103>，交给云顶营地的巴吉勒。可以在龙堡参天高地的草场里采到<hex:02280BFF05>Item<hex:F2324E0103>。

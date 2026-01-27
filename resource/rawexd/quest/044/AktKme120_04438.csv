@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKME120_04438_SEQ_00,汐沫庭前的维涅斯正静静地凝视着冒险者。
 1,TEXT_AKTKME120_04438_SEQ_01,
 2,TEXT_AKTKME120_04438_SEQ_02,

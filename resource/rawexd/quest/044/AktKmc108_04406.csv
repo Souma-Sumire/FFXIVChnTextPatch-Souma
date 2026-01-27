@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMC108_04406_SEQ_00,叹息海的于里昂热静静地等待着冒险者。
 1,TEXT_AKTKMC108_04406_SEQ_01,
 2,TEXT_AKTKMC108_04406_SEQ_02,

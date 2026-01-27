@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME103_03632_SEQ_00,树冠梯前的桑克瑞德决定开始行动。
 1,TEXT_LUCKME103_03632_SEQ_01,
 2,TEXT_LUCKME103_03632_SEQ_02,

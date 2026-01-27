@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6OKHANU_00871_UULIHALI_000_000,这位旅行者，欢迎你的到来……<hex:02100103>关于哈努聚落，你有什么想问的吗？
 1,TEXT_REGYOK6OKHANU_00871_UULIHALI_000_001,哎呀，是为芦苇赋予了活力的旅行者！<hex:02100103>关于哈努聚落，你有什么想问的吗？
 2,TEXT_REGYOK6OKHANU_00871_UULIHALI_000_002,虽然继位仪式貌似已经结束了，<hex:02100103>但是旅行者你能来，我真的很高兴！<hex:02100103>关于哈努聚落，你有什么想问的吗？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMF108_04446_SEQ_00,小萨雷安的于里昂热已经平复了心情。
 1,TEXT_AKTKMF108_04446_SEQ_01,
 2,TEXT_AKTKMF108_04446_SEQ_02,

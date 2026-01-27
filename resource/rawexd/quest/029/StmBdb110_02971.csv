@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDB110_02971_SEQ_00,盐村的阿尔菲诺向瓦特说明完毕。
 1,TEXT_STMBDB110_02971_SEQ_01,
 2,TEXT_STMBDB110_02971_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROCGATESOFJUDGEMENT_00111_MARCELAIN_000_000,冒险者之流找我有什么事啊？<hex:02100103>要是什么无聊的事小心我敲掉你的脑袋。
 1,TEXT_REGROCGATESOFJUDGEMENT_00111_MARCELAIN_000_001,冒险者之流找我有什么事啊？<hex:02100103>和龙族的战争迫在眉睫，我们正忙着应战呢。<hex:02100103>你有什么事快说，不要耽误我工作。
 2,TEXT_REGROCGATESOFJUDGEMENT_00111_MARCELAIN_000_002,我还当是谁呢，原来是品德高尚的冒险者！<hex:02100103>先前的防卫战真是多亏有你。<hex:02100103>你这次来是有什么事吗？

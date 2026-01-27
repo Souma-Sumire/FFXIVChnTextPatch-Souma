@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA304_01605_SEQ_00,戈尔加涅牧场的调查队的骑兵队长有话要对冒险者说。
 1,TEXT_HEAVNA304_01605_SEQ_01,和调查队的骑兵队长进行了交谈。从调查队发现的书信中或许可以找到有用的线索。获取戈尔加涅牧场的<hex:022811FF0A>EventItem<hex:F61E8AAA0103>。
 2,TEXT_HEAVNA304_01605_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AAA0103>。将<hex:022811FF0A>EventItem<hex:F61E8AAA0103>交给戈尔加涅牧场的调查队的骑兵队长。

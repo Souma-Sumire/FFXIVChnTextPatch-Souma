@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAALEPORT_00116_KAIZOPORAIZO_000_000,哦，你是个冒险者吧？<hex:02100103>找我有什么事吗？
 1,TEXT_REGSEAALEPORT_00116_KAIZOPORAIZO_000_010,我就是个小商贩啊，在小麦酒港做着酒品的买卖。
 2,TEXT_REGSEAALEPORT_00116_KAIZOPORAIZO_000_011,5年前发生灵灾那时，有许多船都沉了。<hex:02100103>我也几乎放弃希望……<hex:02100103>不过港口总算是挺过来了。

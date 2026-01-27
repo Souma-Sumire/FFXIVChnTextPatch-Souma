@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHWDINSPECTION_00660_FLOTPASSANT_000_000,哎哟，英雄大人？!<hex:02100103>你是要找我身边的奥瓦埃尔大人吗？
 1,TEXT_CTSHWDINSPECTION_00660_FLOTPASSANT_010_000,哎呀，英雄大人！<hex:02100103>欢迎你的到来！
 2,TEXT_CTSHWDINSPECTION_00660_FLOTPASSANT_010_010,英雄大人也想以大地使者的身份参加重建工程吗？！<hex:02100103>那我有些事情需要说明一下！

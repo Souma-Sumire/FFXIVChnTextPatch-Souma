@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06100_000010_TATARU,拂晓解散之后，这里也变得冷清了……
 1,TEXT_VOICEMAN_06100_000020_TATARU,但是，我并不觉得寂寞。
 2,TEXT_VOICEMAN_06100_000030_TATARU,因为根据我塔塔露情报网掌握到的消息，<hex:02100103>大家都在为各自的目标努力，<hex:02100103>过着繁忙且充实的每一天！

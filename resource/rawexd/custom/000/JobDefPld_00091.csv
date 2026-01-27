@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFPLD_00091_JENLYNS_000_2,银胄团……<hex:02100103>以守卫乌尔达哈王家为荣。
 1,TEXT_JOBDEFPLD_00091_JENLYNS_000_3,我们对现任女王——娜娜莫·乌尔·娜莫陛下效忠，<hex:02100103>为女王而战就是我们的职责。
 2,TEXT_JOBDEFPLD_00091_JENLYNS_000_1,我叫杰林斯，<hex:02100103>是守卫王家的近卫兵团——银胄团的总长。<hex:02100103>你找我有什么事？

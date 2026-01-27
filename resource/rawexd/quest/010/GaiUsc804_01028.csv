@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC804_01028_SEQ_00,骷髅谷营地的乌·居格尔，有件事想要委托给冒险者。
 1,TEXT_GAIUSC804_01028_SEQ_01,接受了委托，讨伐装成道森的海盗。前往海蛇巢穴，打倒<hex:02280FFF09>BNpcName<hex:F208850103>。
 2,TEXT_GAIUSC804_01028_SEQ_02,成功地打倒了德瑞斯纳古尔。回到骷髅谷营地，向乌·居格尔报告。

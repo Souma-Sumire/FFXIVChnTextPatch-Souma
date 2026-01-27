@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC604_01004_SEQ_00,丧灵钟的格拉乌蒙特准备实行计划。
 1,TEXT_GAIUSC604_01004_SEQ_01,格拉乌蒙特讲述了夺取魔导装甲的详细计划。首先向巡逻中的帝国军小队做情感动作“帝国式军礼”，提醒他们加强对危险分子的警戒。
 2,TEXT_GAIUSC604_01004_SEQ_02,将危险分子的情报告知了巡逻中的帝国军小队。在<hex:02280CFF05>EObj<hex:F61E8D400103>使用<hex:022811FF0A>EventItem<hex:F61E87830103>，将帝国军小队引诱出来。

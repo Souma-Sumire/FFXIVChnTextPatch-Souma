@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB102_00821_SEQ_00,遗忘绿洲的族长乌·欧德·努恩想要考验一下冒险者。
 1,TEXT_GAIUSB102_00821_SEQ_01,乌·欧德·努恩想要考验冒险者的实力。为了打倒<hex:02280FFF09>BNpcName<hex:F207B90103>，首先到撒沟厉沙漠东边，将<hex:022811FF0A>EventItem<hex:F61E87030103>放置在<hex:02280CFF05>EObj<hex:F61E8C7C0103>。
 2,TEXT_GAIUSB102_00821_SEQ_02,布置好了<hex:022811FF0A>EventItem<hex:F61E87030103>。在<hex:02280CFF05>EObj<hex:F61E8C7D0103>等待并打倒<hex:02280FFF09>BNpcName<hex:F207B90103>，获取<hex:022811FF0A>EventItem<hex:F61E87040103>。

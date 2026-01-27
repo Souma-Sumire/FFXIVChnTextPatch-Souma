@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4RADISCASROUND_00585_MENTHER_000_000,嗯？你是？<hex:02100103>看你好像不是狩猎独行食罪灵的赏金猎人，<hex:02100103>你来拉迪斯卡瞭望塔有什么事吗？
 1,TEXT_REGNOR4RADISCASROUND_00585_MENTHER_000_020,游末邦军就驻留在附近，<hex:02100103>所以请你谨慎行动。<hex:02100103>如果有什么疑问的话，我来为你解答。
 2,TEXT_REGNOR4RADISCASROUND_00585_MENTHER_000_030,看来游末邦军撤退了啊……<hex:02100103>哎，这样总算能重新开始运输物资了。<hex:02100103>先不说这个，你有什么事情吗？

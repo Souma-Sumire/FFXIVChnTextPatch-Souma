@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL201_01267_SEQ_00,妖精暂留地的颇妮希亚想要阻止妖精领的势力扩大。
 1,TEXT_BANSYL201_01267_SEQ_01,讨伐2只在妖精领看守的<hex:02280FFF09>BNpcName<hex:F202370103>，减少它们的数量。同时讨伐2名训练魔物当看守的<hex:02280DFF09>BNpcName<hex:460103>。
 2,TEXT_BANSYL201_01267_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F202370103>和<hex:02280DFF09>BNpcName<hex:460103>。向妖精暂留地的颇妮希亚报告。

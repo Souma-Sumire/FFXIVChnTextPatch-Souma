@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDR303_03156_SEQ_00,时空狭缝的西德正在观察欧米茄的反应。
 1,TEXT_STMBDR303_03156_SEQ_01,欧米茄终于宣布要和冒险者等人正面对决。西德为了完成准备工作，决定先回到地面上。和呵欠洞的西德谈谈。
 2,TEXT_STMBDR303_03156_SEQ_02,和西德进行了交谈。在神拳痕的<hex:02280CFF05>EObj<hex:F61EAA080103>张望，寻找西德的身影。

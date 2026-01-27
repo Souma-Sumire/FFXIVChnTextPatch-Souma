@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB308_01371_SEQ_00,第789洞穴团采矿地的第789团清洁工博布，很在意同伴的情况。
 1,TEXT_BANKOB308_01371_SEQ_01,第789团清洁工博布委托冒险者帮助第789团辅祭巴戈。在第789洞穴团采矿地，向第789团辅祭巴戈询问详情。
 2,TEXT_BANKOB308_01371_SEQ_02,第789团辅祭巴戈委托冒险者获取<hex:022811FF0A>EventItem<hex:F61E89410103>和<hex:022811FF0A>EventItem<hex:F61E89420103>。前往武伽玛罗武装矿山，讨伐<hex:02280FFF09>BNpcName<hex:F209DA0103>和<hex:02280FFF09>BNpcName<hex:F2072C0103>各2只，再从出现的<hex:02280FFF09>BNpcName<hex:F20A9A0103>和<hex:02280FFF09>BNpcName<hex:F20A990103>身上获取<hex:022811FF0A>EventItem<hex:F61E89410103>和<hex:022811FF0A>EventItem<hex:F61E89420103>。

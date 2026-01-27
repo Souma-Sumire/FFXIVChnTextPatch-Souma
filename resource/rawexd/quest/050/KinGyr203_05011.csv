@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGYR203_05011_SEQ_00,图莱尤拉的波尔·欧伽有事情想拜托冒险者。
 1,TEXT_KINGYR203_05011_SEQ_01,
 2,TEXT_KINGYR203_05011_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST043_00199_SEQ_00,艾·塔塔哨塔的卫兵波勒蒙正在寻找可以帮忙打扫肮脏的路标的人。
 1,TEXT_SUBFST043_00199_SEQ_01,沿着艾·塔塔哨塔附近的道路，去打扫2处肮脏的路标。
 2,TEXT_SUBFST043_00199_SEQ_02,打扫完了肮脏的路标。向私语巨木鸟栏的奇·佳瓦娜报告。

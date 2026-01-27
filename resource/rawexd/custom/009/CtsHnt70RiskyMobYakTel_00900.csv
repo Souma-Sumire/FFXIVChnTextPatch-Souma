@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT70RISKYMOBYAKTEL_00900_TYATQAT_000_001,狩猎是一份杀害生命的差事，但每个生命都是宝贵的。<hex:02100103>只要没有诅咒和疾病，我们就有责任最大化利用它们的每个部分，<hex:02100103>无论是肉、骨头、还是血液。
 1,TEXT_CTSHNT70RISKYMOBYAKTEL_00900_TYATQAT_000_002,哟，这不是<hex:022903EB0203>吗。<hex:02100103>看你还活蹦乱跳的比什么都好。<hex:02100103>要是想了解这片地区的魔物，尽管来问我。
 2,TEXT_CTSHNT70RISKYMOBYAKTEL_00900_TYATQAT_Q1_000_000,想了解什么？

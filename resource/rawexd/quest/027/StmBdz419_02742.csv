@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ419_02742_SEQ_00,弓束官邸的鱼盐在寻找肯听它的请求的好人。
 1,TEXT_STMBDZ419_02742_SEQ_01,
 2,TEXT_STMBDZ419_02742_SEQ_02,

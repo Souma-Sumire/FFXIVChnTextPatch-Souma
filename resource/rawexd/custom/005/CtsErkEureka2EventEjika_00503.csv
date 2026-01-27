@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA2EVENTEJIKA_00503_EJIKATSUNJIKA_000_330,……嗯，原来是你啊。<hex:02100103>看来你探索得很顺利啊，<hex:02100103>有什么发现了吗？
 1,TEXT_CTSERKEUREKA2EVENTEJIKA_00503_EJIKATSUNJIKA_000_331,啧……真不愧是“超越之力”呢。<hex:02100103>你是为了嘲笑我无才无能，根本没有找到任何情报，<hex:02100103>所以才来跟我讲这些话的吗？
 2,TEXT_CTSERKEUREKA2EVENTEJIKA_00503_EJIKATSUNJIKA_000_332,……抱歉，我有些失态了。<hex:02100103>我明白你没有那个意思。<hex:02100103>只是我嫉妒你拥有特别的力量，所以才说了些蠢话。

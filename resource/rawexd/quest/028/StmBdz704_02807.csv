@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ704_02807_SEQ_00,烈士庵的懦弱的男子正在寻找武人。
 1,TEXT_STMBDZ704_02807_SEQ_01,
 2,TEXT_STMBDZ704_02807_SEQ_02,

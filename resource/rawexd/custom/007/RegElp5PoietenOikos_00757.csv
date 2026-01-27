@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGELP5POIETENOIKOS_00757_ERATO_000_000,啊……你是使魔吧。<hex:02100103>正在独自参观厄尔庇斯啊。<hex:02100103>有什么问题的话，就让我来为你解答吧？
 1,TEXT_REGELP5POIETENOIKOS_00757_Q1_000_000,想了解什么？
 2,TEXT_REGELP5POIETENOIKOS_00757_A1_000_001,你是做什么的？

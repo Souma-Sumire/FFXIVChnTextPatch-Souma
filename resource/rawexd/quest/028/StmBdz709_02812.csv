@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ709_02812_SEQ_00,黄金港的异国的贸易商人想委托冒险者找人。
 1,TEXT_STMBDZ709_02812_SEQ_01,
 2,TEXT_STMBDZ709_02812_SEQ_02,

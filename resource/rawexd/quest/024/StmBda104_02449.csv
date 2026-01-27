@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA104_02449_SEQ_00,神拳痕的阿尔菲诺在烦恼着什么。
 1,TEXT_STMBDA104_02449_SEQ_01,
 2,TEXT_STMBDA104_02449_SEQ_02,

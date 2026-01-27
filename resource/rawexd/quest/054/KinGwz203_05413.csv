@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGWZ203_05413_SEQ_00,玻璃匠基地的强力机兵专属维护员正在寻找飞行验证的帮手。
 1,TEXT_KINGWZ203_05413_SEQ_01,
 2,TEXT_KINGWZ203_05413_SEQ_02,

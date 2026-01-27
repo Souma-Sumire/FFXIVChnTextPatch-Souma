@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB102_01326_SEQ_00,第789洞穴团采矿地的第789团清洁工博兹心怀不满。
 1,TEXT_BANKOB102_01326_SEQ_01,第789团清洁工博兹无法忍受只给优秀的地灵族发盒饭。接受了第789团清洁工博兹的委托，抢来<hex:022811FF0A>EventItem<hex:F61E89630103>。在黑金湖获取3份<hex:022811FF0A>EventItem<hex:F61E89630103>。
 2,TEXT_BANKOB102_01326_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E89630103>。将<hex:022811FF0A>EventItem<hex:F61E89630103>交给第789洞穴团采矿地的第789团清洁工博兹。

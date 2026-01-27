@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMH102_03762_SEQ_00,阿拉米格人居住区的可露儿正在等待冒险者做出决定。
 1,TEXT_LUCKMH102_03762_SEQ_01,
 2,TEXT_LUCKMH102_03762_SEQ_02,

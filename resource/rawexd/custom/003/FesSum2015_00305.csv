@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESSUM2015_00305_GURENSTAFFA_000_000,哟！<hex:02100103>我是执行委员中最专业的，人称红莲节博士！<hex:02100103>你有任何关于红莲节的问题都可以问我。
 1,TEXT_FESSUM2015_00305_Q1_000_000,想了解什么？
 2,TEXT_FESSUM2015_00305_A1_000_001,什么是红莲节？

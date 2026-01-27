@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGEA103_05235_SEQ_00,朱诺下层的阿尔夏尔正在关心普利修。
 1,TEXT_KINGEA103_05235_SEQ_01,冒险者决定离开朱诺下层。和前往了亚克特尔树海玛穆克的巴库加加谈谈。
 2,TEXT_KINGEA103_05235_SEQ_02,和巴库加加进行了交谈。在图莱尤拉气球起降所的<hex:02280BFF05>EObj<hex:F51EBD0103>等待。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ006_01731_SEQ_00,福尔唐伯爵府附近的托尔斯费尔正在发愁要把工作委派给谁。
 1,TEXT_HEAVNZ006_01731_SEQ_01,托尔斯费尔拜托冒险者将晚餐会的招待券分别送给受邀的其它三大家族。将<hex:022811FF0A>EventItem<hex:F61E8B8C0103>交给艾因哈特伯爵府的巴特洛特。
 2,TEXT_HEAVNZ006_01731_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8B8C0103>交给了巴特洛特。将<hex:022811FF0A>EventItem<hex:F61E8B8C0103>交给泽梅尔伯爵府的雅妮蕾特。

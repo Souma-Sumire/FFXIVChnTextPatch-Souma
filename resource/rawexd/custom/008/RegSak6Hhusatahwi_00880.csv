@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSAK6HHUSATAHWI_00880_HHUTEPI_000_000,哟，那边的<hex:020813E905FF07>小姐<hex:FF07>小哥<hex:03>。<hex:02100103>你是旅行者吧？要不要我来跟你讲讲镇子上的事啊？
 1,TEXT_REGSAK6HHUSATAHWI_00880_HHUTEPI_000_001,虽然天上飞的那些大箱子令人在意，<hex:02100103>不过目前它们好像也没什么动作……<hex:02100103>不论如何，如果你想了解镇子上的事可以问我。
 2,TEXT_REGSAK6HHUSATAHWI_00880_HHUTEPI_000_002,哎呀，天上的那些奇怪东西终于消失了！<hex:02100103>镇上的人们也总算安下心，看着轻松多了。<hex:02100103>话说回来<hex:020813E905FF07>小姐<hex:FF07>小哥<hex:03>你是想打听什么事吗？

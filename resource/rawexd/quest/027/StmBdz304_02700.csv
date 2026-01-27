@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ304_02700_SEQ_00,翠水乡的阳炎对没见过的面庞兴趣满满。
 1,TEXT_STMBDZ304_02700_SEQ_01,
 2,TEXT_STMBDZ304_02700_SEQ_02,

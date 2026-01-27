@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA163_01149_SEQ_00,骷髅谷营地的威尔特希斯想要拜托冒险者跑腿。
 1,TEXT_SUBSEA163_01149_SEQ_01,根据威尔特希斯的安排，将慰问品分别送给南北防波堤的防卫队长。首先将<hex:022811FF0A>EventItem<hex:F61E884B0103>交给南防波堤的斯塔尔瑞特。
 2,TEXT_SUBSEA163_01149_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E884B0103>交给了斯塔尔瑞特。向威尔特希斯报告。

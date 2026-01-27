@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH204_01393_SEQ_00,诺布养育场的荷乌想要冒险者去进行破坏活动。
 1,TEXT_BANSAH204_01393_SEQ_01,荷乌委托冒险者在攻城兵器<hex:02280FFF09>BNpcName<hex:F209E30103>被运到前线前将其破坏。在萨普沙产卵地破坏2台<hex:02280FFF09>BNpcName<hex:F209E30103>。
 2,TEXT_BANSAH204_01393_SEQ_02,成功破坏了<hex:02280FFF09>BNpcName<hex:F209E30103>。向诺布养育场的荷乌报告。

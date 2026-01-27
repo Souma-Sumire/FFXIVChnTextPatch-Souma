@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA2EVENTCONFLUENCE2_00500_000_130,发现了色彩暗淡的小块结晶。<hex:02100103>看起来好像是枯竭魔素石……<hex:02100103>赶紧将此事向可露儿进行报告吧。
 1,TEXT_CTSERKEUREKA2EVENTCONFLUENCE2_00500_TALK_ACTOR,

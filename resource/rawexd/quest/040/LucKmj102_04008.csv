@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMJ102_04008_SEQ_00,螺旋港的古·拉哈·提亚看上去感慨颇深。
 1,TEXT_LUCKMJ102_04008_SEQ_01,
 2,TEXT_LUCKMJ102_04008_SEQ_02,

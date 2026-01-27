@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD117_04928_SEQ_00,台夏帕尼废村的阿莉塞仍在怀疑斯菲因。
 1,TEXT_KINGMD117_04928_SEQ_01,
 2,TEXT_KINGMD117_04928_SEQ_02,

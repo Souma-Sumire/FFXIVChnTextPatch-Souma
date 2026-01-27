@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB407_00863_SEQ_00,瞭望阵营地斯威古雷尔，灵光一闪想到了一个主意。
 1,TEXT_GAIUSB407_00863_SEQ_01,斯威古雷尔想要饲养长须豹。削弱<hex:02280FFF09>BNpcName<hex:F208900103>的体力后，用<hex:022811FF0A>EventItem<hex:F61E871E0103>捕获它。
 2,TEXT_GAIUSB407_00863_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E871F0103>。将其交给瞭望阵营地斯威古雷尔。

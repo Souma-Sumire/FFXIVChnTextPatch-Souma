@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03003_000010_ALPHINAUD,如果龙族再次攻击伊修加德的话……<hex:02100103>就算我们能够击退龙族，<hex:02100103>伊修加德也将无可避免地受到重大打击。
 1,TEXT_VOICEMAN_03003_000020_TATARU,那我们怎么办？<hex:02100103>龙族根本就听不进我们的话呢！
 2,TEXT_VOICEMAN_03003_000030_ALPHINAUD,……不，有个人说不定还能谈谈。

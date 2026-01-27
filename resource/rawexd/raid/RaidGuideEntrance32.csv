@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_RAIDGUIDEENTRANCE32_LIGHTKIX_000_000,呼哧……呼哧……<hex:02100103>我是监视员 工作是监视！<hex:02100103>迎击 击退 要另拿钱！
 1,TEXT_RAIDGUIDEENTRANCE32_Q1_000_010,要做什么？
 2,TEXT_RAIDGUIDEENTRANCE32_A1_000_011,询问“亚历山大零式机神城律动之章”的开始条件

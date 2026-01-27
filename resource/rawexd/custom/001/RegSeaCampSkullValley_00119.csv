@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEACAMPSKULLVALLEY_00119_AHTMHAS_000_000,您好！您是冒险者吧！<hex:02100103>不知找在下有何贵干！
 1,TEXT_REGSEACAMPSKULLVALLEY_00119_AHTMHAS_000_010,是这样的！<hex:02100103>在下负责在此据点进行警备！
 2,TEXT_REGSEACAMPSKULLVALLEY_00119_AHTMHAS_000_011,在下是去年才被分配到这里的，<hex:02100103>虽经验尚浅，但为了坚守据点，粉身碎骨在所不辞！<hex:02100103>在下会尽全力奋战到底！

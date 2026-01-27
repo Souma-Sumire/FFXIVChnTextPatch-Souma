@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMA113_04872_SEQ_00,瓦丘恩佩洛入口的乌克·拉玛特想要打听选王之人的情报。
 1,TEXT_KINGMA113_04872_SEQ_01,
 2,TEXT_KINGMA113_04872_SEQ_02,

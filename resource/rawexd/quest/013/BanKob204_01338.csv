@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB204_01338_SEQ_00,第789洞穴团采矿地的第789团工匠博古，想去破坏一样东西。
 1,TEXT_BANKOB204_01338_SEQ_01,接受了第789团工匠博古的委托，前往黑金湖，破坏掉2台碍眼的第13团指导者佐加的<hex:02280FFF09>BNpcName<hex:F209E00103>。
 2,TEXT_BANKOB204_01338_SEQ_02,破坏了<hex:02280FFF09>BNpcName<hex:F209E00103>。向第789洞穴团采矿地的第789团工匠博古报告。

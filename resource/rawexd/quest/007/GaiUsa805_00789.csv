@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA805_00789_SEQ_00,秋瓜浮村的鬼哭队士兵戈德温有东西想要冒险者代为传递。
 1,TEXT_GAIUSA805_00789_SEQ_01,将<hex:022811FF0A>EventItem<hex:F61E86EB0103>交给秋瓜浮村西面弗洛朗泰尔哨塔的沃尔多佛协牙尉。
 2,TEXT_GAIUSA805_00789_SEQ_02,<hex:022811FF0A>EventItem<hex:F61E86EB0103>上记录了秋瓜浮村附近的治安状况。多次被人目击到的面具男到底是不是无影呢……

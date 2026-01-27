@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMA109_04365_SEQ_00,中环的阿莉塞正在追踪埃伦维尔的身影。
 1,TEXT_AKTKMA109_04365_SEQ_01,
 2,TEXT_AKTKMA109_04365_SEQ_02,

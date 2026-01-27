@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMG104_05247_SEQ_00,灵魂管理室的可露儿想要展开搜查。
 1,TEXT_KINGMG104_05247_SEQ_01,
 2,TEXT_KINGMG104_05247_SEQ_02,

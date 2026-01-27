@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA307_01248_SEQ_00,灰阵营的雅德夫·夏想要挫败炎牙众的士气。
 1,TEXT_BANAMA307_01248_SEQ_01,接受了雅德夫·夏的委托。前往不悔战阵，将<hex:022811FF0A>EventItem<hex:F61E892A0103>插在5处<hex:02280CFF05>EObj<hex:F61E91050103>。此外，敌方蜥蜴人族可能会来妨碍。讨伐出现的<hex:02280FFF09>BNpcName<hex:F209050103>。
 2,TEXT_BANAMA307_01248_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E892A0103>插在了<hex:02280CFF05>EObj<hex:F61E91050103>。向灰阵营的雅德夫·夏报告。

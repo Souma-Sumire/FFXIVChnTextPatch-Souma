@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA409_00751_SEQ_00,跨天桥的海尔姆哈特，有一件无论如何都想得到的东西。
 1,TEXT_GAIUSA409_00751_SEQ_01,委托十分紧急。讨伐跨天桥附近的<hex:02280FFF09>BNpcName<hex:F201100103>，获得3份<hex:022811FF0A>EventItem<hex:F61E86D80103>。
 2,TEXT_GAIUSA409_00751_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E86D80103>。将其交给跨天桥的海尔姆哈特。

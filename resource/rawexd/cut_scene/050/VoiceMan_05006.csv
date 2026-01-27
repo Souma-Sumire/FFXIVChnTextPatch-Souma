@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_05006_000001_OLDTITANIA,是谁来啦？<hex:02100103>要放我从城堡里出去吗？
 1,TEXT_VOICEMAN_05006_000002_OLDTITANIA,好想出去玩啊……尽情吃、尽情玩……<hex:02100103>吃下好多好多好吃的……直到肚子再也装不下为止……
 2,TEXT_VOICEMAN_05006_000003_OLDTITANIA,嗯？不是这样吗？那你就来陪我玩吧！<hex:02100103>永远！永远！永远陪我玩下去！

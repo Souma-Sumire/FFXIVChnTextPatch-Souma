@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKUA205_04794_SEQ_00,开拓据点的联络小员正在等待小岛的主人与它交谈。
 1,TEXT_AKTKUA205_04794_SEQ_01,和联络小员进行了交谈。前往无人岛西南方向的海滩，在<hex:02280CFF05>EObj<hex:F61EB9710103>等待塔塔露。
 2,TEXT_AKTKUA205_04794_SEQ_02,塔塔露带着尤卢斯等人拜访了小岛。和无人岛小岛木屋附近的塔塔露谈谈。

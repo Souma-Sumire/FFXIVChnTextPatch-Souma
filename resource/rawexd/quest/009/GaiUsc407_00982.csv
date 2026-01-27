@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC407_00982_SEQ_00,魏吉想要委托冒险者找人。
 1,TEXT_GAIUSC407_00982_SEQ_01,比格斯去向不明，魏吉想要找到他。秘石塔的阿贝莉说不定会知道些什么。向她询问详情。
 2,TEXT_GAIUSC407_00982_SEQ_02,阿贝莉虽不知道比格斯的去向，但她告诉了冒险者一个可以藏身的洞窟。调查战争神眼的<hex:02280CFF05>EObj<hex:F61E8D590103>。

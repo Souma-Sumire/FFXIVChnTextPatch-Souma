@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKUN002_03987_SEQ_00,彷徨阶梯亭的蛇心想要立刻开始修行。
 1,TEXT_LUCKUN002_03987_SEQ_01,和蛇心进行了交谈。和雷克兰德水晶公之门的缇纳谈谈。
 2,TEXT_LUCKUN002_03987_SEQ_02,缇纳和蛇心一起成功打开了一个很小的空洞。讨伐从空洞中出现的魔物。

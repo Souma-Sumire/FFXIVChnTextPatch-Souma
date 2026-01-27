@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILPGLGUILD_00064_HAMON_000,哈哈哈，<hex:02100103>你对格斗术有兴趣吗？
 1,TEXT_REGWILPGLGUILD_00064_Q1_000_1,想了解什么？
 2,TEXT_REGWILPGLGUILD_00064_A1_000_1,你是做什么的？

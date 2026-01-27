@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSBSM151_00295_SEQ_00,锻铁匠行会的布瑞赛尔在生意上有些烦恼，他想和冒险者谈一谈。
 1,TEXT_CLSBSM151_00295_SEQ_01,代替胆怯的布瑞赛尔，去锻铁匠行会附近找费兹阿尔，向他询问有关开拓市场的事。
 2,TEXT_CLSBSM151_00295_SEQ_02,在费兹阿尔的推荐下，试着制作能向格里达尼亚出口的产品。制作<hex:02280BFF05>Item<hex:F206450103>和<hex:02280BFF05>Item<hex:F206D90103>，交给费兹阿尔。

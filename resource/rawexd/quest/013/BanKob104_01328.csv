@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB104_01328_SEQ_00,第789洞穴团采矿地的第789团清洁工博兹很不甘。
 1,TEXT_BANKOB104_01328_SEQ_01,第789团清洁工博兹想报复瞧不起自己的地灵族。代替他讨伐2名<hex:02280FFF09>BNpcName<hex:F201790103>，并打倒随之出现的<hex:02280FFF09>BNpcName<hex:F20A7F0103>。
 2,TEXT_BANKOB104_01328_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F201790103>和<hex:02280FFF09>BNpcName<hex:F20A7F0103>。向第789洞穴团采矿地的第789团清洁工博兹报告。

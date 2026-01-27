@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCTRIPLETRIADROOMGUIDE_00369_TTGUIDE_100_001,幻卡对局室是希望进行幻卡对局的客人们光临的社交活动场！
 1,TEXT_CMNGSCTRIPLETRIADROOMGUIDE_00369_TTGUIDE_100_002,客人们之间可以直接进行对局，<hex:02100103>还可以通过向九宫幻卡助手提出对局申请，<hex:02100103>与没见过面的对手进行对局！
 2,TEXT_CMNGSCTRIPLETRIADROOMGUIDE_00369_TTGUIDE_100_003,想要申请对局或是听取详细说明的话，<hex:02100103>就和对局室的九宫幻卡助手说一声吧！<hex:02100103>那么，祝您旗开得胜！

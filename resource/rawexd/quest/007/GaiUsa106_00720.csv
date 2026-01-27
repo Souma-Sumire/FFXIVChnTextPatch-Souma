@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA106_00720_SEQ_00,妖精暂留地的拉琪西奥还没有认可冒险者。
 1,TEXT_GAIUSA106_00720_SEQ_01,为了让拉琪西奥心情变好，对他使用情感动作“戳指”。
 2,TEXT_GAIUSA106_00720_SEQ_02,身上好像被施加了魔法，“自视”一下身上的情况。

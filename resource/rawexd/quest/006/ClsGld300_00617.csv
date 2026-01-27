@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD300_00617_SEQ_00,雕金匠行会的赛伦蒂碧提，有事想要找冒险者商量。
 1,TEXT_CLSGLD300_00617_SEQ_01,制作最高级的<hex:02280DFF07>ItemHQ<hex:F2107A0103>，让雕金匠行会的赛伦蒂碧提查看。
 2,TEXT_CLSGLD300_00617_SEQ_02,将<hex:02280DFF07>ItemHQ<hex:F2107A0103>交给罗罗特恩。他在红玉大路国际市场。

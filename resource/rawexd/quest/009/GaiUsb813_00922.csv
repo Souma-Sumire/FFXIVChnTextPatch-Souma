@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB813_00922_SEQ_00,蓝雾营地的帕帕瓦兹有话想和冒险者说。
 1,TEXT_GAIUSB813_00922_SEQ_01,<hex:022811FF0A>EventItem<hex:F61E874A0103>的出货已经回归正常。向乌尔达哈蓝玉大街国际市场的辛特戈特报告。
 2,TEXT_GAIUSB813_00922_SEQ_02,向辛特戈特报告了恢复出货的消息。等他拿到<hex:022811FF0A>EventItem<hex:F61E874A0103>后，就可以立即备货发送了。

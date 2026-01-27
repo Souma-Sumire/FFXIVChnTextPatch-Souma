@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF108_03651_SEQ_00,奇人工作室的盖雷诺尔特正意气风发地着手制作。
 1,TEXT_LUCKMF108_03651_SEQ_01,盖雷诺尔特将灯交给冒险者，顺便表示可以为冒险者做装备。将<hex:022811FF0A>EventItem<hex:F61E8EF30103>交给黑风海鳍人潮池的托尔嘶·渊斯。
 2,TEXT_LUCKMF108_03651_SEQ_02,将灯交给了托尔嘶·渊斯，见证了祈祷。和鳍人潮池的负责指路的鳍人族谈谈。

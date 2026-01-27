@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ323_01815_SEQ_00,卡尔·米克想知道妈妈托它去做什么。
 1,TEXT_HEAVNZ323_01815_SEQ_01,刚把要去狩猎食物的事情告诉卡尔·米克，它就又独自去了南边。在龙堡参天高地的宽慰河寻找卡尔·米克。
 2,TEXT_HEAVNZ323_01815_SEQ_02,找到了卡尔·米克。想要狩猎，需要准备诱饵来吸引猎物。讨伐宽慰河的<hex:02280FFF09>BNpcName<hex:F20DF20103>，获取<hex:022811FF0A>EventItem<hex:F61E8B580103>。

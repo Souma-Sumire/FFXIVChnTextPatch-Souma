@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGHINCOMPANYMENMBERS2V43_00494_GOODLOOKINGMEMBER_000_070,哎呀，调查已经结束了？<hex:02100103>有什么新发现吗？<hex:02100103>不过，为什么只有你一个人？
 1,TEXT_REGHINCOMPANYMENMBERS2V43_00494_GOODLOOKINGMEMBER_000_080,哎……真的吗？<hex:02100103>竟然发生了这么可怕的事。<hex:02100103>我都吓得说不出话了……
 2,TEXT_REGHINCOMPANYMENMBERS2V43_00494_GOODLOOKINGMEMBER_000_090,终于要开始新的冒险了！<hex:02100103>等你平安归来后，一定要告诉我冒险的时候都发生了什么啊！<hex:02100103>我会以你的经历作为参考提升演技，争取下次拿到主角！

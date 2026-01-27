@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMC105_04901_SEQ_00,记星园庭的阿尔菲诺想出发前往下一个试炼地点。
 1,TEXT_KINGMC105_04901_SEQ_01,
 2,TEXT_KINGMC105_04901_SEQ_02,

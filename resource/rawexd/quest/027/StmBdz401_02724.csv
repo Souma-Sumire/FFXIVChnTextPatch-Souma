@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ401_02724_SEQ_00,玄水连山的深田有事想要拜托冒险者。
 1,TEXT_STMBDZ401_02724_SEQ_01,
 2,TEXT_STMBDZ401_02724_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA122_02456_SEQ_00,阿拉加纳的梅弗里德想要开始展开活动。
 1,TEXT_STMBDA122_02456_SEQ_01,
 2,TEXT_STMBDA122_02456_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDR304_03157_SEQ_00,呵欠洞的比格斯总算缓过了气来。
 1,TEXT_STMBDR304_03157_SEQ_01,比格斯提议告诉同伴们胜利的消息。和呵欠洞的阿尔法谈谈。
 2,TEXT_STMBDR304_03157_SEQ_02,阿尔法眺望着呵欠洞。和神拳痕的杰西谈谈。

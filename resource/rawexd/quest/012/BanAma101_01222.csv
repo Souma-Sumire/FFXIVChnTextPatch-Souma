@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA101_01222_SEQ_00,灰阵营的菲布布·夏有事想要拜托冒险者。
 1,TEXT_BANAMA101_01222_SEQ_01,接受了菲布布·夏的委托。讨伐赞拉克的<hex:02280EFF09>BNpcName<hex:F0F30103>，获取1个<hex:022811FF0A>EventItem<hex:F61E88DA0103>，并讨伐<hex:02280FFF09>BNpcName<hex:F203900103>，获取2个<hex:022811FF0A>EventItem<hex:F61E88D90103>。
 2,TEXT_BANAMA101_01222_SEQ_02,讨伐了魔物，获得了<hex:022811FF0A>EventItem<hex:F61E88DA0103>和<hex:022811FF0A>EventItem<hex:F61E88D90103>。将<hex:022811FF0A>EventItem<hex:F61E88DA0103>和<hex:022811FF0A>EventItem<hex:F61E88D90103>交给灰阵营的菲布布·夏。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_MANFST304_00513_SEQ_00,沙之家的敏菲利亚立刻有事情要拜托冒险者。
 1,TEXT_MANFST304_00513_SEQ_01,敏菲利亚委托冒险者去调查妖精族的动向。和格里达尼亚蛇巢司令部的沃尔赛勒谈谈。
 2,TEXT_MANFST304_00513_SEQ_02,沃尔赛勒貌似在思考着什么。再次和他对话。

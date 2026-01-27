@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSARM501_00284_SEQ_00,铸甲匠行会的赫·纳恩萨，有话想告诉冒险者。
 1,TEXT_CLSARM501_00284_SEQ_01,接受了赫·纳恩萨的委托。制作1件镶有<hex:022811FF05>Item<hex:FF08>　5666<hex:0103>的<hex:022813FF07>ItemHQ<hex:FF08>　3203<hex:0103>，将其交给国际广场的兹威恩贝尔克正漩士。
 2,TEXT_CLSARM501_00284_SEQ_02,将<hex:022813FF07>ItemHQ<hex:FF08>　3203<hex:0103>交给了兹威恩贝尔克。前往利姆萨·罗敏萨的铸甲匠行会，与布兰修提尔交谈。

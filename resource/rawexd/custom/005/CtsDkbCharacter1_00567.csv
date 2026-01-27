@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDKBCHARACTER1_00567_IOLA_000_001,好了，来让我看看你的手艺吧！
 1,TEXT_CTSDKBCHARACTER1_00567_IOLA_000_050,我就收下了！<hex:02100103>要是勇人族能够喜欢就好了！
 2,TEXT_CTSDKBCHARACTER1_00567_IOLA_000_051,我就收下了！<hex:02100103>如此高品质的手甲，<hex:02100103>就算是被阿马罗咬到也不会有一丝伤痕吧！

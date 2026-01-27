@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMF102_04440_SEQ_00,碎璃营地的露琪亚正在确认众人的平安。
 1,TEXT_AKTKMF102_04440_SEQ_01,
 2,TEXT_AKTKMF102_04440_SEQ_02,

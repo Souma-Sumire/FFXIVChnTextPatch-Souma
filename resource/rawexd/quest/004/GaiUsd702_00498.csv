@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSD702_00498_SEQ_00,丧灵钟的珂尔·拉布恩塔想和冒险者做笔交易。
 1,TEXT_GAIUSD702_00498_SEQ_01,决定将水晶塔的调查记录拿给借用着珂尔·拉布恩塔身体的诺亚。去三个地方调查、追忆，取得封入记忆的小恬宝珠。突破古代人迷宫可获得<hex:022811FF0A>EventItem<hex:F61E8A900103>，突破希尔科斯塔可获得<hex:022811FF0A>EventItem<hex:F61E8A910103>，突破暗之世界可获得<hex:022811FF0A>EventItem<hex:F61E8A920103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。
 2,TEXT_GAIUSD702_00498_SEQ_02,集齐了所有的小恬宝珠，将<hex:022811FF0A>EventItem<hex:F61E8A900103>、<hex:022811FF0A>EventItem<hex:F61E8A910103>、<hex:022811FF0A>EventItem<hex:F61E8A920103>交给丧灵钟的珂尔·拉布恩塔。

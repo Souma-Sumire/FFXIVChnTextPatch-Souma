@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA309_01250_SEQ_00,灰阵营的雅德夫·夏想要冒险者去对付倒戈派。
 1,TEXT_BANAMA309_01250_SEQ_01,接受了雅德夫·夏的委托。在不悔战阵的<hex:02280CFF05>EObj<hex:F61E910D0103>周围张望，打败现身的<hex:02280FFF09>BNpcName<hex:F209010103>，对其使用<hex:022811FF0A>EventItem<hex:F61E892C0103>。
 2,TEXT_BANAMA309_01250_SEQ_02,对<hex:02280FFF09>BNpcName<hex:F209010103>们使用了<hex:022811FF0A>EventItem<hex:F61E892C0103>。向灰阵营的雅德夫·夏报告。

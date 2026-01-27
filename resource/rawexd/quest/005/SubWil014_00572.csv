@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL014_00572_SEQ_00,咒术师行会的伊拉斯马斯想要研究生息在萨纳兰的魔物，整理成图鉴。
 1,TEXT_SUBWIL014_00572_SEQ_01,从星点栗鼠身上得到5份栗鼠之血作为研究样本。
 2,TEXT_SUBWIL014_00572_SEQ_02,收集完了栗鼠之血。向咒术师行会的伊拉斯马斯报告。

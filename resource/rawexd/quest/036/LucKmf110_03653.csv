@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF110_03653_SEQ_00,亚马乌罗提的阿尔菲诺正在等待同伴的归来。
 1,TEXT_LUCKMF110_03653_SEQ_01,
 2,TEXT_LUCKMF110_03653_SEQ_02,

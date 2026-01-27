@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA151_01142_SEQ_00,敌人来袭，小麦酒港的丝·萘若二等漩兵惊慌失措。
 1,TEXT_SUBSEA151_01142_SEQ_01,丝·萘若想请冒险者在她准备好加农炮之前帮忙争取时间。在小麦酒港附近讨伐5只<hex:02280FFF09>BNpcName<hex:F201920103>。
 2,TEXT_SUBSEA151_01142_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F201920103>。向小麦酒港的丝·萘若报告。

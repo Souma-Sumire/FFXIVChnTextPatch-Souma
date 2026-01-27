@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB509_00878_SEQ_00,圣阿达玛·兰达玛教会的埃莉内德，想要搬运妖精族的遗体。
 1,TEXT_GAIUSB509_00878_SEQ_01,冒险者从沙之家搬运的遗体中也有妖精族的遗体。将<hex:022811FF0A>EventItem<hex:F61E88460103>交给妖精暂留地的科姆希奥。
 2,TEXT_GAIUSB509_00878_SEQ_02,诺拉克希亚会由妖精族人们安葬。返回圣阿达玛·兰达玛教会，向埃莉内德报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ219_01788_SEQ_00,自由脑窟穴的西布勒鲁瓦正放眼远望。
 1,TEXT_HEAVNZ219_01788_SEQ_01,西布勒鲁瓦拜托冒险者准备一些<hex:022811FF0A>EventItem<hex:F61E8ACD0103>。打倒<hex:02280FFF09>BNpcName<hex:F20DF30103>，获取3份<hex:022811FF0A>EventItem<hex:F61E8ACD0103>。
 2,TEXT_HEAVNZ219_01788_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ACD0103>。将<hex:022811FF0A>EventItem<hex:F61E8ACD0103>交给自由脑窟穴的西布勒鲁瓦。

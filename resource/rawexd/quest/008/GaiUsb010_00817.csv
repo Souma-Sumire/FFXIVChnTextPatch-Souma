@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB010_00817_SEQ_00,恬静路营地的鬼哭队士兵黛特·莫修罗卡有事情想拜托冒险者。
 1,TEXT_GAIUSB010_00817_SEQ_01,黛特·莫修罗卡想要乌尔达哈风格的制品。和途经低径的乌尔达哈商人谈谈。
 2,TEXT_GAIUSB010_00817_SEQ_02,救下了被魔物袭击的商人，从他那里得到了<hex:022811FF0A>EventItem<hex:F61E86FF0103>。将<hex:022811FF0A>EventItem<hex:F61E86FF0103>交给恬静路营地的黛特·莫修罗卡。

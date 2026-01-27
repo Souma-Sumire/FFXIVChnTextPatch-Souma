@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGKD005_05313_SEQ_00,调查队营地的档案希望冒险者将灵魂碎晶带在身上。
 1,TEXT_KINGKD005_05313_SEQ_01,
 2,TEXT_KINGKD005_05313_SEQ_02,

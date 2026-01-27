@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ903_02859_SEQ_00,寒炉村的洛金正在寻找健步如飞的协助者。
 1,TEXT_STMBDZ903_02859_SEQ_01,
 2,TEXT_STMBDZ903_02859_SEQ_02,

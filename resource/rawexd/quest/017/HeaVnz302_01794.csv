@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ302_01794_SEQ_00,自由脑窟穴的力气大很是慌张。
 1,TEXT_HEAVNZ302_01794_SEQ_01,力气大委托冒险者去回收<hex:022811FF0A>EventItem<hex:F61E8AD50103>。调查龙堡参天高地阿瓦隆尼亚古陆的<hex:02280CFF05>EObj<hex:F61E9A890103>，获取<hex:022811FF0A>EventItem<hex:F61E8AD50103>。
 2,TEXT_HEAVNZ302_01794_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AD50103>。将<hex:022811FF0A>EventItem<hex:F61E8AD50103>交给自由脑窟穴的力气大。

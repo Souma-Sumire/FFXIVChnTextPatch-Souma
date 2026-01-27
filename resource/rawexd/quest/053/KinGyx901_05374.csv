@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGYX901_05374_SEQ_00,海岸鸟群市场的怪物狩猎协会成员在用期待的眼光看着冒险者。
 1,TEXT_KINGYX901_05374_SEQ_01,和怪物狩猎协会成员进行了交谈。前往夏劳尼荒野的胡萨塔伊驿镇，在<hex:02280CFF05>EObj<hex:F61EBE650103>进行张望。
 2,TEXT_KINGYX901_05374_SEQ_02,找到了讨伐委托人。和胡萨塔伊驿镇的旅行艾露猫谈谈。

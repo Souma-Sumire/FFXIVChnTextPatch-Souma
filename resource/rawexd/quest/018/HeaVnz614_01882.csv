@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ614_01882_SEQ_00,东方眼目的东北侦察队的龙骑士丢了些东西。
 1,TEXT_HEAVNZ614_01882_SEQ_01,东北侦察队的龙骑士被龙族袭击，丢失了非常重要的<hex:022811FF0A>EventItem<hex:F61E8AFB0103>。在翻云雾海的东方眼目回收2个<hex:022811FF0A>EventItem<hex:F61E8AFB0103>。
 2,TEXT_HEAVNZ614_01882_SEQ_02,回收了2个<hex:022811FF0A>EventItem<hex:F61E8AFB0103>。向东方眼目的东北侦察队的龙骑士报告。

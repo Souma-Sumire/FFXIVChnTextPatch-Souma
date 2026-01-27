@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ014_01739_SEQ_00,玫瑰园的蔷薇骑兵团的随军烹调师很辛苦地望着盒饭。
 1,TEXT_HEAVNZ014_01739_SEQ_01,蔷薇骑兵团的随军烹调师拜托冒险者去送盒饭。获取玫瑰园的<hex:022811FF0A>EventItem<hex:F61E8ABE0103>。
 2,TEXT_HEAVNZ014_01739_SEQ_02,收取了<hex:022811FF0A>EventItem<hex:F61E8ABE0103>。将<hex:022811FF0A>EventItem<hex:F61E8ABE0103>分发给玫瑰园的骑兵们。

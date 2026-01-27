@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03200_000010_KRILE,多亏了你啊，我这边的认证看来也不会有问题。
 1,TEXT_VOICEMAN_03200_000020_THANCRED,那我们尽快动身吧。<hex:02100103>临阵磨枪的假扮指不定什么时候就会露出马脚。
 2,TEXT_VOICEMAN_03200_000030_KRILE,桑克瑞德，有你的帮忙真是太好了。<hex:02100103>以前我就听说过你的事迹，<hex:02100103>这次我对你却是要刮目相看了。

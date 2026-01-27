@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHWDCURRENCYSHOP_00650_ENIE_000_000,我负责保管为劳动者准备的谢礼。<hex:02100103>谢礼无法用金币购买，十分抱歉。
 1,TEXT_CTSHWDCURRENCYSHOP_00650_ENIE_010_000,欢迎你过来。<hex:02100103>英雄你真的也来帮忙重建了啊。<hex:02100103>真是吓了我一跳呢。
 2,TEXT_CTSHWDCURRENCYSHOP_00650_ENIE_010_010,只要帮忙重建天穹街就会得到<hex:02280BFF05>Item<hex:F26D9F0103>。<hex:02100103>用<hex:02280BFF05>Item<hex:F26D9F0103>可以在我这里交换你想要的东西。

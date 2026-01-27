@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ708_01912_SEQ_00,尊杜集落的西努瓦利有非常危险的事要委托冒险者。
 1,TEXT_HEAVNZ708_01912_SEQ_01,西努瓦利委托冒险者去抢夺<hex:022811FF0A>EventItem<hex:F61E8B070103>。前往阿巴拉提亚云海的瓦纳温杜集落，获取3个<hex:022811FF0A>EventItem<hex:F61E8B070103>。
 2,TEXT_HEAVNZ708_01912_SEQ_02,成功夺取了3个<hex:022811FF0A>EventItem<hex:F61E8B070103>。将<hex:022811FF0A>EventItem<hex:F61E8B070103>交给尊杜集落的西努瓦利。

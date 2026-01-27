@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF103_03646_SEQ_00,追随者之门的莱楠要为冒险者带路。
 1,TEXT_LUCKMF103_03646_SEQ_01,莱楠决定带冒险者去深虑室。前往水晶都的观星室。
 2,TEXT_LUCKMF103_03646_SEQ_02,进入深虑室后，得知了水晶公的真相。和幔布门前的莱楠谈谈。

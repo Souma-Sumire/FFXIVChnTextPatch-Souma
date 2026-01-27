@@ -1,5 +1,5 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07220_000050_SUZAKU,荒魂……解放……<hex:02100103>啊……啊——

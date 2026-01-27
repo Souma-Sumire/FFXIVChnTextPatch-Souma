@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA116_01595_SEQ_00,沃仙曦染的奥诺鲁瓦有些在意附近的情况。
 1,TEXT_HEAVNA116_01595_SEQ_01,奥诺鲁瓦请求冒险者一起寻找埃马内兰。在沃仙曦染的<hex:02280CFF05>EObj<hex:F61E99AA0103>进行张望。
 2,TEXT_HEAVNA116_01595_SEQ_02,没能发现埃马内兰的踪影。在沃仙曦染的第二处<hex:02280CFF05>EObj<hex:F61E99AB0103>进行张望。

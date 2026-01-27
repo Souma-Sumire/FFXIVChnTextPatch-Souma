@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03000_000010_GILGAMESH,一起上吧，我的挚友……恩奇都！
 1,TEXT_VOICEMAN_03000_000020_GILGAMESH,有两下子……恩奇都！治疗就交给你了！
 2,TEXT_VOICEMAN_03000_000030_GILGAMESH,变成小鸡！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA902_00797_SEQ_00,山人岩穴的开山工阿德马尔想要筹备夜间工作的必备品。
 1,TEXT_GAIUSA902_00797_SEQ_01,在彻夜工作之前，油灯的灯油好像用光了。削弱<hex:02280FFF09>BNpcName<hex:F2088D0103>后，对其使用<hex:022811FF0A>EventItem<hex:F61E86F30103>，获取<hex:022811FF0A>EventItem<hex:F61E86F40103>。
 2,TEXT_GAIUSA902_00797_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E86F40103>。交给山人岩穴的阿德马尔。

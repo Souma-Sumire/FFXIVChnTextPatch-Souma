@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMH103_05301_SEQ_00,锦砖咖啡的斯菲因一副心怀歉意的样子。
 1,TEXT_KINGMH103_05301_SEQ_01,
 2,TEXT_KINGMH103_05301_SEQ_02,

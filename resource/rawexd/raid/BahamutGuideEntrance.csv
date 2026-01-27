@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BAHAMUTGUIDEENTRANCE_JBROHKA_000_000,延伸至地下的“陨石痕迹”属于未知领域。<hex:02100103>可能比帝国的要塞还要危险。<hex:02100103>请和同伴们做好万全准备！
 1,TEXT_BAHAMUTGUIDEENTRANCE_Q1_000_010,要做什么？
 2,TEXT_BAHAMUTGUIDEENTRANCE_A1_000_011,询问“巴哈姆特大迷宫邂逅之章”的开始条件

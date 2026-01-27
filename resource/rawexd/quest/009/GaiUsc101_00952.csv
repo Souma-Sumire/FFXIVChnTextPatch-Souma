@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC101_00952_SEQ_00,阿尔菲诺想要与德里耶蒙谈谈。
 1,TEXT_GAIUSC101_00952_SEQ_01,从德里耶蒙那里打听出坠落的企业号的情报。
 2,TEXT_GAIUSC101_00952_SEQ_02,飞空艇企业号只能靠自力夺回。前往石卫塔，和纳特朗谈谈。

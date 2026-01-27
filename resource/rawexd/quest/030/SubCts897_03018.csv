@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS897_03018_SEQ_00,黄昏湾的斯威尔盖姆想要将幻象棱晶的制作方法传授给冒险者。
 1,TEXT_SUBCTS897_03018_SEQ_01,接受了斯威尔盖姆交代的跑腿任务。和黄昏湾的福尔克琳德谈谈。
 2,TEXT_SUBCTS897_03018_SEQ_02,和福尔克琳德进行了交谈，取得了<hex:022811FF0A>EventItem<hex:F61E8DF10103>。将<hex:022811FF0A>EventItem<hex:F61E8DF10103>交给黄昏湾的斯威尔盖姆。

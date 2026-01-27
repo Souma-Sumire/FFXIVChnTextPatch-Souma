@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH4MYCBAICHAOUEN_00657_000_000,我们由衷地感谢解放者阁下的协助。<hex:02100103>立足于女王之刃的重现，<hex:02100103>我们将增强抵抗组织的凝聚力，升起战斗的狼烟。
 1,TEXT_REGOTH4MYCBAICHAOUEN_00657_000_001,等我们对第四军团发起反攻作战之时，<hex:02100103>请解放者也务必参加！<hex:02100103>有你协助的话，想必我们一定能够达成夙愿！
 2,TEXT_REGOTH4MYCBAICHAOUEN_00657_000_002,话说回来，你有什么想要了解的事情吗？

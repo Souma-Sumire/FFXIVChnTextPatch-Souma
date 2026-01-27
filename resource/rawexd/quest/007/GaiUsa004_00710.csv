@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA004_00710_SEQ_00,关于给妖精族的见面礼，霍桑山寨的罗尔佛·霍桑想给冒险者一些建议。
 1,TEXT_GAIUSA004_00710_SEQ_01,罗尔佛·霍桑的妻子罗莎·霍桑较为清楚妖精族喜欢的东西。去盛花养蜂场和她谈谈。
 2,TEXT_GAIUSA004_00710_SEQ_02,妖精族好像喜欢<hex:022811FF0A>EventItem<hex:F61E87BF0103>。在<hex:02280CFF05>EObj<hex:F61E8BEE0103>使用<hex:022811FF0A>EventItem<hex:F61E86BB0103>，打倒随之出现的<hex:02280DFF09>BNpcName<hex:220103>，获取<hex:022811FF0A>EventItem<hex:F61E87BF0103>。

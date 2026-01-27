@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ711_01915_SEQ_00,尊杜集落的古努瓦努正思考可以通过仪式的办法。
 1,TEXT_HEAVNZ711_01915_SEQ_01,为了古努瓦努，冒险者要去捕捉腾云蛇。和阿巴拉提亚云海蓝天窗的古努瓦努谈谈。
 2,TEXT_HEAVNZ711_01915_SEQ_02,古努瓦努将<hex:022811FF0A>EventItem<hex:F61E8B610103>给了冒险者。对蓝天窗的训练过的腾云蛇使用<hex:022811FF0A>EventItem<hex:F61E8B610103>。

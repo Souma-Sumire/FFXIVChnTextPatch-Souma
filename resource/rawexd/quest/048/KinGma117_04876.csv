@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMA117_04876_SEQ_00,烈酒蒸馏所的乌克·拉玛特想要去找哈维利。
 1,TEXT_KINGMA117_04876_SEQ_01,
 2,TEXT_KINGMA117_04876_SEQ_02,

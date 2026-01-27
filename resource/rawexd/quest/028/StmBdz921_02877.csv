@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ921_02877_SEQ_00,天营门的穆尼弗里德有任务想委托给战斗经验丰富的冒险者。
 1,TEXT_STMBDZ921_02877_SEQ_01,
 2,TEXT_STMBDZ921_02877_SEQ_02,

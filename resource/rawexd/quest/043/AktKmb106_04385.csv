@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMB106_04385_SEQ_00,封赏别墅的丽茜妮娅似乎在思考什么事情。
 1,TEXT_AKTKMB106_04385_SEQ_01,
 2,TEXT_AKTKMB106_04385_SEQ_02,

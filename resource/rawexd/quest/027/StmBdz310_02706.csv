@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ310_02706_SEQ_00,翠水乡的红打算前往碧玉水。
 1,TEXT_STMBDZ310_02706_SEQ_01,和红进行了交谈。前往红玉海碧玉水，和红汇合。
 2,TEXT_STMBDZ310_02706_SEQ_02,和红汇合了。追上在碧玉水寻找碧甲族旅行商人的红，进行交谈。

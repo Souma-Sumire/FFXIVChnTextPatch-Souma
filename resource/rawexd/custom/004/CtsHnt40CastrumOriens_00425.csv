@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT40CASTRUMORIENS_00425_YAYANEJA_000_000,……我不是艾欧泽亚同盟军的人。<hex:02100103>不过我可是得到了许可才来到这里的。
 1,TEXT_CTSHNT40CASTRUMORIENS_00425_YAYANEJA_000_001,……哦，你也是兵团的人吗？<hex:02100103>我在追踪这一带的恶名精英。<hex:02100103>你要是需要情报，我倒是可以提供给你……
 2,TEXT_CTSHNT40CASTRUMORIENS_00425_YAYANEJA_Q1_000_000,想了解什么？

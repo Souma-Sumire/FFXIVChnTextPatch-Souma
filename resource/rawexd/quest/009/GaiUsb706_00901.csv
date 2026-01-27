@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB706_00901_SEQ_00,巨龙首营地的雅埃勒有话想和冒险者说。
 1,TEXT_GAIUSB706_00901_SEQ_01,雅埃勒想要冒险者去讨伐<hex:02280FFF09>BNpcName<hex:F202AA0103>。先对巨龙首附近的塞巴斯蒂安使用<hex:022811FF0A>EventItem<hex:F61E87400103>，获取<hex:022811FF0A>EventItem<hex:F61E87410103>。
 2,TEXT_GAIUSB706_00901_SEQ_02,再前往巨龙首北边的神意之地，将<hex:022811FF0A>EventItem<hex:F61E87410103>放置在<hex:02280CFF05>EObj<hex:F61E8CCD0103>。

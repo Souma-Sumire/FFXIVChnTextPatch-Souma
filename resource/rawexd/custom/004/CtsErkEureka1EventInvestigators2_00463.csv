@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA1EVENTINVESTIGATORS2_00463_INV00463_000_000,你就是新加入调查队的冒险者吗！<hex:02100103>我虽然不会战斗，但是我会提供情报支援，<hex:02100103>请多多指教！
 1,TEXT_CTSERKEUREKA1EVENTINVESTIGATORS2_00463_INV00463_000_010,我听说你要前去探索原初自然史院分室！<hex:02100103>根据之前的调查，我们发现那附近的环境以太<hex:02100103>是风属性之力更强一些！
 2,TEXT_CTSERKEUREKA1EVENTINVESTIGATORS2_00463_INV00463_000_011,所以估计栖息在那边的魔物也受到环境以太的影响，<hex:02100103>都是拥有强烈风属性之力的魔物！<hex:02100103>请你做好充足的准备！

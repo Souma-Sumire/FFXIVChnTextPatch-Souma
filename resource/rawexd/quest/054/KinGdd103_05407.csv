@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGDD103_05407_SEQ_00,云村的因克·代恩脸都绿了。
 1,TEXT_KINGDD103_05407_SEQ_01,向因克·代恩报告了自己抵达朝圣路尽头的消息。在伊尔美格达穆伦巡礼教会遗迹的<hex:02280CFF05>EObj<hex:F61EBEBE0103>等待。
 2,TEXT_KINGDD103_05407_SEQ_02,派人调查教会遗迹的传送魔纹后，发现驱赶妖灵的魔咒已经消失了。和云村的因克·代恩谈谈。

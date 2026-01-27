@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ018_01743_SEQ_00,福尔唐伯爵府附近的托尔斯费尔正为某事烦恼。
 1,TEXT_HEAVNZ018_01743_SEQ_01,托尔斯费尔委托冒险者去帮他完成埃马内兰交给他的一项任务。前往阿巴拉提亚云海，将<hex:022811FF0A>EventItem<hex:F61E8B8E0103>交给玫瑰园的拉妮艾特。
 2,TEXT_HEAVNZ018_01743_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8B8E0103>交给了拉妮艾特。拉妮艾特和埃马内兰小时候起就经常来往，但面对和小时候相比毫无成长的埃马内兰，还是十分无奈。

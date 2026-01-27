@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBNIN301_00213_SEQ_00,胧打算为冒险者讲解印的使用方法。
 1,TEXT_JOBNIN301_00213_SEQ_01,胧嘱托冒险者去进行修行。结出天之印后发动忍术，即可用出风魔手里剑。对码头小屋外的<hex:02280CFF05>EObj<hex:F61E97BF0103>使用风魔手里剑。
 2,TEXT_JOBNIN301_00213_SEQ_02,成功对<hex:02280CFF05>EObj<hex:F61E97BF0103>使用了风魔手里剑。向码头小屋前的胧报告。

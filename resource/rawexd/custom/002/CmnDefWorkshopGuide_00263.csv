@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFWORKSHOPGUIDE_00263_MAMMET00263_000_000,欢迎、来到、部队工房！<hex:02100103>我是、冒险人偶014号。<hex:02100103>关于部队工房、有什么不懂的、可以问我！
 1,TEXT_CMNDEFWORKSHOPGUIDE_00263_Q1_000_000,想了解什么？
 2,TEXT_CMNDEFWORKSHOPGUIDE_00263_A1_000_001,关于部队工房

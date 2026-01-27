@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL002_01253_SEQ_00,妖精暂留地的欧姆希奥想要帮助冒险者寻找博物学家。
 1,TEXT_BANSYL002_01253_SEQ_01,欧姆希奥告诉了冒险者博物学家维斯可能在的地点。前往百灵啼南部，在<hex:02280CFF05>EObj<hex:F61E8FB00103>等待，查看附近的状况。
 2,TEXT_BANSYL002_01253_SEQ_02,坏妖精向东北方逃走了。救助百灵啼的维斯。

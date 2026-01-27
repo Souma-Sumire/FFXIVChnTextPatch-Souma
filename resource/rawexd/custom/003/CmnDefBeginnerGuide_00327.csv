@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFBEGINNERGUIDE_00327_COACH00327_100_000,我是隶属于冒险者行会的冒险者指导教官，<hex:02100103>主要负责帮助刚刚开始冒险旅途的冒险者。
 1,TEXT_CMNDEFBEGINNERGUIDE_00327_COACH00327_000_000,看来你还是个初出茅庐的冒险者，<hex:02100103>对今后的冒险一定有很多不安。
 2,TEXT_CMNDEFBEGINNERGUIDE_00327_COACH00327_000_001,我们行会称刚开始冒险的冒险者为“新人”。<hex:02100103>就是说这些人身上都蕴藏着无限的可能性，是受期待的新星！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ206_02678_SEQ_00,红玉炮台的端山正在担心地眺望着大海。
 1,TEXT_STMBDZ206_02678_SEQ_01,
 2,TEXT_STMBDZ206_02678_SEQ_02,

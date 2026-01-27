@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH105_01383_SEQ_00,诺布养育场的菲乌发现了会引起争斗的事端。
 1,TEXT_BANSAH105_01383_SEQ_01,菲乌委托冒险者去解救被珊瑚尖枪囚禁的黑涡团士兵。和鱼人军阵营西边负责看守的<hex:02280FFF09>BNpcName<hex:F20AA10103>对话，讨伐发起攻击的<hex:02280FFF09>BNpcName<hex:F20AA10103>并从其身上获取<hex:022811FF0A>EventItem<hex:F61E89660103>。
 2,TEXT_BANSAH105_01383_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E89660103>。对鱼人军阵营西边的被囚禁的黑涡团士兵使用<hex:022811FF0A>EventItem<hex:F61E89660103>。

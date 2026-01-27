@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMA204_03285_SEQ_00,门前区的阿尔菲诺依旧无法释然。
 1,TEXT_LUCKMA204_03285_SEQ_01,
 2,TEXT_LUCKMA204_03285_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD118_04929_SEQ_00,边郊镇的斯菲因想要参观农场。
 1,TEXT_KINGMD118_04929_SEQ_01,
 2,TEXT_KINGMD118_04929_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2SAINTREYMANAUDSCHOOL_00279_BRUVAGNON_000_000,请你保持安静……<hex:02100103>这里是圣恩达利姆神学院。<hex:02100103>以成为圣职者为目标的学生们在这里勤学苦读。
 1,TEXT_REGROC2SAINTREYMANAUDSCHOOL_00279_BRUVAGNON_000_001,请你小心……<hex:02100103>伊修加德正教的欺瞒行为被曝光后，<hex:02100103>人们的怒火直指这座圣恩达利姆神学院……
 2,TEXT_REGROC2SAINTREYMANAUDSCHOOL_00279_BRUVAGNON_000_002,<hex:022903EB0203>阁下，你来了。<hex:02100103>去跟神学生们打个招呼吧，大家见到你一定很高兴。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGBA131_04821_SEQ_00,神殿骑士团的菲尔马尔贝仍在警惕敌人。
 1,TEXT_KINGBA131_04821_SEQ_01,和菲尔马尔贝进行了交谈。忧心特恩托瓦安全的洛泽尼凯从图拉尔大陆赶到了艾欧泽亚。她表示如果能制作一种名叫春阳之甘霖的秘药，或许就能唤醒特恩托瓦。首先在翻云雾海的四臂广场附近收集<hex:022811FF0A>EventItem<hex:F61E92210103>。
 2,TEXT_KINGBA131_04821_SEQ_02,收集了<hex:022811FF0A>EventItem<hex:F61E92210103>。在龙堡内陆低地的萨雷安治学区的<hex:02280CFF05>EObj<hex:F61EB9F10103>张望，讨伐出现的魔物，获取<hex:022811FF0A>EventItem<hex:F61E92220103>。

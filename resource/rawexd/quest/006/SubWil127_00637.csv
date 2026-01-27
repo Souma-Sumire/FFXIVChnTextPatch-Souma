@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL127_00637_SEQ_00,若斯佩尔被古菩猩猩身上的植物感动了。
 1,TEXT_SUBWIL127_00637_SEQ_01,若斯佩尔想照顾这些植物。从西边的池塘中得到浑浊的泉水。
 2,TEXT_SUBWIL127_00637_SEQ_02,获得了浑浊的泉水，交给若斯佩尔。

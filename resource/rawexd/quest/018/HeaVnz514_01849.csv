@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ514_01849_SEQ_00,天极白垩宫丢三落四的莫古力有些烦心事。
 1,TEXT_HEAVNZ514_01849_SEQ_01,和丢三落四的莫古力进行了交谈。候鸟的雏鸟虽然离巢迁徙了，但留下的巢却很影响景观。在天极白垩宫获取5个<hex:022811FF0A>EventItem<hex:F61E8B0F0103>。
 2,TEXT_HEAVNZ514_01849_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B0F0103>。将<hex:022811FF0A>EventItem<hex:F61E8B0F0103>交给天极白垩宫丢三落四的莫古力。

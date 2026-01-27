@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANGNA503_02273_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整（限定职业）<hex:0249020103><hex:0248020103><hex:02100103>自由脑窟穴的眼神好想给冒险者展现一项技能。
 1,TEXT_BANGNA503_02273_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整（限定职业）任务，<hex:02100103>　需要与接受任务时的职业相同才可继续进行任务。<hex:02100103><hex:02100103>眼神好委托冒险者获取供给田园郡的<hex:022811FF0A>EventItem<hex:F61E8C2C0103>。首先需要<hex:022811FF0A>EventItem<hex:F61E8C2B0103>作为诱饵。在悲叹飞泉的<hex:02280CFF05>EObj<hex:F61E9F920103>中获取<hex:022811FF0A>EventItem<hex:F61E8C2B0103>。
 2,TEXT_BANGNA503_02273_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8C2B0103>。在宽慰河中游的<hex:02280CFF05>EObj<hex:F61E9F930103>使用<hex:022811FF0A>EventItem<hex:F61E8C2B0103>，从出现的<hex:02280FFF09>BNpcName<hex:F212720103>身上获取<hex:022811FF0A>EventItem<hex:F61E8C2C0103>。

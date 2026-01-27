@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFWEDDINGRECOVERY_00214_DEACON00214_000_000,"在众神面前,与对方结下永结同心的誓约……<hex:02100103>我将为举办永结同心典礼的人们贡献出绵薄之力。"
 1,TEXT_CMNDEFWEDDINGRECOVERY_00214_SYSTEM_000_001,只对申请了“永结同心”服务的玩家开放。
 2,TEXT_CMNDEFWEDDINGRECOVERY_00214_DEACON00214_000_010,欢迎您的到来。<hex:02100103>关于举办永结同心典礼，有什么不明白或是困扰的地方吗？

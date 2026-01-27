@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ019_01744_SEQ_00,隼巢的英嘉蕾特似乎有什么烦恼。
 1,TEXT_HEAVNZ019_01744_SEQ_01,英嘉蕾特拜托冒险者讨伐<hex:02280FFF09>BNpcName<hex:F20D920103>。前往库尔札斯西部高地的黑铁大桥以北，讨伐3只<hex:02280FFF09>BNpcName<hex:F20D920103>。
 2,TEXT_HEAVNZ019_01744_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20D920103>。向英嘉蕾特报告。

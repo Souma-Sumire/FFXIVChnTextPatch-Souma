@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HOUFURVASE_00336_Q1_000_000,【插花：<hex:02280AFF05>Item<hex:E8020103>】
 1,TEXT_HOUFURVASE_00336_Q1_000_001,【插花：空】
 2,TEXT_HOUFURVASE_00336_A1_000_002,往花瓶中插花

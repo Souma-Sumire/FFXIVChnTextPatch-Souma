@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKBA231_03270_SEQ_00,彷徨阶梯亭的吉奥图似乎只顾着喝酒。
 1,TEXT_LUCKBA231_03270_SEQ_01,在节德被目击到的地方打倒食罪灵，将其引来。在拉凯提卡大森林的蛇行枝和吉奥图汇合。
 2,TEXT_LUCKBA231_03270_SEQ_02,与吉奥图分头讨伐独行食罪灵。在伊奇丝玛雅艾禁林的<hex:02280CFF05>EObj<hex:F61EAB930103>张望，讨伐独行食罪灵。

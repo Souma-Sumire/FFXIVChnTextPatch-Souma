@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ005_02639_SEQ_00,帝国东方堡的鲁兹奇厄兹正漩尉有事想要委托给冒险者。
 1,TEXT_STMBDZ005_02639_SEQ_01,
 2,TEXT_STMBDZ005_02639_SEQ_02,

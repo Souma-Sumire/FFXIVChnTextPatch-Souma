@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ507_02758_SEQ_00,重逢集市的阿答儿金部的男子正在找身手不凡的武人。
 1,TEXT_STMBDZ507_02758_SEQ_01,
 2,TEXT_STMBDZ507_02758_SEQ_02,

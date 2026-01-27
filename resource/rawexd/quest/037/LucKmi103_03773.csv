@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMI103_03773_SEQ_00,观望台的琳表情显得很严肃。
 1,TEXT_LUCKMI103_03773_SEQ_01,从琳那里得知桑克瑞德倒下了。和水晶都炼金医疗馆的桑克瑞德谈谈。
 2,TEXT_LUCKMI103_03773_SEQ_02,桑克瑞德恢复了意识。和原初世界石之家的塔塔露谈谈。

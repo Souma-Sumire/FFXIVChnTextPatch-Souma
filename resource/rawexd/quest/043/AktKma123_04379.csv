@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMA123_04379_SEQ_00,云使宫前的阿尔菲诺准备出发前往制药堂。
 1,TEXT_AKTKMA123_04379_SEQ_01,
 2,TEXT_AKTKMA123_04379_SEQ_02,

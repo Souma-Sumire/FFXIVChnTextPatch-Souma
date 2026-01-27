@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSALC450_00649_SEQ_00,炼金术士行会的塞文利安看上去十分焦躁。
 1,TEXT_CLSALC450_00649_SEQ_01,接受了塞文利安的委托。制作<hex:022813FF07>ItemHQ<hex:FF08>　4607<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　4608<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　4606<hex:0103>各1个，交给乌尔达哈炼金术士行会的塞文利安。
 2,TEXT_CLSALC450_00649_SEQ_02,将<hex:022813FF07>ItemHQ<hex:FF08>　4607<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　4608<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　4606<hex:0103>交给了塞文利安。塞文利安所研究的究极炼金术是为了复活5年前去世的瓦·奈嘉。他表示要再次挑战究极炼金术。祝愿他能挑战成功，并继续努力锻炼。<hex:02100103><hex:02100103>※炼金术士的等级达到50级以上时，可以从塞文利安那里领取下一个炼金术士任务。

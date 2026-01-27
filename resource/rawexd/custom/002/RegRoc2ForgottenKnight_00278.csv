@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2FORGOTTENKNIGHT_00278_GIBRILLONT_000_000,欢迎光临，忘忧骑士亭欢迎来自五湖四海的顾客……<hex:02100103>当然前提是能够习惯这家酒馆做派的。
 1,TEXT_REGROC2FORGOTTENKNIGHT_00278_GIBRILLONT_000_001,竟然把这里当做情报源来利用，那小姑娘胆子还挺大。<hex:02100103>不过很多客人也是冲着那小姑娘来的，<hex:02100103>不妨就当是互帮互助吧。
 2,TEXT_REGROC2FORGOTTENKNIGHT_00278_GIBRILLONT_000_002,各种各样的邂逅让人成长，也组成了那个人的过去。<hex:02100103>为人与人牵线搭桥也是酒馆的魅力所在。

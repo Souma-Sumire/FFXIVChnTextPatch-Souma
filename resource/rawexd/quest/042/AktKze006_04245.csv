@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKZE006_04245_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>最佳威兔洞的吵吵嚷嚷的兔兔族正在实验新的游乐项目。
 1,TEXT_AKTKZE006_04245_SEQ_01,
 2,TEXT_AKTKZE006_04245_SEQ_02,

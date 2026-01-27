@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH206_01395_SEQ_00,诺布养育场的荷乌看上去似乎很烦恼。
 1,TEXT_BANSAH206_01395_SEQ_01,荷乌委托冒险者帮忙整顿产卵地的环境。在萨普沙产卵地使用<hex:022811FF0A>EventItem<hex:F61E89700103>封住5只<hex:02280CFF05>EObj<hex:F61E936D0103>。遭到<hex:02280FFF09>BNpcName<hex:F20AAA0103>袭击的话就将其讨伐。
 2,TEXT_BANSAH206_01395_SEQ_02,使用<hex:022811FF0A>EventItem<hex:F61E89700103>封住了<hex:02280CFF05>EObj<hex:F61E936D0103>。向诺布养育场的荷乌报告。

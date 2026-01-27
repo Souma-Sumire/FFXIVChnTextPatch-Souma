@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGYR301_05187_SEQ_00,来生回廊的可疑的药商想让冒险者帮忙送药。
 1,TEXT_KINGYR301_05187_SEQ_01,可疑的药商委托冒险者送一种药水。将<hex:022811FF0A>EventItem<hex:F61E92F60103>交给乌尔达哈现世回廊的拉拉菲尔族剑术师。
 2,TEXT_KINGYR301_05187_SEQ_02,将药水交给了拉拉菲尔族剑术师。这瓶药水叫做“幻想药”，据说喝下的人可以随意改变自己的容貌。将<hex:022811FF0A>EventItem<hex:F61E92F70103>交给来生回廊的可疑的药商。

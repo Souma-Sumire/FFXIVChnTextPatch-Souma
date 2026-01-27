@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_COMALL002_03007_SEQ_00,
 1,TEXT_COMALL002_03007_SEQ_01,从索伏特诺克斯处听说了新的玩家对战“烈羽争锋”。挑战驱使哥布林族机械的激战吧。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。
 2,TEXT_COMALL002_03007_SEQ_02,

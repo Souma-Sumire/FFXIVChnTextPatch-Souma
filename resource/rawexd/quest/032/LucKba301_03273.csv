@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKBA301_03273_SEQ_00,彷徨阶梯亭的芦·利柯大马金刀地站在那里。
 1,TEXT_LUCKBA301_03273_SEQ_01,芦·利柯为了解决四使徒之一，正在寻找伙伴。冒险者接受了他的试练。在雷克兰德的迷途羊倌之森和芦·利柯谈谈。
 2,TEXT_LUCKBA301_03273_SEQ_02,芦·利柯的试练是指讨伐<hex:02280FFF09>BNpcName<hex:F220F70103>。将从他那里拿到的<hex:022811FF0A>EventItem<hex:F61E8F1E0103>放在迷途羊倌之森的<hex:02280CFF05>EObj<hex:F61EAD1C0103>，吸引<hex:02280FFF09>BNpcName<hex:F220F70103>。

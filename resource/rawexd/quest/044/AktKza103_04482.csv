@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKZA103_04482_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>梅丽奥尔实验农场的生物学研究员充满了干劲。
 1,TEXT_AKTKZA103_04482_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>和生物学研究员进行了交谈，为了驱除窃蠹决定制作特殊杀虫药。冒险者需要筹备有毒成分的素材。讨伐迷津命之风附近的<hex:02280FFF09>BNpcName<hex:F229B10103>，获取<hex:022811FF0A>EventItem<hex:F61E91840103>。
 2,TEXT_AKTKZA103_04482_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E91840103>。将<hex:022811FF0A>EventItem<hex:F61E91840103>交给梅丽奥尔实验农场的生物学研究员。

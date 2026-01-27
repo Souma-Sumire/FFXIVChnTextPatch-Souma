@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3NAMAI_00412_NANOHANA_000_000,欢迎来到茨菰村。<hex:02100103>如果你有什么想了解的可以问我。
 1,TEXT_REGOTH3NAMAI_00412_NANOHANA_000_001,<hex:022903EB0203>，欢迎你来到茨菰村！<hex:02100103>如果你有什么想了解的可以问我。
 2,TEXT_REGOTH3NAMAI_00412_Q1_000_000,想了解什么？

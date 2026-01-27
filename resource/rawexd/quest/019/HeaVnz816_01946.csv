@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ816_01946_SEQ_00,田园郡的霍尔皮克斯非常生气。
 1,TEXT_HEAVNZ816_01946_SEQ_01,霍尔皮克斯表示无法忍受青蓝之手的机关兵器四处破坏。在龙堡内陆低地的宗匠大工房附近讨伐3台<hex:02280FFF09>BNpcName<hex:F20E7D0103>。
 2,TEXT_HEAVNZ816_01946_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E7D0103>。向田园郡的霍尔皮克斯报告。

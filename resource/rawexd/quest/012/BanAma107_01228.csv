@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA107_01228_SEQ_00,灰阵营的菲布布·夏想要冒险者帮忙做实验。
 1,TEXT_BANAMA107_01228_SEQ_01,接受了菲布布·夏的委托。在赞拉克北部的3处<hex:02280CFF05>EObj<hex:F61E90DE0103>张望一番，打败现身的信徒，对其使用<hex:022811FF0A>EventItem<hex:F61E89270103>。
 2,TEXT_BANAMA107_01228_SEQ_02,对信徒们使用了<hex:022811FF0A>EventItem<hex:F61E89270103>。向灰阵营的菲布布·夏报告。

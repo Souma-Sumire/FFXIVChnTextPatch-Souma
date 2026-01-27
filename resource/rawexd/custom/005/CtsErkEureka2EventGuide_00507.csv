@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA2EVENTGUIDE_00507_INV00463_000_000,通过调查常风地带，<hex:02100103>我们发现了优雷卡的魔物<hex:02100103>从以太学的观点来讲是非常不稳定的！
 1,TEXT_CTSERKEUREKA2EVENTGUIDE_00507_INV00463_000_001,这意味着这些魔物很可能是因为某种外因，<hex:02100103>在短时间内发生了突然变异！<hex:02100103>请你在探索的时候，牢记这点！
 2,TEXT_CTSERKEUREKA2EVENTGUIDE_00507_TALK_ACTOR,

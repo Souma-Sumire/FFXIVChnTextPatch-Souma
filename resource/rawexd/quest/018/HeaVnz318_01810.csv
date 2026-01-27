@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ318_01810_SEQ_00,不洁三塔的格林坎比郁闷至极。
 1,TEXT_HEAVNZ318_01810_SEQ_01,格林坎比委托冒险者去摘<hex:02280CFF05>EObj<hex:F61E9AA90103>。前往龙堡参天高地的哀思洞窟，获取<hex:02280CFF05>EObj<hex:F61E9AA90103>。
 2,TEXT_HEAVNZ318_01810_SEQ_02,获得了<hex:02280CFF05>EObj<hex:F61E9AA90103>。将<hex:022811FF0A>EventItem<hex:F61E8ADD0103>交给不洁三塔的格林坎比。

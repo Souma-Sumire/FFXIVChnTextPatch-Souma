@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC706_01018_SEQ_00,瞭望阵营地的芙·玛嘉二等漩兵面色沉痛。
 1,TEXT_GAIUSC706_01018_SEQ_01,芙·玛嘉有4位同伴出任务后就再也没回来了。从黑金湖的阵亡者身上取回<hex:022811FF0A>EventItem<hex:F61E87870103>。
 2,TEXT_GAIUSC706_01018_SEQ_02,回收了4人的<hex:022811FF0A>EventItem<hex:F61E87870103>。将其交给瞭望阵营地的芙·玛嘉。

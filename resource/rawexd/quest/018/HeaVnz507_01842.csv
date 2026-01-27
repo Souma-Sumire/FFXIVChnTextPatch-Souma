@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ507_01842_SEQ_00,赎罪天廊的莫古尼尔好像需要帮助。
 1,TEXT_HEAVNZ507_01842_SEQ_01,和莫古尼尔进行了交谈。听说有可怕的巨虫出现，在翻云雾海的四臂广场讨伐3只<hex:02280FFF09>BNpcName<hex:F210BB0103>。
 2,TEXT_HEAVNZ507_01842_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F210BB0103>。向赎罪天廊的莫古尼尔报告。

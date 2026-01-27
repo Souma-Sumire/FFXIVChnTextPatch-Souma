@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ620_01888_SEQ_00,填絮码头的埃蒙有事想要拜托冒险者。
 1,TEXT_HEAVNZ620_01888_SEQ_01,埃蒙希望冒险者能帮忙讨伐一下给他捣乱的<hex:02280FFF09>BNpcName<hex:F20DA00103>。在填絮码头讨伐5只<hex:02280FFF09>BNpcName<hex:F20DA00103>。
 2,TEXT_HEAVNZ620_01888_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20DA00103>。向填絮码头的埃蒙报告。

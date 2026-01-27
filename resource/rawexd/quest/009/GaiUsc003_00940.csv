@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC003_00940_SEQ_00,阿尔菲诺想要冒险者协助自己将冒牌的吉耶姆逼至绝境。
 1,TEXT_GAIUSC003_00940_SEQ_01,只靠冒险者找到的证据还很难证明吉耶姆就是假货。让白云崖前哨的伤兵若约查看<hex:022811FF0A>EventItem<hex:F61E87E20103>并和他谈谈。
 2,TEXT_GAIUSC003_00940_SEQ_02,若约只在异端审问官到任的那天夜里看到过他的脸。让白云崖前哨的普吕妮亚查看<hex:022811FF0A>EventItem<hex:F61E87E20103>并和她谈谈。

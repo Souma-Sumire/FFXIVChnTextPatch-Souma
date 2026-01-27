@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH106_01384_SEQ_00,诺布养育场的菲乌想要收集制作渔叉的材料。
 1,TEXT_BANSAH106_01384_SEQ_01,接受了菲乌的委托，去收集材料，以便菲乌为他的弟弟们制作渔叉。先去月影岛打倒<hex:02280FFF09>BNpcName<hex:F209E50103>，获得2份<hex:022811FF0A>EventItem<hex:F61E89730103>。诺布养育场的海兽驯养人帕阿会为冒险者准备前往月影岛的水龙蜥。
 2,TEXT_BANSAH106_01384_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E89730103>。将<hex:022811FF0A>EventItem<hex:F61E89730103>设置在月影岛的<hex:02280CFF05>EObj<hex:F61E93800103>，讨伐随之出现的<hex:02280FFF09>BNpcName<hex:F20AA20103>，获取<hex:022811FF0A>EventItem<hex:F61E89740103>。

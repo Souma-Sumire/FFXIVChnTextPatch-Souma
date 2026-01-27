@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC008_00945_SEQ_00,白云崖前哨的贝朗若瓦，有件无论如何都想要证明的事。
 1,TEXT_GAIUSC008_00945_SEQ_01,贝朗若瓦在巡逻中击落了龙族。但谁都不相信他的话。找到龙族的尸骸，将<hex:022811FF0A>EventItem<hex:F61E88250103>带回来。
 2,TEXT_GAIUSC008_00945_SEQ_02,找到了<hex:022811FF0A>EventItem<hex:F61E88250103>。将其交给白云崖前哨的贝朗若瓦。

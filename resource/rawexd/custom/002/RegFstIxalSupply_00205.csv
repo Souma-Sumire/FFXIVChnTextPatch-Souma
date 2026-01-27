@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTIXALSUPPLY_00205_PROCUREMENTIXAL_000_000,干嘛？！<hex:02100103>无翼之徒敢在我们地盘上捣乱试试！<hex:02100103>当心我拿你和废柴一块扔到焚化炉里烧了！
 1,TEXT_REGFSTIXALSUPPLY_00205_PROCUREMENTIXAL_000_010,干嘛？！<hex:02100103>我这里倒是有想交给你的工作！<hex:02100103>还是说你有什么事想问啊！
 2,TEXT_REGFSTIXALSUPPLY_00205_PROCUREMENTIXAL_000_020,干嘛？！<hex:02100103>我交给你的工作怎么样了？<hex:02100103>还是说你有什么事想问啊！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_WARPWEDDINGPLACEDESK_ETOINELLE_000_000,这里是久远圣堂……<hex:02100103>是个供命中注定的二人许下永结同心誓言的神圣场所。<hex:02100103>请问您来这里有什么事吗？
 1,TEXT_WARPWEDDINGPLACEDESK_ETOINELLE_000_001,<hex:022903EB0203>，<hex:02100103>如果想和雷莫商量典礼方案，<hex:02100103>请去找仪式迎宾员，由他领您进圣堂。
 2,TEXT_WARPWEDDINGPLACEDESK_ETOINELLE_000_002,<hex:022903EB0203>，<hex:02100103>请问您找我有什么事吗？

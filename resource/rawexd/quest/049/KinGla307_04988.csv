@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGLA307_04988_SEQ_00,珠串万货街的谢荣加正在推进试喝活动的准备工作。
 1,TEXT_KINGLA307_04988_SEQ_01,和谢荣加进行了交谈。谢荣加说试饮会需要制作<hex:02280DFF07>ItemHQ<hex:F2AB880103>。以<hex:02280BFF05>Item<hex:F2ABA40103>为素材，制作<hex:02280DFF07>ItemHQ<hex:F2AB880103>交给珠串万货街的谢荣加。<hex:02100103><hex:02100103>※如果<hex:02280BFF05>Item<hex:F2ABA40103>不足，可以从装有材料的木箱中重新获得材料，并再次进行挑战。
 2,TEXT_KINGLA307_04988_SEQ_02,将<hex:02280DFF07>ItemHQ<hex:F2AB880103>交给了谢荣加。试饮会大获成功，与谢荣加和哈雷纳鲁坷一起饮用<hex:02280DFF07>ItemHQ<hex:F2AB880103>庆祝。回到珠串万货街，和谢荣加谈谈。

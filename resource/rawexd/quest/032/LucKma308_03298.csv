@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMA308_03298_SEQ_00,上路客店的泰丝琳试着转换心情。
 1,TEXT_LUCKMA308_03298_SEQ_01,和泰丝琳等人一起进餐时，被告知哈尔里克行踪不明了。和上路客店的泰丝琳谈谈。
 2,TEXT_LUCKMA308_03298_SEQ_02,和泰丝琳进行了交谈。在上路客店附近的<hex:02280CFF05>EObj<hex:F61EAB020103>张望，寻找哈尔里克。

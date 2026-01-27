@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSETCREWEDDING_00531_HAWUBAJIHRI_000_000,我的名字是哈舞·巴基莉，<hex:02100103>在为结下了永结同心誓约的人们<hex:02100103>提供“永结同心周年纪念”服务。
 1,TEXT_CTSETCREWEDDING_00531_HAWUBAJIHRI_000_001,等您今后举办了永结同心典礼后，可以来这里找我。
 2,TEXT_CTSETCREWEDDING_00531_HAWUBAJIHRI_000_010,我的名字是哈舞·巴基莉，<hex:02100103>在为结下了永结同心誓约的人们<hex:02100103>提供“永结同心周年纪念”服务。

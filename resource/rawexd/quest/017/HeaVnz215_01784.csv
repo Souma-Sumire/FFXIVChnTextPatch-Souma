@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ215_01784_SEQ_00,悲叹飞泉的一筹莫展的猎人正眼泪汪汪地看着瀑布池。
 1,TEXT_HEAVNZ215_01784_SEQ_01,一筹莫展的猎人拜托冒险者寻找自己遗失的武器。前往龙堡参天高地悲叹飞泉，寻找不知去向的<hex:02280CFF05>EObj<hex:F61E9A670103>。
 2,TEXT_HEAVNZ215_01784_SEQ_02,发现了<hex:02280CFF05>EObj<hex:F61E9A670103>。将<hex:02280CFF05>EObj<hex:F61E9A670103>还给悲叹飞泉的一筹莫展的猎人。

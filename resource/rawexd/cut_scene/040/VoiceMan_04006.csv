@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04006_000010_LYSENARRATION,穿过帝国军基地之后<hex:02100103>我们终于来到了遥望阿拉米格城的湖区
 1,TEXT_VOICEMAN_04006_000020_LYSENARRATION,在那里等着我们的 是来自艾欧泽亚各地的同伴<hex:02100103>我们为了解放阿拉米格而聚集到一起
 2,TEXT_VOICEMAN_04006_000030_LYSENARRATION,被帝国占领20年……<hex:02100103>是自由还是服从 是生存还是死亡 最后的战斗即将开始

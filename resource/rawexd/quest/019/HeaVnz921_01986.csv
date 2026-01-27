@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ921_01986_SEQ_00,第五传送环的排除系统安静地伫立着。
 1,TEXT_HEAVNZ921_01986_SEQ_01,排除系统下达了排除入侵者的指示。入侵者恐怕就是帝国兵。在阿济兹拉的飞空战舰装卸点讨伐<hex:02280FFF09>BNpcName<hex:F20DDA0103>、<hex:02280FFF09>BNpcName<hex:F20DDB0103>、<hex:02280FFF09>BNpcName<hex:F20DDC0103>、<hex:02280FFF09>BNpcName<hex:F20DDD0103>、<hex:02280FFF09>BNpcName<hex:F20DDE0103>任意8名。
 2,TEXT_HEAVNZ921_01986_SEQ_02,成功讨伐了帝国兵。向第五传送环的排除系统报告。

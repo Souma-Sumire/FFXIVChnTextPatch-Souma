@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESSUM302_02957_SEQ_00,※本任务是特定期间内的任务。<hex:02100103><hex:02100103>永夏岛的红莲节执行委员佩·欧碧雅诺希望冒险者能帮忙点燃海上烟火。
 1,TEXT_FESSUM302_02957_SEQ_01,※本任务只有在季节活动开放期间才能接受和进行。<hex:02100103>　季节活动结束后无法进行，敬请注意。<hex:02100103>　详情请参见官方网站。<hex:02100103><hex:02100103>佩·欧碧雅诺委托冒险者点燃烟火。对永夏岛附近的3处<hex:02280CFF05>EObj<hex:F61EA7B70103>使用<hex:022811FF0A>EventItem<hex:F61E8DDB0103>。
 2,TEXT_FESSUM302_02957_SEQ_02,对<hex:02280CFF05>EObj<hex:F61EA7B70103>使用了<hex:022811FF0A>EventItem<hex:F61E8DDB0103>，点燃了烟火。向永夏岛的红莲节执行委员佩·欧碧雅诺报告。

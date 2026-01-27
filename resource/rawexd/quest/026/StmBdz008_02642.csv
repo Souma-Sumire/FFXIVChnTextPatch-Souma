@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ008_02642_SEQ_00,帝国东方堡的老练的士官想要请求冒险者的帮助。
 1,TEXT_STMBDZ008_02642_SEQ_01,与老练的士官对话
 2,TEXT_STMBDZ008_02642_SEQ_02,对<hex:02280CFF05>EObj<hex:F61EA4C40103>使用<hex:022811FF0A>EventItem<hex:F61E8D080103>

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSA301_03860_SEQ_00,巴斯卡隆酒家的巴斯卡隆，想委托冒险者替他跑一趟。
 1,TEXT_XXAUSA301_03860_SEQ_01,曾在酒家工作的特特卢恩遗落了东西。为了找到特特卢恩的去向，去问问利姆萨·罗敏萨国际商贩路的贝恩兴。
 2,TEXT_XXAUSA301_03860_SEQ_02,括括卢恩似乎知道特特卢恩的去向。将<hex:022811FF0A>EventItem<hex:F61E903F0103>交给国际商贩路的括括卢恩。

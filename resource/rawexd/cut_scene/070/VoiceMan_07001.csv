@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07001_000010_GULOOLJAJA,呵呵。<hex:02100103>抱歉，突然把你叫来。
 1,TEXT_VOICEMAN_07001_000020_GULOOLJAJA,我听说你回到了王都，<hex:02100103>就觉得不能放过这难得的机会。
 2,TEXT_VOICEMAN_07001_000030_GULOOLJAJA,从我坐上王座以来，至今为止未尝一败，<hex:02100103>所以这勇武之头也被人们称为武王。

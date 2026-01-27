@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB909_00932_SEQ_00,大审门的神殿骑士肖诺来还有一份工作想要委托给冒险者。
 1,TEXT_GAIUSB909_00932_SEQ_01,接受了筹备素材的委托。打倒4只<hex:02280FFF09>BNpcName<hex:F2086C0103>，获取<hex:022811FF0A>EventItem<hex:F61E87580103>。
 2,TEXT_GAIUSB909_00932_SEQ_02,顺利地获得了<hex:022811FF0A>EventItem<hex:F61E87580103>。将其交给大审门的神殿骑士肖诺来。

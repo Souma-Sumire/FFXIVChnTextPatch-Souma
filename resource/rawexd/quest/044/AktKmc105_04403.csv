@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMC105_04403_SEQ_00,胡萝卜所的生命威有些焦躁不安。
 1,TEXT_AKTKMC105_04403_SEQ_01,
 2,TEXT_AKTKMC105_04403_SEQ_02,

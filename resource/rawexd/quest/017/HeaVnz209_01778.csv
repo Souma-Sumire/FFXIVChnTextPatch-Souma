@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ209_01778_SEQ_00,尾羽集落的维尔尧姆正四处召集人手。
 1,TEXT_HEAVNZ209_01778_SEQ_01,维尔尧姆委托冒险者去采集<hex:022811FF0A>EventItem<hex:F61E8AC70103>。前往龙堡参天高地的南方洞窟，获取<hex:022811FF0A>EventItem<hex:F61E8AC70103>。
 2,TEXT_HEAVNZ209_01778_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AC70103>。将<hex:022811FF0A>EventItem<hex:F61E8AC70103>交给尾羽集落的维尔尧姆。

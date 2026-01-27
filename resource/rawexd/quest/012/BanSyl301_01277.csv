@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL301_01277_SEQ_00,妖精暂留地的莫奇希亚想要借助冒险者的力量。
 1,TEXT_BANSYL301_01277_SEQ_01,莫奇希亚委托冒险者去讨伐能产出乳根的魔物。讨伐妖精领西部的<hex:02280DFF09>BNpcName<hex:A30103>或<hex:02280DFF09>BNpcName<hex:A60103>，收集6份<hex:022811FF0A>EventItem<hex:F61E88E20103>。
 2,TEXT_BANSYL301_01277_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E88E20103>。将<hex:022811FF0A>EventItem<hex:F61E88E20103>交给妖精暂留地的莫奇希亚。

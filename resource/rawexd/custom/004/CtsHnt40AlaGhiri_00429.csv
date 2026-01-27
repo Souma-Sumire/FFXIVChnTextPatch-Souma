@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT40ALAGHIRI_00429_WICKEDAMBUSH_000_000,我听说阿拉基利解放了，<hex:02100103>就赶到了这里，想要狩猎这附近的怪物。
 1,TEXT_CTSHNT40ALAGHIRI_00429_WICKEDAMBUSH_000_001,我听说阿拉基利解放了，<hex:02100103>就赶到了这里，想要狩猎这附近的怪物。<hex:02100103>我可以给你介绍介绍比较受关注的猎物。
 2,TEXT_CTSHNT40ALAGHIRI_00429_WICKEDAMBUSH_Q1_000_000,想了解什么？

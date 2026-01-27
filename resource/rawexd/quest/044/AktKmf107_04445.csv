@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMF107_04445_SEQ_00,理性其一的于里昂热正在扫视兔兔族们。
 1,TEXT_AKTKMF107_04445_SEQ_01,和于里昂热他们一起返回了小萨雷安。和迷津小萨雷安的增盈威谈谈。
 2,TEXT_AKTKMF107_04445_SEQ_02,增盈威显得很没精神。和小萨雷安的正在烦恼的研究员谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWDK003_00141_SEQ_00,刻木匠行会的贝亚坦，希望冒险者去倾听一下同伴的烦恼。
 1,TEXT_CLSWDK003_00141_SEQ_01,刻木匠行会的梅拉·帕梅拉好像有什么烦心事。去问问他发生了什么。
 2,TEXT_CLSWDK003_00141_SEQ_02,代替负责打磨橡木木材的梅拉·帕梅拉，将<hex:02280BFF05>Item<hex:F2071F0103>和<hex:02280BFF05>Item<hex:F207670103>分别交付给枪术师行会和弓箭手行会。

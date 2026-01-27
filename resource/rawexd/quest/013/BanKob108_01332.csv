@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB108_01332_SEQ_00,第789洞穴团采矿地的第789团清洁工博兹，有一件十分在意的事。
 1,TEXT_BANKOB108_01332_SEQ_01,第789团清洁工博兹想将第639洞穴团挖出的绿金矿据为己有，上交充数。从地灵军试掘地的<hex:02280CFF05>EObj<hex:F61E92610103>中获取<hex:022811FF0A>EventItem<hex:F61E89300103>。
 2,TEXT_BANKOB108_01332_SEQ_02,偷到了<hex:022811FF0A>EventItem<hex:F61E89300103>。将<hex:022811FF0A>EventItem<hex:F61E89300103>交给地灵军试掘地的第789团清洁工博兹。

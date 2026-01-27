@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL307_01283_SEQ_00,妖精暂留地的莫奇希亚很担心摇篮的情况。
 1,TEXT_BANSYL307_01283_SEQ_01,接受了莫奇希亚的委托。拿起摇篮树旁边的<hex:02280CFF05>EObj<hex:F61E915C0103>。
 2,TEXT_BANSYL307_01283_SEQ_02,将摇篮树旁边的<hex:02280CFF05>EObj<hex:F61E915C0103>搬运到妖精领的暂留地妖精身旁，放置到<hex:02280CFF05>EObj<hex:F61E91BE0103>。<hex:02100103><hex:02100103>※搬运状态只能维持一段时间。接触<hex:02280CFF05>EObj<hex:F61E91BD0103>可以延长搬运状态的持续时间。

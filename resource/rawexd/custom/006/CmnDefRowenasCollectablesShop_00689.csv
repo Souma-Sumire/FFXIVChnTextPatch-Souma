@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFROWENASCOLLECTABLESSHOP_00689_ROWENASLAVE1_000_000,这里是罗薇娜商会的交易窗口。<hex:02100103>很抱歉，我们这里采用私人推荐制，<hex:02100103>所以无法与你进行交易。
 1,TEXT_CMNDEFROWENASCOLLECTABLESSHOP_00689_ROWENASLAVE2_000_000,这里是罗薇娜商会的交易窗口。<hex:02100103>很抱歉，我们这里采用私人推荐制，<hex:02100103>所以无法与你进行交易。
 2,TEXT_CMNDEFROWENASCOLLECTABLESSHOP_00689_ROWENASLAVE3_000_000,这里是罗薇娜商会的交易窗口。<hex:02100103>很抱歉，我们这里采用私人推荐制，<hex:02100103>所以无法与你进行交易。

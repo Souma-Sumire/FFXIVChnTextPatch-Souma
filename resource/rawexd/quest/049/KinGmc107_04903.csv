@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMC107_04903_SEQ_00,记星园庭的乌克·拉玛特想知道冥境隧路的清理状况。
 1,TEXT_KINGMC107_04903_SEQ_01,
 2,TEXT_KINGMC107_04903_SEQ_02,

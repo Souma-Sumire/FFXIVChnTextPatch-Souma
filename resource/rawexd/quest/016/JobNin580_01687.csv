@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBNIN580_01687_SEQ_00,码头小屋的胧取得了关于国宝的最新情报。
 1,TEXT_JOBNIN580_01687_SEQ_01,决定在灰犬家族将宝物运送给伊修加德豪商的途中进行夺还。为了进行准备工作，冒险者被委托取得<hex:022811FF0A>EventItem<hex:F61E8B3D0103>。前往利姆萨·罗敏萨的西国际商贩路，将<hex:022811FF0A>EventItem<hex:F61E8B880103>交给括括卢恩。
 2,TEXT_JOBNIN580_01687_SEQ_02,成功买到<hex:022811FF0A>EventItem<hex:F61E8B3D0103>后，发现了来找雪回去的井之国人。雪和赤城被迫藏了起来，冒险者则必须去将灰犬家族使用的冥神香偷换成<hex:022811FF0A>EventItem<hex:F61E8B3D0103>。将<hex:022811FF0A>EventItem<hex:F61E8B3D0103>放到利姆萨·罗敏萨码头的<hex:02280CFF05>EObj<hex:F61E9BAE0103>。

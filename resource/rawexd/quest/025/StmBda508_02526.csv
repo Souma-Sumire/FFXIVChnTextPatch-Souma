@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA508_02526_SEQ_00,小防波堤的阿尔菲诺想要向同伴传达归还的消息。
 1,TEXT_STMBDA508_02526_SEQ_01,
 2,TEXT_STMBDA508_02526_SEQ_02,

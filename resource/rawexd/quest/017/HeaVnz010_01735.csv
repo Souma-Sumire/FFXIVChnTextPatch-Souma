@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ010_01735_SEQ_00,金砧塔的伊索多尔很在意山崖对面的情况。
 1,TEXT_HEAVNZ010_01735_SEQ_01,伊索多尔拜托冒险者讨伐<hex:02280FFF09>BNpcName<hex:F20D910103>。在库尔札斯西部高地的交汇河营地附近打倒3只<hex:02280FFF09>BNpcName<hex:F20D910103>。
 2,TEXT_HEAVNZ010_01735_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F20D910103>。向金砧塔伊索多尔报告。

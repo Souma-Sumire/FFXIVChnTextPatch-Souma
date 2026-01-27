@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03500_000010_YDA,我们过来啦！<hex:02100103>没错过什么话题吧？
 1,TEXT_VOICEMAN_03500_000020_ALPHINAUD,我们当然是要等你们来了再开始的。<hex:02100103>好了，除了于里昂热回沙之家去了之外，<hex:02100103>其他人都到齐了吧。
 2,TEXT_VOICEMAN_03500_000030_ALISAIE,所以你到底要说什么？<hex:02100103>我们可都忙着呢。<hex:02100103>废话少说，赶紧说正事吧。

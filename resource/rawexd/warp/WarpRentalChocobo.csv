@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_WARPRENTALCHOCOBO_Q1_000_1,要做什么？
 1,TEXT_WARPRENTALCHOCOBO_A1_000_1,租借陆行鸟（80金币／10分）
 2,TEXT_WARPRENTALCHOCOBO_A1_000_2,听取租借陆行鸟的说明

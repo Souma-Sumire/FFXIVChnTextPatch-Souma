@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ218_02690_SEQ_00,酒杯岛的月影好像有心事。
 1,TEXT_STMBDZ218_02690_SEQ_01,月影认为雀打算向半作报仇。和红玉海酒杯岛的雀谈谈，阻止她行凶。
 2,TEXT_STMBDZ218_02690_SEQ_02,和雀进行了交谈，阻止了她行凶。为确保交易地点的安全，到酒杯岛的<hex:02280CFF05>EObj<hex:F61EA5FE0103>进行张望。

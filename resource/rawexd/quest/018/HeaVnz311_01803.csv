@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ311_01803_SEQ_00,不洁三塔的格林坎比十分不高兴。
 1,TEXT_HEAVNZ311_01803_SEQ_01,格林坎比委托冒险者去消除令它不快的味道。前往龙堡参天高地的阿瓦隆尼亚古陆，寻找3个正在冒烟的<hex:02280CFF05>EObj<hex:F61E9A9A0103>，并将其熄灭。
 2,TEXT_HEAVNZ311_01803_SEQ_02,熄灭了所有<hex:02280CFF05>EObj<hex:F61E9A9A0103>。向不洁三塔的格林坎比报告。

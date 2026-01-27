@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY108_02939_SEQ_00,潮风亭的埃斯特丽尔德依然在审视路过的行人。
 1,TEXT_STMBDY108_02939_SEQ_01,
 2,TEXT_STMBDY108_02939_SEQ_02,

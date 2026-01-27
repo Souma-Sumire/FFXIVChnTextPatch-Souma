@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILREDUCE_00276_TALK_Q1,想了解什么？
 1,TEXT_REGWILREDUCE_00276_TALK_A1,什么是“精选”？
 2,TEXT_REGWILREDUCE_00276_TALK_A2,精选的窍门

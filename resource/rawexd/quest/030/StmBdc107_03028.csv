@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDC107_03028_SEQ_00,无二江流域的朝阳经历战斗后，在考虑是否继续视察。
 1,TEXT_STMBDC107_03028_SEQ_01,
 2,TEXT_STMBDC107_03028_SEQ_02,

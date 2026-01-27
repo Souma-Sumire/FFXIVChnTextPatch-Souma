@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4GATETOWN_00591_THYTH_000_000,……这一带是不是有着很难闻的味道啊？<hex:02100103>虽然我来这里的时期尚浅，<hex:02100103>不过你要是想了解这条街的事情就来问我吧。
 1,TEXT_REGNOR4GATETOWN_00591_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4GATETOWN_00591_A1_000_001,你是做什么的？

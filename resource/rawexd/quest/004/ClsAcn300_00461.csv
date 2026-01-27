@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSACN300_00461_SEQ_00,秘术师行会代理会长图比尔盖姆，想把克·莉霞的指示转告给冒险者。
 1,TEXT_CLSACN300_00461_SEQ_01,克·莉霞为了打倒杜斯玛伽，制定了最强战术，现已展开作战行动。前往东拉诺西亚的太阳海岸，将<hex:022811FF0A>EventItem<hex:F61E87F50103>交给捕鱼人里尔吉恩。
 2,TEXT_CLSACN300_00461_SEQ_02,和里尔吉恩交谈后，获得了<hex:022811FF0A>EventItem<hex:F61E87F60103>。把这个交给太阳海岸的烹调师奥皮隆纳。

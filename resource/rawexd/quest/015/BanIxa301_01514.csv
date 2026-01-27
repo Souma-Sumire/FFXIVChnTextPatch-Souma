@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANIXA301_01514_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>※本任务的推荐等级为：<hex:02100103>　制作职业6级以上、战斗职业45级以上。<hex:02100103><hex:02100103>长风实验场的财务官罗佐尔·卡特兰，希望冒险者制作东西。
 1,TEXT_BANIXA301_01514_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>接受了财务官罗佐尔·卡特兰的委托，去制作<hex:022813FF07>ItemHQ<hex:FF08>　8100<hex:0103>。在成为捕鱼人的状态下，前往库尔札斯中央高地，在占星台西边的库尔札斯河里钓<hex:022811FF0A>EventItem<hex:F61E89F60103>。可以使用<hex:022811FF05>Item<hex:FF08>　2586<hex:0103>等淡水型的钓饵，来钓<hex:022811FF0A>EventItem<hex:F61E89F60103>。
 2,TEXT_BANIXA301_01514_SEQ_02,钓上了<hex:022811FF0A>EventItem<hex:F61E89F60103>。将<hex:022811FF0A>EventItem<hex:F61E89F60103>和<hex:022811FF0A>EventItem<hex:F61E89F50103>交给阿德内尔占星台的坦普尔顿，并获取制作设施的使用权。

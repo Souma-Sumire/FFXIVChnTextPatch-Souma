@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ903_01968_SEQ_00,玛托雅的洞穴的二把手扫把正在唰唰唰唰地打扫卫生。
 1,TEXT_HEAVNZ903_01968_SEQ_01,冒险者需要实现二把手扫把的愿望来作为获取知识的交换条件。从玛托雅的洞穴前和萨雷安治学区的水坑西边逆流而上，从<hex:02280CFF05>EObj<hex:F61E9C380103>汲取<hex:022811FF0A>EventItem<hex:F61E8B680103>。
 2,TEXT_HEAVNZ903_01968_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B680103>。将<hex:022811FF0A>EventItem<hex:F61E8B680103>交给玛托雅的洞穴的二把手扫把。

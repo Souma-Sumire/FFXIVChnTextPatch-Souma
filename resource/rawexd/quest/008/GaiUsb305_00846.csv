@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB305_00846_SEQ_00,断弦亭的德雷斯特，有事想向冒险者诉说。
 1,TEXT_GAIUSB305_00846_SEQ_01,德雷斯特变得非常焦躁。讨伐5群惹恼他的<hex:02280FFF09>BNpcName<hex:F2018C0103>。
 2,TEXT_GAIUSB305_00846_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F2018C0103>。向断弦亭的德雷斯特报告。

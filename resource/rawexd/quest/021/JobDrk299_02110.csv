@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDRK299_02110_SEQ_00,无
 1,TEXT_JOBDRK299_02110_SEQ_01,无
 2,TEXT_JOBDRK299_02110_SEQ_02,无

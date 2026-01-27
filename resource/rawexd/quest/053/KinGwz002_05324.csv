@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGWZ002_05324_SEQ_00,月门基地的姆姆珂又在寻找手有余闲的人。
 1,TEXT_KINGWZ002_05324_SEQ_01,
 2,TEXT_KINGWZ002_05324_SEQ_02,

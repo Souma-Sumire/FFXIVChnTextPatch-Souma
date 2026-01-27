@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMA118_04374_SEQ_00,代米尔遗烈乡的尼答娜再次打起精神。
 1,TEXT_AKTKMA118_04374_SEQ_01,
 2,TEXT_AKTKMA118_04374_SEQ_02,

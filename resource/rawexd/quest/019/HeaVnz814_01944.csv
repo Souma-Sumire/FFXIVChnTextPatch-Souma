@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ814_01944_SEQ_00,萨雷安精制区的德利普威克斯想问问冒险者来找他的理由。
 1,TEXT_HEAVNZ814_01944_SEQ_01,德利普威克斯委托冒险者夺回<hex:022811FF0A>EventItem<hex:F61E8B6A0103>。在萨雷安精制区讨伐<hex:02280FFF09>BNpcName<hex:F20E120103>。
 2,TEXT_HEAVNZ814_01944_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E120103>，但它身上没有<hex:022811FF0A>EventItem<hex:F61E8B6A0103>。继续讨伐<hex:02280FFF09>BNpcName<hex:F20E120103>，夺回<hex:022811FF0A>EventItem<hex:F61E8B6A0103>。

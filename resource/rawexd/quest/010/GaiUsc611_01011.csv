@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC611_01011_SEQ_00,石场水车的克里奇想要引起冒险者的注意。
 1,TEXT_GAIUSC611_01011_SEQ_01,向恐怖的亡灵骑士克里奇使用情感动作“下跪”，请求他的饶恕。
 2,TEXT_GAIUSC611_01011_SEQ_02,亡灵骑士克里奇又有新的命令。从<hex:02280DFF09>BNpcName<hex:090103>身上得到3份<hex:022811FF0A>EventItem<hex:F61E87860103>。

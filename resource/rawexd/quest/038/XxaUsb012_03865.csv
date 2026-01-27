@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSB012_03865_SEQ_00,恬静路营地的鬼哭队士兵朗德内尔想要就获取美味的办法给冒险者一些建议。
 1,TEXT_XXAUSB012_03865_SEQ_01,虽然鬼哭队加强了对<hex:022811FF0A>EventItem<hex:F61E90420103>的警备，不过现在却空无一人。调查南部林区蔓根沼的<hex:02280CFF05>EObj<hex:F61E8C7B0103>，打倒出现的<hex:02280DFF09>BNpcName<hex:230103>。
 2,TEXT_XXAUSB012_03865_SEQ_02,成功打倒了<hex:02280DFF09>BNpcName<hex:230103>。获取<hex:022811FF0A>EventItem<hex:F61E90420103>。

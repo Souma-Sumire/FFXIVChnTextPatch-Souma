@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC117_03338_SEQ_00,四晨星的奥梅意志消沉。
 1,TEXT_LUCKMC117_03338_SEQ_01,
 2,TEXT_LUCKMC117_03338_SEQ_02,

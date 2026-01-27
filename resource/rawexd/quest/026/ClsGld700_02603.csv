@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD700_02603_SEQ_00,神拳痕的艾美洛丝有话要转告给冒险者。
 1,TEXT_CLSGLD700_02603_SEQ_01,和艾美洛丝进行了交谈。和神拳痕的嘉·凯碧卡、维德、哈尔谈谈。
 2,TEXT_CLSGLD700_02603_SEQ_02,和学徒们进行了交谈，获得了他们制作的管弦乐琴部件。将<hex:022811FF0A>EventItem<hex:F61E8C9A0103>、<hex:022811FF0A>EventItem<hex:F61E8CA10103>和<hex:022811FF0A>EventItem<hex:F61E8CA20103>交给神拳痕的艾美洛丝。

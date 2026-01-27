@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4WRIGHT_00592_BEACHORR_000_000,呼……为了生活，需要做的事情实在是太多了。<hex:02100103>虽说这个村子没有什么特别的东西，不过还是请你慢慢享受吧。<hex:02100103>如果有想要知道的事情，请尽管问我。
 1,TEXT_REGNOR4WRIGHT_00592_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4WRIGHT_00592_A1_000_001,你是做什么的？

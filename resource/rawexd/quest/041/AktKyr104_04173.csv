@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKYR104_04173_SEQ_00,以太之光广场的强壮的星战士想要给冒险者介绍某设施。
 1,TEXT_AKTKYR104_04173_SEQ_01,
 2,TEXT_AKTKYR104_04173_SEQ_02,

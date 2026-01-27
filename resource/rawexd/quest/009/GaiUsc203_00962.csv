@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC203_00962_SEQ_00,小麦酒港的西艾娜，想要与冒险者一同前往幻影群岛。
 1,TEXT_GAIUSC203_00962_SEQ_01,冒险者已经拥有了<hex:022811FF0A>EventItem<hex:F61E87CB0103>。与小麦酒港栈桥的船头交谈，在他的帮助下前往幻影群岛。
 2,TEXT_GAIUSC203_00962_SEQ_02,抵达了幻影群岛。向西艾娜询问之后的行动。

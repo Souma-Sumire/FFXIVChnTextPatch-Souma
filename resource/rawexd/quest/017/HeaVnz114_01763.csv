@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ114_01763_SEQ_00,圣菲内雅连队露营地的吕西艾正一边确认物资一边再次摇头叹息。
 1,TEXT_HEAVNZ114_01763_SEQ_01,吕西艾拜托冒险者去准备毛皮。前往库尔札斯西部高地的双子池，讨伐<hex:02280FFF09>BNpcName<hex:F20D970103>并获取3张<hex:022811FF0A>EventItem<hex:F61E8AC20103>。
 2,TEXT_HEAVNZ114_01763_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AC20103>。将<hex:022811FF0A>EventItem<hex:F61E8AC20103>交给圣菲内雅连队露营地的吕西艾。

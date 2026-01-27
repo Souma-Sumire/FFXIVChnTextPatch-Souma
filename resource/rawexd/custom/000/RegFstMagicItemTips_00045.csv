@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTMAGICITEMTIPS_00045_GARRATT_000_1,嘿嘿嘿……<hex:02100103>终于得到了梦寐以求的“以太装备”！
 1,TEXT_REGFSTMAGICITEMTIPS_00045_Q1_1,如何作答？
 2,TEXT_REGFSTMAGICITEMTIPS_00045_A1_1,以太装备是什么？

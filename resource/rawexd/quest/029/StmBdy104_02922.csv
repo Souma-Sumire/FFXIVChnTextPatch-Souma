@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY104_02922_SEQ_00,碧玉水的墨壶想教冒险者如何刺鱼。
 1,TEXT_STMBDY104_02922_SEQ_01,
 2,TEXT_STMBDY104_02922_SEQ_02,

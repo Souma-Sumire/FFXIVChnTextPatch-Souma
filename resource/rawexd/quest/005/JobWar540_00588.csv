@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBWAR540_00588_SEQ_00,石绿湖营地的布罗肯·马乌恩坦非常担心弟弟。
 1,TEXT_JOBWAR540_00588_SEQ_01,布罗肯·马乌恩坦告诉了冒险者如何学会新的战技。为了实践此方法，首先前往龙堡参天高地的尾羽集落，收集巨大熊<hex:02280FFF09>BNpcName<hex:F210040103>的情报。
 2,TEXT_JOBWAR540_00588_SEQ_02,收集了巨大熊的情报。在龙堡参天高地宽慰河西北边获取为引出巨大熊而必需的<hex:022811FF0A>EventItem<hex:F61E8AB60103>。

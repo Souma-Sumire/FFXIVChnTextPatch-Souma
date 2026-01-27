@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMF104_04442_SEQ_00,可可罗工房的阿尔菲诺鼓足了精神。
 1,TEXT_AKTKMF104_04442_SEQ_01,
 2,TEXT_AKTKMF104_04442_SEQ_02,

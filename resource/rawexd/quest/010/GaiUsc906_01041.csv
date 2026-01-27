@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC906_01041_SEQ_00,蓝雾营地的拉福尔德，有件事想要委托给冒险者。
 1,TEXT_GAIUSC906_01041_SEQ_01,卫月爪痕附近出现了一种叫<hex:02280FFF09>BNpcName<hex:F2010E0103>的凶暴魔物。在<hex:02280CFF05>EObj<hex:F61E8D510103>等待，打倒随之出现的<hex:02280FFF09>BNpcName<hex:F2010E0103>，获取<hex:022811FF0A>EventItem<hex:F61E87940103>。
 2,TEXT_GAIUSC906_01041_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E87940103>。将其交给青磷精炼所的梅梅佐夫。

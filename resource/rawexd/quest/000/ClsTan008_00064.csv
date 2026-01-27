@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSTAN008_00064_SEQ_00,制革匠行会的盖娃，看上去十分苦恼。
 1,TEXT_CLSTAN008_00064_SEQ_01,接受了盖娃的委托。筹备1双<hex:022813FF07>ItemHQ<hex:FF08>　3639<hex:0103>，让格里达尼亚制革匠行会的盖娃查看。
 2,TEXT_CLSTAN008_00064_SEQ_02,让盖娃查看了<hex:022813FF07>ItemHQ<hex:FF08>　3639<hex:0103>。将<hex:022813FF07>ItemHQ<hex:FF08>　3639<hex:0103>交给老练的锻铁匠，他就在格里达尼亚的飞·乌尔工作室中。

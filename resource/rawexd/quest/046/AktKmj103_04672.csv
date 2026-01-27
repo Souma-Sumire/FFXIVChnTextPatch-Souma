@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMJ103_04672_SEQ_00,碎璃营地的阿尔菲诺需要冒险者协助重建工作。
 1,TEXT_AKTKMJ103_04672_SEQ_01,
 2,TEXT_AKTKMJ103_04672_SEQ_02,

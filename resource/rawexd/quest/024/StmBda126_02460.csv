@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA126_02460_SEQ_00,林梢的梅弗里德看上去闷闷不乐。
 1,TEXT_STMBDA126_02460_SEQ_01,
 2,TEXT_STMBDA126_02460_SEQ_02,

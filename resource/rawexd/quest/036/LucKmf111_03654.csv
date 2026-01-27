@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF111_03654_SEQ_00,亚马乌罗提的阿莉塞第一个下定了决心。
 1,TEXT_LUCKMF111_03654_SEQ_01,阿莉塞似乎决定继续前进。和亚马乌罗提的阿尔菲诺谈谈。
 2,TEXT_LUCKMF111_03654_SEQ_02,阿尔菲诺已经前行。和亚马乌罗提的于里昂热谈谈。

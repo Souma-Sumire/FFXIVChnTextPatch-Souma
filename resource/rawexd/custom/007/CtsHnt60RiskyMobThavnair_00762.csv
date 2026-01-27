@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT60RISKYMOBTHAVNAIR_00762_LUBDAHRM_000_001,魔法大学这边会经常委托拾穗人总会<hex:02100103>帮忙筹集研究所需的各类物品。<hex:02100103>最近很多都是跟近东以及北洲有关的麻烦委托，实在是叫人头疼。
 1,TEXT_CTSHNT60RISKYMOBTHAVNAIR_00762_LUBDAHRM_000_002,我将魔法大学给出的委托整理了一下，<hex:02100103>最近关于萨维奈岛以及加雷马的棘手事情比较多……<hex:02100103>如果你对讨伐有关的委托感兴趣的话，我会为你说明一下的。
 2,TEXT_CTSHNT60RISKYMOBTHAVNAIR_00762_LUBDAHRM_Q1_000_000,想了解什么？

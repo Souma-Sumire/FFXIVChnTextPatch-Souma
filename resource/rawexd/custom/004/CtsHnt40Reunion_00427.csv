@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT40REUNION_00427_JALIQAI_000_000,我是一名喀部的猎人。<hex:02100103>大草原上的狩猎会有些残酷……<hex:02100103>如果你想要干掉大猎物，那就必须要有相应的身手才行。
 1,TEXT_CTSHNT40REUNION_00427_JALIQAI_000_001,我是一名喀部的猎人。<hex:02100103>异国的旅行者，你看上去也身手不凡啊。<hex:02100103>如果你想要了解草原上的大猎物，我倒是可以告诉你。
 2,TEXT_CTSHNT40REUNION_00427_JALIQAI_Q1_000_000,想了解什么？

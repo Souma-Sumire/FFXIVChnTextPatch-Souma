@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD120_04931_SEQ_00,地中天道秘密基地的埃伦维尔表情十分复杂。
 1,TEXT_KINGMD120_04931_SEQ_01,
 2,TEXT_KINGMD120_04931_SEQ_02,

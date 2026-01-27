@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGHINRETURNTOIVALICESTORYNPC002_00543_LINA_000_000,如你所见，阿鲁玛的身体状况很是不好。她一直硬撑着<hex:02100103>跟大家说自己没什么事，但实际上病情一直没有好转。<hex:02100103>我感觉她这不是普通的发烧感冒……
 1,TEXT_REGHINRETURNTOIVALICESTORYNPC002_00543_LINA_000_040,欢迎回来！<hex:02100103>咦，你刚才去了哪吗？<hex:02100103>居然带着蒙布朗一起……真是的，怎么不叫上我呢！
 2,TEXT_REGHINRETURNTOIVALICESTORYNPC002_00543_LINA_000_080,（★未使用／削除予定★）

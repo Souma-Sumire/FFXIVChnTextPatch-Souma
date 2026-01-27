@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME110_03639_SEQ_00,矮人洞窟前的扣鲁图正警惕地看着周围。
 1,TEXT_LUCKME110_03639_SEQ_01,
 2,TEXT_LUCKME110_03639_SEQ_02,

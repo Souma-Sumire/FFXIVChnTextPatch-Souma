@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_OPENINGULDAH_WYMOND_000_10,喂，你要上哪溜达呢。<hex:02100103>没听见我叫你过来吗？
 1,TEXT_OPENINGULDAH_TUTUMOKO_000_10,喂，害怕得想回去了吗？<hex:02100103>你眼前的楼梯上方就是流沙屋了。
 2,TEXT_OPENINGULDAH_BUBUKKULI_000_05,喂，你打算去哪里呢？<hex:02100103>流沙屋不在那边，赶快回来。

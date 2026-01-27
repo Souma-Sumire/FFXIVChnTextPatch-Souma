@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ412_01830_SEQ_00,莫古力之家的莫古莫莫在盯着上方。
 1,TEXT_HEAVNZ412_01830_SEQ_01,莫古莫莫委托冒险者将<hex:022811FF0A>EventItem<hex:F61E8AE30103>拿来。去拜托一下莫古力之家附近的莫古西亚。
 2,TEXT_HEAVNZ412_01830_SEQ_02,得到了莫古西亚的许可。在莫古力之家附近从<hex:02280CFF05>EObj<hex:F61E9AB40103>上获取5个<hex:022811FF0A>EventItem<hex:F61E8AE30103>。

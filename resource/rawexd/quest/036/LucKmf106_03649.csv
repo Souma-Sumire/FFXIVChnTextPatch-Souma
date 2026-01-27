@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF106_03649_SEQ_00,鳍人潮池的雅·修特拉似乎陷入了沉思。
 1,TEXT_LUCKMF106_03649_SEQ_01,
 2,TEXT_LUCKMF106_03649_SEQ_02,

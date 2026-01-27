@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL142_00705_SEQ_00,奈德里克·艾恩哈特想把某个人介绍给冒险者。
 1,TEXT_SUBWIL142_00705_SEQ_01,奈德里克介绍了一位能够提供优良武器的人物。和丧灵钟的罗薇娜对话。
 2,TEXT_SUBWIL142_00705_SEQ_02,罗薇娜介绍了武器工匠盖罗尔特。将<hex:022811FF0A>EventItem<hex:F61E885B0103>交给黑衣森林北部林区林场水车的盖罗尔特。

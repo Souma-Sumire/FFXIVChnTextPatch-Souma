@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB612_00894_SEQ_00,天火要塞群的斯特凡诺面色凝重……
 1,TEXT_GAIUSB612_00894_SEQ_01,被派遣前往巨龙首营地的新兵一直没有回来。在北面的街道附近好像有凶猛的魔物出没。立即去追寻新兵的踪迹。
 2,TEXT_GAIUSB612_00894_SEQ_02,在<hex:02280FFF09>BNpcName<hex:F203100103>的腹中发现了<hex:022811FF0A>EventItem<hex:F61E873D0103>。将<hex:022811FF0A>EventItem<hex:F61E873D0103>交给天火要塞群的斯特凡诺。

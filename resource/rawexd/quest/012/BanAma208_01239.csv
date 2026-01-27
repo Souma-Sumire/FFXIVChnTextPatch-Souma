@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA208_01239_SEQ_00,灰阵营的纳尔基·冬有事想要委托冒险者。
 1,TEXT_BANAMA208_01239_SEQ_01,接受了纳尔基·冬的委托。在赞拉克侧翼阵周围的<hex:02280CFF05>EObj<hex:F61E90A70103>等待，讨伐现身的<hex:02280FFF09>BNpcName<hex:F208FC0103>，获取<hex:022811FF0A>EventItem<hex:F61E89130103>。
 2,TEXT_BANAMA208_01239_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F208FC0103>，获得了<hex:022811FF0A>EventItem<hex:F61E89130103>。对赞拉克侧翼阵周围的<hex:02280CFF05>EObj<hex:F61E90AF0103>使用<hex:022811FF0A>EventItem<hex:F61E89130103>。

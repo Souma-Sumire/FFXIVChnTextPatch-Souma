@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESPDYPLAYERALTAR_00254_MAIDPDY2015_000_000,我身边的这个展示台，<hex:02100103>本是计划用来摆放真人比例人偶的……<hex:02100103>不过，这台子只是一个试验性的作品。
 1,TEXT_FESPDYPLAYERALTAR_00254_MAIDPDY2015_000_001,主人认为既然已经做出来了，就不应该随便浪费，<hex:02100103>于是我们依照主人的安排将它安放在这里。<hex:02100103>这是向各位冒险者和市民免费开放的，请您随意地使用吧。
 2,TEXT_FESPDYPLAYERALTAR_00254_SYSTEM_000_002,此展示台可以供冒险者们在合影或摄像时自由使用。

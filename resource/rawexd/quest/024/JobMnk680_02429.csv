@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBMNK680_02429_SEQ_00,阿拉加纳的维达盖尔特非常失落。
 1,TEXT_JOBMNK680_02429_SEQ_01,维达盖尔特的情绪非常低落。和阿拉加纳的奥·夏可哈谈谈。
 2,TEXT_JOBMNK680_02429_SEQ_02,夏可哈很担心维达盖尔特。在基拉巴尼亚边区的神拳痕寻找艾里克。

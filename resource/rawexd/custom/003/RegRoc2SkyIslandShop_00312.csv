@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2SKYISLANDSHOP_00312_JAQUOINIE_000_000,这里面向参加飞空艇探索的冒险者出售“云海探索用青磷水兑换券”！<hex:02100103>这在搭乘前往云冠群岛的飞空艇时是必不可少的。
 1,TEXT_REGROC2SKYISLANDSHOP_00312_JAQUOINIE_000_010,不过……云冠群岛是危险的暗礁空域。<hex:02100103>如果没有相应的实力，或许都无法活着回来。<hex:02100103>请你过段时间再来吧。
 2,TEXT_REGROC2SKYISLANDSHOP_00312_SYSTEM_000_011,要开始“云冠群岛探索”需要满足以下条件。

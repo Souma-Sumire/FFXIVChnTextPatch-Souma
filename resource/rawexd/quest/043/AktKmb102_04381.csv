@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMB102_04381_SEQ_00,公开讲堂的可露儿正在回味蒙蒂谢涅的话。
 1,TEXT_AKTKMB102_04381_SEQ_01,
 2,TEXT_AKTKMB102_04381_SEQ_02,

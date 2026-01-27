@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB310_00851_SEQ_00,太阳海岸的格格鲁玖，看上去一副无所事事的样子。
 1,TEXT_GAIUSB310_00851_SEQ_01,格格鲁玖想出了一个能吹起清爽海风的主意。首先从<hex:02280DFF09>BNpcName<hex:740103>身上获得3个<hex:022811FF0A>EventItem<hex:F61E87140103>。
 2,TEXT_GAIUSB310_00851_SEQ_02,获得了3个<hex:022811FF0A>EventItem<hex:F61E87140103>。将其放置于太阳海岸南面悬崖上的<hex:02280CFF05>EObj<hex:F61E8C8F0103>处，用其招来强大的<hex:02280DFF09>BNpcName<hex:740103>。

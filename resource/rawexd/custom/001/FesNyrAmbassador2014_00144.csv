@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESNYRAMBASSADOR2014_00144_HORSEMISSIONARY_000_000,我们从祖国“远东之国”带来了庆祝降神节的纪念品。<hex:02100103>今后也想和艾欧泽亚各国保持友好关系。
 1,TEXT_FESNYRAMBASSADOR2014_00144_HORSEMISSIONARY_000_010,……嗯？<hex:02100103>莫非你弄丢了我送给你的<hex:02280BFF05>Item<hex:F21B340103>？
 2,TEXT_FESNYRAMBASSADOR2014_00144_HORSEMISSIONARY_000_011,竟然弄丢了友好纪念品，真是个不知轻重的<hex:020813E905FF07>女人<hex:FF07>男人<hex:03>……<hex:02100103>好吧，给你个备用的。<hex:02100103>这次可别再弄丢了！

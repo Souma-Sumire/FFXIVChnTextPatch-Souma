@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6MIPLUSMATEGARDEN_00867_BAPLI_000_000,有什么事吗？<hex:02100103>关于茶园的事可以尽管问我。
 1,TEXT_REGYOK6MIPLUSMATEGARDEN_00867_BAPLI_000_001,听说乌克·拉玛特大人他们把艳翼蛇鸟讨伐了。<hex:02100103>是与尤卡巨人族有所来往的商人一脸兴奋地告诉我的！
 2,TEXT_REGYOK6MIPLUSMATEGARDEN_00867_BAPLI_000_002,图莱尤拉今后将会变成一个崭新的国家……<hex:02100103>所以也得让茶园焕然一新才行。

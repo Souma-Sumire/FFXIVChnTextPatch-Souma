@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06002_000010_WATCHEROFMOON,<hex:024804F2022303>各位，请过来吧。<hex:02100103>谢谢你们给我时间休息，我已经没事了。<hex:0248020103>
 1,TEXT_VOICEMAN_06002_000020_YSHTOLA,恢复了就好，其实我们更应该表示感谢，<hex:02100103>毕竟在这里看到了不少令人兴趣颇深的记录。
 2,TEXT_VOICEMAN_06002_000030_YSHTOLA,不过，关于即将再次降临的远古时代的末日，<hex:02100103>还是请你更具体地为我们讲讲吧。

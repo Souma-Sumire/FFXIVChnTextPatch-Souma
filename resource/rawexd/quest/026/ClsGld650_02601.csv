@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD650_02601_SEQ_00,神拳痕的艾美洛丝似乎有了新的烦恼。
 1,TEXT_CLSGLD650_02601_SEQ_01,和艾美洛丝进行了交谈。和神拳痕的嘉·凯碧卡、维德、哈尔谈谈。
 2,TEXT_CLSGLD650_02601_SEQ_02,和学徒们进行了交谈。和神拳痕的艾美洛丝谈谈。

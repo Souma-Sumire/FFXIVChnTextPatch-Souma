@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_RAIDGUIDETRAVEL32_Q1_000_010,要前往“亚历山大零式机神城”吗？
 1,TEXT_RAIDGUIDETRAVEL32_A1_000_011,询问“亚历山大零式机神城律动之章”的开始条件
 2,TEXT_RAIDGUIDETRAVEL32_A1_000_012,以通常的分配方式开始“<hex:022815FF10>InstanceContent<hex:E8020403>”

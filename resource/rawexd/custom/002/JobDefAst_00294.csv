@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFAST_00294_GUILLESTET_000_000,欢迎来到圣冈里奥尔占星院。<hex:02100103>大家都在专心进行研究，请不要大声喧哗。
 1,TEXT_JOBDEFAST_00294_GUILLESTET_000_001,欢迎来到圣冈里奥尔占星院。<hex:02100103>萨雷安式占星术的修炼还顺利吗？
 2,TEXT_JOBDEFAST_00294_GUILLESTET_Q1_000_000,想了解什么？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC111_03332_SEQ_00,蛇行枝的于里昂热正在安静地等候。
 1,TEXT_LUCKMC111_03332_SEQ_01,
 2,TEXT_LUCKMC111_03332_SEQ_02,

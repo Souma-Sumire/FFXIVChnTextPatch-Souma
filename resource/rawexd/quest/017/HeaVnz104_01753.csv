@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ104_01753_SEQ_00,双子池的刻薄的老兵正在远望着暮卫塔。
 1,TEXT_HEAVNZ104_01753_SEQ_01,刻薄的老兵拜托冒险者消灭<hex:02280FFF09>BNpcName<hex:F20D980103>。前往库尔札斯西部高地的灾祸池，讨伐4只<hex:02280FFF09>BNpcName<hex:F20D980103>。
 2,TEXT_HEAVNZ104_01753_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20D980103>。向双子池的刻薄的老兵报告。

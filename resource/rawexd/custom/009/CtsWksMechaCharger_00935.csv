@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSWKSMECHACHARGER_00935_TALK_ACTIVE,正在接受协助员投放的燃料……<hex:02100103>当前输出功率：<hex:022003E80203>%。
 1,TEXT_CTSWKSMECHACHARGER_00935_TALK_NON_ACTIVE,野外探查器正在准备启动……

@@ -1,5 +1,5 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07320_000200_SEIRYU,凡人 用力量来证明你们吧！<hex:02100103>荒魂解放！

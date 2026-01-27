@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ616_01884_SEQ_00,西方水泉的北方侦察队的龙骑士想委托冒险者回收测量仪。
 1,TEXT_HEAVNZ616_01884_SEQ_01,北方侦察队的龙骑士委托冒险者回收测量仪。前往翻云雾海的西方水泉，回收3个<hex:022811FF0A>EventItem<hex:F61E8AFD0103>。
 2,TEXT_HEAVNZ616_01884_SEQ_02,回收了全部的<hex:022811FF0A>EventItem<hex:F61E8AFD0103>。向西方水泉的北方侦察队的龙骑士报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBREL012_00358_SEQ_00,为了制作再铸黄道武器所需要的材料，向丧灵钟的盖丁·斯塔询问关于特殊物质的事情。
 1,TEXT_JOBREL012_00358_SEQ_01,决定和盖丁·斯塔一起制作再铸黄道武器时所必需的特殊物质。先拿到<hex:02280BFF05>Item<hex:F225460103>，将其交给丧灵钟的盖丁·斯塔。<hex:02280BFF05>Item<hex:F225460103>应该能在南萨纳兰买到。
 2,TEXT_JOBREL012_00358_SEQ_02,将<hex:02280BFF05>Item<hex:F225460103>交给了盖丁·斯塔。继续收集制作特殊物质要用到的2种材料。突破毒雾洞窟黄金谷，获取<hex:022811FF0A>EventItem<hex:F61E8A7C0103>。突破恶灵府邸静语庄园，获取<hex:022811FF0A>EventItem<hex:F61E8A7D0103>。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。

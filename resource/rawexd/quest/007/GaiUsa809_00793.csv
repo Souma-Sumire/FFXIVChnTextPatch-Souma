@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA809_00793_SEQ_00,浮栓亭的艾尔温因为预订了房间的客人迟迟未到而感到担心。
 1,TEXT_GAIUSA809_00793_SEQ_01,预订了房间的女客人迟迟未到。如果被卷进了事件的话就不妙了。立刻进行搜救。
 2,TEXT_GAIUSA809_00793_SEQ_02,打倒出现在冒险者装扮的女子附近的<hex:02280DFF09>BNpcName<hex:120103>。跟冒险者装扮的女性谈谈。

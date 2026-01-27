@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESNYR2021_00645_CUWSERVER_000_000,我是从东方远道而来的使节团的一员。<hex:02100103>如果有什么不清楚的事情，请尽管咨询。
 1,TEXT_FESNYR2021_00645_Q1_000_1,想了解什么？
 2,TEXT_FESNYR2021_00645_A1_000_1,你在这里做什么？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMJ107_04676_SEQ_00,大青湖的零想讨论一下今后的打算。
 1,TEXT_AKTKMJ107_04676_SEQ_01,
 2,TEXT_AKTKMJ107_04676_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA1EVENTKRILEINIT_00460_KRILE_000_000,……这地方真糟糕。<hex:02100103>甚至连皮肤都能直接感受到混乱的属性之力。
 1,TEXT_CTSERKEUREKA1EVENTKRILEINIT_00460_EJIKATSUNJIKA_000_001,嗯……<hex:02100103>看来你的预测是正确的。<hex:02100103>可是属性之力居然会变得如此混乱……
 2,TEXT_CTSERKEUREKA1EVENTKRILEINIT_00460_KRILE_000_002,登岛之后我终于能够确定了。<hex:02100103>所以我会按照跟你的约定，为你说明一下，<hex:02100103>拂晓……不对，是我接下委托的理由。

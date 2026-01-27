@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL035_00227_SEQ_00,白银集市的法法弗诺正在东张西望。
 1,TEXT_SUBWIL035_00227_SEQ_01,接受了法法弗诺的委托，去筹集油。从锈蚀矿爬虫身上获取4份矿爬虫油。
 2,TEXT_SUBWIL035_00227_SEQ_02,获得了矿爬虫油。将矿爬虫油交给二号打桩塔的阿德拉德。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESANV2018TRANSFORM_00535_TRANSFORMHLW2018_000_000,嘻嘻嘻……我是擅长变身奇术的普通小魔精。<hex:02100103>让我来用我的拿手绝活，把你变成你想到的人吧！
 1,TEXT_FESANV2018TRANSFORM_00535_TRANSFORMHLW2018_100_001,想象一下在你至今为止的冒险旅途所遇到的人们中，<hex:02100103>给你留下强烈印象的人！
 2,TEXT_FESANV2018TRANSFORM_00535_TRANSFORMHLW2018_000_001,那么，首先回忆一下你至今为止的冒险！<hex:02100103>嘻嘻嘻……你想到了什么？

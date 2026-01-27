@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMYCMEDAL_00719_RESISTANCECOUNCILOR_000_000,解放者阁下，辛苦了！<hex:02100103>你是为义军勋章来找我的吗？
 1,TEXT_CTSMYCMEDAL_00719_RESISTANCECOUNCILOR_000_010,解放者阁下，辛苦了！<hex:02100103>你已经获得了所有义军勋章，<hex:02100103>找我还有什么事吗？
 2,TEXT_CTSMYCMEDAL_00719_Q1_000_000,要做什么？

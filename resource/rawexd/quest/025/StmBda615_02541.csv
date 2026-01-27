@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA615_02541_SEQ_00,白鬼岩山的莉瑟想要立刻汇报侦察的结果。
 1,TEXT_STMBDA615_02541_SEQ_01,
 2,TEXT_STMBDA615_02541_SEQ_02,

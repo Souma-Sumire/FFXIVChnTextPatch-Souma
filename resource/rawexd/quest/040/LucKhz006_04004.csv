@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKHZ006_04004_SEQ_00,浸雪浴场的喜欢泡澡的男人想要找人搭话。
 1,TEXT_LUCKHZ006_04004_SEQ_01,
 2,TEXT_LUCKHZ006_04004_SEQ_02,

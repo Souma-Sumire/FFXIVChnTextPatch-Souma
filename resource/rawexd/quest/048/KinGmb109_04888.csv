@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMB109_04888_SEQ_00,朋友的灯火的柯纳正在等待桑克瑞德的联络。
 1,TEXT_KINGMB109_04888_SEQ_01,
 2,TEXT_KINGMB109_04888_SEQ_02,

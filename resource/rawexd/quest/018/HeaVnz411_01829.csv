@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ411_01829_SEQ_00,天极白垩宫勤劳忙碌的莫古力看起来很忙。
 1,TEXT_HEAVNZ411_01829_SEQ_01,勤劳忙碌的莫古力委托冒险者运送土壤。从天极白垩宫的<hex:02280CFF05>EObj<hex:F61E9AB30103>中获取<hex:022811FF0A>EventItem<hex:F61E8AE20103>。
 2,TEXT_HEAVNZ411_01829_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AE20103>。将<hex:022811FF0A>EventItem<hex:F61E8AE20103>交给莫古力之家的莫古莫莫。

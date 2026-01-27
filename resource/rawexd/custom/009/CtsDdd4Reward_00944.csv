@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDDD4REWARD_00944_OSEWYDOSEWYD_000_000,嘿咻嘿咻，我也要好好准备准备。<hex:02100103>不执笔不握剑，我要以一名工匠的身份帮助妖灵王的小树苗！
 1,TEXT_CTSDDD4REWARD_00944_OSEWYD_000_010,我之前说过了吧，我是自由的工匠！<hex:02100103>只要你把材料给我，我就能给你做出最好的东西！
 2,TEXT_CTSDDD4REWARD_00944_Q1_000_020,要做什么？

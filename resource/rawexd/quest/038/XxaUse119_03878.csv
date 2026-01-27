@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSE119_03878_SEQ_00,沙之家的敏菲利亚希望冒险者帮忙送一件东西。
 1,TEXT_XXAUSE119_03878_SEQ_01,敏菲利亚将亡父的手册交给了冒险者。将<hex:022811FF0A>EventItem<hex:F61E90360103>交给沙之家的于里昂热。
 2,TEXT_XXAUSE119_03878_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E90360103>交给于里昂热后，接到了敏菲利亚的联络。前往丧灵钟的第七天堂，和塔塔露谈谈。

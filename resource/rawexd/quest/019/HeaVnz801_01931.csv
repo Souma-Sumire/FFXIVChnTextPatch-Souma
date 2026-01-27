@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ801_01931_SEQ_00,先贤伟业纪念碑的伍尔尼克斯正在对冒险者上下打量。
 1,TEXT_HEAVNZ801_01931_SEQ_01,伍尔尼克斯被<hex:02280FFF09>BNpcName<hex:F20E090103>折磨得很苦。在龙堡内陆低地的萨雷安屯集区讨伐3只<hex:02280FFF09>BNpcName<hex:F20E090103>。
 2,TEXT_HEAVNZ801_01931_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E090103>。向先贤伟业纪念碑的伍尔尼克斯报告。

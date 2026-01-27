@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA102_02447_SEQ_00,帝国东方堡的莉瑟想要开始行动。
 1,TEXT_STMBDA102_02447_SEQ_01,
 2,TEXT_STMBDA102_02447_SEQ_02,

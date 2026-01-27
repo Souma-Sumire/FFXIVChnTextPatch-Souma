@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ604_02782_SEQ_00,晨曦王座的也速根正在因缺少食材而烦恼。
 1,TEXT_STMBDZ604_02782_SEQ_01,和也速根进行了交谈。羊奶库存不足，也速根委托冒险者挤一些回来。和晨曦王座的唆鲁和谈谈，获得许可。
 2,TEXT_STMBDZ604_02782_SEQ_02,和唆鲁和进行了交谈。也速根向冒险者委托挤羊奶的事，让唆鲁和感到无奈，不过冒险者还是获得了许可。从晨曦王座的3只<hex:02280CFF05>EObj<hex:F61EA75D0103>身上获得<hex:022811FF0A>EventItem<hex:F61E8DCC0103>。

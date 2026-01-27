@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4SLITHERBOUGH_00602_WRENDIA_000_000,欢迎来到夜之民居住的蛇行枝。<hex:02100103>我们会好好招待来自森林外面的客人。
 1,TEXT_REGNOR4SLITHERBOUGH_00602_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4SLITHERBOUGH_00602_A1_000_001,你是做什么的？

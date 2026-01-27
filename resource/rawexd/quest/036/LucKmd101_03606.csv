@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD101_03606_SEQ_00,悬挂公馆的管理员十分慌张。
 1,TEXT_LUCKMD101_03606_SEQ_01,从悬挂公馆的管理员处得知，雷克兰德遭到了食罪灵的袭击。在水晶都露天席大广场的<hex:02280CFF05>EObj<hex:F61EAB270103>张望。
 2,TEXT_LUCKMD101_03606_SEQ_02,在露天席大广场和阿尔菲诺、阿莉塞汇合了。操纵水晶都以太之光广场附近的<hex:02280CFF05>EObj<hex:F61EAB280103>。

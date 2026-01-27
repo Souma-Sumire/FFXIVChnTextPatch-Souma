@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04300_000010_YOTSUYU,爷爷，来张口，我喂你吃——
 1,TEXT_VOICEMAN_04300_000020_GOSETSU,露儿，不用麻烦你了。<hex:02100103>老夫自己能吃。
 2,TEXT_VOICEMAN_04300_000030_GOSETSU,唉呀，天天喝粥，老夫口中可是索然无味啊……

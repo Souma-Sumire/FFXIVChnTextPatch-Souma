@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_000,准备好素材了啊，<hex:02100103>那我就用附着了半魂晶的锻铁工具，<hex:02100103>为你展现一下只有这里才能实现的加工方法！
 1,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_001,怎么样？很棒吧！<hex:02100103>将以太生成的虚影化作实影，<hex:02100103>并附着在了武器之上……
 2,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_002,这就是我倾注全力制作出的幻境武器——<hex:02280AFF05>Item<hex:E8020103>！

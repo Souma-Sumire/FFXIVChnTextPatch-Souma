@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ009_01734_SEQ_00,隼巢附近的席甘好像回忆起了旧日时光。
 1,TEXT_HEAVNZ009_01734_SEQ_01,和席甘进行了交谈。击退危险的魔物，调查隼巢附近的<hex:02280CFF05>EObj<hex:F61E9C190103>，回收<hex:022811FF0A>EventItem<hex:F61E8B480103>。
 2,TEXT_HEAVNZ009_01734_SEQ_02,回收了<hex:022811FF0A>EventItem<hex:F61E8B480103>。将<hex:022811FF0A>EventItem<hex:F61E8B480103>交给隼巢附近的席甘。

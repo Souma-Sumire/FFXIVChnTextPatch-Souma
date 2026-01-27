@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOT5MERYALLAGRONOMICS_00742_MNOGGYA_000_000,你是……来自异国的人吧。<hex:02100103>找我有什么事吗？
 1,TEXT_REGNOT5MERYALLAGRONOMICS_00742_MNOGGYA_000_001,哲学家议会命令我们要大撤退，现在可忙了。<hex:02100103>有什么事吗？
 2,TEXT_REGNOT5MERYALLAGRONOMICS_00742_MNOGGYA_000_002,你们的计划还真够胡来的。<hex:02100103>总之能够平安……啊，真是的！<hex:02100103>有什么问题就赶紧问吧！

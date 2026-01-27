@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTFALLGOURDFLOAT_00130_THIERRAND_000_000,哎呀，你是冒险者吧。<hex:02100103>找我有什么事啊？
 1,TEXT_REGFSTFALLGOURDFLOAT_00130_THIERRAND_000_010,我是一名幻术师，遵从法师大人的指示，<hex:02100103>为元灵和人类之间的沟通架起桥梁。
 2,TEXT_REGFSTFALLGOURDFLOAT_00130_THIERRAND_000_011,原本，人们想要在森林中建立村落，<hex:02100103>但那样的话，就必定要砍伐树木，对森林造成伤害。<hex:02100103>因此，人们就考虑，在开放的湖面上建造不就好了？

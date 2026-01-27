@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGGYR3ALAGANNHA_00397_BERGARD_000_000,哎呀，居然有外地人来造访“阿拉加纳”，这可真是稀客。<hex:02100103>如果你是来采购石材的，那我们欢迎之至。
 1,TEXT_REGGYR3ALAGANNHA_00397_Q1_000_000,想了解什么？
 2,TEXT_REGGYR3ALAGANNHA_00397_A1_000_001,你是做什么的？

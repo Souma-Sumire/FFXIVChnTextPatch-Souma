@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMJICAVESURVEY_00831_TALK_ACTOR,0
 1,TEXT_CTSMJICAVESURVEY_00831_POINT_001_000,看起来没什么特别的……<hex:02100103>试试调查其他地方吧。
 2,TEXT_CTSMJICAVESURVEY_00831_POINT_001_005,看起来里面有很大的空洞！<hex:02100103>快去向猫耳小员报告你的发现吧！

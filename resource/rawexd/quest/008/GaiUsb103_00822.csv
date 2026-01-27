@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB103_00822_SEQ_00,遗忘绿洲的族长乌·欧德·努恩对冒险者很满意。
 1,TEXT_GAIUSB103_00822_SEQ_01,想要得到南萨纳兰的美味，就要打倒<hex:02280FFF09>BNpcName<hex:F207BA0103>。为了吸引<hex:02280FFF09>BNpcName<hex:F207BA0103>，打倒<hex:02280FFF09>BNpcName<hex:F201330103>，获得<hex:022811FF0A>EventItem<hex:F61E87050103>。
 2,TEXT_GAIUSB103_00822_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E87050103>放置在<hex:02280CFF05>EObj<hex:F61E8C7E0103>。

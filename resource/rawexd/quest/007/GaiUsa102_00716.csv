@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA102_00716_SEQ_00,霍桑山寨的布莱赛特有事情想要冒险者协助调查。
 1,TEXT_GAIUSA102_00716_SEQ_01,布莱赛特昨天晚上看到有疑似小孩子的人影在屋顶上玩耍。登上霍桑山寨的屋顶，寻找人影留下的踪迹。
 2,TEXT_GAIUSA102_00716_SEQ_02,在屋顶上发现了人影留下的痕迹。将<hex:022811FF0A>EventItem<hex:F61E86BF0103>和<hex:022811FF0A>EventItem<hex:F61E86C00103>交给霍桑山寨的布莱赛特。

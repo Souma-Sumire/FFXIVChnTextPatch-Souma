@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKZH006_03516_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>蜂箱夜总会的蜂箱总管好像正在寻找能进出废船街的人。
 1,TEXT_LUCKZH006_03516_SEQ_01,
 2,TEXT_LUCKZH006_03516_SEQ_02,

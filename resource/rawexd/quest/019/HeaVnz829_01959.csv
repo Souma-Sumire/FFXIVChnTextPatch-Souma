@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ829_01959_SEQ_00,萨雷安治学区的布姆肖克斯想要达成最后的工作指标。
 1,TEXT_HEAVNZ829_01959_SEQ_01,和布姆肖克斯进行了交谈。为了帮她达成工作指标，在龙堡内陆低地的圣茉夏娜植物园东南方讨伐<hex:02280FFF09>BNpcName<hex:F20E140103>，获取3根<hex:022811FF0A>EventItem<hex:F61E8B210103>。
 2,TEXT_HEAVNZ829_01959_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B210103>。向萨雷安治学区的布姆肖克斯报告。

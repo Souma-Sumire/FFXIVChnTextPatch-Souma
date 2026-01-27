@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ304_01796_SEQ_00,自由脑窟穴的讲故事气得抖了起来。
 1,TEXT_HEAVNZ304_01796_SEQ_01,同胞遇袭，讲故事十分愤怒，想要向犯人报仇。分别打倒龙堡参天高地唯一脑窟穴的<hex:02280FFF09>BNpcName<hex:F20DFF0103>、<hex:02280EFF09>BNpcName<hex:F10E0103>、<hex:02280FFF09>BNpcName<hex:F20E010103>各一名。
 2,TEXT_HEAVNZ304_01796_SEQ_02,打倒了指定的骨颌族。向自由脑窟穴的讲故事报告。

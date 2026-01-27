@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ806_02834_SEQ_00,阿拉基利的解放军女战士有事想请冒险者帮忙。
 1,TEXT_STMBDZ806_02834_SEQ_01,
 2,TEXT_STMBDZ806_02834_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA105_01584_SEQ_00,隼巢的雷德沃尔德希望冒险者能帮忙重建设施。
 1,TEXT_HEAVNA105_01584_SEQ_01,接受了雷德沃尔德的委托，去帮助木匠们的领导罗思。在隼巢寻找罗思，和他谈谈。
 2,TEXT_HEAVNA105_01584_SEQ_02,和罗思进行了交谈。设施中住进了冰元精，妨碍重建工作的进行。调查隼巢的3处<hex:02280CFF05>EObj<hex:F61E999B0103>，讨伐出现的<hex:02280FFF09>BNpcName<hex:F20F350103>。

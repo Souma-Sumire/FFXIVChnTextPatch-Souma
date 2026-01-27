@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS818_00164_SEQ_00,丧灵钟的斯拉佛伯恩正在寻找冒险者。
 1,TEXT_SUBCTS818_00164_SEQ_01,据斯拉佛伯恩说，有人来找冒险者了。和丧灵钟秘密工房的杰西谈谈。丧灵钟的斯拉佛伯恩会带领冒险者前往秘密工房。
 2,TEXT_SUBCTS818_00164_SEQ_02,接受了杰西的委托，去收集部件，以用来修理魔导装甲。调查摩杜纳帝国中央堡的<hex:02280CFF05>EObj<hex:F61E955A0103>，获取<hex:022811FF0A>EventItem<hex:F61E89BB0103>、<hex:022811FF0A>EventItem<hex:F61E89BC0103>和<hex:022811FF0A>EventItem<hex:F61E89BD0103>。

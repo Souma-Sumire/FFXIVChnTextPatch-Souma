@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKRA101_04475_SEQ_00,七贤人庭园的尼姆吉吉在等待冒险者。
 1,TEXT_AKTKRA101_04475_SEQ_01,和尼姆吉吉进行了交谈。她说有样东西想让冒险者帮忙看看。和迷津无路总部的克劳狄恩谈谈。
 2,TEXT_AKTKRA101_04475_SEQ_02,从神秘的水晶中得知了危机正在逼近万魔殿。为了回到过去，前往水晶都观星室的<hex:02280CFF05>EObj<hex:F61EB5090103>。

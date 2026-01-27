@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ307_01799_SEQ_00,不洁三塔的特·伊斯拉垂涎欲滴。
 1,TEXT_HEAVNZ307_01799_SEQ_01,和特·伊斯拉进行了交谈。前往龙堡参天高地的阿瓦隆尼亚古陆，讨伐<hex:02280FFF09>BNpcName<hex:F20DF90103>，获取3份<hex:022811FF0A>EventItem<hex:F61E8AD70103>。
 2,TEXT_HEAVNZ307_01799_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AD70103>。将<hex:022811FF0A>EventItem<hex:F61E8AD70103>交给不洁三塔的特·伊斯拉。

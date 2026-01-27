@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAINN_00052_MYTESYN_000_1,哟，这里是后桅旅店。啊哈哈。<hex:02100103>……不过抱歉，我们不向新手冒险者开放。
 1,TEXT_REGSEAINN_00052_MYTESYN_000_2,如果你能以出色的表现得到人们的信赖，<hex:02100103>那么巴德龙或许就会允许你使用客房。<hex:02100103>所以不要灰心，继续努力吧。
 2,TEXT_REGSEAINN_00052_Q1_000_1,想了解什么？

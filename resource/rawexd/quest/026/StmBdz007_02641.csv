@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ007_02641_SEQ_00,帝国东方堡的黑涡团的士兵想要向老练的冒险者寻求帮助。
 1,TEXT_STMBDZ007_02641_SEQ_01,
 2,TEXT_STMBDZ007_02641_SEQ_02,

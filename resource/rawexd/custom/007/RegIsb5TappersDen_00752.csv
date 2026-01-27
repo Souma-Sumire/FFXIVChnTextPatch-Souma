@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGISB5TAPPERSDEN_00752_AALART_000_001,你是从冰原那边过来的吧？<hex:02100103>嗯，看来没被那些变得奇奇怪怪的帝国兵跟过来……
 1,TEXT_REGISB5TAPPERSDEN_00752_AALART_000_002,之前帝都那边会隐约传来一些令人不舒服的声响，刚刚却突然停止了，<hex:02100103>是你们做了什么吗？
 2,TEXT_REGISB5TAPPERSDEN_00752_AALART_000_003,喂喂，你知道天空的颜色为什么会变成这样吗？<hex:02100103>真是的，看着就觉得浑身不适，我都不想出去了。

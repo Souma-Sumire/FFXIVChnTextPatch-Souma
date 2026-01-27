@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ711_02814_SEQ_00,黄金港的负伤的赤诚组成员看上去疼痛不已。
 1,TEXT_STMBDZ711_02814_SEQ_01,
 2,TEXT_STMBDZ711_02814_SEQ_02,

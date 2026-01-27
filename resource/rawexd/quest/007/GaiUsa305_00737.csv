@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA305_00737_SEQ_00,梅梅卢恩交易站的特特卢恩，想委托冒险者将东西送给巴斯卡隆。
 1,TEXT_GAIUSA305_00737_SEQ_01,接受了送东西的委托。前往格里达尼亚的巴斯卡隆酒家，将<hex:022811FF0A>EventItem<hex:F61E86D20103>交给巴斯卡隆。
 2,TEXT_GAIUSA305_00737_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E86D20103>交给了巴斯卡隆。得知特特卢恩还惦记着他，巴斯卡隆很是高兴。

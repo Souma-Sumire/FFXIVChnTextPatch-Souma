@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSCUL351_00267_SEQ_00,烹调师行会的林格萨斯希望冒险者作为烹调师要继续不断地学习。
 1,TEXT_CLSCUL351_00267_SEQ_01,接受了林格萨斯的委托。和利姆萨·罗敏萨烹调师行会的拉蒂莎谈谈。
 2,TEXT_CLSCUL351_00267_SEQ_02,和拉蒂莎进行了交谈。准备1道<hex:022813FF07>ItemHQ<hex:FF08>　4677<hex:0103>，交给利姆萨·罗敏萨烹调师行会的拉蒂莎。

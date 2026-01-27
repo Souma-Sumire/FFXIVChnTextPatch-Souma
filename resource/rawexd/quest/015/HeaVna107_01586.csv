@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA107_01586_SEQ_00,正在修理征龙像的蒂耶蒙，很在意冒险者接下来的动向。
 1,TEXT_HEAVNA107_01586_SEQ_01,蒂耶蒙希望冒险者帮忙去送东西，将<hex:022811FF0A>EventItem<hex:F61E8AA50103>交给了冒险者。前往库尔札斯西部高地的金砧塔，将<hex:022811FF0A>EventItem<hex:F61E8AA50103>交给伊索多尔。
 2,TEXT_HEAVNA107_01586_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8AA50103>交给了伊索多尔。和库尔札斯西部高地隼巢的雷德沃尔德谈谈。

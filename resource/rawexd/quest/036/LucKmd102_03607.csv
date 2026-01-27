@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD102_03607_SEQ_00,奥斯塔尔严命城的阿莉塞面色沉痛。
 1,TEXT_LUCKMD102_03607_SEQ_01,
 2,TEXT_LUCKMD102_03607_SEQ_02,

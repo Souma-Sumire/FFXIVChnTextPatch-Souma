@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILTHEQUICKSAND_00157_MOMODI_000_000,欢迎来到流沙屋！<hex:02100103>这里是聚集于乌尔达哈的冒险者们的休息厅。
 1,TEXT_REGWILTHEQUICKSAND_00157_MOMODI_000_001,第七灵灾后，城市混乱，纠纷四起。<hex:02100103>我很期待你们冒险者的表现。请多多指教哦。
 2,TEXT_REGWILTHEQUICKSAND_00157_MOMODI_000_010,<hex:022903EB0203>，看来你很努力啊。<hex:02100103>呵呵，想起你第一次到这里来的时候，那一脸紧张的。<hex:02100103>那些事情就好像是昨天刚发生的一样。

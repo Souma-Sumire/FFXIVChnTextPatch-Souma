@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFGFF2_00730_LALAHJINJAHL_000_000,<hex:022903EB0203>，最近怎么样啊？<hex:02100103>作为优秀的贤者，想必你一定守护了许多的生命，<hex:02100103>并将会在今后拯救更多的人们吧。
 1,TEXT_JOBDEFGFF2_00730_LALAHJINJAHL_000_010,<hex:022903EB0203>，最近怎么样啊？<hex:02100103>对了，我可从阿莉塞前辈那里听说了！<hex:02100103>没想到人生中的初次任务就请到了拯救世界的英雄来帮忙……
 2,TEXT_JOBDEFGFF2_00730_Q1_000_000,想了解什么？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA604_01653_SEQ_00,魔女咖啡馆的塔塔露想要说些什么。
 1,TEXT_HEAVNA604_01653_SEQ_01,塔塔露想要在雅·修特拉康复之前为她准备礼物，因此拜托冒险者取回用于最终加工的物品。和格里达尼亚制革匠行会的盖娃以及幻术师行会的艾·斯密·雅恩谈谈。
 2,TEXT_HEAVNA604_01653_SEQ_02,和两位行会会长交谈过之后，取回了塔塔露委托的物品。将<hex:022811FF0A>EventItem<hex:F61E8B860103>和<hex:022811FF0A>EventItem<hex:F61E8B870103>交给魔女咖啡馆的塔塔露。

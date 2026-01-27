@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMA102_03280_SEQ_00,水晶都的水晶公在思考事情。
 1,TEXT_LUCKMA102_03280_SEQ_01,
 2,TEXT_LUCKMA102_03280_SEQ_02,

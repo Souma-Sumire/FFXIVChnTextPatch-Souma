@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST121_00060_SEQ_00,弯枝牧场的蒂尔尼想向冒险者介绍行会令。
 1,TEXT_SUBFST121_00060_SEQ_01,蒂尔尼向冒险者介绍了行会令。去和弯枝牧场的里巴尔德谈谈。
 2,TEXT_SUBFST121_00060_SEQ_02,里巴尔德向冒险者介绍了行会令。如果感兴趣，就从他那里接受工作。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_05003_000010_CRYSTARIUMMAN,(-男性的叫声-)是食罪灵！食罪灵来了！
 1,TEXT_VOICEMAN_05003_000020_ALPHINAUD,很好！<hex:02100103>防护罩生效了。
 2,TEXT_VOICEMAN_05003_000030_ALISAIE,这样市民的安全应该没问题了……<hex:02100103>可接下来我们该怎么办？

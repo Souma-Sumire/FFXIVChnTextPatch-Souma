@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB120_03321_SEQ_00,群花馆的桑克瑞德有事要告诉冒险者。
 1,TEXT_LUCKMB120_03321_SEQ_01,
 2,TEXT_LUCKMB120_03321_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ201_02673_SEQ_00,酒杯岛的涌水有事要去红玉炮台。
 1,TEXT_STMBDZ201_02673_SEQ_01,
 2,TEXT_STMBDZ201_02673_SEQ_02,

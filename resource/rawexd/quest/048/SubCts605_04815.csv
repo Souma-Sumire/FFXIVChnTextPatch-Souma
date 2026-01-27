@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS605_04815_SEQ_00,知识神海港的泰奥波丹正在和拾穗人谈话。
 1,TEXT_SUBCTS605_04815_SEQ_01,
 2,TEXT_SUBCTS605_04815_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA207_00730_SEQ_00,巴斯卡隆酒家的约恩娜，想要冒险者帮忙确认某群人平安无事。
 1,TEXT_GAIUSA207_00730_SEQ_01,在巴斯卡隆酒家附近调查遗迹的人们，最近一段时间都没在酒馆露面。前往空居，寻找伊莉耶勒。
 2,TEXT_GAIUSA207_00730_SEQ_02,调查<hex:02280CFF05>EObj<hex:F61E8E1B0103>，打倒所有现身的<hex:02280DFF09>BNpcName<hex:2C0103>、<hex:02280FFF09>BNpcName<hex:F202A80103>和<hex:02280FFF09>BNpcName<hex:F202A90103>。

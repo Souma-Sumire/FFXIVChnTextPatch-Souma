@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6CIBLUSCOFFEEGROUNDS_00866_SHOVLU_000_000,这里是栽培咖啡豆的农园！<hex:02100103>你有什么想问的吗？！
 1,TEXT_REGYOK6CIBLUSCOFFEEGROUNDS_00866_SHOVLU_000_001,我也是后来才听说了艳翼蛇鸟被讨伐的事！<hex:02100103>还好没有对咖啡豆的栽培造成什么影响。<hex:02100103>那我就跟你介绍一下这里吧！
 2,TEXT_REGYOK6CIBLUSCOFFEEGROUNDS_00866_SHOVLU_000_002,听说新任国王已经定下来了啊！<hex:02100103>为了能让联王大人喝到美味的咖啡，<hex:02100103>我必须努力培育出极致的咖啡豆才行！

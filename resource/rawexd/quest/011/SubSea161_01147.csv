@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA161_01147_SEQ_00,骷髅谷营地的法尔克布瑞达想委托冒险者做简单的杂活。
 1,TEXT_SUBSEA161_01147_SEQ_01,渡渡鸟在骷髅谷营地筑巢，造成了麻烦。拆除<hex:02280CFF05>EObj<hex:F61E8E640103>，打倒干扰的<hex:02280FFF09>BNpcName<hex:F201890103>。
 2,TEXT_SUBSEA161_01147_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F201890103>，拆除了<hex:02280CFF05>EObj<hex:F61E8E640103>。向骷髅谷营地的法尔克布瑞达报告。

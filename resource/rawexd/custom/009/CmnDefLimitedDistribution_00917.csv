@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFLIMITEDDISTRIBUTION_00917_PILGRIMMOOGLE_000_000,库啵啵！<hex:02100103>莫非你看得见莫古吗库啵？<hex:02100103>真是令人惊讶！
 1,TEXT_CMNDEFLIMITEDDISTRIBUTION_00917_PILGRIMMOOGLE_000_001,对了库啵，在这里遇见也是某种缘分！<hex:02100103>莫古就送你传闻中可以自由改变容貌的幻想药作为见面礼吧库啵！
 2,TEXT_CMNDEFLIMITEDDISTRIBUTION_00917_PILGRIMMOOGLE_000_002,库啵啵！没想到莫古们还能再次见面库啵！<hex:02100103>莫古从一个诗人朋友那里又拿到一瓶幻想药，<hex:02100103>也送给你好了库啵！

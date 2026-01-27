@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ520_01855_SEQ_00,惋惜之晶遗迹附近扑闪扑闪的莫古力一副精疲力竭的样子。
 1,TEXT_HEAVNZ520_01855_SEQ_01,和扑闪扑闪的莫古力进行了交谈。扑闪扑闪的莫古力正因为被好奇心旺盛的<hex:02280FFF09>BNpcName<hex:F20E270103>追赶而烦恼。在惋惜之晶遗迹附近讨伐4只<hex:02280FFF09>BNpcName<hex:F20E270103>。
 2,TEXT_HEAVNZ520_01855_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E270103>。向惋惜之晶遗迹附近扑闪扑闪的莫古力报告。

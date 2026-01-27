@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDDD2GACHA_00825_ABOUT_DD2GACHA_000_000,你有事找我的话，就先跟那边的九星打声招呼吧？<hex:02100103>海贼众也有些人情世故之类的问题呢。
 1,TEXT_CTSDDD2GACHA_00825_ABOUT_DD2GACHA_000_010,哟，鉴定“埋藏的宝藏”的事情就交给我吧。<hex:02100103>我会全心全意地帮你鉴定的！
 2,TEXT_CTSDDD2GACHA_00825_ABOUT_DD2GACHA_000_020,嘿嘿，你来了啊英雄！<hex:02100103>你是来鉴定“埋藏的宝藏”的吗？<hex:02100103>我来给你展示一下什么叫鬼师的手腕！

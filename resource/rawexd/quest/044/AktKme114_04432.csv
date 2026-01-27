@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKME114_04432_SEQ_00,转移六洋院的维涅斯想要继续调查。
 1,TEXT_AKTKME114_04432_SEQ_01,
 2,TEXT_AKTKME114_04432_SEQ_02,

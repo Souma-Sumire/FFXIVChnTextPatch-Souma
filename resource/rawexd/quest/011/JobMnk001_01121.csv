@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBMNK001_01121_SEQ_00,林场水车的盖罗尔特有事想要拜托冒险者。
 1,TEXT_JOBMNK001_01121_SEQ_01,接受了盖罗尔特的委托。调查南萨纳兰不悔战阵的<hex:02280CFF05>EObj<hex:F61E8E3D0103>，获取<hex:022811FF0A>EventItem<hex:F61E885E0103>。
 2,TEXT_JOBMNK001_01121_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E885E0103>。将<hex:022811FF0A>EventItem<hex:F61E885E0103>交给北部林区林场水车的盖罗尔特。

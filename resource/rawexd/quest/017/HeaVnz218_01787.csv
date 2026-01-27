@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ218_01787_SEQ_00,自由脑窟穴的吃不够很在意美夏醒言遗迹。
 1,TEXT_HEAVNZ218_01787_SEQ_01,吃不够拜托冒险者捡一些<hex:022811FF0A>EventItem<hex:F61E8ACC0103>。前往龙堡参天高地的陆行鸟之森，拾取3个<hex:022811FF0A>EventItem<hex:F61E8ACC0103>。
 2,TEXT_HEAVNZ218_01787_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ACC0103>。将<hex:022811FF0A>EventItem<hex:F61E8ACC0103>交给自由脑窟穴的吃不够。

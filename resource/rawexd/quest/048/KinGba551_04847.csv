@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGBA551_04847_SEQ_00,新港的帖佩切想让冒险者知道，准备工作已经完成了。
 1,TEXT_KINGBA551_04847_SEQ_01,决斗的舞台准备好了。和萨维奈岛巨胆石采掘场的帖佩切谈谈。
 2,TEXT_KINGBA551_04847_SEQ_02,打倒了维剌赞。返回萨维奈岛。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGLAKREVENANTSTOLL_00112_ALISON_000_000,哎呀，你有什么事吗？<hex:02100103>我会尽我所能帮你的。
 1,TEXT_REGLAKREVENANTSTOLL_00112_ALISON_000_010,我是被冒险者行会派遣到这里的冒险者。<hex:02100103>帮助斯拉佛伯恩，为来到摩杜纳的冒险者提供支援。
 2,TEXT_REGLAKREVENANTSTOLL_00112_ALISON_000_011,你也是冒险者行会的吧？<hex:02100103>一直奔波来往于各个国家对吧。

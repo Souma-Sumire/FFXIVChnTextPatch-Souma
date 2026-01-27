@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKZG003_03488_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>迦利克村的各安甘希望冒险者帮他寻找侄子。
 1,TEXT_LUCKZG003_03488_SEQ_01,
 2,TEXT_LUCKZG003_03488_SEQ_02,

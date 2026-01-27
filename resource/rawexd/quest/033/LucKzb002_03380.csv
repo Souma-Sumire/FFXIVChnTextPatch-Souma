@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKZB002_03380_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>悬挂公馆的赫吉好像有事想去乔布要塞。
 1,TEXT_LUCKZB002_03380_SEQ_01,
 2,TEXT_LUCKZB002_03380_SEQ_02,
