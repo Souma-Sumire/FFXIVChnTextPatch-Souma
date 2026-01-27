@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06000_000010_THANCRED,船员说货快要卸完了。<hex:02100103>之后就可以开始登船。
 1,TEXT_VOICEMAN_06000_000020_YSHTOLA,太好了，<hex:02100103>看来这趟旅程，我们至少能有个顺利的开始。
 2,TEXT_VOICEMAN_06000_000030_THANCRED,是啊……

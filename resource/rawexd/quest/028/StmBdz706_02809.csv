@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ706_02809_SEQ_00,烈士庵的纤细的女战士正在寻找协助者。
 1,TEXT_STMBDZ706_02809_SEQ_01,
 2,TEXT_STMBDZ706_02809_SEQ_02,

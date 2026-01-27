@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDOMRECONSTRUCTIHASE_00527_IHASE_000_000,这里是最近才清理干净的。<hex:02100103>如你所见现在还是一片荒芜的土地，<hex:02100103>我想着能不能试着种植水稻……
 1,TEXT_CTSDOMRECONSTRUCTIHASE_00527_IHASE_000_010,麻烦让你专门跑这里一趟，真是对不住。<hex:02100103>我只是想让你看一看这片土地。
 2,TEXT_CTSDOMRECONSTRUCTIHASE_00527_IHASE_000_011,话说……<hex:02100103>你对这片土地有什么看法？

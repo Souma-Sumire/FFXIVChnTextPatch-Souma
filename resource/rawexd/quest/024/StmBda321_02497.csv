@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA321_02497_SEQ_00,帝国河畔堡的夕雾陷入了沉思。
 1,TEXT_STMBDA321_02497_SEQ_01,
 2,TEXT_STMBDA321_02497_SEQ_02,

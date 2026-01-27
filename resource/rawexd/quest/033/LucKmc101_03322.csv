@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC101_03322_SEQ_00,悬挂公馆的管理员笑容满面。
 1,TEXT_LUCKMC101_03322_SEQ_01,从悬挂公馆的管理员处收到了口信。前往水晶都的观星室。
 2,TEXT_LUCKMC101_03322_SEQ_02,决定和同伴们分头寻找灵光卫。和观星室的水晶公谈谈。

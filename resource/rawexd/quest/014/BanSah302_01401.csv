@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH302_01401_SEQ_00,诺布养育场的塞乌有事情想要委托给冒险者。
 1,TEXT_BANSAH302_01401_SEQ_01,塞乌委托冒险者去破坏珊瑚尖枪制造的强力攻城兵器。在萨普沙产卵地破坏2台<hex:02280FFF09>BNpcName<hex:F209E40103>。
 2,TEXT_BANSAH302_01401_SEQ_02,成功破坏了<hex:02280FFF09>BNpcName<hex:F209E40103>。向诺布养育场的塞乌报告。

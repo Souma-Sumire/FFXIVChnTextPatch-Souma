@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKTA120_03721_SEQ_00,复制工厂废墟的科诺古想要征求旅行者的意见。
 1,TEXT_LUCKTA120_03721_SEQ_01,和科诺古进行了交谈，决定一起去调查遗迹。和复制工厂废墟的科诺古谈谈。
 2,TEXT_LUCKTA120_03721_SEQ_02,和科诺古进行了交谈。再次和复制工厂废墟的科诺古谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILALCGUILD_00067_SEVERIAN_000,你来找身为炼金术士的我有何贵干？<hex:02100103>我现在很忙，长话短说。
 1,TEXT_REGWILALCGUILD_00067_Q1_000_1,想了解什么？
 2,TEXT_REGWILALCGUILD_00067_A1_000_1,你是做什么的？ 

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD115_03620_SEQ_00,废都拿巴示艾兰的敏菲利亚神情严肃。
 1,TEXT_LUCKMD115_03620_SEQ_01,
 2,TEXT_LUCKMD115_03620_SEQ_02,

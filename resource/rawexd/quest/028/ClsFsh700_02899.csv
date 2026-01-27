@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSFSH700_02899_SEQ_00,捕鱼人行会的瓦瓦拉哥似乎调查完了有关海神祭的记载。
 1,TEXT_CLSFSH700_02899_SEQ_01,瓦瓦拉哥为了举办海神祭似乎干劲十足。和黄金港的蕾伊娜谈谈。
 2,TEXT_CLSFSH700_02899_SEQ_02,蕾伊娜刚刚接到了昂索姆。和红玉海渔村的瓦瓦拉哥汇合。

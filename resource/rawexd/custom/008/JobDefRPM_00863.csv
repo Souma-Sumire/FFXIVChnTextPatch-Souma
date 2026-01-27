@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFRPM_00863_BERURU_000_000,啊，<hex:022903EB0203>！<hex:02100103>没想到在旅行途中能够再见到你，<hex:02100103>真是意料外的惊喜！
 1,TEXT_JOBDEFRPM_00863_Q1_000_000,想了解什么？
 2,TEXT_JOBDEFRPM_00863_A1_000_001,最近怎么样？

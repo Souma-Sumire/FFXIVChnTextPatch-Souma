@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB115_03316_SEQ_00,普拉恩尼茸洞的卫德·拉德正在发呆。
 1,TEXT_LUCKMB115_03316_SEQ_01,
 2,TEXT_LUCKMB115_03316_SEQ_02,

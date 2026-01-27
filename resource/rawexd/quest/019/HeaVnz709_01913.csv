@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ709_01913_SEQ_00,尊杜集落的加努瓦利似乎非常生气。
 1,TEXT_HEAVNZ709_01913_SEQ_01,加努瓦利委托冒险者去妨碍前来捣乱的温杜族，打倒<hex:02280FFF09>BNpcName<hex:F20DBA0103>。前往阿巴拉提亚云海的瓦纳温杜集落，讨伐3只<hex:02280FFF09>BNpcName<hex:F20DBA0103>。
 2,TEXT_HEAVNZ709_01913_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20DBA0103>。向尊杜集落的加努瓦利报告。

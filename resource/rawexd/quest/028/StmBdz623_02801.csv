@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ623_02801_SEQ_00,模儿衣楼的不哲格想要准备葬礼。
 1,TEXT_STMBDZ623_02801_SEQ_01,
 2,TEXT_STMBDZ623_02801_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD107_03612_SEQ_00,比朗大矿山的萨夫准备前往他们的村子。
 1,TEXT_LUCKMD107_03612_SEQ_01,和萨夫一起前往络尾聚落。和比朗大矿山附近的萨夫谈谈。
 2,TEXT_LUCKMD107_03612_SEQ_02,和萨夫进行了交谈。和北琥珀丘的萨夫谈谈。

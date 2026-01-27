@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06505_000010_KRILE,埃伦维尔！
 1,TEXT_VOICEMAN_06505_000020_ERENVILLE,抱歉，有劳你过来一趟了。
 2,TEXT_VOICEMAN_06505_000030_ERENVILLE,我正好在“那边”找到了行会需要收集的东西，<hex:02100103>今天是过来交货的。

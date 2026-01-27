@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA002_01218_SEQ_00,灰阵营的哈姆基·夏有事想要拜托冒险者。
 1,TEXT_BANAMA002_01218_SEQ_01,名为炎牙众的蜥蜴人一派意欲行凶。前往南萨纳兰红迷宫的<hex:02280CFF05>EObj<hex:F61E8FF30103>，阻止他们。
 2,TEXT_BANAMA002_01218_SEQ_02,打倒了来袭的炎牙众。和紧张的商人谈谈。

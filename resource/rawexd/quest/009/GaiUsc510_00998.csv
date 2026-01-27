@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC510_00998_SEQ_00,丧灵钟的冒险者古奥尔盖姆想要发一笔横财。
 1,TEXT_GAIUSC510_00998_SEQ_01,<hex:022811FF0A>EventItem<hex:F61E877B0103>能够作为梦幻之药卖出高价。前往丧灵钟西边的迷雾湿原，从<hex:02280FFF09>BNpcName<hex:F202850103>身上得到5份<hex:022811FF0A>EventItem<hex:F61E877B0103>。
 2,TEXT_GAIUSC510_00998_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E877B0103>。将其交给丧灵钟的古奥尔盖姆。

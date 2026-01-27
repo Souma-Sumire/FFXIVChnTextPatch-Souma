@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKME105_04423_SEQ_00,南风诺托斯的感叹的赫尔墨斯暂时松了一口气。
 1,TEXT_AKTKME105_04423_SEQ_01,
 2,TEXT_AKTKME105_04423_SEQ_02,

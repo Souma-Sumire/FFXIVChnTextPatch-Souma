@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ620_02798_SEQ_00,百一启示的亦巴合正在准备仪式。
 1,TEXT_STMBDZ620_02798_SEQ_01,
 2,TEXT_STMBDZ620_02798_SEQ_02,

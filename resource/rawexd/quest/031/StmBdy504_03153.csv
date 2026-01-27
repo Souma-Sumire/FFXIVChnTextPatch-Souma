@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY504_03153_SEQ_00,多玛飞地的小樱正在计划举行祭奠仪式。
 1,TEXT_STMBDY504_03153_SEQ_01,贯希望冒险者招呼大家举行放天灯仪式。与百货市场的三叶还有栗斋学堂的水无月交谈。
 2,TEXT_STMBDY504_03153_SEQ_02,与三叶、水无月进行了交谈。在无二庭园的<hex:02280CFF05>EObj<hex:F61EA9FD0103>等待，参加放天灯仪式。

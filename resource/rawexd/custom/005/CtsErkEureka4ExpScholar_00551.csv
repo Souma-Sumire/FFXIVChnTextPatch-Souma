@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA4EXPSCHOLAR_00551_INV00463_000_000,冒险者，欢迎来到丰水地带！<hex:02100103>可露儿在等着你呢，<hex:02100103>请你去跟她打声招呼吧！
 1,TEXT_CTSERKEUREKA4EXPSCHOLAR_00551_INV00463_000_010,终于可以为在这座岛屿上发生的一切做个了结了！<hex:02100103>我也会贡献出微薄之力来支援大家！<hex:02100103>咱们一起努力吧！
 2,TEXT_CTSERKEUREKA4EXPSCHOLAR_00551_INV00463_000_040,可露儿应该前往了瓦尔河源流区域那里的中央魔力桥脚！<hex:02100103>请冒险者你也过去一趟吧！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDOMRECONSTRUCTMITSUBA_00487_MITSUBA_000_000,要想重建城镇，<hex:02100103>首先需要让大家都能吃饱才行！<hex:02100103>只靠着毫无变化的配给食物，大家都会厌烦的！
 1,TEXT_CTSDOMRECONSTRUCTMITSUBA_00487_MITSUBA_000_010,如果你能为百货市场的发展出一份力的话，那就太好了。<hex:02100103>详细的事项请你去询问车前会所的小樱吧。
 2,TEXT_CTSDOMRECONSTRUCTMITSUBA_00487_MITSUBA_000_020,啊，<hex:022903EB0203>。<hex:02100103>看来你提供了不少物资啊。<hex:02100103>谢谢你！

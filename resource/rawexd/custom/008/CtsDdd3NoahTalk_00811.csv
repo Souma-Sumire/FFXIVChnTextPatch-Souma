@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDDD3NOAHTALK_00811_KOHRABNTAH_000_000,忙前忙后的你也很难办吧，<hex:02100103>不过妾身保证，只要你能攻破地下30层，<hex:02100103>就能掌握正统优雷卡的大概。
 1,TEXT_CTSDDD3NOAHTALK_00811_KOHRABNTAH_000_001,在那之后，妾身会再听一次你的报告，<hex:02100103>这个时代最勇敢的冒险者，<hex:022903EB0203>啊。<hex:02100103>这件事就交给你了……
 2,TEXT_CTSDDD3NOAHTALK_00811_KOHRABNTAH_000_010,多亏了你，妾身才能在这个时代醒来，<hex:02100103>乃至于在某种程度上算是重获新生了吧。

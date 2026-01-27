@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC909_01044_SEQ_00,青磷精炼所的梅梅佐夫，正在忙于调制药物。
 1,TEXT_GAIUSC909_01044_SEQ_01,梅梅佐夫使用冒险者送来的药材制出了药。对劳班缓冲地的受伤的士兵使用<hex:022811FF0A>EventItem<hex:F61E87950103>。
 2,TEXT_GAIUSC909_01044_SEQ_02,对所有的伤兵使用了<hex:022811FF0A>EventItem<hex:F61E87950103>。去向青磷精炼所的梅梅佐夫报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWDK550_01999_SEQ_00,云雾街的巴尔托维厄有些消沉。
 1,TEXT_CLSWDK550_01999_SEQ_01,巴尔托维厄想要送给救命恩人正教的修道士一把幻杖。前往伊修加德的以太之光广场，和正教的修道士谈谈。
 2,TEXT_CLSWDK550_01999_SEQ_02,正教的修道士想要一把<hex:02280DFF07>ItemHQ<hex:F2298C0103>。制作<hex:02280DFF07>ItemHQ<hex:F2298C0103>，交给以太之光广场的正教的修道士。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB202_00833_SEQ_00,太阳海岸的库扎伊·塔扎伊，看上去似乎很烦恼。
 1,TEXT_GAIUSB202_00833_SEQ_01,太阳海岸的食品都被地灵族偷走了。在<hex:02280CFF05>EObj<hex:F61E8C820103>设置<hex:022811FF0A>EventItem<hex:F61E870A0103>。
 2,TEXT_GAIUSB202_00833_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E870A0103>设置好了。在<hex:02280CFF05>EObj<hex:F61E8C830103>处等待，打倒现身的地灵族。

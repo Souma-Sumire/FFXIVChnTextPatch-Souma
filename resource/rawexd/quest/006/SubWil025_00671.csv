@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL025_00671_SEQ_00,帕帕夏恩所长希望冒险者去做一些简单的工作。
 1,TEXT_SUBWIL025_00671_SEQ_01,将黄昏卷饼交给在乌尔达哈调车库附近巡逻的卫兵。
 2,TEXT_SUBWIL025_00671_SEQ_02,成功将慰问品交给了卫兵们。向帕帕夏恩报告。

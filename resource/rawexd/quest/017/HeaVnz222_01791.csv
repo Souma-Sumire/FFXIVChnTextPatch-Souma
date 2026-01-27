@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ222_01791_SEQ_00,自由脑窟穴的啥都吃正注视着建筑物。
 1,TEXT_HEAVNZ222_01791_SEQ_01,啥都吃拜托冒险者准备<hex:022811FF0A>EventItem<hex:F61E8ACF0103>。前往龙堡参天高地的唯一脑窟穴，获取<hex:022811FF0A>EventItem<hex:F61E8ACF0103>。
 2,TEXT_HEAVNZ222_01791_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ACF0103>。将<hex:022811FF0A>EventItem<hex:F61E8ACF0103>交给自由脑窟穴的啥都吃。

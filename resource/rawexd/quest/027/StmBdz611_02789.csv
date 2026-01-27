@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ611_02789_SEQ_00,朵塔儿水洲的阿古加木好像有什么烦恼。
 1,TEXT_STMBDZ611_02789_SEQ_01,
 2,TEXT_STMBDZ611_02789_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBNIN451_00233_SEQ_00,胧想尽快向冒险者解说新印的用法。
 1,TEXT_JOBNIN451_00233_SEQ_01,胧讲解了人之印的用法。迅速赶往东拉诺西亚的码头小屋，和胧对话。
 2,TEXT_JOBNIN451_00233_SEQ_02,小屋附近残留着争斗的痕迹。燕应该还在附近。寻找燕。

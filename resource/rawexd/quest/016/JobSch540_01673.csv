@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBSCH540_01673_SEQ_00,放浪神古神殿的斯里托·卡里托有事情想要拜托冒险者。
 1,TEXT_JOBSCH540_01673_SEQ_01,接受了斯里托·卡里托的委托。在拉诺西亚外地尼姆浮游遗迹的<hex:02280CFF05>EObj<hex:F61E9A110103>进行张望，寻找南洋的装饰壶。
 2,TEXT_JOBSCH540_01673_SEQ_02,对四周张望了一番，但是没有发现南洋的装饰壶。在尼姆浮游遗迹的<hex:02280CFF05>EObj<hex:F61E9A120103>进行张望，寻找南洋的装饰壶。

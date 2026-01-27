@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL124_00634_SEQ_00,黄金集市的本尼格尔另有一事想要委托给冒险者。
 1,TEXT_SUBWIL124_00634_SEQ_01,本尼格尔受采矿工之托，想收集遗迹附近的石头。去消逝王都附近收集5个白辉石。
 2,TEXT_SUBWIL124_00634_SEQ_02,获得了白辉石，向黄金集市的本尼格尔报告。

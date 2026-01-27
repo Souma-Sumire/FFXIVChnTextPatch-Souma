@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLA100_00261_SEQ_00,剑术师行会的密拉，将要给予冒险者讨伐枪术师的试炼。
 1,TEXT_CLSGLA100_00261_SEQ_01,最近多发枪术师集团袭击剑术师的事件。去弃石贫民窟帮助懦弱的剑术师。
 2,TEXT_CLSGLA100_00261_SEQ_02,打倒了枪术师。和懦弱的剑术师谈谈，确认他是否平安无事。
@@ -99,7 +99,7 @@ int32,str,str
 94,TEXT_CLSGLA100_00261_MYLLA_000_165,阿尔迪斯？！<hex:02100103>喂！<hex:022903EB0203>，<hex:02100103>刚才你说阿尔迪斯了吧？！
 95,TEXT_CLSGLA100_00261_MYLLA_000_166,……不可能。<hex:02100103>难道他……回来了么……<hex:02100103>回到这乌尔达哈……
 96,TEXT_CLSGLA100_00261_MYLLA_000_170,纳伊迪斯？<hex:02100103>不认识这个人啊。<hex:02100103>算了……不管这么多了。
-97,TEXT_CLSGLA100_00261_SYSTEM_000_180,等级达到“15级”以上时，才可以领取下一个任务。<hex:02100103>提高等级后再来行会。 
+97,TEXT_CLSGLA100_00261_SYSTEM_000_180,等级达到15级以上时，才可以领取下一个任务。<hex:02100103>提高等级后再来行会。 
 98,TEXT_CLSGLA100_00261_POP_MESSAGE,察觉到了敌人的气息！ 
 99,TEXT_CLSGLA100_00261_SCENE00005_INSTANCE_BATTLE_YESNO_TITLE,要开始“折断长枪的剑光”的战斗吗？
 100,TEXT_CLSGLA100_00261_SCENE00005_INSTANCE_BATTLE_YESNO_YES,是

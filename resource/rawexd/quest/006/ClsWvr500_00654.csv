@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWVR500_00654_SEQ_00,裁衣匠行会的雷多伦特·罗斯有些小道消息要告诉冒险者。
 1,TEXT_CLSWVR500_00654_SEQ_01,接受了雷多伦特·罗斯的委托。将<hex:022813FF07>ItemHQ<hex:FF08>　3215<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　3475<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　2895<hex:0103>各1个，交给乌尔达哈裁衣匠行会的雷多伦特·罗斯。
 2,TEXT_CLSWVR500_00654_SEQ_02,将<hex:022813FF07>ItemHQ<hex:FF08>　3215<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　3475<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　2895<hex:0103>交给了雷多伦特·罗斯。和乌尔达哈黄金广场的瓦瓦鲁卡谈谈。

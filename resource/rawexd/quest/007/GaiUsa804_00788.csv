@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA804_00788_SEQ_00,秋瓜浮村的商人索梅希尔德想要冒险者帮忙寻找失物。
 1,TEXT_GAIUSA804_00788_SEQ_01,索梅希尔德的商人同伴丢失了<hex:022811FF0A>EventItem<hex:F61E86EA0103>。寻找<hex:022811FF0A>EventItem<hex:F61E86EA0103>。
 2,TEXT_GAIUSA804_00788_SEQ_02,找到了<hex:022811FF0A>EventItem<hex:F61E86EA0103>。交给浮栓亭的艾尔温。

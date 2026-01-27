@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_DUNGEONOMEGA2_00000_OMEGA_000_000,明明掌握了未知的力量——<hex:02100103>却还是要——结束了吗——
 1,TEXT_DUNGEONOMEGA2_00000_OMEGA_000_001,怎么回事……？
 2,TEXT_DUNGEONOMEGA2_00000_OMEGA_000_002,你说……还没有结束<hex:02100103>想和我一起旅行？

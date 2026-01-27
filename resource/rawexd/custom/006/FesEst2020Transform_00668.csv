@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESEST2020TRANSFORM_00668_EGGHUNTSTAFF_000_000,产出特殊装饰彩蛋的小鸡逃走了！<hex:02100103>真是愁死了！
 1,TEXT_FESEST2020TRANSFORM_00668_SYSTEM_000_001,要参加危命任务“彩蛋狩猎‘粘鸟胶大作战’”，<hex:02100103>需要先接受并完成任务“彩蛋狩猎看兔子”。
 2,TEXT_FESEST2020TRANSFORM_00668_EGGHUNTSTAFF_000_002,产出特殊装饰彩蛋的小鸡逃走了！<hex:02100103>如果方便的话，可以请你帮忙抓回来吗？<hex:02100103>我会教你具体如何捕获的！

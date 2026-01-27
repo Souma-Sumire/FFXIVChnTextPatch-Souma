@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC809_01033_SEQ_00,北防波堤的卫士长诺尔特穆恩，希望冒险者帮他筹备一样东西。
 1,TEXT_GAIUSC809_01033_SEQ_01,接受了委托，筹备诺尔特穆恩最喜欢的食物。打倒海蛇巢穴里的<hex:02280FFF09>BNpcName<hex:F201680103>，得到8个<hex:022811FF0A>EventItem<hex:F61E87900103>。
 2,TEXT_GAIUSC809_01033_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E87900103>。回到北防波堤，将其交给卫士长诺尔特穆恩。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_WARPINNCRYSTARIUM_GUIDEOFTHEPENDANTS_000_1,欢迎光临。<hex:02100103>这里是悬挂公馆。
 1,TEXT_WARPINNCRYSTARIUM_GUIDEOFTHEPENDANTS_000_2,只不过非常抱歉……<hex:02100103>现在所有房间都已经住满了，<hex:02100103>没法接收新的人员入住。
 2,TEXT_WARPINNCRYSTARIUM_Q1_000_1,想了解什么？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMG104_04453_SEQ_00,诸神黄昏号魔导船附近的阿尔菲诺谨慎地观察着周围。
 1,TEXT_AKTKMG104_04453_SEQ_01,
 2,TEXT_AKTKMG104_04453_SEQ_02,

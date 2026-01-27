@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA317_02493_SEQ_00,烈士庵的夕雾想要谈谈今后的行动。
 1,TEXT_STMBDA317_02493_SEQ_01,
 2,TEXT_STMBDA317_02493_SEQ_02,

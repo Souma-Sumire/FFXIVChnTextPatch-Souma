@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB405_00861_SEQ_00,瞭望阵营地的布鲁艾丁，正在制订作战计划。
 1,TEXT_GAIUSB405_00861_SEQ_01,布鲁艾丁打算阻止地灵族制作巨像兵的计划。首先，从尼姆浮游遗迹附近的<hex:02280FFF09>BNpcName<hex:F2016D0103>身上获得<hex:022811FF0A>EventItem<hex:F61E871C0103>。
 2,TEXT_GAIUSB405_00861_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E871C0103>。为了引诱地灵族出现，将<hex:022811FF0A>EventItem<hex:F61E871C0103>放置在指定地点。

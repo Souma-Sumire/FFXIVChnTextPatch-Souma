@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA803_00787_SEQ_00,秋瓜浮村的开山工埃蒂恩又得知了一个关于怪异事件的传闻。
 1,TEXT_GAIUSA803_00787_SEQ_01,西南石场有一块巨大的岩石，据说被杀害的那些年轻女性的怨念聚集在这块石头上，时而会发出光。为了确认传闻的真假，使用<hex:022811FF0A>EventItem<hex:F61E86E80103>将西南石场的<hex:02280CFF05>EObj<hex:F61E8C3F0103>爆破，将碎片带回来。
 2,TEXT_GAIUSA803_00787_SEQ_02,对<hex:02280CFF05>EObj<hex:F61E8C3F0103>进行了爆破。捡起<hex:022811FF0A>EventItem<hex:F61E86E90103>。

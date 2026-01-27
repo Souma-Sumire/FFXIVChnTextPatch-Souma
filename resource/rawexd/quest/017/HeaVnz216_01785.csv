@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ216_01785_SEQ_00,尾羽集落的勒马克隆似乎在害怕着什么。
 1,TEXT_HEAVNZ216_01785_SEQ_01,勒马克隆拜托冒险者去确认他所见的龙族究竟是什么。前往龙堡参天高地的美夏醒言遗迹，在<hex:02280CFF05>EObj<hex:F61E9A690103>张望四周。
 2,TEXT_HEAVNZ216_01785_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E9A690103>进行了张望。美夏醒言遗迹里留有龙族的铜像。将此事报告给尾羽集落的勒马克隆。

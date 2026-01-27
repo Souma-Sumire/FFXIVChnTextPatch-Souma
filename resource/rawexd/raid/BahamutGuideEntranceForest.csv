@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BAHAMUTGUIDEENTRANCEFOREST_ANAELLE_000_000,终于要突入巴哈姆特大迷宫了。<hex:02100103>卫月碎片的周围及其内部都潜藏着未知的危险……<hex:02100103>请您和您的同伴们都做好万全准备。
 1,TEXT_BAHAMUTGUIDEENTRANCEFOREST_Q1_000_010,要做什么？
 2,TEXT_BAHAMUTGUIDEENTRANCEFOREST_A1_000_011,询问“巴哈姆特大迷宫入侵之章”的开始条件

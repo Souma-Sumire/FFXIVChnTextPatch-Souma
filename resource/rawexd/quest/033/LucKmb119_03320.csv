@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB119_03320_SEQ_00,云村的赛特十分担心冒险者。
 1,TEXT_LUCKMB119_03320_SEQ_01,从赛特处得知了通往梦羽城的路线。调查伊尔美格梦羽城的<hex:02280CFF05>EObj<hex:F61EAAF00103>。
 2,TEXT_LUCKMB119_03320_SEQ_02,解开了<hex:02280CFF05>EObj<hex:F61EAAF00103>的封印。讨伐城堡内化身灵光卫的妖灵王缇坦妮雅！<hex:02100103><hex:02100103>※可以通过任务搜索器参加。

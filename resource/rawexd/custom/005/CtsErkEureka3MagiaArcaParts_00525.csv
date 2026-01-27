@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA3MAGIAARCAPARTS_00525_SYSTEM_000_000,从德雷克提到的装置的金属残骸中<hex:02100103>回收了看起来还能使用的零件。<hex:02100103>赶快交给德雷克吧。
 1,TEXT_CTSERKEUREKA3MAGIAARCAPARTS_00525_TALK_ACTOR,

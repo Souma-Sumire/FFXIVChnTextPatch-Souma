@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ015_01740_SEQ_00,玫瑰园的吉尔登看中冒险者的实力，想拜托一件事情。
 1,TEXT_HEAVNZ015_01740_SEQ_01,吉尔登希望冒险者说服负责管理食物的法布雷耶改善一下伙食。和阿巴拉提亚云海云顶营地的法布雷耶谈谈。
 2,TEXT_HEAVNZ015_01740_SEQ_02,法布雷耶断然拒绝了改善伙食的要求。而且为了让吉尔登放弃纠缠，他拜托冒险者采集<hex:022811FF0A>EventItem<hex:F61E8B650103>。获取生长在阿巴拉提亚云海云顶附近的<hex:022811FF0A>EventItem<hex:F61E8B650103>。

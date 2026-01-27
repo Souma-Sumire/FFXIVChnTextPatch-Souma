@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB107_03308_SEQ_00,群花馆的伊思·雅拉十分痛苦。
 1,TEXT_LUCKMB107_03308_SEQ_01,
 2,TEXT_LUCKMB107_03308_SEQ_02,

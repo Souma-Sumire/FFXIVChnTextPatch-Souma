@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ012_01737_SEQ_00,戈尔加涅牧场的怒不可遏的骑兵非常亢奋。
 1,TEXT_HEAVNZ012_01737_SEQ_01,怒不可遏的骑兵希望冒险者将<hex:022811FF0A>EventItem<hex:F61E8ABC0103>夺回来。前往库尔札斯西部高地的戈尔加涅牧草地，讨伐<hex:02280FFF09>BNpcName<hex:F20D940103>，取得3个有一定几率获取的<hex:022811FF0A>EventItem<hex:F61E8ABC0103>。
 2,TEXT_HEAVNZ012_01737_SEQ_02,获得了所有的<hex:022811FF0A>EventItem<hex:F61E8ABC0103>。将<hex:022811FF0A>EventItem<hex:F61E8ABC0103>交还给戈尔加涅牧场的怒不可遏的骑兵。

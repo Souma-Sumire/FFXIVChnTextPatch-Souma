@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMG102_05245_SEQ_00,后房的古鲁加想要外出领取花束。
 1,TEXT_KINGMG102_05245_SEQ_01,
 2,TEXT_KINGMG102_05245_SEQ_02,

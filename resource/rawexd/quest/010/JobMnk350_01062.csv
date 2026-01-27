@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBMNK350_01062_SEQ_00,艾里克博士想要在新的古战场上测量以太。
 1,TEXT_JOBMNK350_01062_SEQ_01,不知不觉间，冒险者加入了划时代的尝试，和维达盖尔特同时调查两个古战场。在东拉诺西亚的鲜血滨设置<hex:022811FF0A>EventItem<hex:F61E87B10103>。
 2,TEXT_JOBMNK350_01062_SEQ_02,测量了以太。回收<hex:022811FF0A>EventItem<hex:F61E87B10103>。

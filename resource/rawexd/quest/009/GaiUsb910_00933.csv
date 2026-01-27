@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB910_00933_SEQ_00,白云崖前哨的骑兵福西里安想要除掉妨碍进军的敌人。
 1,TEXT_GAIUSB910_00933_SEQ_01,接受了讨伐龙族眷属<hex:02280FFF09>BNpcName<hex:F202AD0103>的委托。前往白云崖前哨西北，在<hex:02280CFF05>EObj<hex:F61E8CF40103>使用<hex:022811FF0A>EventItem<hex:F61E87590103>，打倒随之出现的<hex:02280FFF09>BNpcName<hex:F202AD0103>。
 2,TEXT_GAIUSB910_00933_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F202AD0103>。向白云崖前哨的骑兵福西里安报告。

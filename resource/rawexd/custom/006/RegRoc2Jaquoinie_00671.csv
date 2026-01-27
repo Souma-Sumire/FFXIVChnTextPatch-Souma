@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2JAQUOINIE_00671_JAQUOINIE_000_000,我们是从属于艾因哈特家奥瓦埃尔大人的私兵。<hex:02100103>主人为了开辟新的工作，目前正在做准备。<hex:02100103>十分抱歉，他现在人不在这里。
 1,TEXT_REGROC2JAQUOINIE_00671_JAQUOINIE_000_001,我们是从属于艾因哈特家奥瓦埃尔大人的私兵。<hex:02100103>主人现在正忙于在天穹街开辟新的工作。
 2,TEXT_REGROC2JAQUOINIE_00671_JAQUOINIE_000_002,这里不仅能帮你解锁上锁的宝箱，<hex:02100103>还能用在空贼之间作为货币而流通的战利品——<hex:02100103>空贼通货进行交易。

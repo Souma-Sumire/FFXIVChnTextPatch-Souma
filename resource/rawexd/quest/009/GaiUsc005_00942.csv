@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC005_00942_SEQ_00,白云崖前哨的利奥托鲁瓦，想要让冒险者去收集某样东西。
 1,TEXT_GAIUSC005_00942_SEQ_01,利奥托鲁瓦想要修复损坏的钟。在白云崖前哨收集<hex:022811FF0A>EventItem<hex:F61E875E0103>。
 2,TEXT_GAIUSC005_00942_SEQ_02,成功收集到了<hex:022811FF0A>EventItem<hex:F61E875E0103>。将<hex:022811FF0A>EventItem<hex:F61E875E0103>交给白云崖前哨的图阿克。

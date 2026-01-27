@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA108_00722_SEQ_00,妖精暂留地的阿密希亚有事情想委托给冒险者。
 1,TEXT_GAIUSA108_00722_SEQ_01,阿密希亚好像在外面受到了魔物的袭击。调查<hex:02280BFF05>EObj<hex:F51E8C0103>，打倒随之出现的<hex:02280DFF09>BNpcName<hex:110103>；再调查另一处<hex:02280CFF05>EObj<hex:F61E8C010103>，打倒随之出现的<hex:02280FFF09>BNpcName<hex:F207B70103>。
 2,TEXT_GAIUSA108_00722_SEQ_02,打倒了全部的<hex:02280DFF09>BNpcName<hex:110103>和<hex:02280FFF09>BNpcName<hex:F207B70103>。向妖精暂留地的阿密希亚报告。

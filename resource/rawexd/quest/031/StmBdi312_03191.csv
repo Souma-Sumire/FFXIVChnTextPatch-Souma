@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDI312_03191_SEQ_00,道具间妖艳的剧团成员有事想拜托冒险者。
 1,TEXT_STMBDI312_03191_SEQ_01,异国的剧作家委托冒险者找来下酒菜。筹备<hex:02280DFF07>ItemHQ<hex:F24D6E0103>、<hex:02280DFF07>ItemHQ<hex:F24D720103>、<hex:02280DFF07>ItemHQ<hex:F257A00103>各3份，交给道具间的异国的剧作家。
 2,TEXT_STMBDI312_03191_SEQ_02,将下酒菜交给了异国的剧作家。凑齐美酒佳肴的剧作家支付了很贵重的报酬给冒险者，准备开始畅饮。这是完成了一连串寻物任务的奖励，无须客气收下它们即可。

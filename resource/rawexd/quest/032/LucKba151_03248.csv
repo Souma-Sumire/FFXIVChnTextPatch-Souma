@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKBA151_03248_SEQ_00,普拉恩尼茸洞的苏儿·欧儿想要得知格兰逊的回答。
 1,TEXT_LUCKBA151_03248_SEQ_01,和苏儿·欧儿进行了交谈。格兰逊下定决心，既要向义德复仇，也要救赎布兰登。在伊尔美格的桃色睡床的<hex:02280CFF05>EObj<hex:F61EAB5C0103>使用<hex:022811FF0A>EventItem<hex:F61E8E890103>，寻找双头狼之爪。
 2,TEXT_LUCKBA151_03248_SEQ_02,在<hex:02280CFF05>EObj<hex:F61EAB5C0103>使用了<hex:022811FF0A>EventItem<hex:F61E8E890103>，刚发现双头狼之爪，察觉到戒指的义德就出现了。和格兰逊合作打倒义德。

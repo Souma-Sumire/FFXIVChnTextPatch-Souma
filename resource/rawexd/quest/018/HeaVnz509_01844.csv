@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ509_01844_SEQ_00,赎罪天廊的莫古格有些寝食难安。
 1,TEXT_HEAVNZ509_01844_SEQ_01,和莫古格进行了交谈。据说在四臂广场长出了很多新芽。在翻云雾海的四臂广场采集5个<hex:022811FF0A>EventItem<hex:F61E8AED0103>。
 2,TEXT_HEAVNZ509_01844_SEQ_02,取得了<hex:022811FF0A>EventItem<hex:F61E8AED0103>。将<hex:022811FF0A>EventItem<hex:F61E8AED0103>交给翻云雾海莫古力之家附近的莫古西亚。

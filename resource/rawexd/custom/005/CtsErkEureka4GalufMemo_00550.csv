@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA4GALUFMEMO_00550_SYSTEM_100_000,堆起来的书籍倒了下来，散在了桌子上……<hex:02100103>好像都是与创神优雷卡无关的书。
 1,TEXT_CTSERKEUREKA4GALUFMEMO_00550_SYSTEM_200_000,从倒下的书籍的最底下发现了加拉夫·巴尔德西昂的笔记！
 2,TEXT_CTSERKEUREKA4GALUFMEMO_00550_EUREKAMEMO_000_000,(-加拉夫的笔记-)加拉夫·巴尔德西昂，<hex:02100103>为了防范最糟糕的状况发生，而在此记录。

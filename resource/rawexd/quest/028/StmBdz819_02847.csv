@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ819_02847_SEQ_00,白鬼岩山北的断崖的古恩特马尔有事想拜托冒险者。
 1,TEXT_STMBDZ819_02847_SEQ_01,
 2,TEXT_STMBDZ819_02847_SEQ_02,

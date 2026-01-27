@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFGLASSESEXCHANGE_00850_TALK_000_000,我正在回收部分以前曾作为装饰品使用的眼镜。<hex:02100103>如果你有的话，我可以为你交换成使用起来更方便的同款眼镜。
 1,TEXT_CMNDEFGLASSESEXCHANGE_00850_Q1_000_000,要做什么？
 2,TEXT_CMNDEFGLASSESEXCHANGE_00850_A1_000_001,交出眼镜（换成面部配饰）

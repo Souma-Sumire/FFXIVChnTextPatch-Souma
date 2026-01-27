@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKBA441_03627_SEQ_00,鼹灵集市的凯瑞格正因缇纳的修行而苦恼。
 1,TEXT_LUCKBA441_03627_SEQ_01,凯瑞格想让缇纳积累实战经验。为了修行，前往雷克兰德的迷途羊倌之森，和凯瑞格谈谈。
 2,TEXT_LUCKBA441_03627_SEQ_02,身为魔法师的前辈，给缇纳做个榜样。在迷途羊倌之森的<hex:02280CFF05>EObj<hex:F61EAC670103>张望，讨伐出现的<hex:02280FFF09>BNpcName<hex:F220D70103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROCOBSERVATORY_00110_FORLEMORT_000_000,干嘛？我可是很忙的，有话快说。
 1,TEXT_REGROCOBSERVATORY_00110_FORLEMORT_000_001,自从龙啸发出之后，龙族的活动趋于活跃，<hex:02100103>现在我们是一点都不能松懈。<hex:02100103>如果你有什么事情的话，还请长话短说……
 2,TEXT_REGROCOBSERVATORY_00110_FORLEMORT_000_002,干嘛？我可是很忙的。<hex:02100103>没时间和萨雷安的占星术士聊天……

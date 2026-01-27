@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6HOUSEOFWINDSHIGH_00907_PONUHANU_000_000,啊，欢迎光临……<hex:02100103>虽然我的风魔法还尚未成熟，<hex:02100103>不过可以作为一名见习向导与你交流。
 1,TEXT_REGYOK6HOUSEOFWINDSHIGH_00907_PONUHANU_000_001,这位旅行者，欢迎光临！<hex:02100103>自从展翅节之后，感觉自己的魔法逐渐进入了状态。<hex:02100103>不介意的话，可以由我来为你介绍一下这里。
 2,TEXT_REGYOK6HOUSEOFWINDSHIGH_00907_PONUHANU_000_002,新任联王大人已经定下来了啊，可喜可贺！<hex:02100103>我也希望能让自己的风魔法继续精进，为国家出一份力。<hex:02100103>关于这里有什么问题都可以问我。

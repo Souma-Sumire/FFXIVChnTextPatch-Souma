@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA1EVENTSPHERE4_00470_SYSTEM_000_001,没有发现魔素石……<hex:02100103>看来这周围没有魔素石。
 1,TEXT_CTSERKEUREKA1EVENTSPHERE4_00470_EJIKATSUNJIKA_000_005,嗯？是冒险者啊。<hex:02100103>你不愧是解放者，居然能来到这里。<hex:02100103>看来实力和传闻相符啊。
 2,TEXT_CTSERKEUREKA1EVENTSPHERE4_00470_EJIKATSUNJIKA_000_006,不过，因为地脉的异常我就来调查看看，<hex:02100103>没想到会在这里遇见你。<hex:02100103>冒险者你又是因为什么来这里呢？

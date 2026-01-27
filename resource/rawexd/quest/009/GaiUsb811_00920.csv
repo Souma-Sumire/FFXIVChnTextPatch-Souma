@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB811_00920_SEQ_00,蓝雾的中间人帕帕瓦兹好像也遇到了麻烦。
 1,TEXT_GAIUSB811_00920_SEQ_01,青磷精炼所运出的<hex:022811FF0A>EventItem<hex:F61E874A0103>有被倒卖的嫌疑。对运输<hex:022811FF0A>EventItem<hex:F61E874A0103>的要强的运货人使用情感动作“质疑”。
 2,TEXT_GAIUSB811_00920_SEQ_02,质问了要强的运货人，但是他声称自己是被冤枉的。依照他所说的，调查放于保管处的<hex:02280CFF05>EObj<hex:F61E8CE90103>。

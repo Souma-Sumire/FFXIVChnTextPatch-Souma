@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTEXPLORENOTE_00177_MILLITHIRONHEART_000_000,我叫米莉丝·艾恩哈特，是个探险家。<hex:02100103>你知道“艾欧泽亚全景图”吧？那是我爷爷绘制的……<hex:02100103>受他影响，我家代代都以探险家为职。
 1,TEXT_REGFSTEXPLORENOTE_00177_MILLITHIRONHEART_000_001,兄长奈德里克以发现未知的领域为目标……<hex:02100103>而我为了绘制名胜与秘境的风景画行走在世界各地。
 2,TEXT_REGFSTEXPLORENOTE_00177_MILLITHIRONHEART_000_010,啊，<hex:022903EB0203>！<hex:02100103>探险进展得顺利吗？

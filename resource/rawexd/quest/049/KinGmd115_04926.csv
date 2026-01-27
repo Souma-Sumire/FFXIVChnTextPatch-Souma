@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD115_04926_SEQ_00,夏劳尼站的瓦里卡充满了干劲。
 1,TEXT_KINGMD115_04926_SEQ_01,和瓦里卡进行了交谈。在夏劳尼站附近的<hex:02280CFF05>EObj<hex:F61EBA780103>等待炸弹列车完成改造。
 2,TEXT_KINGMD115_04926_SEQ_02,等待了炸弹列车完成。做好一切准备。

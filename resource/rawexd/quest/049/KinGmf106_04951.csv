@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMF106_04951_SEQ_00,水之终端前的喀赫奇瓦凝视着冒险者一行。
 1,TEXT_KINGMF106_04951_SEQ_01,
 2,TEXT_KINGMF106_04951_SEQ_02,

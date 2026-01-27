@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKKUGANEREPLICA_00506_STAELHUNDR_000_000,居然被带到了这东方的尽头啊。<hex:02100103>在被东阿尔迪纳德商会雇佣之前，我从没想过这种事呢。<hex:02100103>人生真是不可预测啊。
 1,TEXT_CTSERKKUGANEREPLICA_00506_MENU_000_000,要做什么？
 2,TEXT_CTSERKKUGANEREPLICA_00506_MENU_000_001,复制禁地兵装（战斗精英）

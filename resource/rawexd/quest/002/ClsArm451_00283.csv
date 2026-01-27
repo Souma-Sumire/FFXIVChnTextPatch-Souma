@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSARM451_00283_SEQ_00,铸甲匠行会的赫·纳恩萨，有事情想告诉冒险者。
 1,TEXT_CLSARM451_00283_SEQ_01,接受了赫·纳恩萨的委托。在利姆萨·罗敏萨的铸甲匠行会，将<hex:022813FF07>ItemHQ<hex:FF08>　3861<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2830<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　3868<hex:0103>各1个交给赫·纳恩萨。
 2,TEXT_CLSARM451_00283_SEQ_02,将<hex:022813FF07>ItemHQ<hex:FF08>　3861<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2830<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　3868<hex:0103>各1个交给了赫·纳恩萨。在利姆萨·罗敏萨的铸甲匠行会，向布兰修提尔报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3SAKAZUKI_00407_IHAKI_000_000,你有什么事？<hex:02100103>看你的样子……莫非是来自海外的洋人？<hex:02100103>这里是我们海贼众的监视据点“酒杯岛”！
 1,TEXT_REGOTH3SAKAZUKI_00407_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3SAKAZUKI_00407_A1_000_001,你是做什么的？

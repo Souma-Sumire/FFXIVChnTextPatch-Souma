@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB210_00841_SEQ_00,葡萄酒港的埃特加尔，想要委托冒险者讨伐魔物。
 1,TEXT_GAIUSB210_00841_SEQ_01,埃特加尔希望冒险者去消灭在葡萄酒港附近大肆破坏的<hex:02280FFF09>BNpcName<hex:F2019B0103>。讨伐4只<hex:02280FFF09>BNpcName<hex:F2019B0103>。
 2,TEXT_GAIUSB210_00841_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F2019B0103>。向葡萄酒港的埃特加尔报告。

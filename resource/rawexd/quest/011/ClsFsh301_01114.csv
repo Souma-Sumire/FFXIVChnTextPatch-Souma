@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSFSH301_01114_SEQ_00,捕鱼人行会的希希蒲有工作想要委托给冒险者。
 1,TEXT_CLSFSH301_01114_SEQ_01,接受了希希蒲的委托。和捕鱼人行会的托克提克斯谈谈。
 2,TEXT_CLSFSH301_01114_SEQ_02,和托克提克斯进行了交谈。和捕鱼人行会的瓦瓦拉哥谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA202_01233_SEQ_00,灰阵营的纳尔基·冬想要冒险者做一件事。
 1,TEXT_BANAMA202_01233_SEQ_01,接受了纳尔基·冬的委托。讨伐赞拉克侧翼阵的<hex:02280FFF09>BNpcName<hex:F208F90103>和<hex:02280EFF09>BNpcName<hex:F0F90103>各2名。
 2,TEXT_BANAMA202_01233_SEQ_02,成功讨伐了蛮族。向灰阵营的纳尔基·冬报告。

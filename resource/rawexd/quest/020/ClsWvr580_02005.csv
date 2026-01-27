@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWVR580_02005_SEQ_00,伊修加德的阿弗丽尔好像有什么烦恼。
 1,TEXT_CLSWVR580_02005_SEQ_01,格伦达委托阿弗丽尔去制作棉线。阿弗丽尔担心前去训练的弗雷斯金，因此拜托冒险者替她去交送棉线。将<hex:022811FF0A>EventItem<hex:F61E8B310103>交给伊修加德圣雷马诺大圣堂的格伦达。
 2,TEXT_CLSWVR580_02005_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8B310103>交给了格伦达。格伦达又让阿弗丽尔去制作修道士的长袍。向尊贵凯旋门的阿弗丽尔报告。

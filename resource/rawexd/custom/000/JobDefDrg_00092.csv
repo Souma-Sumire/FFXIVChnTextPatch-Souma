@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFDRG_00092_ALBERIC_000_1,我的旧伤今天也在隐隐作痛……<hex:02100103>就是那些在当龙骑士的时候受的伤……
 1,TEXT_JOBDEFDRG_00092_Q1_000_1,想了解什么？
 2,TEXT_JOBDEFDRG_00092_A1_000_1,你是做什么的？

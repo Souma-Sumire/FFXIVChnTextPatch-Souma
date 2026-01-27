@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA103_01224_SEQ_00,灰阵营的菲布布·夏有事想要拜托冒险者。
 1,TEXT_BANAMA103_01224_SEQ_01,接受了菲布布·夏的委托。从赞拉克的<hex:02280CFF05>EObj<hex:F61E90230103>上得到<hex:022811FF0A>EventItem<hex:F61E88F20103>。
 2,TEXT_BANAMA103_01224_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E88F20103>。将<hex:022811FF0A>EventItem<hex:F61E88F20103>交给灰阵营的菲布布·夏。

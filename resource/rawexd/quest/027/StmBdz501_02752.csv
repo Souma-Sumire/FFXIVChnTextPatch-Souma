@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ501_02752_SEQ_00,重逢集市的奥罗尼部的青年有事想请冒险者帮忙。
 1,TEXT_STMBDZ501_02752_SEQ_01,
 2,TEXT_STMBDZ501_02752_SEQ_02,

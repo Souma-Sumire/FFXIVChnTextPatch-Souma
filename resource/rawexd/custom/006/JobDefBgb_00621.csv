@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFBGB_00621_RADOVAN_000_000,你来了，真正的绝枪战士<hex:022903EB0203>。
 1,TEXT_JOBDEFBGB_00621_RADOVAN_000_100,你来了，<hex:022903EB0203>。<hex:02100103>我能看出来，你现在正以绝枪战士的身份继续修行。
 2,TEXT_JOBDEFBGB_00621_RADOVAN_001_000,谢谢你带我们过来。<hex:02100103>说起来，你的打扮很不像绝枪战士啊。

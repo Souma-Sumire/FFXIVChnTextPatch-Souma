@@ -1,5 +1,5 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCCHOCOBORACEDEFAULTA_00255_TALK_ACTOR,喔，你对陆行鸟竞赛感兴趣吗？<hex:02100103>那你可以去和参赛登记员谈谈。

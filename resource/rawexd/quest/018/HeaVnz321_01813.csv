@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ321_01813_SEQ_00,不洁三塔的艾斯·卡斯一动也不动。
 1,TEXT_HEAVNZ321_01813_SEQ_01,和艾斯·卡斯进行了交谈。彻悟岩窟中有不少邪龙眷属。前往龙堡参天高地的彻悟岩窟，讨伐<hex:02280FFF09>BNpcName<hex:F20DE30103>、<hex:02280FFF09>BNpcName<hex:F20DFD0103>或<hex:02280FFF09>BNpcName<hex:F20DFE0103>共5只。
 2,TEXT_HEAVNZ321_01813_SEQ_02,讨伐了彻悟岩窟的邪龙眷属。向不洁三塔的艾斯·卡斯报告。

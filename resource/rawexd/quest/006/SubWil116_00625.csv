@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL116_00625_SEQ_00,凯特琳正在寻找可以去打倒土狗的冒险者。
 1,TEXT_SUBWIL116_00625_SEQ_01,凯特琳希望冒险者去消灭土狗。前往东南方打倒7匹土狗。
 2,TEXT_SUBWIL116_00625_SEQ_02,成功地打倒了土狗。向枯骨营地的凯特琳报告。

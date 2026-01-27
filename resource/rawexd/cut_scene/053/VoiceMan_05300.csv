@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_05300_000010_ELIDIBUS,呃……
 1,TEXT_VOICEMAN_05300_000020_ELIDIBUS,我……为什么会在这里……<hex:02100103>是你叫我来的？
 2,TEXT_VOICEMAN_05300_000030_LAHABREA,(-十四人委员会主席-)<hex:024804F2022303>恭喜，从今天起，你就是十四人委员会的新成员了。<hex:0248020103>

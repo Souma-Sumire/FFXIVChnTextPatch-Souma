@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6WACHUNPELO_00865_LEBLU_000_000,这位旅行者，欢迎光临！<hex:02100103>你有什么想问的吗？
 1,TEXT_REGYOK6WACHUNPELO_00865_LEBLU_000_001,艳翼蛇鸟的封印好像被解除了啊……<hex:02100103>所以现在需要做好准备，以便随时可以避难。<hex:02100103>有什么想问的就长话短说吧。
 2,TEXT_REGYOK6WACHUNPELO_00865_LEBLU_000_002,艳翼蛇鸟被打倒了啊！<hex:02100103>这下奥阔帕恰山就又恢复了和平。<hex:02100103>你也在瓦丘恩佩洛好好放松一下吧。

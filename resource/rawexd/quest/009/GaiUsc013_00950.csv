@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC013_00950_SEQ_00,白云崖前哨的莫莉丝，正在寻找能帮忙救援骑兵的人。
 1,TEXT_GAIUSC013_00950_SEQ_01,有一支部队因暴风雪肆虐而迷失方向，闯入了贝希摩斯的领地。将<hex:022811FF0A>EventItem<hex:F61E87620103>交给他们。
 2,TEXT_GAIUSC013_00950_SEQ_02,成功转交了<hex:022811FF0A>EventItem<hex:F61E87620103>。向白云崖前哨的莫莉丝报告。

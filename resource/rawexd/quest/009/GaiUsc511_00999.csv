@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC511_00999_SEQ_00,丧灵钟的阿加恩博尔德有事情想要委托给冒险者。
 1,TEXT_GAIUSC511_00999_SEQ_01,纠缠沼泽林里野生的<hex:022811FF0A>EventItem<hex:F61E877C0103>是很有用的药材。前往丧灵钟西边的纠缠沼泽林，获取8份<hex:022811FF0A>EventItem<hex:F61E877C0103>。
 2,TEXT_GAIUSC511_00999_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E877C0103>。返回丧灵钟，向阿加恩博尔德报告。

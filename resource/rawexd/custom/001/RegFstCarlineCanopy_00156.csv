@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTCARLINECANOPY_00156_MIOUNNE_000_000,欢迎来到“魔女咖啡馆”。<hex:02100103>汇集在森林之都格里达尼亚的冒险者们都会来这里休养生息。
 1,TEXT_REGFSTCARLINECANOPY_00156_MIOUNNE_000_001,为了使遭受第七灵灾破坏的森林恢复原来的样子，<hex:02100103>格里达尼亚很需要你们这样的冒险者。<hex:02100103>请务必助我们一臂之力。
 2,TEXT_REGFSTCARLINECANOPY_00156_MIOUNNE_000_002,虽然有些人很讨厌外来者，<hex:02100103>不过他们的想法也在一点点地发生改变……<hex:02100103>我相信你们一定会带来一股正气之风的。

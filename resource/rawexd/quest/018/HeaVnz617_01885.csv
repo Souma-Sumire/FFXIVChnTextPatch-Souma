@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ617_01885_SEQ_00,隼巢的英嘉蕾特非常在意魔物的目击情报。
 1,TEXT_HEAVNZ617_01885_SEQ_01,英嘉蕾特委托冒险者调查关于<hex:02280FFF09>BNpcName<hex:F20DA30103>的目击情报。和隼巢的图尔瑟内谈谈。
 2,TEXT_HEAVNZ617_01885_SEQ_02,据图尔瑟内所说，很有可能会有大量的<hex:02280FFF09>BNpcName<hex:F20DA30103>来袭。在红沿讨伐4只<hex:02280FFF09>BNpcName<hex:F20DA30103>的话，也许会缓解情况。在库尔札斯西部高地的红沿讨伐4只<hex:02280FFF09>BNpcName<hex:F20DA30103>。

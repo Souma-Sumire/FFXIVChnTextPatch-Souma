@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMG101_04450_SEQ_00,巴尔德西昂分馆的可露儿有事情要告诉冒险者。
 1,TEXT_AKTKMG101_04450_SEQ_01,
 2,TEXT_AKTKMG101_04450_SEQ_02,

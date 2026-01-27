@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEABEGINNERDPSGUIDE_00338_DPSCOACH00338_000_000,我在教新人冒险者如何与同伴共同战斗。<hex:02100103>不过你看起来实力还不太够啊。<hex:02100103>再一个人出去多闯闯、多练练吧！
 1,TEXT_REGSEABEGINNERDPSGUIDE_00338_SYSTEM_000_000,只有15级以上的战斗精英或魔法导师<hex:02100103>才能接受初学者学堂的训练。
 2,TEXT_REGSEABEGINNERDPSGUIDE_00338_DPSCOACH00338_000_010,我在教新人冒险者如何与同伴共同战斗。<hex:02100103>就等着你这样有前途的冒险者来学习呢。<hex:02100103>如果你想接受训练，就去找冒险者指导教官吧。

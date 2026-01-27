@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA137_02467_SEQ_00,帝国东方堡的阿莉塞在思考接下来的行动。
 1,TEXT_STMBDA137_02467_SEQ_01,
 2,TEXT_STMBDA137_02467_SEQ_02,

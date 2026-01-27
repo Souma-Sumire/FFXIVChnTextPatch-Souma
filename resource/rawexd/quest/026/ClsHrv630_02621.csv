@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSHRV630_02621_SEQ_00,绿地菜园的艾德姬丝有事想要委托冒险者。
 1,TEXT_CLSHRV630_02621_SEQ_01,艾德姬丝委托冒险者和她一起去找弗弗茶。与艾德姬丝在格里达尼亚的以太之光附近汇合。
 2,TEXT_CLSHRV630_02621_SEQ_02,与艾德姬丝汇合了。和园艺工行会的弗弗茶谈谈。

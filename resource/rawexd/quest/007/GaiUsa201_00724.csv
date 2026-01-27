@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA201_00724_SEQ_00,妖精暂留地的科姆希奥，有事想要委托给冒险者。
 1,TEXT_GAIUSA201_00724_SEQ_01,有妖精离开了妖精暂留地。前往荆棘森，和克拉克希奥交谈。
 2,TEXT_GAIUSA201_00724_SEQ_02,克拉克希奥的决心毫不动摇。返回妖精暂留地，向科姆希奥报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA307_01608_SEQ_00,圣菲内雅连队露营地的埃斯蒂尼安想要与异端者进行接触。
 1,TEXT_HEAVNA307_01608_SEQ_01,和埃斯蒂尼安进行了交谈。趁他与阿尔菲诺去收集木柴时，冒险者去收集<hex:022811FF0A>EventItem<hex:F61E8AB00103>。从库尔札斯西部高地的<hex:02280FFF09>BNpcName<hex:F20D970103>身上获取2张<hex:022811FF0A>EventItem<hex:F61E8AB00103>。
 2,TEXT_HEAVNA307_01608_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AB00103>。将<hex:022811FF0A>EventItem<hex:F61E8AB00103>交给库尔札斯西部高地卧龙岛北边的埃斯蒂尼安。

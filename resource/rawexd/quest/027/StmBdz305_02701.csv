@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ305_02701_SEQ_00,翠水乡的蓝发的敖龙族为与冒险者再会感到高兴。
 1,TEXT_STMBDZ305_02701_SEQ_01,
 2,TEXT_STMBDZ305_02701_SEQ_02,

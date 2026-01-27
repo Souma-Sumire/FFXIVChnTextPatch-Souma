@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMF109_04447_SEQ_00,无路总部的古·拉哈·提亚想去给人帮忙。
 1,TEXT_AKTKMF109_04447_SEQ_01,
 2,TEXT_AKTKMF109_04447_SEQ_02,

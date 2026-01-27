@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ603_02781_SEQ_00,晨曦王座的奥罗尼部猎人对异国的战士很感兴趣。
 1,TEXT_STMBDZ603_02781_SEQ_01,
 2,TEXT_STMBDZ603_02781_SEQ_02,

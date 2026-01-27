@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ302_02698_SEQ_00,翠水乡的金翅在为什么事感到困扰。
 1,TEXT_STMBDZ302_02698_SEQ_01,
 2,TEXT_STMBDZ302_02698_SEQ_02,

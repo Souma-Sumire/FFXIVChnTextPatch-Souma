@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKME106_04424_SEQ_00,醒悟天测园的赫尔墨斯已经调整好了心情。
 1,TEXT_AKTKME106_04424_SEQ_01,
 2,TEXT_AKTKME106_04424_SEQ_02,

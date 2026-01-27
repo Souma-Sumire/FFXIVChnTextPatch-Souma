@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ610_02788_SEQ_00,朵塔儿水洲的朵塔儿部的战士对优秀的战士很感兴趣。
 1,TEXT_STMBDZ610_02788_SEQ_01,和朵塔儿部的战士对话
 2,TEXT_STMBDZ610_02788_SEQ_02,不走出线并前往暮晖王座的胸口

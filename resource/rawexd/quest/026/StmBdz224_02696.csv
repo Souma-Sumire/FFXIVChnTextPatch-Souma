@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ224_02696_SEQ_00,碧玉水的鳞正在寻找武术达人。
 1,TEXT_STMBDZ224_02696_SEQ_01,
 2,TEXT_STMBDZ224_02696_SEQ_02,

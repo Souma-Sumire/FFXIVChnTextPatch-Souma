@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESVLT2026ENTRANCE_00938_TALK_ENTRANCEMAN_000_001,非常感谢你能帮忙。<hex:02100103>如果想前往蛋糕店或者想要听取制作蛋糕的说明，<hex:02100103>请到我这里来。
 1,TEXT_FESVLT2026ENTRANCE_00938_Q1_000_000,要做什么？
 2,TEXT_FESVLT2026ENTRANCE_00938_A1_000_001,前往瓦伦提昂蛋糕店

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGDRA2LOTHASTVATH_00284_HISTORIAN_000_000,嘁嘁嘁……这不是人类么。<hex:02100103>我是负责记录历史的，你有什么想要问我的吗？
 1,TEXT_REGDRA2LOTHASTVATH_00284_HISTORIAN_000_005,嘁嘁嘁……这不是人类冒险者嘛。<hex:02100103>我是负责记录历史的，你有什么想要问我的吗？
 2,TEXT_REGDRA2LOTHASTVATH_00284_Q1_000_000,想了解什么？

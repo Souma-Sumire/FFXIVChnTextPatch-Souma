@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILINN_00061_OTOPAPOTTOPA_000,这里是沙钟旅亭。<hex:02100103>……不过，我们不向初出茅庐的冒险者开放。
 1,TEXT_REGWILINN_00061_OTOPAPOTTOPA_001,如果您能在乌尔达哈取得出色表现，获得周围人的信赖，<hex:02100103>那么莫莫蒂大人或许就会允许您使用客房。<hex:02100103>所以您还是先努力工作吧。
 2,TEXT_REGWILINN_00061_Q1_000_1,想了解什么？

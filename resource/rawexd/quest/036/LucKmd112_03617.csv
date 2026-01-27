@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD112_03617_SEQ_00,努贝依旧矿山的古斯约恩准备履行约定。
 1,TEXT_LUCKMD112_03617_SEQ_01,
 2,TEXT_LUCKMD112_03617_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC108_03329_SEQ_00,蛇行枝的雅·修特拉要向大家公布石板的解读成果。
 1,TEXT_LUCKMC108_03329_SEQ_01,
 2,TEXT_LUCKMC108_03329_SEQ_02,

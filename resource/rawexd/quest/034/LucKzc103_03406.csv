@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKZC103_03406_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>群花馆的乌儿·佐恩正在考虑成为名人的新办法。
 1,TEXT_LUCKZC103_03406_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>乌儿·佐恩想到的办法是收集花朵作为礼物。在伊尔美格的桃色睡床收集<hex:02280BFF05>EObj<hex:F51EAD0103>。
 2,TEXT_LUCKZC103_03406_SEQ_02,收集到了<hex:02280BFF05>EObj<hex:F51EAD0103>。将<hex:02280BFF05>EObj<hex:F51EAD0103>交给桃色睡床的乌儿·佐恩。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA604_00766_SEQ_00,石场水车的鬼哭队队员巴兰，想要委托给冒险者一件工作。
 1,TEXT_GAIUSA604_00766_SEQ_01,偷猎者在村子附近设置了陷阱。拆除<hex:02280CFF05>EObj<hex:F61E8C2E0103>，并讨伐偷猎者。
 2,TEXT_GAIUSA604_00766_SEQ_02,拆除了偷猎者的陷阱，并成功讨伐了偷猎者。向石场水车的鬼哭队队员巴兰报告。

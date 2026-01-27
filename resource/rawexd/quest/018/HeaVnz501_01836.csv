@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ501_01836_SEQ_00,休岛园上活泼机智的莫古力正倒在地上。
 1,TEXT_HEAVNZ501_01836_SEQ_01,和活泼机智的莫古力进行了交谈。他是出来为发烧的朋友寻找<hex:022811FF0A>EventItem<hex:F61E8AE70103>的，但自己却也在途中累倒了。获取翻云雾海休岛园东南的<hex:022811FF0A>EventItem<hex:F61E8AE70103>。
 2,TEXT_HEAVNZ501_01836_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AE70103>。和休岛园活泼机智的莫古力谈谈。

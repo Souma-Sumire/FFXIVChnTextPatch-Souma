@@ -1,7 +1,7 @@
 ﻿key,0,1
-#,,
+#,Singular,Plural
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AETHERYTE_MAINMENU_TITLE,<hex:02280FFF0A>PlaceName<hex:E8020103>
 1,TEXT_AETHERYTE_TOWN_WARP,<hex:0212024603> 都市传送网
 2,TEXT_AETHERYTE_HOUSING_WARP,<hex:0212024603> 冒险者住宅区传送

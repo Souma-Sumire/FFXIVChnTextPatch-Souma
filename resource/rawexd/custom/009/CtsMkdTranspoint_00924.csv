@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMKDTRANSPOINT_00924_SYSTEM_000_000,和魔路进行了共鸣。开放了岛内传送网！
 1,TEXT_CTSMKDTRANSPOINT_00924_SYSTEM_000_010,使用岛内传送网，<hex:02100103>可以在同一区域的魔路间进行自由传送。<hex:02100103>找到魔路时，请积极进行共鸣。

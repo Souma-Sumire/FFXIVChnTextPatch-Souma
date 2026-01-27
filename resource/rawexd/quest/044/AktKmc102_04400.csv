@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMC102_04400_SEQ_00,月面监视者想要完成最后的工作。
 1,TEXT_AKTKMC102_04400_SEQ_01,月面监视者提议骑乘阿尔戈斯移动。和叹息海灵土之剑附近的月面监视者谈谈。
 2,TEXT_AKTKMC102_04400_SEQ_02,月面监视者帮忙带了路。再次和叹息海荧光洞的月面监视者谈谈。

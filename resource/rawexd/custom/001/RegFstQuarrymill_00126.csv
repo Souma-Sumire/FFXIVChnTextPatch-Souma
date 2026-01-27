@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTQUARRYMILL_00126_CHARLINE_000_000,来自异邦的冒险者……<hex:02100103>你到石场水车有何贵干？
 1,TEXT_REGFSTQUARRYMILL_00126_CHARLINE_000_010,我是石场水车的法师。<hex:02100103>我的工作就是倾听元灵的声音，<hex:02100103>并将此传达给这个村落的居民……
 2,TEXT_REGFSTQUARRYMILL_00126_CHARLINE_000_011,如果你不太了解“法师”究竟是个怎样身份的话，<hex:02100103>那就当我是这个村落的“顾问”好了。

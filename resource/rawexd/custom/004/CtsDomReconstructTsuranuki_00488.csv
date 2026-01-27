@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDOMRECONSTRUCTTSURANUKI_00488_TSURANUKI_000_000,要是真心想重建多玛飞地的话，<hex:02100103>那我希望有座自己的工房……不知道行不行啊……
 1,TEXT_CTSDOMRECONSTRUCTTSURANUKI_00488_TSURANUKI_000_010,我听说重建工作会先从百货市场开始进行啊。<hex:02100103>虽然有点不甘心，但是可以理解。<hex:02100103>我们也是没法饿着肚子干活的！
 2,TEXT_CTSDOMRECONSTRUCTTSURANUKI_00488_TSURANUKI_000_020,接下来该重建的就是这里的匠人街了吧？！<hex:02100103>这样的话，基本上工具什么的都可以自己制作了！

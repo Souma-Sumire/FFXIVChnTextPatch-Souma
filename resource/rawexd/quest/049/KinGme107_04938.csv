@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGME107_04938_SEQ_00,后房的乌克·拉玛特想去找古鲁加。
 1,TEXT_KINGME107_04938_SEQ_01,
 2,TEXT_KINGME107_04938_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07102_000010_RYNE,脑袋里有什么声音……<hex:02100103>伊甸……控制不住了！
 1,TEXT_VOICEMAN_07102_000020_RYNE,呃……啊——！！
 2,TEXT_VOICEMAN_07102_000030_MITRON,终于……利用光之巫女的力量 打破了封印！

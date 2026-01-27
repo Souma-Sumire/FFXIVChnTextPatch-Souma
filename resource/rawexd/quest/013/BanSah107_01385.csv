@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH107_01385_SEQ_00,诺布养育场的菲乌有些困扰。
 1,TEXT_BANSAH107_01385_SEQ_01,菲乌委托冒险者去收集给弟弟们吃的食材。在月影岛获取5个<hex:022811FF0A>EventItem<hex:F61E89750103>。诺布养育场的海兽驯养人帕阿会为冒险者准备前往月影岛的水龙蜥。
 2,TEXT_BANSAH107_01385_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E89750103>。将<hex:022811FF0A>EventItem<hex:F61E89750103>交给诺布养育场的菲乌。

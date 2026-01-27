@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA319_01620_SEQ_00,莫古力之家的莫古唐想要对冒险者进行试炼。
 1,TEXT_HEAVNA319_01620_SEQ_01,接受莫古唐的考验，去收集药材。在翻云雾海招恶荒岛获取3朵<hex:022811FF0A>EventItem<hex:F61E8AAD0103>。
 2,TEXT_HEAVNA319_01620_SEQ_02,获得了3朵<hex:022811FF0A>EventItem<hex:F61E8AAD0103>。将<hex:022811FF0A>EventItem<hex:F61E8AAD0103>交给莫古力之家的莫古唐。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD104_03609_SEQ_00,炼金医疗馆的桑克瑞德准备进行下一步。
 1,TEXT_LUCKMD104_03609_SEQ_01,桑克瑞德让冒险者先行前往观星室。和水晶都观星室的水晶公谈谈。
 2,TEXT_LUCKMD104_03609_SEQ_02,和水晶公等人商讨了接下来的目标。和观星室的敏菲利亚谈谈。

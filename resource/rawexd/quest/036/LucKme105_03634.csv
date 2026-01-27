@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME105_03634_SEQ_00,梯底的于里昂热神情严肃。
 1,TEXT_LUCKME105_03634_SEQ_01,于里昂热认为冒险者应当休息一下。在梯底的<hex:02280CFF05>EObj<hex:F61EABEA0103>等待。
 2,TEXT_LUCKME105_03634_SEQ_02,经过等待后，搭乘了大升降机。和梯顶的阿尔菲诺谈谈。

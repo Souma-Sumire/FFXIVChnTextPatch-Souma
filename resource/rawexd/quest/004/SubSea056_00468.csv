@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA056_00468_SEQ_00,开垦者小仓的佛茹阿尔，希望冒险者夺回被海盗抢走的农具。
 1,TEXT_SUBSEA056_00468_SEQ_01,讨伐在周边徘徊的海盗，夺回3个被抢走的农具。
 2,TEXT_SUBSEA056_00468_SEQ_02,成功夺回了所有被抢走的农具。将其交给开垦者小仓的佛茹阿尔。

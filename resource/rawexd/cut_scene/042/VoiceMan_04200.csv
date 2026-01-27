@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04200_000010_HANCOCK,哎呀，你们来啦！
 1,TEXT_VOICEMAN_04200_000020_ALISAIE,这么急着找我们过来到底是出了什么事？<hex:02100103>连夕雾和算盘都在这……
 2,TEXT_VOICEMAN_04200_000030_SOROBAN,其实我不是被叫过来的，是有点别的事要找你们——<hex:02100103>不过反正现在也不急——<hex:02100103>你们可以先不用管我——

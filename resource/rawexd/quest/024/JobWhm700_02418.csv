@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBWHM700_02418_SEQ_00,猎人小屋的希尔菲看起来有些惊慌失措。
 1,TEXT_JOBWHM700_02418_SEQ_01,嘉蒂控制魔力的锻炼很顺利，可母亲的病情越发严重。代替照看母亲的希尔菲，前往基拉巴尼亚边区的帝国东方堡，从酒保商人那里获取<hex:022811FF0A>EventItem<hex:F61E8C850103>。
 2,TEXT_JOBWHM700_02418_SEQ_02,从酒保商人那里获得了<hex:022811FF0A>EventItem<hex:F61E8C850103>。和猎人小屋的希尔菲谈谈。

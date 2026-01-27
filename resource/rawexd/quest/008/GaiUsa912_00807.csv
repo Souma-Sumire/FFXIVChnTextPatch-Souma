@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA912_00807_SEQ_00,邓斯坦哨塔的马尔塞特又想找冒险者来协助研究。
 1,TEXT_GAIUSA912_00807_SEQ_01,这次的工作是调查套索花的生态。使用<hex:022811FF0A>EventItem<hex:F61E883E0103>，打倒<hex:02280FFF09>BNpcName<hex:F208090103>，获取<hex:022811FF0A>EventItem<hex:F61E87DE0103>。
 2,TEXT_GAIUSA912_00807_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E87DE0103>。将<hex:022811FF0A>EventItem<hex:F61E87DE0103>交给邓斯坦哨塔的马尔塞特。

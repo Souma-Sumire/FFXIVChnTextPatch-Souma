@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ211_01780_SEQ_00,尾羽集落周边营地的猎人很在意宽慰河的上游。
 1,TEXT_HEAVNZ211_01780_SEQ_01,尾羽集落的猎人拜托冒险者消灭<hex:02280FFF09>BNpcName<hex:F20DEE0103>。前往龙堡参天高地的悲叹飞泉讨伐4只<hex:02280FFF09>BNpcName<hex:F20DEE0103>。
 2,TEXT_HEAVNZ211_01780_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20DEE0103>。向尾羽集落周边营地的尾羽集落的猎人报告。

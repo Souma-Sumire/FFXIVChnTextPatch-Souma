@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMF112_04957_SEQ_00,探索花园的喀赫奇瓦打算开始探索了。
 1,TEXT_KINGMF112_04957_SEQ_01,和喀赫奇瓦对话，调查附近的情况。在探索花园收集能报告给喀赫奇瓦的情报。
 2,TEXT_KINGMF112_04957_SEQ_02,收集了情报。和探索花园的喀赫奇瓦谈谈。

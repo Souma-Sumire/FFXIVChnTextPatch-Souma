@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD103_04914_SEQ_00,谢申内青磷泉的埃伦维尔暗自下定了决心。
 1,TEXT_KINGMD103_04914_SEQ_01,
 2,TEXT_KINGMD103_04914_SEQ_02,

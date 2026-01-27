@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANALL240_03164_SEQ_00,朵洛衣楼的武盔想要尽快赶回黄金港。
 1,TEXT_BANALL240_03164_SEQ_01,和武盔进行了交谈。在黄金港望海楼附近的<hex:02280CFF05>EObj<hex:F61EAA060103>等待，与嘉·奥尔敏汇合。
 2,TEXT_BANALL240_03164_SEQ_02,和嘉·奥尔敏汇合了。纳扎·阿·嘉布好像将三种至宝搬进了黑母衣丸号。和黑母衣丸号附近的梅·赛特·提亚谈谈。

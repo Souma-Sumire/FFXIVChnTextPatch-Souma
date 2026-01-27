@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESSUM304_02959_SEQ_00,※本任务是特定期间内的任务。<hex:02100103><hex:02100103>永夏岛的红莲节供应专员博德富安希望冒险者能提供帮助。
 1,TEXT_FESSUM304_02959_SEQ_01,※本任务只有在季节活动开放期间才能接受和进行。<hex:02100103>　季节活动结束后无法进行，敬请注意。<hex:02100103>　详情请参见官方网站。<hex:02100103><hex:02100103>博德富安委托冒险者钓些<hex:022811FF0A>EventItem<hex:F61E8DD60103>。收集3只<hex:022811FF0A>EventItem<hex:F61E8BE10103>。<hex:022811FF0A>EventItem<hex:F61E8BE10103>可在永夏岛北钓到。
 2,TEXT_FESSUM304_02959_SEQ_02,钓上了<hex:022811FF0A>EventItem<hex:F61E8DD60103>。将3条<hex:022811FF0A>EventItem<hex:F61E8DD60103>交给永夏岛的红莲节供应专员博德富安。

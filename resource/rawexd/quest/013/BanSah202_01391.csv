@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH202_01391_SEQ_00,诺布养育场的荷乌想要削减珊瑚尖枪的战力。
 1,TEXT_BANSAH202_01391_SEQ_01,接受了荷乌的委托，讨伐珊瑚尖枪饲养的水龙蜥。在萨普沙产卵地讨伐2只<hex:02280FFF09>BNpcName<hex:F209DF0103>，并对被引出来的<hex:02280FFF09>BNpcName<hex:F20AA70103>使用<hex:022811FF0A>EventItem<hex:F61E89770103>后将其讨伐。
 2,TEXT_BANSAH202_01391_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F209DF0103>和<hex:02280FFF09>BNpcName<hex:F20AA70103>。向诺布养育场的荷乌报告。

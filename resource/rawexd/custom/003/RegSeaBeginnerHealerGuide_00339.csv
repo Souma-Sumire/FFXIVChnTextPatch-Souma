@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEABEGINNERHEALERGUIDE_00339_HEALERCOACH00339_000_000,这里是学习如何与同伴一起战斗的初学者学堂。<hex:02100103>看来你才刚开始冒险不久，<hex:02100103>请先专注于完成你个人的冒险任务吧。
 1,TEXT_REGSEABEGINNERHEALERGUIDE_00339_SYSTEM_000_001,只有15级以上的战斗精英或魔法导师<hex:02100103>才能接受初学者学堂的训练。
 2,TEXT_REGSEABEGINNERHEALERGUIDE_00339_HEALERCOACH00339_000_010,这里是学习如何与同伴一起战斗的初学者学堂。<hex:02100103>如果你今后也准备做一名冒险者，来这里学习是不会吃亏的。<hex:02100103>请你去找里面的冒险者指导教官接受训练。

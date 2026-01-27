@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ512_02763_SEQ_00,重逢集市的阔托塔好像在思考有关格希部青年哲别的事。
 1,TEXT_STMBDZ512_02763_SEQ_01,阔托塔交还了<hex:022811FF0A>EventItem<hex:F61E8D360103>。在重逢集市的族长的帐篷里，将<hex:022811FF0A>EventItem<hex:F61E8D360103>交给族长亦秃儿根，并说明情况。
 2,TEXT_STMBDZ512_02763_SEQ_02,亦秃儿根指向了东北方向，似乎在说那个方向有事发生。在太阳神草原刃海的<hex:02280CFF05>EObj<hex:F61EA53E0103>进行张望。

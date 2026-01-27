@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA164_01150_SEQ_00,北防波堤的黑涡团团员阿黎洛夫正为同事迟到而烦恼。
 1,TEXT_SUBSEA164_01150_SEQ_01,阿黎洛夫的同事出去扫墓了。前往卫士军墓，和鲁汉斯对话。
 2,TEXT_SUBSEA164_01150_SEQ_02,和鲁汉斯进行了交谈。在卫士军墓前献上<hex:022811FF0A>EventItem<hex:F61E884C0103>。

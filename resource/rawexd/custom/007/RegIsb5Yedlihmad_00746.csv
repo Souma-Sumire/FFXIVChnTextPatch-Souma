@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGISB5YEDLIHMAD_00746_DAHAABA_000_000,哎呀，你是从岛外来的人吗？<hex:02100103>请问找我有什么事？
 1,TEXT_REGISB5YEDLIHMAD_00746_Q1_000_000,想了解什么？
 2,TEXT_REGISB5YEDLIHMAD_00746_A1_000_001,你是做什么的？

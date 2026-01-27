@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA403_00745_SEQ_00,妖精暂留地的诺蕾克希亚，十分感谢冒险者。
 1,TEXT_GAIUSA403_00745_SEQ_01,诺蕾克希亚似乎想报答冒险者。削弱<hex:02280FFF09>BNpcName<hex:F2088B0103>的体力后，对其使用<hex:022811FF0A>EventItem<hex:F61E86D50103>，获得3份<hex:022811FF0A>EventItem<hex:F61E86D60103>。
 2,TEXT_GAIUSA403_00745_SEQ_02,成功获得了<hex:022811FF0A>EventItem<hex:F61E86D60103>。返回妖精暂留地，将<hex:022811FF0A>EventItem<hex:F61E86D60103>交给诺蕾克希亚。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3THERUBYPRICE_00406_TSURUGI_000_000,嗯，异国旅行者来这红玉炮台所为何事？<hex:02100103>想去黄金港的话还要再向东航行一阵子才能抵达。
 1,TEXT_REGOTH3THERUBYPRICE_00406_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3THERUBYPRICE_00406_A1_000_001,你是做什么的？

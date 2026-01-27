@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB409_00865_SEQ_00,瞭望阵营地的布鲁艾丁，回想起了某件事。
 1,TEXT_GAIUSB409_00865_SEQ_01,<hex:02280FFF09>BNpcName<hex:F207BC0103>正是使得布拉乌吉巴尔负伤的元凶，他说不定就在附近。为了诱出<hex:02280FFF09>BNpcName<hex:F207BC0103>，冒险者要找出<hex:02280CFF05>EObj<hex:F61E8CAD0103>，并用<hex:022811FF0A>EventItem<hex:F61E87200103>摧毁它。
 2,TEXT_GAIUSB409_00865_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E8D530103>等待，打倒现身的<hex:02280FFF09>BNpcName<hex:F207BC0103>。

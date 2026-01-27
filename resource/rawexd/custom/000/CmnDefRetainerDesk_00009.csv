@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFRETAINERDESK_00009_DEFAULT_TALK_1,您好。<hex:02100103>这里是雇员窗口。
 1,TEXT_CMNDEFRETAINERDESK_00009_DEFAULT_TALK_2,所谓“雇员”，<hex:02100103>就是指代替繁忙的冒险者管理行李的人们。
 2,TEXT_CMNDEFRETAINERDESK_00009_DEFAULT_TALK_3,非常抱歉，<hex:02100103>新手冒险者是无法享用雇员服务的。

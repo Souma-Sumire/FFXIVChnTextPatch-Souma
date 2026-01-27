@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA124_02458_SEQ_00,阿拉加纳的梅弗里德斗志高昂。
 1,TEXT_STMBDA124_02458_SEQ_01,
 2,TEXT_STMBDA124_02458_SEQ_02,

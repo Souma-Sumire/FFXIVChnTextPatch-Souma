@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ020_01745_SEQ_00,隼巢的雷德沃尔德正在寻找能接下调查任务的人。
 1,TEXT_HEAVNZ020_01745_SEQ_01,和雷德沃尔德进行了对话。在隼巢搜集关于最近的神秘急性病的情报。
 2,TEXT_HEAVNZ020_01745_SEQ_02,在隼巢搜集到了情报。向隼巢的雷德沃尔德报告。

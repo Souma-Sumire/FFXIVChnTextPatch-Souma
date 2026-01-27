@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_DUNGEONDRAGONSONGWAR_00000_WANDERINGMINSTREL_000_000,就这样 另一个的故事也迎来了结尾<hex:02100103>在这片天空奏响的 与史实截然不同的龙诗又会走向怎样的未来呢？
 1,TEXT_DUNGEONDRAGONSONGWAR_00000_WANDERINGMINSTREL_000_001,是人也好是龙也罢 任何生命都是宝贵的<hex:02100103>丧失心中挚爱的悲痛 将在活着一方的心中投下绝望的暗影
 2,TEXT_DUNGEONDRAGONSONGWAR_00000_WANDERINGMINSTREL_100_001,不过 死亡带来的 绝非仅仅是悲痛<hex:02100103>共同走过的记忆 倾注的情感 以及延续下去的希望……

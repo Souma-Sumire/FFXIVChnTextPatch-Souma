@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCCHOCOBORACECOUPLING_00235_TALK_ACTOR,你是希望进行退役竞赛陆行鸟的配种吗？
 1,TEXT_CMNGSCCHOCOBORACECOUPLING_00235_001_01,好的，这就是你的“<hex:02280BFF05>Item<hex:F225580103>”！<hex:02100103>直到你的新陆行鸟长大到可以参赛为止，<hex:02100103>就由我来悉心照料它吧！
 2,TEXT_CMNGSCCHOCOBORACECOUPLING_00235_001_02,只要经过<hex:02280BFF05>Item<hex:F225580103>上标示的时间，<hex:02100103>就可以前来用它交换已经长成的新陆行鸟。<hex:02100103>到时候请再来这里领取你的新伙伴！

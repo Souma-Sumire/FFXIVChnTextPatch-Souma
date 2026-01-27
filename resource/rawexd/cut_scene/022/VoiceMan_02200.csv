@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_02200_000010_THANCRED,接下来……
 1,TEXT_VOICEMAN_02200_000020_THANCRED,是我，桑克瑞德。<hex:02100103>情况可能比我们预想的还要复杂。
 2,TEXT_VOICEMAN_02200_000030_URIANGER,我知道了。有情况我会联系你。

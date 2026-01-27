@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESVLT2023PRESENTATION_00794_EMILIE_000_000,啊，冒险者！<hex:02100103>我们一起宣传过的活动马上就要开始了！<hex:02100103>期间还会进行新服装的试穿，有机会的话请来看看吧！
 1,TEXT_FESVLT2023PRESENTATION_00794_Q2_100_000,要观看活动吗？
 2,TEXT_FESVLT2023PRESENTATION_00794_Q1_000_000,要看哪一场活动？

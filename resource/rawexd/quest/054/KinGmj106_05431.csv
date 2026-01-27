@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMJ106_05431_SEQ_00,特雷诺小路的艾雅奈好像有什么在意的事情。
 1,TEXT_KINGMJ106_05431_SEQ_01,
 2,TEXT_KINGMJ106_05431_SEQ_02,

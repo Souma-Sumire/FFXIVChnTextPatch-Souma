@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3TAMAMIZU_00408_SUZURI_000_000,啊，真是稀客，欢迎光临——<hex:02100103>这里是甲人族中碧甲族的村子“碧玉水”——
 1,TEXT_REGOTH3TAMAMIZU_00408_SUZURI_000_001,呀，碧玉寻宝众的啊，欢迎——<hex:02100103>多亏了你们，碧玉水的宝物殿里，<hex:02100103>有了越来越多的宝物了——！
 2,TEXT_REGOTH3TAMAMIZU_00408_SUZURI_000_002,呀，碧玉寻宝众的啊，欢迎——<hex:02100103>感谢你带了来诸多的缘分与宝物——！<hex:02100103>我有预感，付丧神大人一定会驾临我们这里——

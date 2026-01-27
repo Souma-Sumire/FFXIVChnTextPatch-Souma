@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCCHOCOBORACEGETFOAL_00236_TALK_ACTOR,你是要领取新陆行鸟对吗？<hex:02100103>请稍等，我翻翻记录……
 1,TEXT_CMNGSCCHOCOBORACEGETFOAL_00236_001_01,如何，它很有精神吧？<hex:02100103>这是它的陆行鸟出赛登记书，请拿好！<hex:02100103>之后只要完成竞赛陆行鸟的登记，就可以让它在赛场上奔跑了！
 2,TEXT_CMNGSCCHOCOBORACEGETFOAL_00236_ERROR_001_01,哎呀，你身上似乎没有带着<hex:02280BFF05>Item<hex:F225580103>呢。<hex:02100103>要不要重新确认一下？

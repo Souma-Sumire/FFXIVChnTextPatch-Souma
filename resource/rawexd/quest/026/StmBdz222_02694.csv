@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ222_02694_SEQ_00,碧玉水的灯笼正在寻找对力量有自信的旅行者。
 1,TEXT_STMBDZ222_02694_SEQ_01,
 2,TEXT_STMBDZ222_02694_SEQ_02,

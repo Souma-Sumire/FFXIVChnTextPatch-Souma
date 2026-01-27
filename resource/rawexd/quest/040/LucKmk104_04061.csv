@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMK104_04061_SEQ_00,阿济兹拉旗舰岛的拘束系统会带领冒险者前往情报终端处。
 1,TEXT_LUCKMK104_04061_SEQ_01,为了控制拘束具，需要前往情报终端的所在地。访问阿济兹拉旗舰岛的<hex:02280CFF05>EObj<hex:F61EB15C0103>。
 2,TEXT_LUCKMK104_04061_SEQ_02,埃斯蒂尼安说明了尝试对话的危险性。和阿济兹拉对偶处刑台的阿莉塞谈谈。

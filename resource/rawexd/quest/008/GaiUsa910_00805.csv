@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA910_00805_SEQ_00,邓斯坦哨塔的马尔塞特想要冒险者协助自己的研究。
 1,TEXT_GAIUSA910_00805_SEQ_01,被马尔塞特任命为她的第六助手，协助她的研究。削弱<hex:02280FFF09>BNpcName<hex:F2088E0103>的体力后，对其使用<hex:022811FF0A>EventItem<hex:F61E86F80103>，获取<hex:022811FF0A>EventItem<hex:F61E86F90103>。
 2,TEXT_GAIUSA910_00805_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E86F90103>交给邓斯坦哨塔的马尔塞特。

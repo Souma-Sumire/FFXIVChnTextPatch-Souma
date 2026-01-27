@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBBRD450_01088_SEQ_00,让泰尔要将«罪孽深重的愚者»唱给冒险者听。
 1,TEXT_JOBBRD450_01088_SEQ_01,接受了让泰尔的委托。在北部林区格尔莫拉遗迹的<hex:02280CFF05>EObj<hex:F61E8DBF0103>使用<hex:022811FF0A>EventItem<hex:F61E88380103>。
 2,TEXT_JOBBRD450_01088_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E8DBF0103>使用了<hex:022811FF0A>EventItem<hex:F61E88380103>。和南部林区石场水车西边的让泰尔谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBPST001_01482_SEQ_00,邮差莫古力前辈有封送往格里达尼亚的信要交给冒险者。
 1,TEXT_SUBPST001_01482_SEQ_01,接受了邮差莫古力前辈的委托，前去送信。前往格里达尼亚的魔女咖啡馆，将信交给店主缪恩。
 2,TEXT_SUBPST001_01482_SEQ_02,将信交给了缪恩。缪恩说要带冒险者去观赏大水车。去观赏前，先在格里达尼亚旧街和新街摘取4朵<hex:022811FF0A>EventItem<hex:F61E89AA0103>。

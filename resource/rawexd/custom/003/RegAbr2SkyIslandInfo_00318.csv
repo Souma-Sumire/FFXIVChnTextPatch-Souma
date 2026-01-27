@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGABR2SKYISLANDINFO_00318_MAUNIE_000_000,云冠群岛上的风属性以太太强了，<hex:02100103>所以风脉很不稳定，容易紊乱。
 1,TEXT_REGABR2SKYISLANDINFO_00318_MAUNIE_000_001,即使如此，不飞起来的话也就没办法进行探索。<hex:02100103>所以每当风脉紊乱时，就必须要重新读取风向，<hex:02100103>我们也因此吃了不少苦。
 2,TEXT_REGABR2SKYISLANDINFO_00318_SYSTEM_000_010,每次“云冠群岛探索”风脉都会发生改变。<hex:02100103>因此，要想在云冠群岛飞行，<hex:02100103>就必须在每次进入副本后寻找“乱风脉泉”。

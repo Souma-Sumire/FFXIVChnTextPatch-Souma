@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSIKDENTRANCE_00663_DRYSKTHOTA_000_000,这里是捕鱼人行会运营的大型渔船“努力号”的乘船登记窗口，<hex:02100103>如果有兴趣的话，请先拜访捕鱼人行会！
 1,TEXT_CTSIKDENTRANCE_00663_DRYSKTHOTA_000_010,欢迎来到捕鱼人行会引以为傲的大型渔船……<hex:02100103>你是想要乘坐“努力号”吗？
 2,TEXT_CTSIKDENTRANCE_00663_SYSTEM_000_005,乘船登记中

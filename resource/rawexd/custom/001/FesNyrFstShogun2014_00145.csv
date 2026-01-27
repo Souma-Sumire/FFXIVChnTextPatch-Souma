@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESNYRFSTSHOGUN2014_00145_YELLOWGENERAL_000_000,穿着那身装备可能看不出来，<hex:02100103>马奉行其实是尊贵的公主哦。
 1,TEXT_FESNYRFSTSHOGUN2014_00145_YELLOWGENERAL_000_001,她肩负着宣传马的重大使命，<hex:02100103>又刚经过长途远征，压力肯定很大吧。<hex:02100103>请你务必助马奉行一臂之力。
 2,TEXT_FESNYRFSTSHOGUN2014_00145_YELLOWGENERAL_000_010,哎呀，<hex:02280BFF05>Item<hex:F21B360103>呢？<hex:02100103>那个头盔可是你宣传了马的美的证明……

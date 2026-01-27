@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA509_02946_SEQ_00,乌尔达哈商会馆的塔塔露准备大显身手一番。
 1,TEXT_STMBDA509_02946_SEQ_01,
 2,TEXT_STMBDA509_02946_SEQ_02,

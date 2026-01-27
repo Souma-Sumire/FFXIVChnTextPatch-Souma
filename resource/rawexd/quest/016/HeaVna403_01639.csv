@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA403_01639_SEQ_00,忘忧骑士亭的阿尔菲诺有些担忧。
 1,TEXT_HEAVNA403_01639_SEQ_01,决定寻找在云雾街收集情报的塔塔露。在伊修加德云雾街的<hex:02280CFF05>EObj<hex:F61E9A2E0103>进行张望。
 2,TEXT_HEAVNA403_01639_SEQ_02,环顾了四周，并未发现塔塔露的身影。继续到其他的地方寻找。在云雾街的第2处<hex:02280CFF05>EObj<hex:F61E9A2F0103>进行张望。

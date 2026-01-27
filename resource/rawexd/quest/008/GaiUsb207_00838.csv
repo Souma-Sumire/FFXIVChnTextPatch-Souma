@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB207_00838_SEQ_00,太阳海岸的菲利尔森，把什么东西弄丢了。
 1,TEXT_GAIUSB207_00838_SEQ_01,菲利尔森把<hex:022811FF0A>EventItem<hex:F61E870C0103>弄丢了。前往白鸥塔的塔顶，在标注的位置做情感动作“张望”。
 2,TEXT_GAIUSB207_00838_SEQ_02,在白鸥塔的塔顶发现了3处闪光点。说不定是<hex:022811FF0A>EventItem<hex:F61E870C0103>。赶快去捡起来。

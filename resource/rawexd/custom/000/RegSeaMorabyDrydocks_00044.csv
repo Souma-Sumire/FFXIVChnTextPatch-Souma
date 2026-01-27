@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAMORABYDRYDOCKS_00044_AHTBYRM_000_1,“胜利号”的建造正在稳步进行。<hex:02100103>再过不久，应该就可以迎来下水典礼了。<hex:02100103>机会难得，你就把它现在的样子印在脑海里吧。
 1,TEXT_REGSEAMORABYDRYDOCKS_00044_Q1_000_1,想了解什么？
 2,TEXT_REGSEAMORABYDRYDOCKS_00044_A1_000_1,你是做什么的？

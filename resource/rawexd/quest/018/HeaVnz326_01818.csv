@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ326_01818_SEQ_00,不洁三塔的格林坎比希望冒险者帮忙治疗龙族。
 1,TEXT_HEAVNZ326_01818_SEQ_01,和格林坎比进行了交谈。和不洁三塔的卡尔·米克谈谈。
 2,TEXT_HEAVNZ326_01818_SEQ_02,和卡尔·米克进行了交谈。在龙堡参天高地的悲叹飞泉寻找<hex:022811FF0A>EventItem<hex:F61E8B5D0103>。

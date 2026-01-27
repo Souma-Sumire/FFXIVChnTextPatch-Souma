@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNA311_01612_SEQ_00,伊塞勒想通了骨颌族为何会召唤蛮神。
 1,TEXT_HEAVNA311_01612_SEQ_01,为讨伐蛮神，先去收集骨颌族的情报。和龙堡参天高地尾羽集落的马塞尚谈谈。
 2,TEXT_HEAVNA311_01612_SEQ_02,和马塞尚进行了交谈。为从离群的骨颌族那里获得情报，需要先为他们准备礼物。从宽慰河的<hex:02280FFF09>BNpcName<hex:F20DF20103>身上获取3份<hex:022811FF0A>EventItem<hex:F61E8AAC0103>。

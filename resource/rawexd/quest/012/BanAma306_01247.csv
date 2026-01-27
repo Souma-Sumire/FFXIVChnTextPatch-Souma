@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA306_01247_SEQ_00,灰阵营的雅德夫·夏想要弱化蛮神的加护。
 1,TEXT_BANAMA306_01247_SEQ_01,接受了雅德夫·夏的委托。讨伐不悔战阵的<hex:02280FFF09>BNpcName<hex:F208FF0103>，获取2个<hex:022811FF0A>EventItem<hex:F61E88E30103>。
 2,TEXT_BANAMA306_01247_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F208FF0103>，获得了<hex:022811FF0A>EventItem<hex:F61E88E30103>。对不悔战阵北边的<hex:02280CFF05>EObj<hex:F61E8FE60103>使用<hex:022811FF0A>EventItem<hex:F61E88E30103>。

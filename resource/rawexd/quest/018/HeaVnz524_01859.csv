@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ524_01859_SEQ_00,竖骨岛的一丝不苟的莫古力在唉声叹气。
 1,TEXT_HEAVNZ524_01859_SEQ_01,一丝不苟的莫古力委托冒险者采来<hex:022811FF0A>EventItem<hex:F61E8AF20103>。在竖骨岛取得3个<hex:022811FF0A>EventItem<hex:F61E8AF20103>。
 2,TEXT_HEAVNZ524_01859_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AF20103>。将<hex:022811FF0A>EventItem<hex:F61E8AF20103>交给竖骨岛一丝不苟的莫古力。

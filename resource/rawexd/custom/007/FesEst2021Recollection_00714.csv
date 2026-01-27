@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESEST2021RECOLLECTION_00714_NONOTTA_000_045,冒险者，你来得正好！<hex:02100103>目前谢礼的分发还在继续，<hex:02100103>我想稍微休息一会，能请你替一下班吗！
 1,TEXT_FESEST2021RECOLLECTION_00714_SYSTEM_000_046,可以再次领取任务“彩蛋狩猎添彩”发放礼品了。
 2,TEXT_FESEST2021RECOLLECTION_00714_Q1_000_000,要开始帮忙吗？

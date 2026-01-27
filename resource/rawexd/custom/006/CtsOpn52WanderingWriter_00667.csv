@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSOPN52WANDERINGWRITER_00667_CFC_TO_INSTANCE_CONTENT,<hex:02281CFF17>ContentFinderCondition<hex:E8020403>
 1,TEXT_CTSOPN52WANDERINGWRITER_00667_WANDERINGWRITER_000_000,哎呀，这不是爱跑腿的寻物高手……啊，不，是解放者吗？<hex:02100103>好久不见、好久不见！<hex:02100103>探索伊瓦利斯的时候，团员们和杰诺米都承蒙你的照顾了！
 2,TEXT_CTSOPN52WANDERINGWRITER_00667_WANDERINGWRITER_000_001,这里就是甘戈斯——博兹雅义军的据点啊！<hex:02100103>有件事要对无地鼓座保密，其实我正在为剧本创作发愁呢……<hex:02100103>不过在这里的话没准能获得新的灵感，所以我就过来了。

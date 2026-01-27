@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB211_00842_SEQ_00,葡萄酒港的比格莱恩特，看上去十分恼怒。
 1,TEXT_GAIUSB211_00842_SEQ_01,比格莱恩特对葡萄酒瓶塞的软木质量极为不满。讨伐5只<hex:02280FFF09>BNpcName<hex:F202AC0103>，获得<hex:022811FF0A>EventItem<hex:F61E870E0103>。
 2,TEXT_GAIUSB211_00842_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E870E0103>。将其交给葡萄酒港的比格莱恩特。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFF1E4ENTRANCE_00047_TALK_000,前面是神勇队司令室。
 1,TEXT_CMNDEFF1E4ENTRANCE_00047_TALK_001,前面是禁止无关人士进入的。
 2,TEXT_CMNDEFF1E4ENTRANCE_00047_YESNO_Q,要进入神勇队司令室吗？

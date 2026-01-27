@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWVR400_00652_SEQ_00,裁衣匠行会的雷多伦特·罗斯想要交给冒险者一份工作。
 1,TEXT_CLSWVR400_00652_SEQ_01,接受了雷多伦特·罗斯的委托。和乌尔达哈黄金广场的可可摩谈谈。
 2,TEXT_CLSWVR400_00652_SEQ_02,和可可摩进行了交谈。将1个<hex:022813FF07>ItemHQ<hex:FF08>　3413<hex:0103>交给乌尔达哈裁衣匠行会的雷多伦特·罗斯。

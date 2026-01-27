@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA319_02495_SEQ_00,茨菰村的夕雾接受了民众的现状。
 1,TEXT_STMBDA319_02495_SEQ_01,来到延夏的冒险者一行同夕雾以及多玛的起义军汇合了。但是，茨菰村的民众都不希望再发生战乱。在茨菰村的<hex:02280CFF05>EObj<hex:F61EA31E0103>等待。
 2,TEXT_STMBDA319_02495_SEQ_02,在等待的时候，帝国军来到村落征召村民。和茨菰村的夕雾谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6CRACKEDCISTERN_00908_BOLILYIK_000_000,你知道这里是什么地方吗？<hex:02100103>是个稍微有点奇怪的聚集地……不介意的话我就告诉你。
 1,TEXT_REGYOK6CRACKEDCISTERN_00908_BOLILYIK_000_001,图莱尤拉已经定下了新任的联王大人啊……<hex:02100103>对于我们这种水平一般的人来说，会有属于自己的栖身之所吗？
 2,TEXT_REGYOK6CRACKEDCISTERN_00908_Q1_000_000,想了解什么？

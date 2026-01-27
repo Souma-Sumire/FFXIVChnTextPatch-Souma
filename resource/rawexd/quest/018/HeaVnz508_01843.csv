@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ508_01843_SEQ_00,赎罪天廊的莫古格在瑟瑟发抖。
 1,TEXT_HEAVNZ508_01843_SEQ_01,和莫古格进行了交谈。据说<hex:02280FFF09>BNpcName<hex:F20E2C0103>的数量在不断增加。在翻云雾海的四臂广场讨伐4只<hex:02280FFF09>BNpcName<hex:F20E2C0103>。
 2,TEXT_HEAVNZ508_01843_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E2C0103>。向赎罪天廊的莫古格报告。

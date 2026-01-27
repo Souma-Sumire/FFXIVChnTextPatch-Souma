@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4WOLEKDORF_00601_TRAVELER_000_000,哟，居然有客人来到这里，真是稀奇。<hex:02100103>我们只是喜欢平稳的生活，并不是讨厌来客。<hex:02100103>只要你不来破坏我们在这里的生活，我们就欢迎你的到来。
 1,TEXT_REGNOR4WOLEKDORF_00601_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4WOLEKDORF_00601_A1_000_001,你是做什么的？

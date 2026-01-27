@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4THECRYSTARIUM_00606_BETHARD_000_000,欢迎来到水晶都。<hex:02100103>你有什么想要知道的事情吗？
 1,TEXT_REGNOR4THECRYSTARIUM_00606_BETHARD_000_010,只要身在水晶都内，就算食罪灵袭击过来也是安全的。<hex:02100103>请放心进行购物和逛街。
 2,TEXT_REGNOR4THECRYSTARIUM_00606_BETHARD_000_011,好了……欢迎你来到水晶都。<hex:02100103>你有什么想要知道的事情吗？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ003_02637_SEQ_00,神拳痕的阿难陀族斗士正在找人。
 1,TEXT_STMBDZ003_02637_SEQ_01,
 2,TEXT_STMBDZ003_02637_SEQ_02,

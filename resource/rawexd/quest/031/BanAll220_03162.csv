@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANALL220_03162_SEQ_00,黄金港的嘉·奥尔敏想要立刻启程追踪纳扎·阿·嘉布。
 1,TEXT_BANALL220_03162_SEQ_01,和嘉·奥尔敏进行了交谈。和红玉海红玉炮台的嘉·奥尔敏谈谈
 2,TEXT_BANALL220_03162_SEQ_02,和嘉·奥尔敏进行了交谈。在红玉炮台收集情报。

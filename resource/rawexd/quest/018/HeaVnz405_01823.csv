@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ405_01823_SEQ_00,莫古力之家的莫古欣在瑟瑟发抖。
 1,TEXT_HEAVNZ405_01823_SEQ_01,莫古欣很惧怕通往赎罪天廊途中的<hex:02280FFF09>BNpcName<hex:F20E240103>。在翻云雾海的人王遗迹讨伐3只<hex:02280FFF09>BNpcName<hex:F20E240103>。
 2,TEXT_HEAVNZ405_01823_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E240103>。向翻云雾海赎罪天廊的莫古萌报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ406_02729_SEQ_00,茨菰村的青旗正在寻找对力气有自信的人。
 1,TEXT_STMBDZ406_02729_SEQ_01,
 2,TEXT_STMBDZ406_02729_SEQ_02,

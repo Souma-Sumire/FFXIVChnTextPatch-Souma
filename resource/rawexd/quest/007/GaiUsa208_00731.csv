@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA208_00731_SEQ_00,空居的罗朗代，正在寻找可以帮他调查遗迹的人。
 1,TEXT_GAIUSA208_00731_SEQ_01,罗朗代正在调查地下城邦格尔莫拉的遗迹。帮助他做调查，调查空居周围。
 2,TEXT_GAIUSA208_00731_SEQ_02,发现了几个<hex:022811FF0A>EventItem<hex:F61E86C90103>。让空居的罗朗代查看。

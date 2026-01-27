@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSBSM580_02010_SEQ_00,宝杖大街的弗勒蒙丹想要委托冒险者为洛莉斯制作某物。
 1,TEXT_CLSBSM580_02010_SEQ_01,和弗勒蒙丹进行了交谈。他想要修复杰尔凡家的宝剑，让洛莉斯在比赛时使用。将<hex:022811FF0A>EventItem<hex:F61E8B2D0103>拿给利姆萨·罗敏萨锻铁匠行会的布瑞赛尔查看。
 2,TEXT_CLSBSM580_02010_SEQ_02,让布瑞赛尔查看了<hex:022811FF0A>EventItem<hex:F61E8B2D0103>。就算是经验丰富的布瑞赛尔也不知道如何修复这柄宝剑。前往北部林区的林场水车，将<hex:022811FF0A>EventItem<hex:F61E8B2D0103>拿去给传说中的武器工匠盖罗尔特查看，向他寻求帮助。

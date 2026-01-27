@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC120_03341_SEQ_00,奇坦那神影洞前的雅·修特拉若有所思。
 1,TEXT_LUCKMC120_03341_SEQ_01,
 2,TEXT_LUCKMC120_03341_SEQ_02,

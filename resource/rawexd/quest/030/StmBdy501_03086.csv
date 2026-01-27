@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY501_03086_SEQ_00,多玛飞地的小樱正在努力工作。
 1,TEXT_STMBDY501_03086_SEQ_01,小樱和飞燕想委托冒险者成为让多玛难民们重返故乡的中介人。将<hex:022811FF0A>EventItem<hex:F61E8E210103>交给摩杜纳丧灵钟的斯拉佛伯恩。
 2,TEXT_STMBDY501_03086_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8E210103>交给了斯拉佛伯恩。和丧灵钟的宝山谈谈。

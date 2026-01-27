@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA3ARMOR_00532_CRAFSMAN00532_000_000,没想到能与名匠盖罗尔特阁下一起工作……<hex:02100103>这正是我用来锻炼自身技艺的千载难逢的机会，<hex:02100103>就让我好好地学习学习天才的技术吧。
 1,TEXT_CTSERKEUREKA3ARMOR_00532_CRAFSMAN00532_000_010,由我来代替名匠盖罗尔特阁下负责为你制作防具。<hex:02100103>如果你准备好了素材，我马上就可以为你进行制作。
 2,TEXT_CTSERKEUREKA3ARMOR_00532_TALK_ACTOR,

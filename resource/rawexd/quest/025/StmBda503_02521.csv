@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA503_02521_SEQ_00,烈士庵的阿莉塞有些担心冒险者。
 1,TEXT_STMBDA503_02521_SEQ_01,
 2,TEXT_STMBDA503_02521_SEQ_02,

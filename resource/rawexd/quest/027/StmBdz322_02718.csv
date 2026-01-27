@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ322_02718_SEQ_00,渔村少年正在寻找擅长游泳的人。
 1,TEXT_STMBDZ322_02718_SEQ_01,
 2,TEXT_STMBDZ322_02718_SEQ_02,

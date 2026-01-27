@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_05505_002630_KANESENNA,由衷感谢各位前来出席本次会议。
 1,TEXT_VOICEMAN_05505_002640_IXALICHIEFTAIN,听说你们找到了线索？<hex:02100103>就别说客套话了！<hex:02100103>赶紧告诉我们情况吧！
 2,TEXT_VOICEMAN_05505_002650_IXALICHIEFTAIN,这群混蛋！<hex:02100103>竟敢如此对待我们的同胞！<hex:02100103>必须赶快去救他们！

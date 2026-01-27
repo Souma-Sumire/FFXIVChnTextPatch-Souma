@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGKD003_05311_SEQ_00,幻境村的档案想要了解详情。
 1,TEXT_KINGKD003_05311_SEQ_01,和档案进行了交谈。和幻境村的杰弗瑞谈谈。
 2,TEXT_KINGKD003_05311_SEQ_02,众人决定先调查岛屿的南部。准备好后就和幻境村的杰弗瑞说一声，前往活动据点。

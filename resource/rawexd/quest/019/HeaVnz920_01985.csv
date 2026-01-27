@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ920_01985_SEQ_00,第四传送环附近的狩猎系统安静地伫立着。
 1,TEXT_HEAVNZ920_01985_SEQ_01,狩猎系统向冒险者推荐狩猎<hex:02280FFF09>BNpcName<hex:F20DD50103>。在阿济兹拉的贝塔管区讨伐4只<hex:02280FFF09>BNpcName<hex:F20DD50103>。
 2,TEXT_HEAVNZ920_01985_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20DD50103>。向第四传送环附近的狩猎系统报告。

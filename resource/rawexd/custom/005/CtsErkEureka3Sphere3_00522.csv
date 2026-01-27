@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA3SPHERE3_00522_SYSTEM_000_000,从以太的奔流中回收了璀璨的魔素石。<hex:02100103>快点向可露儿报告吧。
 1,TEXT_CTSERKEUREKA3SPHERE3_00522_TALK_ACTOR,

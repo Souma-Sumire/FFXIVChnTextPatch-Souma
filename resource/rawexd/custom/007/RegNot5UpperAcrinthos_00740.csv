@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOT5UPPERACRINTHOS_00740_LAGONTHOTA_000_000,哎呀，没见过你啊。<hex:02100103>找我有事吗？
 1,TEXT_REGNOT5UPPERACRINTHOS_00740_LAGONTHOTA_000_001,突然下了什么大撤退的命令，我现在正忙着呢！<hex:02100103>有事的话就快点说吧。
 2,TEXT_REGNOT5UPPERACRINTHOS_00740_LAGONTHOTA_000_002,我都听说了，你要去宇宙尽头是吧……<hex:02100103>虽然我能为你做的不多，<hex:02100103>可如果你有什么想问的，我一定尽量回答！

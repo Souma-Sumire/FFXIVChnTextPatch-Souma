@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDD107_03076_SEQ_00,石之家的阿莉塞很担心阿尔菲诺。
 1,TEXT_STMBDD107_03076_SEQ_01,阿莉塞和雅·修特拉决定小恬片刻。前往丧灵钟石之家的<hex:02280CFF05>EObj<hex:F61EA97B0103>。
 2,TEXT_STMBDD107_03076_SEQ_02,三人稍作休息时，桑克瑞德出现了。大家都很担心阿尔菲诺的安危。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSSFSCHARACTER6_00674_GREETING_EHLLTOU_000_000,英雄！感谢你能来！<hex:02100103>是来帮忙准备龙族用采集工具部件的吗？
 1,TEXT_CTSSFSCHARACTER6_00674_GREETING_EHLLTOU_000_001,英雄，你又来了呀！<hex:02100103>是来帮忙准备龙族用缝纫工具的吗？
 2,TEXT_CTSSFSCHARACTER6_00674_GREETING_EHLLTOU_000_002,英雄！<hex:02100103>可以拜托你帮忙准备我们也能使用的<hex:02100103>龙族用工匠工具吗？

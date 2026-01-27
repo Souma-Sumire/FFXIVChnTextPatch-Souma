@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ502_01837_SEQ_00,莫古力之家的莫古噗看着花在发愁。
 1,TEXT_HEAVNZ502_01837_SEQ_01,和莫古噗进行了交谈。原来是<hex:02280FFF09>BNpcName<hex:F210B80103>栖息在了水源，妨碍莫古们打水。前往翻云雾海的招恶荒岛讨伐<hex:02280FFF09>BNpcName<hex:F210B80103>，在<hex:02280CFF05>EObj<hex:F61E9AD30103>处打水。
 2,TEXT_HEAVNZ502_01837_SEQ_02,使用<hex:022811FF0A>EventItem<hex:F61E8AE80103>打满了水。将<hex:022811FF0A>EventItem<hex:F61E8AE90103>交给莫古力之家的莫古噗。

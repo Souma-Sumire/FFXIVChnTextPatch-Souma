@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ904_01969_SEQ_00,玛托雅的洞穴的三根弦扫把正在唰唰唰唰地打扫卫生。
 1,TEXT_HEAVNZ904_01969_SEQ_01,冒险者需要实现三根弦扫把的愿望来作为获取知识的交换条件。在龙堡内陆低地西侧的岩壁方向寻找小小的木桥。
 2,TEXT_HEAVNZ904_01969_SEQ_02,发现了小小的木桥。探索<hex:02280CFF05>EObj<hex:F61E9C3D0103>。

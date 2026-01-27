@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD001_00187_SEQ_00,为了能够到雕金匠行会学习，成为一名雕金匠，冒险者必须办理相应的手续才行。接待处的杰麦姆想要确认冒险者的意愿。
 1,TEXT_CLSGLD001_00187_SEQ_01,
 2,TEXT_CLSGLD001_00187_SEQ_02,

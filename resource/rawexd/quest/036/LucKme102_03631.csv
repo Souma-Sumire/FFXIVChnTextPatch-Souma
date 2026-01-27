@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME102_03631_SEQ_00,门前区的于里昂热陷入了沉思。
 1,TEXT_LUCKME102_03631_SEQ_01,在同伴们和凯·希尔的协助下找到了异变的元凶。和门前区的阿尔菲诺谈谈，进入游末邦。
 2,TEXT_LUCKME102_03631_SEQ_02,进入了游末邦。

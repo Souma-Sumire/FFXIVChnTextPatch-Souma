@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSTAN530_02076_SEQ_00,宝杖大街的艾尔德在等待冒险者。
 1,TEXT_CLSTAN530_02076_SEQ_01,艾尔德委托冒险者将信交给艾蕾兹。将<hex:022811FF0A>EventItem<hex:F61E8B360103>交给宝杖大街的艾蕾兹。
 2,TEXT_CLSTAN530_02076_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8B360103>交给了艾蕾兹。向宝杖大街的艾尔德报告。

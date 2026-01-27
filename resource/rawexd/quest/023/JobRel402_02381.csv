@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBREL402_02381_SEQ_00,田园郡的安格莱特好像在等待冒险者向她搭话。
 1,TEXT_JOBREL402_02381_SEQ_01,安格莱特希望用<hex:02280BFF05>Item<hex:F23EC00103>交换<hex:022811FF0A>EventItem<hex:F61E8C650103>。冒险者带着<hex:022811FF0A>EventItem<hex:F61E8C640103>回忆自己经历过的惨烈战斗，即可令<hex:022811FF0A>EventItem<hex:F61E8C650103>诞生。携带<hex:022811FF0A>EventItem<hex:F61E8C640103>完成“随机任务：拾级迷宫”，获取<hex:022811FF0A>EventItem<hex:F61E8C650103>。<hex:02100103><hex:02100103>※只有在接受任务的状态下完成“随机任务：拾级迷宫”，才能获得<hex:022811FF0A>EventItem<hex:F61E8C650103>。
 2,TEXT_JOBREL402_02381_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8C650103>。将<hex:022811FF0A>EventItem<hex:F61E8C650103>交给田园郡的安格莱特。

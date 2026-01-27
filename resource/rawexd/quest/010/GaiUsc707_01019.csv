@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC707_01019_SEQ_00,瞭望阵营地的布鲁艾丁协漩校有个作战计划想要冒险者共同进行。
 1,TEXT_GAIUSC707_01019_SEQ_01,布鲁艾丁委托冒险者进行佯动作战。前往黑金湖，使用<hex:022811FF0A>EventItem<hex:F61E87880103>来爆破<hex:02280CFF05>EObj<hex:F61E8D420103>。
 2,TEXT_GAIUSC707_01019_SEQ_02,顺利地炸毁了<hex:02280CFF05>EObj<hex:F61E8D420103>。不知布鲁艾丁方面的状况如何。返回瞭望阵营地，向布鲁艾丁报告。

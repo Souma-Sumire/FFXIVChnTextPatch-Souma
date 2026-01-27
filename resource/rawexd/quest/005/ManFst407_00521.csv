@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_MANFST407_00521_SEQ_00,西德想要展开解救敏菲利亚的作战。
 1,TEXT_MANFST407_00521_SEQ_01,为了救出敏菲利亚，终于要展开作战了。装备上<hex:02280BFF05>Item<hex:F2184F0103>和<hex:02280BFF05>Item<hex:F218500103>，和西德对话。
 2,TEXT_MANFST407_00521_SEQ_02,变装奏效了，成功潜入到了帝国基地中。对3名帝国兵做情感动作“帝国式军礼”，收集有关敏菲利亚他们的情报。

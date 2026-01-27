@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGABRSKYPIRATESDENSHARE_00346_REDBILLDECKHAND_000_000,前阵子乌塔塔不是被猛禽联盟抓了吗？<hex:02100103>自那以后我们就加强了警备。<hex:02100103>总得让大家有个安心的环境休息不是？
 1,TEXT_REGABRSKYPIRATESDENSHARE_00346_REDBILLDECKHAND_000_010,哟，你来见利奥法德吗？<hex:02100103>他应该就在自己的屋子里。<hex:02100103>从这道门进去往左走就是了。
 2,TEXT_REGABRSKYPIRATESDENSHARE_00346_REDBILLDECKHAND_000_020,一开始还以为会发生什么大事，不过后来发现他们并没有敌意。<hex:02100103>就交给利奥法德处理吧……

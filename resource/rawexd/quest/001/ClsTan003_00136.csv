@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSTAN003_00136_SEQ_00,制革匠行会的盖娃要将一份重要的工作委托给冒险者。
 1,TEXT_CLSTAN003_00136_SEQ_01,代替丢下工作跑掉的制革匠，制作出<hex:02280BFF05>Item<hex:F20EBC0103>和<hex:02280BFF05>Item<hex:F210D40103>各一个，并交给制革匠行会的盖娃。
 2,TEXT_CLSTAN003_00136_SEQ_02,因为盖娃要修改冒险者所做的<hex:02280BFF05>Item<hex:F20EBC0103>和<hex:02280BFF05>Item<hex:F210D40103>，所以没能及时交货。为此，冒险者必须亲自去向委托人索索巴提道歉。向委托人索索巴提下跪，以示诚意。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD102_04913_SEQ_00,胡萨塔伊驿镇的埃伦维尔正想去查看情况。
 1,TEXT_KINGMD102_04913_SEQ_01,
 2,TEXT_KINGMD102_04913_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA406_00748_SEQ_00,跨天桥的商人希希巴鲁，想要告诉冒险者关于面具男的事情。
 1,TEXT_GAIUSA406_00748_SEQ_01,询问跨天桥的商人们有关面具男的传闻。
 2,TEXT_GAIUSA406_00748_SEQ_02,没有打听到有关面具男的有用消息。向跨天桥的希希巴鲁报告。

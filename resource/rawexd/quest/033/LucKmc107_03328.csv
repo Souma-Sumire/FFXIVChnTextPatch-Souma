@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC107_03328_SEQ_00,蛇行枝的鲁纳尔高兴地收下了命名石。
 1,TEXT_LUCKMC107_03328_SEQ_01,鲁纳尔提议让冒险者等人也参加葬礼。和蛇行枝的敏菲利亚谈谈。
 2,TEXT_LUCKMC107_03328_SEQ_02,邀请了敏菲利亚参加葬礼。和蛇行枝至暗所的安静的老婆婆谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL302_01278_SEQ_00,妖精暂留地的莫奇希亚因为伙伴中了陷阱而感到困扰。
 1,TEXT_BANSYL302_01278_SEQ_01,接受了莫奇希亚的委托。在悬钩群南面讨伐<hex:02280FFF09>BNpcName<hex:F2090F0103>或<hex:02280FFF09>BNpcName<hex:F2090D0103>或<hex:02280FFF09>BNpcName<hex:F2090E0103>，获取3份<hex:02280CFF05>EObj<hex:F61E90990103>讨厌的<hex:022811FF0A>EventItem<hex:F61E890F0103>。
 2,TEXT_BANSYL302_01278_SEQ_02,成功讨伐了坏妖精们，获得了<hex:022811FF0A>EventItem<hex:F61E890F0103>。对生长在悬钩群南边的<hex:02280CFF05>EObj<hex:F61E90990103>使用<hex:022811FF0A>EventItem<hex:F61E890F0103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA921_00699_SEQ_00,斯威尔盖姆想教给冒险者如何染色。
 1,TEXT_SUBSEA921_00699_SEQ_01,斯威尔盖姆似乎口渴了。在学习染色之前，先将<hex:02280BFF05>Item<hex:F212890103>交给斯威尔盖姆。在黄昏湾的杂用商人处，就能买到<hex:02280BFF05>Item<hex:F212890103>。
 2,TEXT_SUBSEA921_00699_SEQ_02,将<hex:02280BFF05>Item<hex:F212890103>交给了斯威尔盖姆。她十分满意，并告诉了冒险者如何染色。可以给装备染色了，有机会可以尝试一下。

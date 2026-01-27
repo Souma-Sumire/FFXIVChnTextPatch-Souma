@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKZJ104_03591_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>鳍人潮池入口的纳洛嘶·涳尔想要制作助产绳。
 1,TEXT_LUCKZJ104_03591_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>纳洛嘶·涳尔想为鳍人族的母王制作特别的助产绳。在鳍人潮池北边的<hex:02280CFF05>EObj<hex:F61EAD640103>张望并从<hex:02280FFF09>BNpcName<hex:F223320103>身上获取<hex:022811FF0A>EventItem<hex:F61E8F3C0103>。
 2,TEXT_LUCKZJ104_03591_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8F3C0103>。赶快将东西交给鳍人潮池入口的纳洛嘶·涳尔。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNRADENTERBOWLOFEMBERS_00081_ADALA_1,看来蜥蜴人那群臭爬虫们<hex:02100103>想要将我们献给“蛮神伊弗利特”……<hex:02100103>难道……你要和蛮神战斗？！
 1,TEXT_CMNRADENTERBOWLOFEMBERS_00081_Q1_1,有什么事？
 2,TEXT_CMNRADENTERBOWLOFEMBERS_00081_A1_1,询问“伊弗利特讨伐战”的开始条件

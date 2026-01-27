@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA303_00735_SEQ_00,梅梅卢恩交易站的格格卢恩，因要送的货太多而十分烦恼。
 1,TEXT_GAIUSA303_00735_SEQ_01,代替格格卢恩，前往撒拉奥斯的遗骸，将<hex:022811FF0A>EventItem<hex:F61E86CF0103>拿给塔恩嘉·托恩嘉。
 2,TEXT_GAIUSA303_00735_SEQ_02,多亏冒险者送去的东西，塔恩嘉·托恩嘉可以吃上饭了。这下他的研究也会有所进展了吧。

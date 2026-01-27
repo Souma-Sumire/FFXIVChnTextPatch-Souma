@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILDRYBONE_00058_RAULIN_000,是冒险者啊。<hex:02100103>我可以为你介绍情况。
 1,TEXT_REGWILDRYBONE_00058_SCENE00000Q,想了解什么？
 2,TEXT_REGWILDRYBONE_00058_SCENE00000A1,你在这里是做什么的？

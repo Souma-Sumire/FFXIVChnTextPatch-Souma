@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDOMRECONSTRUCTKAMISUKI_00490_ARARAGI_000_000,……怎么了？<hex:02100103>你这种年轻人，用不着花时间来陪我这个闲暇老人。
 1,TEXT_CTSDOMRECONSTRUCTKAMISUKI_00490_ARARAGI_000_005,听说多玛飞地开始了重建计划啊。<hex:02100103>不知道我的工作场地会变成什么样呢……
 2,TEXT_CTSDOMRECONSTRUCTKAMISUKI_00490_ARARAGI_000_010,听说那个顽固老头正在全力建设工作场地啊。<hex:02100103>车前会决定的事情我是不会反对啦……就是让我很不爽而已。

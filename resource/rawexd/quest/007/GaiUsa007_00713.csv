@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA007_00713_SEQ_00,鬼哭队的皮拉尔诺想让冒险者帮助进行巡视。
 1,TEXT_GAIUSA007_00713_SEQ_01,代替士兵进行巡视。有3处地点设置了<hex:02280CFF05>EObj<hex:F61E8BF20103>，需要在这些地方附近巡视一段时间。
 2,TEXT_GAIUSA007_00713_SEQ_02,顺利地完成了巡视工作。向若斯兰哨塔的皮拉尔诺报告。

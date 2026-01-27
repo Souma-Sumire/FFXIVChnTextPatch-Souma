@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ116_02666_SEQ_00,黄金港的天路有事情想要拜托旅行者。
 1,TEXT_STMBDZ116_02666_SEQ_01,
 2,TEXT_STMBDZ116_02666_SEQ_02,

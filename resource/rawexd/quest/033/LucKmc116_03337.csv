@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC116_03337_SEQ_00,大图帕萨礼拜堂前的奥梅有话要对冒险者说。
 1,TEXT_LUCKMC116_03337_SEQ_01,从奥梅处听取了忠告。和大图帕萨礼拜堂前的雅·修特拉谈谈。
 2,TEXT_LUCKMC116_03337_SEQ_02,和雅·修特拉等人一起进入了大图帕萨礼拜堂。返回礼拜堂外。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB714_00909_SEQ_00,欧金尼娅哨塔的白羊师团长密亚·莫尔柯特想要委托冒险者进行传令。
 1,TEXT_GAIUSB714_00909_SEQ_01,密亚·莫尔柯特决定要和库尔札斯的贝尔蒙特联手作战。前往库尔札斯中央高地，将<hex:022811FF0A>EventItem<hex:F61E87460103>交给巨龙首营地的佣兵贝尔蒙特。
 2,TEXT_GAIUSB714_00909_SEQ_02,顺利地将<hex:022811FF0A>EventItem<hex:F61E87460103>交给了贝尔蒙特。他起誓要和库尔札斯的同伴们以及神勇队白羊师团一起对抗鸟人族。

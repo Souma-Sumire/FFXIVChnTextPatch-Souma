@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAPVPMOCKBATTLEGUIDE_00441_SOFTKNOX_000_000,呼哧……呼哧……<hex:02100103>想让哥布 告诉你 “烈羽争锋” 的事吗——？<hex:02100103>那么你就 把耳朵 挖干净 好好 听着吧——！
 1,TEXT_REGSEAPVPMOCKBATTLEGUIDE_00441_Q1_000_001,关于烈羽争锋有什么想了解的？
 2,TEXT_REGSEAPVPMOCKBATTLEGUIDE_00441_A1_000_002,什么是“烈羽争锋”？

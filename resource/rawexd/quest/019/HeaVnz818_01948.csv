@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ818_01948_SEQ_00,田园郡的德利普威克斯干劲十足地准备定规矩。
 1,TEXT_HEAVNZ818_01948_SEQ_01,为了解决租借道具的问题，德利普威克斯委托冒险者将<hex:022811FF0A>EventItem<hex:F61E8B6B0103>带去给德莱德克斯。将<hex:022811FF0A>EventItem<hex:F61E8B6B0103>交给田园郡的德莱德克斯。
 2,TEXT_HEAVNZ818_01948_SEQ_02,德莱德克斯认为<hex:022811FF0A>EventItem<hex:F61E8B6B0103>上要记录的条目太多，有些不满……和田园郡的德利普威克斯谈谈。

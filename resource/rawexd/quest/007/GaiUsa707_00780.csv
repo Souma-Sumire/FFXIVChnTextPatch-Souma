@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA707_00780_SEQ_00,小阿拉米格的阿梅罗特有想要的东西。
 1,TEXT_GAIUSA707_00780_SEQ_01,阿梅罗特为了得到制作解毒剂的材料<hex:022811FF0A>EventItem<hex:F61E86E70103>而向冒险者求助。使用<hex:022811FF0A>EventItem<hex:F61E87BD0103>打倒<hex:02280FFF09>BNpcName<hex:F207C90103>。
 2,TEXT_GAIUSA707_00780_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E86E70103>。回到小阿拉米格，将<hex:022811FF0A>EventItem<hex:F61E86E70103>交给阿梅罗特。

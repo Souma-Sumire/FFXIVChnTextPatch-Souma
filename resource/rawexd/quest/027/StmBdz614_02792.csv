@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ614_02792_SEQ_00,朵塔儿水洲的马兀赤希望冒险者能帮助修行。
 1,TEXT_STMBDZ614_02792_SEQ_01,和马兀赤进行了交谈。马兀赤希望参考朵塔儿部以外的战斗方式，因此委托冒险者在自己面前打倒魔物。和月神沙漠北端的马兀赤交谈，讨伐<hex:02280FFF09>BNpcName<hex:F217120103>。
 2,TEXT_STMBDZ614_02792_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F217120103>。和月神沙漠北端的马兀赤谈谈。

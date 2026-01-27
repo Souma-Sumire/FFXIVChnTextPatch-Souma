@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB410_00866_SEQ_00,石绿湖营地疗养院的管理人鲁库萨·珐鲁萨，看上去十分烦恼。
 1,TEXT_GAIUSB410_00866_SEQ_01,这个村落本是伤兵进行疗养的场所，不知为何雕金匠造访了这里。从<hex:02280FFF09>BNpcName<hex:F201870103>身上获得4瓶量可以干燥伤患部位的<hex:022811FF0A>EventItem<hex:F61E87210103>。
 2,TEXT_GAIUSB410_00866_SEQ_02,获得了4瓶量的<hex:022811FF0A>EventItem<hex:F61E87210103>。让石绿湖营地的雕金匠查看。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB118_03319_SEQ_00,云村的赛特有事情想要拜托冒险者。
 1,TEXT_LUCKMB118_03319_SEQ_01,
 2,TEXT_LUCKMB118_03319_SEQ_02,

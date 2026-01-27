@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMF113_04958_SEQ_00,克雷拉自然史博物馆的喀赫奇瓦想尝试空中游览。
 1,TEXT_KINGMF113_04958_SEQ_01,
 2,TEXT_KINGMF113_04958_SEQ_02,

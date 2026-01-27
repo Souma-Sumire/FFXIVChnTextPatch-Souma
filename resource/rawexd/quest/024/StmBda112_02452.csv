@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA112_02452_SEQ_00,条纹丘的梅·娜格想要继续前进。
 1,TEXT_STMBDA112_02452_SEQ_01,
 2,TEXT_STMBDA112_02452_SEQ_02,

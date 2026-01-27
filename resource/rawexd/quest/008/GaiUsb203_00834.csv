@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB203_00834_SEQ_00,太阳海岸的库扎伊·塔扎伊，看上去还是很烦恼。
 1,TEXT_GAIUSB203_00834_SEQ_01,因受到地震的影响，<hex:02280FFF09>BNpcName<hex:F202300103>登陆上岸了。首先，打倒5只<hex:02280FFF09>BNpcName<hex:F202300103>。
 2,TEXT_GAIUSB203_00834_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F202300103>。大陆蟹到底会不会出现……在<hex:02280CFF05>EObj<hex:F61E8C840103>处等待，打倒出现的魔物。对魔物使用<hex:022811FF0A>EventItem<hex:F61E87BE0103>非常有效。

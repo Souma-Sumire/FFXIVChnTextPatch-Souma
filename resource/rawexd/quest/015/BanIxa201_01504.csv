@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANIXA201_01504_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>※本任务的推荐等级为：<hex:02100103>　制作职业3级以上、战斗职业43级以上。<hex:02100103><hex:02100103>长风实验场的大姐头梅图里·卡特兰，想委托冒险者处理紧急的工作。
 1,TEXT_BANIXA201_01504_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>接受了大姐头梅图里·卡特兰的委托，去制作<hex:022813FF07>ItemHQ<hex:FF08>　8095<hex:0103>。首先前往桤木泉，击退<hex:02280FFF09>BNpcName<hex:F20BAA0103>，并从<hex:02280CFF05>EObj<hex:F61E95EC0103>中获取<hex:022811FF0A>EventItem<hex:F61E89E50103>。
 2,TEXT_BANIXA201_01504_SEQ_02,成功夺回了<hex:022811FF0A>EventItem<hex:F61E89E50103>。前往秋瓜浮村的浮栓亭，将<hex:022811FF0A>EventItem<hex:F61E89E50103>交给休德耶德，并获取制作设施的使用权。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWDK530_01998_SEQ_00,云雾街的巴尔托维厄想要一把新的弓箭。
 1,TEXT_CLSWDK530_01998_SEQ_01,巴尔托维厄想要用新筹备的弓箭来狩猎大型的龙族。制作<hex:02280DFF07>ItemHQ<hex:F229730103>，交给云雾街的巴尔托维厄。
 2,TEXT_CLSWDK530_01998_SEQ_02,将<hex:02280DFF07>ItemHQ<hex:F229730103>交给了巴尔托维厄。巴尔托维厄被他的儿子无视了。代替他到伊修加德的天钢机工房，和菲利帕莱谈谈。

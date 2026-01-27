@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCESTABLISHMENTGUIDANCE_00241_TALK_ACTOR,您好，我负责向客人们介绍金碟游乐场内的各项娱乐活动。<hex:02100103>客人您有什么感兴趣的项目吗？
 1,TEXT_CMNGSCESTABLISHMENTGUIDANCE_00241_Q1_1,想了解什么？
 2,TEXT_CMNGSCESTABLISHMENTGUIDANCE_00241_A1_1,关于“陆行鸟竞赛”

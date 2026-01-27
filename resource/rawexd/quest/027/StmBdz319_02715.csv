@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ319_02715_SEQ_00,渔村的元肥有事想要拜托旅行者。
 1,TEXT_STMBDZ319_02715_SEQ_01,
 2,TEXT_STMBDZ319_02715_SEQ_02,

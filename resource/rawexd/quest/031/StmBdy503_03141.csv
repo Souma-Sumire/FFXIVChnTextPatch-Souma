@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY503_03141_SEQ_00,多玛飞地的小樱继续努力地工作着。
 1,TEXT_STMBDY503_03141_SEQ_01,小樱委托冒险者协助进行新的多玛飞地重建计划。和多玛飞地的百货市场的三叶交谈。
 2,TEXT_STMBDY503_03141_SEQ_02,和三叶进行了交谈。和车前会所的小樱交谈。

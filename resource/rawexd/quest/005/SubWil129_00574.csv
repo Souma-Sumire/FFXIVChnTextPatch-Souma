@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL129_00574_SEQ_00,枯骨营地的领头人伊桑巴德正在为找不出假扮祭司的人而苦恼。
 1,TEXT_SUBWIL129_00574_SEQ_01,桑克瑞德提出了扮成贫民诱出假祭司的作战方案。首先需要把有贫民在找活干的消息给传开，装备上<hex:02280BFF05>Item<hex:F20BB30103>和<hex:02280BFF05>Item<hex:F20CEA0103>扮成贫民，和附近的村民对话。
 2,TEXT_SUBWIL129_00574_SEQ_02,消息已经在村民们之间传播开了。向枯骨营地的桑克瑞德报告。

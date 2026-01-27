@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ818_02846_SEQ_00,白鬼岩山北的断崖的莱夫正在认真地监视崖下。
 1,TEXT_STMBDZ818_02846_SEQ_01,
 2,TEXT_STMBDZ818_02846_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSAK6MEHWAHHETSOAN_00882_TSEPPI_000_000,哎呀，你身上散发着一股异国人士的气息啊……<hex:02100103>来美花黑泽恩是要找什么东西吗？<hex:02100103>希望你能在这里找到你想要的东西。
 1,TEXT_REGSAK6MEHWAHHETSOAN_00882_TSEPPI_000_001,草木被风吹动的声音就如同在通知我们有危险一般。<hex:02100103>在这美花黑泽恩，大家的警戒意识都很强。
 2,TEXT_REGSAK6MEHWAHHETSOAN_00882_TSEPPI_000_002,停留在空气中的恶意似乎已经消散了。<hex:02100103>如今森林中的草木晃动的节奏都很平稳。<hex:02100103>美花黑泽恩终于又恢复了和平。

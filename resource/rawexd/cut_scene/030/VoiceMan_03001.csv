@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03001_000010_ALPHINAUD,要让拂晓再次崛起……
 1,TEXT_VOICEMAN_03001_000020_ALPHINAUD,需要迈出关键的第一步了。<hex:02100103>但是在此之前，必须洗脱我们的嫌疑，<hex:02100103>否则我们将寸步难行。
 2,TEXT_VOICEMAN_03001_000030_ALPHINAUD,不过塔塔露建议我们在伊修加德东山再起也不无道理。<hex:02100103>不如我们兵分两路，你和塔塔露前往伊修加德，<hex:02100103>我就回到乌尔达哈……

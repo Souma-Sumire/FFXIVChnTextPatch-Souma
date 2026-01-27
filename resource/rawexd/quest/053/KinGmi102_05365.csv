@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMI102_05365_SEQ_00,9-14号居住栋的瓦亚凯非常担心同伴的情况。
 1,TEXT_KINGMI102_05365_SEQ_01,
 2,TEXT_KINGMI102_05365_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMK103_04737_SEQ_00,知识神海港的于里昂热打算说明今后的计划。
 1,TEXT_AKTKMK103_04737_SEQ_01,
 2,TEXT_AKTKMK103_04737_SEQ_02,

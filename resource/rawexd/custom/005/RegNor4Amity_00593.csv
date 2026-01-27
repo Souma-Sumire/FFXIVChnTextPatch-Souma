@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4AMITY_00593_JUDINE_000_000,哎呀，你是旅行者啊。<hex:02100103>欢迎你来到这里。<hex:02100103>要想了解什么事情，请随时找我。
 1,TEXT_REGNOR4AMITY_00593_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4AMITY_00593_A1_000_001,你是做什么的？

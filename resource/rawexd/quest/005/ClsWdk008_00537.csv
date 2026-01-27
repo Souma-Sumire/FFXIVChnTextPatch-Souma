@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWDK008_00537_SEQ_00,刻木匠行会的贝亚坦有东西想务必委托给冒险者来制作。
 1,TEXT_CLSWDK008_00537_SEQ_01,接受了贝亚坦的委托。筹备1把<hex:022813FF07>ItemHQ<hex:FF08>　1925<hex:0103>，让格里达尼亚刻木匠行会的贝亚坦查看。
 2,TEXT_CLSWDK008_00537_SEQ_02,让贝亚坦查看了<hex:022813FF07>ItemHQ<hex:FF08>　1925<hex:0103>。将<hex:022813FF07>ItemHQ<hex:FF08>　1925<hex:0103>交给蛇巢司令部的盖伊尔哈德。

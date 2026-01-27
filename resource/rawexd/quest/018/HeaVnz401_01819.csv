@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ401_01819_SEQ_00,莫古力之家的莫古噗有些在意水源附近的情况。
 1,TEXT_HEAVNZ401_01819_SEQ_01,莫古噗正因为无法靠近水源而困扰着。前往翻云雾海，在招恶荒岛的水源讨伐3只<hex:02280FFF09>BNpcName<hex:F20E1E0103>。
 2,TEXT_HEAVNZ401_01819_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E1E0103>。向莫古力之家的莫古噗报告。

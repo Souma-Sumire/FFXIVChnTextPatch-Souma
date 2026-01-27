@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ512_01847_SEQ_00,赎罪天廊的莫古索恩想起自己落了东西。
 1,TEXT_HEAVNZ512_01847_SEQ_01,和莫古索恩进行了交谈。他将东西落在了危险区域，想请冒险者帮忙取回。前往翻云雾海的惋惜之晶遗迹寻回3个<hex:022811FF0A>EventItem<hex:F61E8AEE0103>。
 2,TEXT_HEAVNZ512_01847_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AEE0103>。将<hex:022811FF0A>EventItem<hex:F61E8AEE0103>交给赎罪天廊的莫古索恩。

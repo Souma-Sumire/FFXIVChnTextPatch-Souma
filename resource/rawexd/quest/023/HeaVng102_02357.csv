@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNG102_02357_SEQ_00,丰饶神祭坛的阿尔菲诺想要与西德等人汇合。
 1,TEXT_HEAVNG102_02357_SEQ_01,和阿尔菲诺进行了交谈。为了汇合，和格里达尼亚飞艇坪的西德谈谈。
 2,TEXT_HEAVNG102_02357_SEQ_02,与西德等人汇合了。和飞艇坪的管理员希妲打声招呼，乘坐企业号。

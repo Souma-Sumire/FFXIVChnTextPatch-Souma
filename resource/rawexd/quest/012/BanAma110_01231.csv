@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA110_01231_SEQ_00,灰阵营的菲布布·夏有必须要完成的使命。
 1,TEXT_BANAMA110_01231_SEQ_01,接受了菲布布·夏的委托。破坏不悔战阵西边的2座<hex:02280FFF09>BNpcName<hex:F2056E0103>。
 2,TEXT_BANAMA110_01231_SEQ_02,破坏了<hex:02280FFF09>BNpcName<hex:F2056E0103>。向灰阵营的菲布布·夏报告。

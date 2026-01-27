@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAPVPDUELGUIDE_00368_DUELOFFICER_000_000,对战训练还顺利吗？<hex:02100103>关于“个人练习场”的使用规则和规定如果有不明白的地方，<hex:02100103>可以随时来问我。
 1,TEXT_REGSEAPVPDUELGUIDE_00368_DUELOFFICER_000_005,我身后的场地是个人练习场，<hex:02100103>只要遵守练习场的使用规则和规定，<hex:02100103>就可以和想要过招的冒险者一决胜负。
 2,TEXT_REGSEAPVPDUELGUIDE_00368_DUELOFFICER_000_006,牢记我接下来要说的话，<hex:02100103>在和形形色色的对手交手的过程中，积累对战经验吧！

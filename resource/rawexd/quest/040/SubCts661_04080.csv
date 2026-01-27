@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS661_04080_SEQ_00,鲁什芒德纪念医院的莫莉莱蒂要对下一项工作进行说明。
 1,TEXT_SUBCTS661_04080_SEQ_01,
 2,TEXT_SUBCTS661_04080_SEQ_02,

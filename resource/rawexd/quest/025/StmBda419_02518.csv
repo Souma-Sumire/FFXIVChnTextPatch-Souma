@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA419_02518_SEQ_00,月神沙漠北端的飞燕准备返回延夏。
 1,TEXT_STMBDA419_02518_SEQ_01,
 2,TEXT_STMBDA419_02518_SEQ_02,

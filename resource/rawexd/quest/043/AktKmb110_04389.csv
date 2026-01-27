@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMB110_04389_SEQ_00,第三站的尤卢斯严厉地看着冒险者一行人。
 1,TEXT_AKTKMB110_04389_SEQ_01,
 2,TEXT_AKTKMB110_04389_SEQ_02,

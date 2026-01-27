@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA310_01251_SEQ_00,灰阵营的雅德夫·夏很信任冒险者，想要委托一件事。
 1,TEXT_BANAMA310_01251_SEQ_01,接受了雅德夫·夏的委托。破坏不悔战阵的2座<hex:02280FFF09>BNpcName<hex:F207560103>。
 2,TEXT_BANAMA310_01251_SEQ_02,破坏了<hex:02280FFF09>BNpcName<hex:F207560103>。向灰阵营的雅德夫·夏报告。

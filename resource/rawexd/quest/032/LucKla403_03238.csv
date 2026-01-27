@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKLA403_03238_SEQ_00,中庸工艺馆的科希·芮在等待冒险者。
 1,TEXT_LUCKLA403_03238_SEQ_01,和科希·芮进行了交谈。判明了萨迈尔会用幻影隐藏身姿，和其栖息地是在珂露西亚岛。与搜索队一行人一同前往珂露西亚岛，和碎石山地的科希·芮谈谈。
 2,TEXT_LUCKLA403_03238_SEQ_02,和珂露西亚岛的科希·芮进行了交谈。为了解除萨迈尔的幻影，需要<hex:022811FF0A>EventItem<hex:F61E8E860103>。在碎石山地附近收集制作<hex:022811FF0A>EventItem<hex:F61E8E860103>所需要的<hex:02280BFF05>Item<hex:F268850103>。

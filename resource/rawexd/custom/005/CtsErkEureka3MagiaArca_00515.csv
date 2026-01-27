@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA3MAGIAARCA_00515_SYSTEM_000_000,这里有一个没有见过的奇怪装置。<hex:02100103>看来还在准备中……
 1,TEXT_CTSERKEUREKA3MAGIAARCA_00515_SYSTEM_000_010,这里有一个没有见过的奇怪装置……<hex:02100103>看来这就是德雷克提到的“文理融合器”。<hex:02100103>赶紧尝试提取记忆吧。
 2,TEXT_CTSERKEUREKA3MAGIAARCA_00515_TALK_ACTOR,

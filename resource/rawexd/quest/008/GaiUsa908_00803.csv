@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA908_00803_SEQ_00,鬼哭队的鲁斯特邦有事情想要拜托给有能力的冒险者。
 1,TEXT_GAIUSA908_00803_SEQ_01,邓斯坦哨塔的蒂埃维奈需要有能力的冒险者帮忙。和邓斯坦哨塔的蒂埃维奈对话。
 2,TEXT_GAIUSA908_00803_SEQ_02,接受了委托来对盖住大洞的架台进行点检。并且驱逐点检中出现的<hex:02280DFF09>BNpcName<hex:290103>。

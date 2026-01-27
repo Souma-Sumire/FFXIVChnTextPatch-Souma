@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ619_02797_SEQ_00,百一启示的察仑想传给儿子某样东西。
 1,TEXT_STMBDZ619_02797_SEQ_01,
 2,TEXT_STMBDZ619_02797_SEQ_02,

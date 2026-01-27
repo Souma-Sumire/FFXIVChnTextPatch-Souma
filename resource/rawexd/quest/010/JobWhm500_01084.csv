@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBWHM500_01084_SEQ_00,恬静路营地的拉雅·奥·神纳，有事情想要告诉冒险者。
 1,TEXT_JOBWHM500_01084_SEQ_01,接受了拉雅·奥·神纳的委托。前往中央林区的常影区，在<hex:02280CFF05>EObj<hex:F61E8DE80103>平息长老树。
 2,TEXT_JOBWHM500_01084_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E8DE80103>平息了长老树。前往南部林区的恬静路营地，向拉雅·奥·神纳报告。

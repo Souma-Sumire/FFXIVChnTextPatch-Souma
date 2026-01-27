@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC118_03339_SEQ_00,休憩广场的于里昂热想要为鲁纳尔进行治疗。
 1,TEXT_LUCKMC118_03339_SEQ_01,
 2,TEXT_LUCKMC118_03339_SEQ_02,

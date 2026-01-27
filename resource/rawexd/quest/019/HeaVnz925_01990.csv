@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ925_01990_SEQ_00,德尔塔管区的拘束系统安静地伫立着。
 1,TEXT_HEAVNZ925_01990_SEQ_01,认为冒险者是亚拉戈帝国军兵将的拘束系统命令冒险者讨伐拘束具脱落的龙族。在德尔塔管区讨伐<hex:02280FFF09>BNpcName<hex:F20DE80103>和<hex:02280FFF09>BNpcName<hex:F20DE20103>各3只。
 2,TEXT_HEAVNZ925_01990_SEQ_02,成功讨伐了龙族。向德尔塔管区的拘束系统报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ110_01759_SEQ_00,圣菲内雅连队露营地的吕西艾在一边确认物资一边叹气。
 1,TEXT_HEAVNZ110_01759_SEQ_01,吕西艾拜托冒险者驱除野兽。讨伐库尔札斯西部高地双子池的4只<hex:02280FFF09>BNpcName<hex:F20D9D0103>。
 2,TEXT_HEAVNZ110_01759_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20D9D0103>。向圣菲内雅连队露营地的吕西艾报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESBKCRECOMPLETE_00716_SYSTEM_000_000,季节活动再现可以让玩家在特定期间内<hex:02100103>再次体验已经完成过的季节活动。
 1,TEXT_FESBKCRECOMPLETE_00716_YESNO_000_001,要开始“季节活动再现”吗？
 2,TEXT_FESBKCRECOMPLETE_00716_YESNOCHECK_000_002,・进入“季节活动再现”后，<hex:02100103>　以下任务将重置为未完成的状态。<hex:02100103>　　“<hex:02280BFF06>Quest<hex:E8020103>”<hex:02100103><hex:020827E4E80301FF01><hex:FF1F>　　“<hex:02280BFF06>Quest<hex:E8030103>”<hex:02100103><hex:03><hex:020827E4E80401FF01><hex:FF1F>　　“<hex:02280BFF06>Quest<hex:E8040103>”<hex:02100103><hex:03><hex:020893E4E80501FF01><hex:FF8B>・在任务完成之前，<hex:02100103>　无法从下列非玩家角色处购买或交换相关道具。<hex:02100103>　　“<hex:022812FF0D>ENpcResident<hex:E8050103>”<hex:02100103><hex:03><hex:02082EE4E80601FF01><hex:FF26>　　“<hex:022812FF0D>ENpcResident<hex:E8060103>”<hex:02100103><hex:03><hex:020871E4E80501FF01><hex:FF69>・如果未能在举办期间完成对应的任务，<hex:02100103>　则无法交换或购买相关道具。<hex:02100103><hex:03>・季节活动再现中，<hex:02100103>　即便完成对应任务也无法获得任务报酬。<hex:02100103><hex:02100103>进行“季节活动再现”时，<hex:02100103>为了确保能在举办期间内完成对应的季节任务，<hex:02100103>请预留充分的时间来进行体验。<hex:02100103><hex:02100103>

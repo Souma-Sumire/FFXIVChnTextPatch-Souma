@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC204_00963_SEQ_00,天狼星灯塔的大卫，有事想要委托给冒险者。
 1,TEXT_GAIUSC204_00963_SEQ_01,冒险者要着手解决幻影群岛中发生的怪事。首先在天狼星灯塔附近收集情报。
 2,TEXT_GAIUSC204_00963_SEQ_02,收集到了情报。返回天狼星灯塔，向大卫报告。

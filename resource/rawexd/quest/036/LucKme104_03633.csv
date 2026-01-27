@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME104_03633_SEQ_00,贵妇会客厅的阿尔菲诺感慨万千。
 1,TEXT_LUCKME104_03633_SEQ_01,
 2,TEXT_LUCKME104_03633_SEQ_02,

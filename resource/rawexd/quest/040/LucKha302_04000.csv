@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKHA302_04000_SEQ_00,升歌文化区的克农有事找冒险者商量。
 1,TEXT_LUCKHA302_04000_SEQ_01,克农等居民向冒险者提议计划举办庆祝重建工程竣工的演奏会。和伊修加德天穹街十字镐大街的丰克里诺商量。
 2,TEXT_LUCKHA302_04000_SEQ_02,和丰克里诺进行了商量。丰克里诺说要叫人过来，在十字镐大街的<hex:02280CFF05>EObj<hex:F61EB0AB0103>等待。

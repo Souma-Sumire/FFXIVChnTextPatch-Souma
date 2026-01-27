@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06400_000010_MYSTERIOUSPERSON,今天也是老样子，用这份调料。
 1,TEXT_VOICEMAN_06400_000020_MEHRYDE,好的，没问题。
 2,TEXT_VOICEMAN_06400_000030_MEHRYDE,分量这么大，足够熬上满满一大锅你喜欢的特制咖喱了。

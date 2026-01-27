@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD101_00613_SEQ_00,雕金匠行会的赛伦蒂碧提有工作想要委托给冒险者。
 1,TEXT_CLSGLD101_00613_SEQ_01,制作12箱<hex:02280BFF05>Item<hex:F213DE0103>，交给赛伦蒂碧提查看。
 2,TEXT_CLSGLD101_00613_SEQ_02,前往雕金匠行会前的广场，将委托品<hex:02280BFF05>Item<hex:F213DE0103>交给罗伯特。

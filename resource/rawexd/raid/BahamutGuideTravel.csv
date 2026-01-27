@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BAHAMUTGUIDETRAVEL_Q1_000_010,要前往“巴哈姆特大迷宫”吗？
 1,TEXT_BAHAMUTGUIDETRAVEL_A1_000_011,询问“巴哈姆特大迷宫邂逅之章”的开始条件
 2,TEXT_BAHAMUTGUIDETRAVEL_A1_000_012,开始“<hex:022815FF10>InstanceContent<hex:E8020403>”

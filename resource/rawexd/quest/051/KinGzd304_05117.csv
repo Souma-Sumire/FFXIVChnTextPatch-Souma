@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGZD304_05117_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>玛穆克的高图加想要确认烟雾弹的效果。
 1,TEXT_KINGZD304_05117_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>和高图加进行了交谈，领取了<hex:022811FF0A>EventItem<hex:F61E92A80103>。在亚克特尔树海的玛穆克附近寻找野生犀蜴，并前往附近的<hex:02280CFF05>EObj<hex:F61EBBC80103>投掷<hex:022811FF0A>EventItem<hex:F61E92A80103>。
 2,TEXT_KINGZD304_05117_SEQ_02,使用了<hex:022811FF0A>EventItem<hex:F61E92A80103>，确认其对驱赶犀蜴有效。为了报告效果，和玛穆克的高图加谈谈。

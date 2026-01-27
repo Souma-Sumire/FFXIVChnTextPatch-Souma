@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ715_01919_SEQ_00,被囚禁在瓦纳温杜集落的尊杜族正在向冒险者求助。
 1,TEXT_HEAVNZ715_01919_SEQ_01,被囚禁的尊杜族希望冒险者从帝国兵身上夺取<hex:022811FF0A>EventItem<hex:F61E8B080103>，然后将自己释放。在瓦纳温杜集落讨伐<hex:02280FFF09>BNpcName<hex:F20DBE0103>、<hex:02280FFF09>BNpcName<hex:F20DBF0103>、<hex:02280FFF09>BNpcName<hex:F20DC00103>、<hex:02280FFF09>BNpcName<hex:F20DC10103>和<hex:02280FFF09>BNpcName<hex:F20DC20103>。
 2,TEXT_HEAVNZ715_01919_SEQ_02,讨伐的帝国兵身上没有<hex:022811FF0A>EventItem<hex:F61E8B080103>。在瓦纳温杜集落讨伐<hex:02280FFF09>BNpcName<hex:F20DBE0103>、<hex:02280FFF09>BNpcName<hex:F20DBF0103>、<hex:02280FFF09>BNpcName<hex:F20DC00103>、<hex:02280FFF09>BNpcName<hex:F20DC10103>和<hex:02280FFF09>BNpcName<hex:F20DC20103>中的随便一种，获取<hex:022811FF0A>EventItem<hex:F61E8B080103>。

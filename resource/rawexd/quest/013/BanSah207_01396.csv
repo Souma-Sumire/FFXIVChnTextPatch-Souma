@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH207_01396_SEQ_00,诺布养育场的荷乌想要冒险者去打倒敌人。
 1,TEXT_BANSAH207_01396_SEQ_01,荷乌委托冒险者去对抗协助珊瑚尖枪的战士长<hex:02280FFF09>BNpcName<hex:F206A80103>。参加萨普沙产卵地的危命任务“海蛇末路”，通过获得贡献度，获取<hex:02280BFF05>Item<hex:F21E7C0103>。将获得的<hex:02280BFF05>Item<hex:F21E7C0103>交给诺布养育场的荷乌。
 2,TEXT_BANSAH207_01396_SEQ_02,将<hex:02280BFF05>Item<hex:F21E7C0103>交给了荷乌。荷乌对冒险者赞赏有加。和负责指挥的<hex:02280FFF09>BNpcName<hex:F206A80103>的这一战必定能让鱼人族的战士们认识到人类的强悍。为了牵制珊瑚尖枪的行动，今后也继续提升自己的功勋。

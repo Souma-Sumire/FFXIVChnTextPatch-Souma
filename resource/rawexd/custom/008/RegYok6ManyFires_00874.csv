@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6MANYFIRES_00874_FLONICHIQ_000_000,哼哧……哼哧……<hex:02100103>怎么 想了解 这里吗？
 1,TEXT_REGYOK6MANYFIRES_00874_FLONICHIQ_000_001,新任联王 已定 可喜可贺。<hex:02100103>相信又会增加 新的生意。<hex:02100103>怎么 想了解 这里吗？
 2,TEXT_REGYOK6MANYFIRES_00874_FLONICHIQ_000_002,哼哧……哼哧……<hex:02100103>旅行者和商人 团结一心 共同为国家的昌盛 做贡献。<hex:02100103>怎么 想了解 这里吗？

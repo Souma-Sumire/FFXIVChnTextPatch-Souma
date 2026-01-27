@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ102_02652_SEQ_00,野战医院的阿拉米格解放军的伤兵正在用呆滞的目光看着冒险者。
 1,TEXT_STMBDZ102_02652_SEQ_01,
 2,TEXT_STMBDZ102_02652_SEQ_02,

@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDKBCHARACTER1SUB3_00574_SUEREND_100_001,在这里的全都是些思维奇特的家伙，<hex:02100103>我猜你肯定是想离他们远远的。<hex:02100103>现在我素·任德回来了，你可以放心了。
 1,TEXT_CTSDKBCHARACTER1SUB3_00574_SUEREND_000_001,再来……再给我更多的工作！

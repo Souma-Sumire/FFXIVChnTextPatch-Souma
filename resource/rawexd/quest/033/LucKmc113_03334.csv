@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC113_03334_SEQ_00,法诺村的夏梅十分稀奇地看着冒险者。
 1,TEXT_LUCKMC113_03334_SEQ_01,
 2,TEXT_LUCKMC113_03334_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ915_01980_SEQ_00,螺旋港的清扫系统安静地伫立着。
 1,TEXT_HEAVNZ915_01980_SEQ_01,据清扫系统反应，清扫终端失去了控制。在阿济兹拉的阿尔法管区讨伐5个<hex:02280FFF09>BNpcName<hex:F20DD00103>。
 2,TEXT_HEAVNZ915_01980_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20DD00103>。向螺旋港的清扫系统报告。

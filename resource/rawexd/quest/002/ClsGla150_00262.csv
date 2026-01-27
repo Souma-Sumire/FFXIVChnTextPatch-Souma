@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLA150_00262_SEQ_00,剑术师行会的密拉，将要给予冒险者新的课题。
 1,TEXT_CLSGLA150_00262_SEQ_01,最近发生了多起使用弓的蜥蜴人族袭击商人的事件。前往枯骨的东边，和负伤的剑术师谈谈，打倒随之袭来的蜥蜴人破坏者。
 2,TEXT_CLSGLA150_00262_SEQ_02,无畏弓箭，与蜥蜴人族战斗，并打倒了蜥蜴人族。和负伤的剑术师谈谈，确认他是否平安无事。
@@ -118,7 +118,7 @@ int32,str,str
 113,TEXT_CLSGLA150_00262_MYLLA_000_150,(CUT)
 114,TEXT_CLSGLA150_00262_MYLLA_000_151,(CUT)
 115,TEXT_CLSGLA150_00262_MYLLA_000_152,它对只能近战的剑术师来说，<hex:02100103>可是相当有用的本领。<hex:02100103>你在战场上要灵活运用它啊！
-116,TEXT_CLSGLA150_00262_SYSTEM_000_160,等级达到“20级”以上时，才可以领取下一个任务。<hex:02100103>提高等级后再来行会。
+116,TEXT_CLSGLA150_00262_SYSTEM_000_160,等级达到20级以上时，才可以领取下一个任务。<hex:02100103>提高等级后再来行会。
 117,TEXT_CLSGLA150_00262_POP_MESSAGE,察觉到了敌人的气息！ 
 118,TEXT_CLSGLA150_00262_SCENE00040_INSTANCE_BATTLE_YESNO_TITLE,要开始“箭雨中的胜机”的战斗吗？
 119,TEXT_CLSGLA150_00262_SCENE00040_INSTANCE_BATTLE_YESNO_YES,是

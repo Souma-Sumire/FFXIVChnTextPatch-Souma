@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKBB101_03261_SEQ_00,※本任务是特职绝枪战士的开放任务。<hex:02100103><hex:02100103>以太之光广场的耿直的神勇队队员似乎正在召集人手。
 1,TEXT_LUCKBB101_03261_SEQ_01,耿直的神勇队队员委托冒险者搜索盗贼团伙。在东部林区荆棘森的<hex:02280CFF05>EObj<hex:F61EAC7D0103>张望。
 2,TEXT_LUCKBB101_03261_SEQ_02,在<hex:02280CFF05>EObj<hex:F61EAC7D0103>张望的时候，被异国打扮的两名盗贼袭击了。在荆棘森讨伐愤怒的盗贼。

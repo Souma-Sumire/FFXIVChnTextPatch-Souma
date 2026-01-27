@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTHKOFUINSEIGETSU_00479_KOFUINSEIGETSU_100_000,今后这里将会成为全体鲶鱼精接受文明开化的据点啊。<hex:02100103>嗯，看来我们必须打起精神干活了！
 1,TEXT_REGOTHKOFUINSEIGETSU_00479_KOFUINSEIGETSU_000_000,文明开化进展得顺利吗？<hex:02100103>我这边也正在利用处理日常杂务的空余时间，<hex:02100103>来解读各种书籍，学习有关祭礼的知识。
 2,TEXT_REGOTHKOFUINSEIGETSU_00479_KOFUINSEIGETSU_000_001,«诸国风俗问状答»乃是远东之国的御用学者<hex:02100103>向各地的学问人寄送了问卷，并将问卷答案回收整理而成的书籍。<hex:02100103>通过这本书籍可以学到各种地域的传统文化。

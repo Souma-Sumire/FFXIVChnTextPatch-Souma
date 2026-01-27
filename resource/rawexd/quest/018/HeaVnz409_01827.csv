@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ409_01827_SEQ_00,赎罪天廊的莫古萌在警戒四周。
 1,TEXT_HEAVNZ409_01827_SEQ_01,接受了莫古萌的委托。讨伐赎罪天廊北边的<hex:02280FFF09>BNpcName<hex:F20E210103>、南边的<hex:02280FFF09>BNpcName<hex:F20E220103>各3只。
 2,TEXT_HEAVNZ409_01827_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E220103>和<hex:02280FFF09>BNpcName<hex:F20E210103>。向赎罪天廊的莫古萌报告。

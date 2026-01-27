@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_07410_000010_METEM,群魔之中一点红！<hex:02100103>魔性的处刑者——致命美人！
 1,TEXT_VOICEMAN_07410_000020_METEM,水火不容 严禁混合！<hex:02100103>操控温差的搭档——极限兄弟！
 2,TEXT_VOICEMAN_07410_000030_REFEREE,Ｋ.Ｏ！

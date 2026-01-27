@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ022_01747_SEQ_00,雷德沃尔德想尽快推进调查的进度。
 1,TEXT_HEAVNZ022_01747_SEQ_01,受雷德沃尔德之托，冒险者决定调查毒药的解毒方法。让隼巢的烹调师努瓦尔特雷尔看看<hex:022811FF0A>EventItem<hex:F61E8B4C0103>。
 2,TEXT_HEAVNZ022_01747_SEQ_02,和努瓦尔特雷尔进行了交谈。将<hex:022811FF0A>EventItem<hex:F61E8B4C0103>交给站在隼巢附近的当地老人。

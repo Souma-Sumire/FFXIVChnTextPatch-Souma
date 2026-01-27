@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBREL500QUESTLEAVE_00373_ARDASHIR_000_000,<hex:022903EB0203>，你想中止这次人造元灵研究，<hex:02100103>好好休息一段时间吗？
 1,TEXT_JOBREL500QUESTLEAVE_00373_Q1_000_000,中止这次研究吗？
 2,TEXT_JOBREL500QUESTLEAVE_00373_ARDASHIR_000_010,是、是吗！！<hex:02100103>我还以为你想中止这次研究休息一阵子，<hex:02100103>毕竟一直都是在麻烦你……

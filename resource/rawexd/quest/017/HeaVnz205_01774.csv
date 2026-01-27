@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ205_01774_SEQ_00,尾羽集落周边营地的艾梅贝尔正在寻找战斗力足够的人。
 1,TEXT_HEAVNZ205_01774_SEQ_01,艾梅贝尔拜托冒险者讨伐<hex:02280FFF09>BNpcName<hex:F20DED0103>。前往龙堡参天高地的陆行鸟之森，讨伐3只<hex:02280FFF09>BNpcName<hex:F20DED0103>。
 2,TEXT_HEAVNZ205_01774_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20DED0103>。向尾羽集落周边营地的艾梅贝尔报告。

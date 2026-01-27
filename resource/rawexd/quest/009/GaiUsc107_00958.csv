@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC107_00958_SEQ_00,采矿工佛罗廷·斯特恩，想要冒险者帮他收集东西。
 1,TEXT_GAIUSC107_00958_SEQ_01,讨伐5只栖息在火墙的变异矿爬虫<hex:02280FFF09>BNpcName<hex:F201130103>，获取<hex:022811FF0A>EventItem<hex:F61E87680103>。
 2,TEXT_GAIUSC107_00958_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E87680103>。将其交给紫红瀑布的采矿工佛罗廷·斯特恩。

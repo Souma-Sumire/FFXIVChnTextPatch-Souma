@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMJ106_04012_SEQ_00,龙堡内陆低地的阿尔菲诺想为大家带去好消息。
 1,TEXT_LUCKMJ106_04012_SEQ_01,
 2,TEXT_LUCKMJ106_04012_SEQ_02,

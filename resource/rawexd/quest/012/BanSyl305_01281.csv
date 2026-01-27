@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL305_01281_SEQ_00,妖精暂留地的莫奇希亚有问题想要拜托冒险者解决。
 1,TEXT_BANSYL305_01281_SEQ_01,接受了莫奇希亚的委托。和妖精领入口的神秘的妖精谈谈。
 2,TEXT_BANSYL305_01281_SEQ_02,和神秘的妖精进行了交谈，身上被他施加了隐身咒文。对妖精领的<hex:02280CFF05>EObj<hex:F61E91500103>使用<hex:022811FF0A>EventItem<hex:F61E891F0103>。在透明状态下就可以轻松地接近<hex:02280CFF05>EObj<hex:F61E91500103>。<hex:02100103><hex:02100103>※透明状态在一定时间后就会失效。接触<hex:02280CFF05>EObj<hex:F61E914C0103>可以延长透明状态的持续时间。

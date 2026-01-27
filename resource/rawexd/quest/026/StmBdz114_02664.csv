@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ114_02664_SEQ_00,帝国东方堡的斯威斯里克正牙将好像有事要告诉冒险者。
 1,TEXT_STMBDZ114_02664_SEQ_01,和斯威斯里克正牙将进行了交谈。和基拉巴尼亚边区帝国东方堡的塔拉·莫尔酷协牙尉交谈。
 2,TEXT_STMBDZ114_02664_SEQ_02,和塔拉·莫尔酷协牙尉进行了交谈。在对帝国兵的应急治疗完成前，到<hex:02280CFF05>EObj<hex:F61EA6D20103>等待。

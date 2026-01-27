@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA302_02478_SEQ_00,酒杯岛的湛水警惕地盯着冒险者。
 1,TEXT_STMBDA302_02478_SEQ_01,
 2,TEXT_STMBDA302_02478_SEQ_02,

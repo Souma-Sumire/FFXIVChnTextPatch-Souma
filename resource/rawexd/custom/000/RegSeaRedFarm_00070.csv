@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAREDFARM_00070_ANAOC_000_1,你好呀，这里是赤血雄鸡农场。<hex:02100103>你有什么事吗？
 1,TEXT_REGSEAREDFARM_00070_Q1_000_1,想了解什么？
 2,TEXT_REGSEAREDFARM_00070_A1_000_1,你是做什么的？

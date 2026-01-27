@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMF104_03647_SEQ_00,阿马罗栈桥的于里昂热正在等待出发的时刻。
 1,TEXT_LUCKMF104_03647_SEQ_01,于里昂热表示，想要前往黑风海，需要做一些特别的措施。和雷克兰德阴沉乡的于里昂热谈谈。
 2,TEXT_LUCKMF104_03647_SEQ_02,和于里昂热进行了交谈。潜入雷克兰德的始源湖，调查<hex:02280CFF05>EObj<hex:F61EAC190103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ011_01736_SEQ_00,隼巢的英嘉蕾特在寻找充满回忆的物品。
 1,TEXT_HEAVNZ011_01736_SEQ_01,英嘉蕾特拜托冒险者寻找东西。在库尔札斯西部高地交汇河营地附近寻找3个<hex:022811FF0A>EventItem<hex:F61E8ABB0103>。
 2,TEXT_HEAVNZ011_01736_SEQ_02,找齐了所有的<hex:022811FF0A>EventItem<hex:F61E8ABB0103>。将<hex:022811FF0A>EventItem<hex:F61E8ABB0103>交还给隼巢的英嘉蕾特。

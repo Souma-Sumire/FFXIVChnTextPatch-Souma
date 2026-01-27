@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06004_000010_VOICEGUIDE,(-亚拉戈机械的声音-)皇血确认完成……请问有何指示。
 1,TEXT_VOICEMAN_06004_000020_VOICEGUIDE,(-亚拉戈机械的声音-)明白。<hex:02100103>解除希尔科斯塔的睡眠模式。<hex:02100103>开始在全体区域搜索名为“艾里迪布斯”的个体。
 2,TEXT_VOICEMAN_06004_000030_VOICEGUIDE,(-亚拉戈机械的声音-)目标位于地下深层的核心动力源附近。<hex:02100103>即将投映目标影像。

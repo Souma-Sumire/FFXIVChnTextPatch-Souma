@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFRELICWEAPON040GLASS_00212_DRAKE_000_000,哦？你好像有黄道透镜呀！<hex:02100103>如若遗失了的话，请来找我。
 1,TEXT_CMNDEFRELICWEAPON040GLASS_00212_DRAKE_000_010,什么？！黄道透镜丢了？<hex:02100103>师父大人提前给了我备用的透镜以备这种情况发生。<hex:02100103>真是搞不懂师父大人究竟是细心还是粗心……
 2,TEXT_CMNDEFRELICWEAPON040GLASS_00212_DRAKE_000_011,……呜哇，刚才的话请务必当做我没说过。<hex:02100103>这个黄道透镜给你。<hex:02100103>这次要小心，别再弄丢了。

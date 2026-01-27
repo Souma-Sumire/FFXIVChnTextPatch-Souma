@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ812_02840_SEQ_00,阿拉基利的嘉·奈若想再次感谢冒险者。
 1,TEXT_STMBDZ812_02840_SEQ_01,
 2,TEXT_STMBDZ812_02840_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCGATENOTICE_00242_TALK_ACTOR,接下来我们将在<hex:020938E804FF0D>奇妙广场<hex:FF0D>演出广场<hex:FF0D>圆形广场<hex:FF0A>仙人彩<hex:03>开展<hex:02100103>“<hex:0209C7E803FF16>小雏鸟的营救者<hex:FF19>从天而降的送货人<hex:FF19>火眼金睛的追踪者<hex:FF16>舞蹈大师的特训<hex:FF16>喷风中的幸存者<hex:FF19>虚景跳跳乐大挑战<hex:FF16>空军装甲驾驶员<hex:FF19>必中一闪快刀斩魔<hex:03>”活动。<hex:02100103>客人您也请踊跃参加吧！
 1,TEXT_CMNGSCGATENOTICE_00242_TALK_SYSTEM,下一次机遇任务将于<hex:020703E80203><hex:020821DBFF1D><hex:020919DB02030405060708090A0B0C0D0E0F10111213141516171803><hex:0103>点<hex:022402DA03>分（地球时间）<hex:02100103>在<hex:020938E804FF0D>奇妙广场<hex:FF0D>演出广场<hex:FF0D>圆形广场<hex:FF0A>仙人彩<hex:03>出现。<hex:02100103>届时可以通过和现场的人物对话来参加活动。
 2,TEXT_CMNGSCGATENOTICE_00242_GATE_IN_SESSION,现在<hex:020938E803FF0D>奇妙广场<hex:FF0D>演出广场<hex:FF0D>圆形广场<hex:FF0A>仙人彩<hex:03>正在开展<hex:02100103>“<hex:0209C7E802FF16>小雏鸟的营救者<hex:FF19>从天而降的送货人<hex:FF19>火眼金睛的追踪者<hex:FF16>舞蹈大师的特训<hex:FF16>喷风中的幸存者<hex:FF19>虚景跳跳乐大挑战<hex:FF16>空军装甲驾驶员<hex:FF19>必中一闪快刀斩魔<hex:03>”活动！<hex:02100103>客人您也请踊跃参加吧！

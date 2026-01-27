@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDB107_02968_SEQ_00,斗技场的娜娜莫·乌尔·娜莫沉浸在回忆之中。
 1,TEXT_STMBDB107_02968_SEQ_01,
 2,TEXT_STMBDB107_02968_SEQ_02,

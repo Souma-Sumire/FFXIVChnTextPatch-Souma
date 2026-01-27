@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ511_01846_SEQ_00,天极白垩宫认真负责的莫古力在警戒四周。
 1,TEXT_HEAVNZ511_01846_SEQ_01,和认真负责的莫古力进行了交谈。原来是四处游荡的<hex:02280FFF09>BNpcName<hex:F20E290103>令莫古力非常害怕。在翻云雾海的竖骨岛讨伐4只<hex:02280FFF09>BNpcName<hex:F20E290103>。
 2,TEXT_HEAVNZ511_01846_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E290103>。向天极白垩宫认真负责的莫古力报告。

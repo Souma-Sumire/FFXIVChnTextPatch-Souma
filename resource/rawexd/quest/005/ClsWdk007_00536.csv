@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWDK007_00536_SEQ_00,刻木匠行会的贝亚坦想要冒险者接下他好友的委托。
 1,TEXT_CLSWDK007_00536_SEQ_01,接受了贝亚坦的委托。筹备1把<hex:022813FF07>ItemHQ<hex:FF08>　1917<hex:0103>，让格里达尼亚刻木匠行会的贝亚坦查看。
 2,TEXT_CLSWDK007_00536_SEQ_02,让贝亚坦查看了<hex:022813FF07>ItemHQ<hex:FF08>　1917<hex:0103>。将<hex:022813FF07>ItemHQ<hex:FF08>　1917<hex:0103>交给格里达尼亚蛇巢司令部的盖伊尔哈德。

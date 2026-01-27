@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKSA303_04086_SEQ_00,弗尔德尼斯前哨的水琴正在观测下一个据点候补。
 1,TEXT_LUCKSA303_04086_SEQ_01,
 2,TEXT_LUCKSA303_04086_SEQ_02,

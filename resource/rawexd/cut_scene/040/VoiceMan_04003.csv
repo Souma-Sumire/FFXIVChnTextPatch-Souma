@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04003_000010_LYSE,喂——！<hex:02100103>你找到什么线索了吗？
 1,TEXT_VOICEMAN_04003_000020_GOSETSU,什么，这位姑娘知道公子的下落？<hex:02100103>真是太好了！
 2,TEXT_VOICEMAN_04003_000030_YUGIRI,其日娜阁下，<hex:02100103>还请告知飞燕大人身在何处，<hex:02100103>我们感激不尽。

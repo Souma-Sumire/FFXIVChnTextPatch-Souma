@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC207_00966_SEQ_00,船舶墓场的艾拉毗·塔洛毗，想要将汤熬得更加美味。
 1,TEXT_GAIUSC207_00966_SEQ_01,艾拉毗·塔洛毗想要一些可以加入汤中的香料。调查船舶墓场的<hex:02280CFF05>EObj<hex:F61E8D0C0103>，获得<hex:022811FF0A>EventItem<hex:F61E876C0103>。
 2,TEXT_GAIUSC207_00966_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E876C0103>。将其交给船舶墓场的艾拉毗·塔洛毗。

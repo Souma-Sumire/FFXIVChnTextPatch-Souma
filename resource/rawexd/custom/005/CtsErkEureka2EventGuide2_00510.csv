@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA2EVENTGUIDE2_00510_OPERATOR00510_000_000,在据点的建设途中，我看见有种像是兔子一样的魔物<hex:02100103>被其他魔物来回追赶来着。<hex:02100103>那到底是什么啊？
 1,TEXT_CTSERKEUREKA2EVENTGUIDE2_00510_TALK_ACTOR,

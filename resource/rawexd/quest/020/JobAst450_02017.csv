@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBAST450_02017_SEQ_00,圣冈里奥尔占星院的雅内基纳尔衷心欢迎冒险者的来访。
 1,TEXT_JOBAST450_02017_SEQ_01,雅内基纳尔要向教皇厅申请让蕾薇瓦进行演讲。前往库尔札斯中央高地的阿德内尔占星台，从福勒莫尔手中获取<hex:022811FF0A>EventItem<hex:F61E8B9B0103>。
 2,TEXT_JOBAST450_02017_SEQ_02,从福勒莫尔那里获得了<hex:022811FF0A>EventItem<hex:F61E8B9B0103>。将<hex:022811FF0A>EventItem<hex:F61E8B9B0103>交给圣冈里奥尔占星院的雅内基纳尔。

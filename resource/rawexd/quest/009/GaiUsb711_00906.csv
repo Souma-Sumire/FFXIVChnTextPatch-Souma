@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB711_00906_SEQ_00,神勇队白羊师团的伊索多雷尔想要替自己报仇。
 1,TEXT_GAIUSB711_00906_SEQ_01,伊索多雷尔被鸟人族斥候偷袭而负伤。在秋瓜浮村东北的<hex:02280CFF05>EObj<hex:F61E8CD50103>附近等待<hex:02280FFF09>BNpcName<hex:F202940103>出现，并将其讨伐。
 2,TEXT_GAIUSB711_00906_SEQ_02,成功打倒了<hex:02280FFF09>BNpcName<hex:F202940103>。向秋瓜浮村浮栓亭的伊索多雷尔报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ918_02874_SEQ_00,阿拉加纳的盖尔伯特很在意破坏神像。
 1,TEXT_STMBDZ918_02874_SEQ_01,
 2,TEXT_STMBDZ918_02874_SEQ_02,

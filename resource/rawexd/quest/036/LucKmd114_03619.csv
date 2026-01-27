@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD114_03619_SEQ_00,络尾聚落的玛格努斯心中的愁云消散了。
 1,TEXT_LUCKMD114_03619_SEQ_01,让玛格努斯开动了矿车。和安穆·艾兰比朗大矿山的敏菲利亚谈谈。
 2,TEXT_LUCKMD114_03619_SEQ_02,和敏菲利亚进行了交谈。和比朗大矿山的玛格努斯谈谈。

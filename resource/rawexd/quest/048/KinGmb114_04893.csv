@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMB114_04893_SEQ_00,沃拉的回响的埃伦维尔准备让魔法人偶开始追踪艳翼蛇鸟。
 1,TEXT_KINGMB114_04893_SEQ_01,
 2,TEXT_KINGMB114_04893_SEQ_02,

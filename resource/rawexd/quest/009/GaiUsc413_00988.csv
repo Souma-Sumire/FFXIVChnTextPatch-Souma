@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC413_00988_SEQ_00,丧灵钟的恩帕·塔尤恩，想要冒险者去讨伐魔物。
 1,TEXT_GAIUSC413_00988_SEQ_01,丧灵钟西面有一片结晶化的大地。调查废弃营地中的2处<hex:02280CFF05>EObj<hex:F61E8D1E0103>，讨伐袭来的<hex:02280DFF09>BNpcName<hex:1C0103>。
 2,TEXT_GAIUSC413_00988_SEQ_02,成功讨伐了<hex:02280DFF09>BNpcName<hex:1C0103>。向丧灵钟的恩帕·塔尤恩报告。

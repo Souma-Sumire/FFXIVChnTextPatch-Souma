@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST044_00195_SEQ_00,仓库管理人琳妮薇正在寻找可以帮她采集灯火茸的人。
 1,TEXT_SUBFST044_00195_SEQ_01,获取生长在和平苑西南方山崖上的灯火茸。据说需要光芒最为强烈的那只。
 2,TEXT_SUBFST044_00195_SEQ_02,将获得的灯火茸交给林场水车的琳妮薇。

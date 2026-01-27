@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKLA105_04136_SEQ_00,精制堂的露露夏有事想委托冒险者。
 1,TEXT_AKTKLA105_04136_SEQ_01,
 2,TEXT_AKTKLA105_04136_SEQ_02,

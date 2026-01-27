@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA701_00774_SEQ_00,石场水车的梅弗里德，有一件事想要拜托冒险者。
 1,TEXT_GAIUSA701_00774_SEQ_01,梅弗里德为了救部下的命，需要得到药品。从<hex:02280DFF09>BNpcName<hex:050103>身上获得4个<hex:022811FF0A>EventItem<hex:F61E86E40103>。
 2,TEXT_GAIUSA701_00774_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E86E40103>。向石场水车的梅弗里德报告。

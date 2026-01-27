@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ101_02651_SEQ_00,神拳痕的老实的酒保商人正在寻找愿意帮忙的人。
 1,TEXT_STMBDZ101_02651_SEQ_01,
 2,TEXT_STMBDZ101_02651_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNY002_02112_SEQ_00,尊杜集落的萨努瓦努正在寻找能够帮他弄到制作面具所需材料的人。
 1,TEXT_HEAVNY002_02112_SEQ_01,萨努瓦努委托冒险者找来<hex:022811FF0A>EventItem<hex:F61E8BDC0103>。前往阿巴拉提亚云海的不获岛，和托努瓦努谈谈。
 2,TEXT_HEAVNY002_02112_SEQ_02,可以进入不获岛了。突破空中神域不获岛。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。

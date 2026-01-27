@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_WARPINNTULIYOLLAL_PESHEKWA_000_000,欢迎回来。<hex:02100103>要在船头小屋休息吗？
 1,TEXT_WARPINNTULIYOLLAL_PESHEKWA_000_010,欢迎回来。<hex:02100103>我们的旅店幸运地在此次袭击中躲过了一劫……<hex:02100103>要在船头小屋休息吗？
 2,TEXT_WARPINNTULIYOLLAL_PESHEKWA_000_020,欢迎回来，<hex:022903EB0203>阁下。<hex:02100103>请随意使用客房。<hex:02100103>要在船头小屋休息吗？

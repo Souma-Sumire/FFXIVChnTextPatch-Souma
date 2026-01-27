@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB713_00908_SEQ_00,欧金尼娅哨塔神勇队的密亚·莫尔柯特想要冒险者协助某个作战。
 1,TEXT_GAIUSB713_00908_SEQ_01,鸟人族搭建的路障对密亚·莫尔柯特的作战实行是个不小的阻碍。使用<hex:022811FF0A>EventItem<hex:F61E87450103>炸毁鸟人族在北侧隘路上搭建的路障。
 2,TEXT_GAIUSB713_00908_SEQ_02,成功毁掉了路障。向欧金尼娅哨塔的密亚·莫尔柯特报告。

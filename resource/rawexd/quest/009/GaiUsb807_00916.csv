@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB807_00916_SEQ_00,巨龙首营地的厄让努瓦想要委托冒险者进行调查。
 1,TEXT_GAIUSB807_00916_SEQ_01,钢卫塔附近又有龙族的目击情报。前往钢卫塔，调查是否有线索留下来。
 2,TEXT_GAIUSB807_00916_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E874F0103>。将其交给巨龙首营地的厄让努瓦。

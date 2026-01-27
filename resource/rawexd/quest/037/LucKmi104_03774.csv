@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMI104_03774_SEQ_00,石之家的塔塔露好像有话要说。
 1,TEXT_LUCKMI104_03774_SEQ_01,
 2,TEXT_LUCKMI104_03774_SEQ_02,

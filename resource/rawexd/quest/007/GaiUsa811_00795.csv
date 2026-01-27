@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA811_00795_SEQ_00,戈戈拉塔不想返回乌尔达哈是有原因的。
 1,TEXT_GAIUSA811_00795_SEQ_01,戈戈拉塔的货物被卢恩族夺去了。前往秋瓜浮村南面的卢恩宿营地，取回<hex:022811FF0A>EventItem<hex:F61E86F10103>。
 2,TEXT_GAIUSA811_00795_SEQ_02,取回了<hex:022811FF0A>EventItem<hex:F61E86F10103>。交给秋瓜浮村浮栓亭的戈戈拉塔。

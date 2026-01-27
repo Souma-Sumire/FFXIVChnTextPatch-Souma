@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFRELICWEAPON025NOTETALK_00170_GJUSANA_000_000,«黄道文书»……<hex:02100103>上面记载了上古英雄的事迹，还有他们持有的光之武器。<hex:02100103>你要是想要的话……
 1,TEXT_CMNDEFRELICWEAPON025NOTETALK_00170_GJUSANA_000_001,1卷古书需要拿100个<hex:02280FFF05>Item<hex:FF06>　28<hex:0103>来换。<hex:02100103>一套共有9卷，我会按顺序一卷一卷地换给你的。
 2,TEXT_CMNDEFRELICWEAPON025NOTETALK_00170_SYSTEM_000_010,打倒黄道文书中记载的所有讨伐目标，<hex:02100103>就能提升该上古武器·魂晶的性能。

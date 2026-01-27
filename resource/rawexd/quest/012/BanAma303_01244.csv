@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA303_01244_SEQ_00,灰阵营的雅德夫·夏想要委托给冒险者一份工作。
 1,TEXT_BANAMA303_01244_SEQ_01,接受了雅德夫·夏的委托。前往不悔战阵，获取5个<hex:02280CFF05>EObj<hex:F61E90500103>。
 2,TEXT_BANAMA303_01244_SEQ_02,获得了<hex:02280CFF05>EObj<hex:F61E90500103>。将<hex:02280CFF05>EObj<hex:F61E90500103>交给灰阵营的雅德夫·夏。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMA107_04866_SEQ_00,哈努聚落入口的乌克·拉玛特想要去寻找选王之人。
 1,TEXT_KINGMA107_04866_SEQ_01,
 2,TEXT_KINGMA107_04866_SEQ_02,

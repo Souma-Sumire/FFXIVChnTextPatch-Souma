@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB204_00835_SEQ_00,太阳海岸的菲利尔森，有些想法想要实施。
 1,TEXT_GAIUSB204_00835_SEQ_01,地灵族将<hex:02280CFF05>EObj<hex:F61E8C850103>拿了出去，他们似乎在谋划着什么。使用<hex:022811FF0A>EventItem<hex:F61E870B0103>爆破3个<hex:02280CFF05>EObj<hex:F61E8C850103>。
 2,TEXT_GAIUSB204_00835_SEQ_02,对全部<hex:02280CFF05>EObj<hex:F61E8C850103>进行了爆破。向太阳海岸的菲利尔森报告。

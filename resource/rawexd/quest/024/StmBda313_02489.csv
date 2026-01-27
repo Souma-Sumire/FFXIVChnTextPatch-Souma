@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA313_02489_SEQ_00,富豪居的阿莉塞看上去铁了心。
 1,TEXT_STMBDA313_02489_SEQ_01,在文镇提供的协助下，冒险者等人进入了甲人族的宝物殿。出乎意料的是，豪神须佐之男被召唤了出来。调查红玉海富豪居的<hex:02280CFF05>EObj<hex:F61EA32D0103>。
 2,TEXT_STMBDA313_02489_SEQ_02,调查了<hex:02280CFF05>EObj<hex:F61EA32D0103>。讨伐在里面等着的豪神须佐之男！<hex:02100103><hex:02100103>※可以通过任务搜索器参加。

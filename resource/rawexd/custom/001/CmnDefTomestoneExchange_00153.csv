@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFTOMESTONEEXCHANGE_00153_HELP,<hex:02280AFF05>Item<hex:E8020103>？<hex:02100103>罗薇娜说那石头卖不出去，所以停止交易了。<hex:02100103>……因为收藏家总是会立刻找到下一个“猎物”。
 1,TEXT_CMNDEFTOMESTONEEXCHANGE_00153_TALK_NOT_HAVE,如果你需要的话，我可以用<hex:02280AFF05>Item<hex:E8030103>和你交换……<hex:02100103>不过前提是你如果有<hex:02280AFF05>Item<hex:E8020103>的话。
 2,TEXT_CMNDEFTOMESTONEEXCHANGE_00153_TALK_Q,如果你需要的话，<hex:02100103>我可以用<hex:02280AFF05>Item<hex:E8040103>换你的<hex:02280AFF05>Item<hex:E8020103>。<hex:02100103>我至少能赚点零花钱。

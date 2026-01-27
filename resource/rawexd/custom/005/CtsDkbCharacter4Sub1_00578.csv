@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDKBCHARACTER4SUB1_00578_YALANA_000_000,哎呀，你是旅行者吗？<hex:02100103>为了给水晶都的粮食调度做出贡献，<hex:02100103>目前这里正在进行着肥料的改良与土壤的研究。
 1,TEXT_CTSDKBCHARACTER4SUB1_00578_YALANA_000_010,啊，<hex:022903EB0203>！<hex:02100103>大地资源部的科希·芮部长有没有再给你添麻烦啊？
 2,TEXT_CTSDKBCHARACTER4SUB1_00578_YALANA_000_020,我承认我很喜欢研究疑似是萨迈尔的巨大生物！<hex:02100103>但我可不会像科希·芮部长那样丢下工作不管！

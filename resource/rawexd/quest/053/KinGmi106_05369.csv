@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMI106_05369_SEQ_00,第二实验室前的谢尔准备开门。
 1,TEXT_KINGMI106_05369_SEQ_01,
 2,TEXT_KINGMI106_05369_SEQ_02,

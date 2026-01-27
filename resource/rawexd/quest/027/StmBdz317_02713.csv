@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ317_02713_SEQ_00,渔村的网引正在寻找有实力的旅行者。
 1,TEXT_STMBDZ317_02713_SEQ_01,
 2,TEXT_STMBDZ317_02713_SEQ_02,

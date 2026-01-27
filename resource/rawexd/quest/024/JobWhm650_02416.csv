@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBWHM650_02416_SEQ_00,帝国东方堡的希尔菲想向冒险者提一个建议。
 1,TEXT_JOBWHM650_02416_SEQ_01,希尔菲多次遇见了嘉蒂，可每次都被她逃掉。为了从上次嘉蒂逃掉的地方进行调查，前往基拉巴尼亚边区的东境混交林，在<hex:02280CFF05>EObj<hex:F61EA29F0103>进行张望。
 2,TEXT_JOBWHM650_02416_SEQ_02,在<hex:02280CFF05>EObj<hex:F61EA29F0103>进行了张望。追上希尔菲，在<hex:02280CFF05>EObj<hex:F61EA2A00103>再次进行张望。

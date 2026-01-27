@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA112_00409_SEQ_00,正在给造船师送盒饭的瓦福福，在寻找丢失的盒饭。
 1,TEXT_SUBSEA112_00409_SEQ_01,去寻找瓦福福制作的手工盒饭。
 2,TEXT_SUBSEA112_00409_SEQ_02,找到了瓦福福制作的手工盒饭。把盒饭交给瓦福福。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC905_01040_SEQ_00,蓝雾营地的斯派拉凌·帕斯十分慌张。
 1,TEXT_GAIUSC905_01040_SEQ_01,运输队没装全物资就出发了。去追赶前往东侧监视塔的运输队，将<hex:022811FF0A>EventItem<hex:F61E87930103>交给他们。
 2,TEXT_GAIUSC905_01040_SEQ_02,顺利交付了<hex:022811FF0A>EventItem<hex:F61E87930103>。回到蓝雾营地，向斯派拉凌·帕斯报告。

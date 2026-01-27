@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKZE104_04519_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>胡萝卜所的梦明威非常想让冒险者了解自己的工作。
 1,TEXT_AKTKZE104_04519_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>和梦明威进行了交谈。为了体验栽培胡萝卜的工作，在胡萝卜所将<hex:022811FF0A>EventItem<hex:F61E91800103>种在<hex:02280CFF05>EObj<hex:F61EB5600103>里。
 2,TEXT_AKTKZE104_04519_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E91800103>种在了<hex:02280CFF05>EObj<hex:F61EB5600103>里。接下来，从<hex:02280CFF05>EObj<hex:F61EB5610103>中获取浇水所需的水晶。

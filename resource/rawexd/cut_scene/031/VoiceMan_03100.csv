@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_03100_000010_AYMERIC,不好意思，让你们专门来访。<hex:02100103>不过我希望能在保证不走漏风声的地方和你们交谈。
 1,TEXT_VOICEMAN_03100_000020_ALPHINAUD,您不用客气。<hex:02100103>不过，到底是什么事情这么隐秘呢？
 2,TEXT_VOICEMAN_03100_000030_AYMERIC,正如二位所知，<hex:02100103>在我父亲去世之后，目前仍然没有人继承教皇的位置，<hex:02100103>也导致伊修加德最近情势越来越不稳定。

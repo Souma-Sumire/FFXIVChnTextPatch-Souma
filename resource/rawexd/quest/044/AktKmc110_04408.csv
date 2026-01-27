@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMC110_04408_SEQ_00,泪湾的雅·修特拉暗自下了决心。
 1,TEXT_AKTKMC110_04408_SEQ_01,
 2,TEXT_AKTKMC110_04408_SEQ_02,

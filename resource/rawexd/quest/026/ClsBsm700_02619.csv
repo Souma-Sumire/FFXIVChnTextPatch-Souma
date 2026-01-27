@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSBSM700_02619_SEQ_00,锻铁匠行会的布瑞赛尔总算挤出了时间。
 1,TEXT_CLSBSM700_02619_SEQ_01,布瑞赛尔准备收拾行李前往黄金港。先一步前往黄金港，和第二防波堤的雪花谈谈。
 2,TEXT_CLSBSM700_02619_SEQ_02,和雪花进行了交谈。前往小锻冶屋，和神刀谈谈。

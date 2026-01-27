@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB709_00904_SEQ_00,巨龙首营地的佣兵贝尔蒙特想找冒险者协助自己的工作。
 1,TEXT_GAIUSB709_00904_SEQ_01,贝尔蒙特很在意鸟人族的动向。探索巨龙首营地东边的鸟人族巢穴。
 2,TEXT_GAIUSB709_00904_SEQ_02,探索鸟人族巢穴后发现了<hex:022811FF0A>EventItem<hex:F61E87430103>。将<hex:022811FF0A>EventItem<hex:F61E87430103>交给巨龙首营地的贝尔蒙特。

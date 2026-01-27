@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ309_01801_SEQ_00,不洁三塔的特·伊斯拉很在意冒险者。
 1,TEXT_HEAVNZ309_01801_SEQ_01,特·伊斯拉很好奇人类的食物。前往龙堡参天高地的陆行鸟之森，和莱奥尼尔夫谈谈。
 2,TEXT_HEAVNZ309_01801_SEQ_02,莱奥尼尔夫委托冒险者去收集肉。从陆行鸟之森的<hex:02280FFF09>BNpcName<hex:F20DEC0103>身上获取<hex:022811FF0A>EventItem<hex:F61E8AD90103>。

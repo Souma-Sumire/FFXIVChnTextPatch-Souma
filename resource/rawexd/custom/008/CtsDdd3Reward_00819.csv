@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDDD3REWARD_00819_DD3ITEMSHOP_000_000,哔哔哔……沙沙沙……<hex:02100103>请为我提供资源。<hex:02100103>我会为你制作厉害的道具！
 1,TEXT_CTSDDD3REWARD_00819_DD3ITEMSHOP_000_010,哔哔！<hex:02100103>创造系统已解除睡眠模式。<hex:02100103>请告知你的需求。
 2,TEXT_CTSDDD3REWARD_00819_Q1_000_020,要做什么？

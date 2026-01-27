@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ526_01861_SEQ_00,飞龙港闷闷不乐的莫古力非常不满。
 1,TEXT_HEAVNZ526_01861_SEQ_01,和闷闷不乐的莫古力进行了交谈。闷闷不乐的莫古力在收集人类的武器、工具时被<hex:02280FFF09>BNpcName<hex:F20E280103>袭击，收集来的东西也都被抢走了。在飞龙港讨伐<hex:02280FFF09>BNpcName<hex:F20E280103>，获取3个其身上可能会掉落的<hex:022811FF0A>EventItem<hex:F61E8AF40103>。
 2,TEXT_HEAVNZ526_01861_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AF40103>。将<hex:022811FF0A>EventItem<hex:F61E8AF40103>交给飞龙港闷闷不乐的莫古力。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_05401_000010_GAIA,开始召唤……暗属性的构想妖异！
 1,TEXT_VOICEMAN_05401_000020_RYNE,成功了，盖娅！太好了！
 2,TEXT_VOICEMAN_05401_000030_RYNE,这就是100年前的战场……

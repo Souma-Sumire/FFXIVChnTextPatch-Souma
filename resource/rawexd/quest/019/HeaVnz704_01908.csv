@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ704_01908_SEQ_00,尊杜集落的西努瓦利对钝钝的小刀非常不满。
 1,TEXT_HEAVNZ704_01908_SEQ_01,西努瓦利委托冒险者拿来<hex:022811FF0A>EventItem<hex:F61E8B050103>。在阿巴拉提亚云海蓝天窗的<hex:02280FFF09>BNpcName<hex:F20DB70103>身上获取4个<hex:022811FF0A>EventItem<hex:F61E8B050103>。
 2,TEXT_HEAVNZ704_01908_SEQ_02,获得了4个<hex:022811FF0A>EventItem<hex:F61E8B050103>将<hex:022811FF0A>EventItem<hex:F61E8B050103>交给尊杜集落的西努瓦利。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_COMDEFFREECOMPANYREWARD_00100_TALK_ACTOR_001,隶属于<hex:020924E802FF0A>黑涡团<hex:FF0A>双蛇党<hex:FF0A>恒辉队<hex:03>的部队可以在这里用部队战绩<hex:02100103>兑换特殊的强化魔法和各种有用的物品。
 1,TEXT_COMDEFFREECOMPANYREWARD_00100_TALK_ACTOR_Q,你有什么事？
 2,TEXT_COMDEFFREECOMPANYREWARD_00100_TALK_ACTOR_A1,使用部队战绩进行交换（部队特效）

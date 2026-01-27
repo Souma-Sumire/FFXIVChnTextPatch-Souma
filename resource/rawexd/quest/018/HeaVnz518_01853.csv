@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ518_01853_SEQ_00,竖骨岛的莫古托在观察附近的情况。
 1,TEXT_HEAVNZ518_01853_SEQ_01,莫古托的目标是讨伐<hex:02280FFF09>BNpcName<hex:F20E250103>。从<hex:02280FFF09>BNpcName<hex:F20E250103>身上取得3个<hex:022811FF0A>EventItem<hex:F61E8AF10103>。
 2,TEXT_HEAVNZ518_01853_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AF10103>。向竖骨岛的莫古托报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_DUNGEONDEEPDUNGEON2_00000_KYUSEI_000_000,(-传统装束的男子-)居然能轻松突破10层。<hex:02100103>真不愧是光之战士啊。
 1,TEXT_DUNGEONDEEPDUNGEON2_00000_KYUSEI_000_001,(-传统装束的男子-)啊，所谓的光之战士，<hex:02100103>就是那位艾欧泽亚出身的英雄的称号。<hex:02100103>据说<hex:02080DE905FF04>她<hex:FF04>他<hex:03>曾经打倒了拥有漆黑的王狼称号的帝国将军……
 2,TEXT_DUNGEONDEEPDUNGEON2_00000_RASHO_000_002,你对西方的情况倒是挺熟悉的啊。<hex:02100103>这些情报你从哪里打听到的？

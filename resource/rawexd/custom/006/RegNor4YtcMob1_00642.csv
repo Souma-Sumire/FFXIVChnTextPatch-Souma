@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4YTCMOB1_00642_STRONGMINER00642_000_001,啊，你也听说了遗迹的传闻？<hex:02100103>最近在那里挖掘到了未知的机械。
 1,TEXT_REGNOR4YTCMOB1_00642_STRONGMINER00642_000_002,虽然不知道那是什么时代的产物……<hex:02100103>不过肯定很值钱！
 2,TEXT_REGNOR4YTCMOB1_00642_STRONGMINER00642_000_005,我说旅行者，遗迹那边好像有些吵闹，<hex:02100103>是出什么事了吗？

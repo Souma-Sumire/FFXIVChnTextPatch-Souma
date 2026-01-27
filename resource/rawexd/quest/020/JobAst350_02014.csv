@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBAST350_02014_SEQ_00,圣冈里奥尔占星院的雅内基纳尔想要邀请冒险者进行新的修炼。
 1,TEXT_JOBAST350_02014_SEQ_01,从雅内基纳尔处听取了关于新修炼的说明。和东萨纳兰最终祈祷纪念地的蕾薇瓦谈谈。
 2,TEXT_JOBAST350_02014_SEQ_02,和蕾薇瓦进行了交谈。在东萨纳兰最终祈祷纪念地的<hex:02280CFF05>EObj<hex:F61E9D2A0103>仰望天空。

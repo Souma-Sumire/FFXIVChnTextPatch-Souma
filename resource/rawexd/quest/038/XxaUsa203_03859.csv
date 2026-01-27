@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSA203_03859_SEQ_00,巴斯卡隆酒家的巴斯卡隆，想要交给冒险者一份工作。
 1,TEXT_XXAUSA203_03859_SEQ_01,巴斯卡隆希望冒险者能制止胡闹的顾客。对巴斯卡隆酒家的中原之民醉汉使用<hex:022811FF0A>EventItem<hex:F61E903E0103>。
 2,TEXT_XXAUSA203_03859_SEQ_02,胡闹的醉汉走了。向巴斯卡隆报告。

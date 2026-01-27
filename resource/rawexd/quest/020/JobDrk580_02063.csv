@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDRK580_02063_SEQ_00,忘忧骑士亭的希德勒格十分气愤。
 1,TEXT_JOBDRK580_02063_SEQ_01,希德勒格建议冒险者去寻找老龙“身居天空彼岸的朋友”。和翻云雾海莫古力之家的莫古琪谈谈。
 2,TEXT_JOBDRK580_02063_SEQ_02,和莫古琪进行了交谈，看到前来汇合的希德勒格和莉艾勒，莫古琪理解了暗黑骑士的奥义的含义。遵从莫古琪的指示，从莫古力之家周围的<hex:02280CFF05>EObj<hex:F61E9D4A0103>收集4个<hex:022811FF0A>EventItem<hex:F61E8BD40103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGHINJENOMIS_00446_JENOMISLEXENTALE_000_000,是你啊，阿拉米格的解放者。<hex:02100103>虽然我也很想将你的冒险写成戏剧，<hex:02100103>但现在必须先集中于眼下的研究。
 1,TEXT_REGHINJENOMIS_00446_JENOMISLEXENTALE_000_001,很遗憾，现在暂时还没什么进展。<hex:02100103>要是当初先把书上所有内容都研究一遍就好了……<hex:02100103>都怪我太心急，刚发现勒萨利亚的消息就不顾一切跑了过去。
 2,TEXT_REGHINJENOMIS_00446_JENOMISLEXENTALE_000_002,说起来，你是有什么事想问我吗？

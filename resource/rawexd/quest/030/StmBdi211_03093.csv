@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDI211_03093_SEQ_00,道具间的妖艳的剧团成员有事想要拜托冒险者。
 1,TEXT_STMBDI211_03093_SEQ_01,异国的剧作家似乎在找冒险者。和道具间的异国的剧作家谈谈。
 2,TEXT_STMBDI211_03093_SEQ_02,异国的剧作家委托冒险者收集烟肉麦穗面包。收集10个<hex:02280DFF07>ItemHQ<hex:F224730103>，将其交给道具间的异国的剧作家。

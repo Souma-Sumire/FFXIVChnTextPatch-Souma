@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB412_00868_SEQ_00,石绿湖营地疗养院的管理人鲁库萨·珐鲁萨，看上去一筹莫展。
 1,TEXT_GAIUSB412_00868_SEQ_01,雕金匠戈德伯特在温泉中泡晕了。对戈德伯特做情感动作“戳指”。
 2,TEXT_GAIUSB412_00868_SEQ_02,戈德伯特没有任何反应。对戈德伯特使用<hex:022811FF0A>EventItem<hex:F61E87240103>。

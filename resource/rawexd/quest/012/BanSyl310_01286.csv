@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL310_01286_SEQ_00,妖精暂留地的莫奇希亚想要冒险者帮忙解决一件他一直担心的事情。
 1,TEXT_BANSYL310_01286_SEQ_01,接受了莫奇希亚的委托。驱逐悬钩群附近的2只<hex:02280FFF09>BNpcName<hex:F2090C0103>。
 2,TEXT_BANSYL310_01286_SEQ_02,成功驱逐了<hex:02280FFF09>BNpcName<hex:F2090C0103>。向妖精暂留地的莫奇希亚报告。

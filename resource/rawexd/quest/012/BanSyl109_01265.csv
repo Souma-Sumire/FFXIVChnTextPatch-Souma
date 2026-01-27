@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL109_01265_SEQ_00,妖精暂留地的特那克希亚好像有些困扰。
 1,TEXT_BANSYL109_01265_SEQ_01,接受了特那克希亚的委托。对百灵啼那些可疑的家伙使用<hex:022811FF0A>EventItem<hex:F61E89010103>，讨伐随之出现的3名<hex:02280FFF09>BNpcName<hex:F209090103>。
 2,TEXT_BANSYL109_01265_SEQ_02,成功处理那些可疑的家伙<hex:02280FFF09>BNpcName<hex:F209090103>。向妖精暂留地的特那克希亚报告。

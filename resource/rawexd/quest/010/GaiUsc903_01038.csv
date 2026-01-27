@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC903_01038_SEQ_00,蓝雾营地的拉福尔德，有件事想要委托给冒险者。
 1,TEXT_GAIUSC903_01038_SEQ_01,接受了拉福尔德的委托。分别在3处<hex:02280CFF05>EObj<hex:F61E8D4D0103>旁进行监视。
 2,TEXT_GAIUSC903_01038_SEQ_02,在3处地点监视完毕。回到蓝雾营地，向拉福尔德报告。

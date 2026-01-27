@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ821_02849_SEQ_00,辐射村的加热罗斯·加尔想要为新的生意做准备。
 1,TEXT_STMBDZ821_02849_SEQ_01,
 2,TEXT_STMBDZ821_02849_SEQ_02,

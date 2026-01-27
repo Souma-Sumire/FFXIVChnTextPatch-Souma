@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA162_01148_SEQ_00,骷髅谷营地的威尔特希斯想要把一份工作委托给冒险者。
 1,TEXT_SUBSEA162_01148_SEQ_01,据威尔特希斯说，营地的物资中有东西不够了。讨伐<hex:02280FFF09>BNpcName<hex:F2049D0103>，收集<hex:022811FF0A>EventItem<hex:F61E884A0103>。
 2,TEXT_SUBSEA162_01148_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F2049D0103>。将<hex:022811FF0A>EventItem<hex:F61E884A0103>交给骷髅谷营地的威尔特希斯。

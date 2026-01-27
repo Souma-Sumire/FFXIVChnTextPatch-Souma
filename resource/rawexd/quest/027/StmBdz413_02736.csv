@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ413_02736_SEQ_00,茨菰村的覆土似乎有事找冒险者商量。
 1,TEXT_STMBDZ413_02736_SEQ_01,和覆土进行了交谈。受委托帮助住在村里的狼人族黑鼻。在茨菰村的<hex:02280CFF05>EObj<hex:F61EA58B0103>等待黑鼻回来。
 2,TEXT_STMBDZ413_02736_SEQ_02,在<hex:02280CFF05>EObj<hex:F61EA58B0103>等待时，黑鼻回来了。将覆土的话告诉了黑鼻，但黑鼻仍垂头丧气。对茨菰村的黑鼻使用情感动作“鼓励”。

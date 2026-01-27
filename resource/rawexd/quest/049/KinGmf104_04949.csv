@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMF104_04949_SEQ_00,中央终端前的乌克·拉玛特满心懊恼。
 1,TEXT_KINGMF104_04949_SEQ_01,冒险者一行决定寻找最初遇到的永久人康斯坦希。在活着的记忆地场节点·忆的<hex:02280CFF05>EObj<hex:F61EBA4A0103>张望。
 2,TEXT_KINGMF104_04949_SEQ_02,见到了永久人喀赫奇瓦。和地场节点·忆运河镇的警卫员谈谈。

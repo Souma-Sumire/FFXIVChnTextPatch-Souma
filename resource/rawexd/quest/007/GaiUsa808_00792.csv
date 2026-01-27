@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA808_00792_SEQ_00,浮栓亭的艾尔温正在寻找可以帮忙清洁装饰画的人。
 1,TEXT_GAIUSA808_00792_SEQ_01,艾尔温很在意装饰画上堆积的灰尘。在<hex:02280CFF05>EObj<hex:F61E8C490103>和<hex:02280CFF05>EObj<hex:F61E8C4A0103>上使用<hex:022811FF0A>EventItem<hex:F61E86EF0103>，对图画进行清洁。
 2,TEXT_GAIUSA808_00792_SEQ_02,完成了对图画的清洁。向浮栓亭的艾尔温报告。

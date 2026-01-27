@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ708_02811_SEQ_00,烈士庵的眼光锐利的女武士正在寻找能够在空中飞行的武人。
 1,TEXT_STMBDZ708_02811_SEQ_01,
 2,TEXT_STMBDZ708_02811_SEQ_02,

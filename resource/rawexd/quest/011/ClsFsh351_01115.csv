@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSFSH351_01115_SEQ_00,捕鱼人行会的希希蒲有工作想要委托给冒险者。
 1,TEXT_CLSFSH351_01115_SEQ_01,接受了希希蒲的委托。和南萨纳兰遗忘绿洲的乌·葛洛姆丽谈谈。
 2,TEXT_CLSFSH351_01115_SEQ_02,和乌·葛洛姆丽进行了交谈。将1条<hex:022811FF05>Item<hex:FF08>　5033<hex:0103>交给利姆萨·罗敏萨捕鱼人行会的托克提克斯。在南萨纳兰的撒沟厉沙丘钓场里用<hex:022811FF05>Item<hex:FF08>　2600<hex:0103>作鱼饵可以钓到<hex:022811FF05>Item<hex:FF08>　5033<hex:0103>。

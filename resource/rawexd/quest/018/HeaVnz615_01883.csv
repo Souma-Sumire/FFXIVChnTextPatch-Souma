@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ615_01883_SEQ_00,南方墙壁的南方侦察队的龙骑士非常在意前往另一个战场遗迹的调查员。
 1,TEXT_HEAVNZ615_01883_SEQ_01,南方侦察队的龙骑士非常在意前往另一个战场遗迹的调查员。和翻云雾海西方水泉的北方侦察队的龙骑士谈谈。
 2,TEXT_HEAVNZ615_01883_SEQ_02,北方侦察队的龙骑士委托冒险者帮忙夺回<hex:022811FF0A>EventItem<hex:F61E8AFC0103>。在西方水泉讨伐<hex:02280FFF09>BNpcName<hex:F20E2D0103>。

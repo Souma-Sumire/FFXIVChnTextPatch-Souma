@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKHZ004_03961_SEQ_00,落羽商业区的艾因哈特家士兵好像在为某件事情而感到困扰。
 1,TEXT_LUCKHZ004_03961_SEQ_01,
 2,TEXT_LUCKHZ004_03961_SEQ_02,

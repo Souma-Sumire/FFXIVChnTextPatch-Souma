@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDC104_03025_SEQ_00,奥萨德东岸的夕雾想带豪雪和夜露去见飞燕。
 1,TEXT_STMBDC104_03025_SEQ_01,
 2,TEXT_STMBDC104_03025_SEQ_02,

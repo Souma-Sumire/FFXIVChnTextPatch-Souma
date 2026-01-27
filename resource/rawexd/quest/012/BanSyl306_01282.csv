@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL306_01282_SEQ_00,妖精暂留地的莫奇希亚有事情想要冒险者帮忙。
 1,TEXT_BANSYL306_01282_SEQ_01,接受了莫奇希亚的委托。前往妖精领西部，打倒<hex:02280CFF05>EObj<hex:F61E91540103>附近出现的坏妖精们。
 2,TEXT_BANSYL306_01282_SEQ_02,成功地打倒了坏妖精。将<hex:022811FF0A>EventItem<hex:F61E89200103>种植在<hex:02280CFF05>EObj<hex:F61E91540103>。

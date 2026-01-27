@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ402_01820_SEQ_00,莫古力之家的莫古慕古飘飘悠悠着在烦恼一些事情。
 1,TEXT_HEAVNZ402_01820_SEQ_01,莫古慕古委托冒险者找来<hex:022811FF0A>EventItem<hex:F61E8ADF0103>。在翻云雾海的招恶荒岛打倒<hex:02280FFF09>BNpcName<hex:F20E1D0103>获得<hex:022811FF0A>EventItem<hex:F61E8ADF0103>。
 2,TEXT_HEAVNZ402_01820_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ADF0103>。将<hex:022811FF0A>EventItem<hex:F61E8ADF0103>交给莫古力之家的莫古慕古。

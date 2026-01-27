@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEACAMPOVERLOOK_00117_SWYGRAE_000_000,冒险者找我有什么事啊？<hex:02100103>你要是问我太难的问题我也答不上来的。
 1,TEXT_REGSEACAMPOVERLOOK_00117_SWYGRAE_000_010,我是“红燕陆战队”的一员，<hex:02100103>那可是被称作黑涡团里“最狂”的打击舰队所属陆战队。
 2,TEXT_REGSEACAMPOVERLOOK_00117_SWYGRAE_000_011,我们部队里都是一些当过海盗的人。<hex:02100103>虽然粗鲁狂野了些，不过都是些靠得住的家伙。

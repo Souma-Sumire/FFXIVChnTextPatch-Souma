@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6PANAQPELURETREAT_00869_YUPLU_000_000,欢迎来到帕纳克佩鲁休养所！<hex:02100103>我会对这里的汤泉进行说明。
 1,TEXT_REGYOK6PANAQPELURETREAT_00869_YUPLU_000_001,刚才感受到了区别于地震的神奇晃动。<hex:02100103>究竟发生了什么目前正在确认，<hex:02100103>以防万一，必须得对客人们进行疏散才行。
 2,TEXT_REGYOK6PANAQPELURETREAT_00869_YUPLU_000_002,我从客人那里听说了，<hex:02100103>是艳翼蛇鸟在山里引发了暴动！<hex:02100103>不过大家当时没有任何察觉，都在悠闲地泡温泉。

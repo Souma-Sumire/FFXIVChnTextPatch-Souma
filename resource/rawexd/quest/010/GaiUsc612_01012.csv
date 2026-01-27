@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC612_01012_SEQ_00,石场水车的希幂有东西想要交给冒险者。
 1,TEXT_GAIUSC612_01012_SEQ_01,收下了<hex:022811FF0A>EventItem<hex:F61E87CE0103>，关于亡灵骑士的情报都收录在这里面。返回沙之家，将<hex:022811FF0A>EventItem<hex:F61E87CE0103>交给于里昂热。
 2,TEXT_GAIUSC612_01012_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E87CE0103>交给了于里昂热。于里昂热说圣典里记载的内容也只是基于亚拉戈帝国的立场上看到的真相。现在还依然看不到事件的全貌……

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ632_01900_SEQ_00,云顶营地的法布雷耶似乎正在烦恼什么。
 1,TEXT_HEAVNZ632_01900_SEQ_01,法布雷耶拜托冒险者一项工作。在阿巴拉提亚云海的危步台打倒<hex:02280FFF09>BNpcName<hex:F20DB00103>，获取4个<hex:022811FF0A>EventItem<hex:F61E8AF70103>。
 2,TEXT_HEAVNZ632_01900_SEQ_02,获得了4个<hex:022811FF0A>EventItem<hex:F61E8AF70103>。将<hex:022811FF0A>EventItem<hex:F61E8AF70103>交给云顶营地的法布雷耶。

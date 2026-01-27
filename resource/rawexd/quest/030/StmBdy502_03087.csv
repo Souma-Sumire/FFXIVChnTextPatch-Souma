@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDY502_03087_SEQ_00,丧灵钟的宝山正在等待时机。
 1,TEXT_STMBDY502_03087_SEQ_01,宝山委托冒险者一起去向斯拉佛伯恩打招呼。和丧灵钟的斯拉佛伯恩谈谈。
 2,TEXT_STMBDY502_03087_SEQ_02,斯拉佛伯恩和宝山等人在离别前加深了友谊。在丧灵钟寻找阳山。

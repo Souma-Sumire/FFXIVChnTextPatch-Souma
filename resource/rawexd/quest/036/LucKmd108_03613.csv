@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD108_03613_SEQ_00,络尾聚落的敏菲利亚忧心忡忡。
 1,TEXT_LUCKMD108_03613_SEQ_01,
 2,TEXT_LUCKMD108_03613_SEQ_02,

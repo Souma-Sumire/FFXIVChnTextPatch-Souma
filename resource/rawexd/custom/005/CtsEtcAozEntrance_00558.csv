@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSETCAOZENTRANCE_00558_BLUESKYGUIDE_000_000,这里是新建的天青斗场的入口。<hex:02100103>目前只允许会员客人、斗技场相关人员入场。
 1,TEXT_CTSETCAOZENTRANCE_00558_Q1_000_000,要做什么？
 2,TEXT_CTSETCAOZENTRANCE_00558_A1_000_001,挑战假面狂欢

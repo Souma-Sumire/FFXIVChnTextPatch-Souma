@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNC111_02241_SEQ_00,隼巢的阿尔菲诺在思考什么事情。
 1,TEXT_HEAVNC111_02241_SEQ_01,阿尔菲诺有话要告诉冒险者。前往库尔札斯中央高地巨龙首营地的接待室，在<hex:02280CFF05>EObj<hex:F61E9F500103>等待阿尔菲诺。
 2,TEXT_HEAVNC111_02241_SEQ_02,和阿尔菲诺进行了交谈。作为朋友，他想要救出埃斯蒂尼安。再次和接待室的阿尔菲诺谈谈。

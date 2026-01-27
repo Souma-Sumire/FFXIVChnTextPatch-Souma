@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_100_000,啊……阿马罗这种生物真是神秘又富有浪漫色彩……<hex:02100103>你也这么认为吧？
 1,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_010,（★未使用／削除予定★）
 2,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_011,（★未使用／削除予定★）

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA1EVENTBREAKTERMINAL_00457_SYSTEM_000_001,中继以太之晶看上去完好无损，<hex:02100103>但已经完全停止了运转。
 1,TEXT_CTSERKEUREKA1EVENTBREAKTERMINAL_00457_KRILE_000_002,(-可露儿的声音-)<hex:022903EB0203>……是我，可露儿。<hex:02100103>我想你应该差不多已经确认完中继以太之晶的状态了，<hex:02100103>所以就来联系你了，以太之晶的状态如何？
 2,TEXT_CTSERKEUREKA1EVENTBREAKTERMINAL_00457_KRILE_000_003,(-可露儿的声音-)……是吗？没有任何破损却没有启动啊。<hex:02100103>恐怕是传送目的地的以太之光出现了故障吧。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA504_00756_SEQ_00,跨天桥的商人希希巴鲁，想起了有关面具男的关键线索。
 1,TEXT_GAIUSA504_00756_SEQ_01,有一个像是面具男的人，在使用烽火与蛮族进行联系。在跨天桥东北方的<hex:02280CFF05>EObj<hex:F61E8C2D0103>处使用<hex:022811FF0A>EventItem<hex:F61E86DC0103>，引出敌人。
 2,TEXT_GAIUSA504_00756_SEQ_02,成功讨伐<hex:02280FFF09>BNpcName<hex:F207CD0103>后，获得了<hex:022811FF0A>EventItem<hex:F61E88270103>。将其交给跨天桥的商人希希巴鲁。

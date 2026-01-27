@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL104_01260_SEQ_00,妖精暂留地的特那克希亚有很紧急的事情想要委托给冒险者。
 1,TEXT_BANSYL104_01260_SEQ_01,接受了特那克希亚的委托。调查百灵啼的<hex:02280CFF05>EObj<hex:F61E91150103>，获取<hex:022811FF0A>EventItem<hex:F61E891A0103>。
 2,TEXT_BANSYL104_01260_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E891A0103>。对百灵啼的<hex:02280CFF05>EObj<hex:F61E911D0103>使用<hex:022811FF0A>EventItem<hex:F61E891A0103>，救出被捉的妖精。

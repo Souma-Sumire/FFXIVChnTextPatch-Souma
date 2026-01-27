@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL125_00635_SEQ_00,黄金集市的露露洛，希望冒险者去驱除魔物。
 1,TEXT_SUBWIL125_00635_SEQ_01,由于受到土元精袭击，因此大型的采矿工具都运不进来。打倒3只土元精。
 2,TEXT_SUBWIL125_00635_SEQ_02,打倒了土元精。让枯骨的雷雷马奇搬运来采矿工具。

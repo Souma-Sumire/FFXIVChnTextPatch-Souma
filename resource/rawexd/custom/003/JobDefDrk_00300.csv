@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFDRK_00300_SIDURGU_000_001,想喝酒找别人喝去，<hex:02100103>我没话跟你说。
 1,TEXT_JOBDEFDRK_00300_SIDURGU_000_005,这气息……你也拥有暗黑之力么……<hex:02100103>但你与我前进的方向完全不同，<hex:02100103>别来跟我套近乎。
 2,TEXT_JOBDEFDRK_00300_SIDURGU_000_010,……别期待我能说出什么有意思的事，<hex:02100103>但既然我已经答应你要告诉你暗黑骑士的知识，<hex:02100103>就会有问必答。

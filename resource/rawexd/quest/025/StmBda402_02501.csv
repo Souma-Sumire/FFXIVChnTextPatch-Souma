@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA402_02501_SEQ_00,重逢集市的其日娜想要去寻找灵树树根。
 1,TEXT_STMBDA402_02501_SEQ_01,
 2,TEXT_STMBDA402_02501_SEQ_02,

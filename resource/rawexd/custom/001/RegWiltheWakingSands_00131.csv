@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILTHEWAKINGSANDS_00131_TATARU_000_000,不好意思啊，<hex:02100103>这里是不允许非相关人员进入的，还请你尽快离开。
 1,TEXT_REGWILTHEWAKINGSANDS_00131_TATARU_000_010,啊，<hex:022903EB0203>！<hex:02100103>辛苦你了，接待处一切正常。
 2,TEXT_REGWILTHEWAKINGSANDS_00131_TATARU_000_020,啊呜呜，真是给你添麻烦了……<hex:02100103>我是太想让大家知道<hex:022903EB0203>有多厉害，<hex:02100103>所以一不小心就说个不停了……

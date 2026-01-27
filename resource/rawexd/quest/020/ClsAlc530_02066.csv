@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSALC530_02066_SEQ_00,丧灵钟的威尔特维克想要委托冒险者第一份工作。
 1,TEXT_CLSALC530_02066_SEQ_01,接受了威尔特维克解读暗号的委托。前往利姆萨·罗敏萨，给沉溺海豚亭的巴德龙看看<hex:022811FF0A>EventItem<hex:F61E8B290103>，尝试解读暗号。
 2,TEXT_CLSALC530_02066_SEQ_02,给巴德龙看了<hex:022811FF0A>EventItem<hex:F61E8B290103>。看似暗号的文字列似乎只是胡乱排列的记号而已。将<hex:022811FF0A>EventItem<hex:F61E8B290103>还给丧灵钟的威尔特维克，并报告结果。

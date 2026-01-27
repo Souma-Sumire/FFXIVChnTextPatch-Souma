@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMD107_04918_SEQ_00,谢申内青磷泉的埃伦维尔正在等待冒险者。
 1,TEXT_KINGMD107_04918_SEQ_01,
 2,TEXT_KINGMD107_04918_SEQ_02,

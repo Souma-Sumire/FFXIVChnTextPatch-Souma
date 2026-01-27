@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL204_01270_SEQ_00,妖精暂留地的颇妮希亚想要惩治醉乳根的妖精。
 1,TEXT_BANSYL204_01270_SEQ_01,接受了颇妮希亚的委托。在妖精暂留地周围的<hex:02280CFF05>EObj<hex:F61E91B40103>附近张望，打败出现的<hex:02280FFF09>BNpcName<hex:F209080103>后，对他们使用<hex:022811FF0A>EventItem<hex:F61E891D0103>。
 2,TEXT_BANSYL204_01270_SEQ_02,对<hex:02280FFF09>BNpcName<hex:F209080103>使用了<hex:022811FF0A>EventItem<hex:F61E891D0103>。向妖精暂留地的颇妮希亚报告。

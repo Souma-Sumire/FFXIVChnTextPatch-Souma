@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ023_01748_SEQ_00,玫瑰园的拉妮艾特正在寻找能帮她干活的人。
 1,TEXT_HEAVNZ023_01748_SEQ_01,拉妮艾特拜托冒险者取来<hex:02280FFF09>BNpcName<hex:F20DA60103>的飞膜。前往阿巴拉提亚云海讨伐云顶的<hex:02280FFF09>BNpcName<hex:F20DA60103>，获取有一定几率取得的<hex:022811FF0A>EventItem<hex:F61E8ABF0103>。
 2,TEXT_HEAVNZ023_01748_SEQ_02,无法从<hex:02280FFF09>BNpcName<hex:F20DA60103>身上获得<hex:022811FF0A>EventItem<hex:F61E8ABF0103>。继续讨伐<hex:02280FFF09>BNpcName<hex:F20DA60103>，获取有一定几率取得的<hex:022811FF0A>EventItem<hex:F61E8ABF0103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANIXA605_01566_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>※本任务推荐等级为：<hex:02100103>　制作职业16级以上、战斗职业49级以上。<hex:02100103><hex:02100103>长风实验场的二把手杰兹尔·阿华坦有个特殊委托要交给冒险者。
 1,TEXT_BANIXA605_01566_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>二把手杰兹尔·阿华坦委托冒险者制作<hex:022813FF07>ItemHQ<hex:FF08>　8125<hex:0103>。首先，前往库尔札斯中央高地的魔胃洞讨伐<hex:022815FF09>BNpcName<hex:FF08>　2918<hex:0103>。在<hex:02280FFF09>BNpcName<hex:F20BB00103>出现后将其击败，获取<hex:022811FF0A>EventItem<hex:F61E8A160103>。
 2,TEXT_BANIXA605_01566_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8A160103>。将<hex:022811FF0A>EventItem<hex:F61E8A160103>交给巨龙首营地的诺贝托，获取制作设施的使用许可。

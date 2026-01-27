@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTTANGUILD_00030_GEVA_000_1,怎么了，一副没见过世面的样子。<hex:02100103>难道你想打听关于制革的事情吗？
 1,TEXT_REGFSTTANGUILD_00030_Q1_000_1,想了解什么？
 2,TEXT_REGFSTTANGUILD_00030_A1_000_1,你是做什么的？

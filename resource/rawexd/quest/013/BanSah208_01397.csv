@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH208_01397_SEQ_00,诺布养育场的荷乌有事情想要委托给冒险者。
 1,TEXT_BANSAH208_01397_SEQ_01,荷乌委托冒险者去救出被囚禁的黑涡团士兵。他们受到毒雾影响，在意识不清的情况下被囚禁着。对萨普沙产卵地的<hex:02280CFF05>EObj<hex:F61E93740103>使用<hex:022811FF0A>EventItem<hex:F61E89710103>，阻止毒雾散布。
 2,TEXT_BANSAH208_01397_SEQ_02,对<hex:02280CFF05>EObj<hex:F61E93740103>使用<hex:022811FF0A>EventItem<hex:F61E89710103>，解救了黑涡团的士兵。向诺布养育场的荷乌报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST120_00700_SEQ_00,沃尔赛勒正牙校想要教给冒险者如何获得专属陆行鸟。
 1,TEXT_SUBFST120_00700_SEQ_01,用军票和补给负责人交换<hex:02280BFF05>Item<hex:F217820103>，再交给陆行鸟房的辛格尔就能获得专属陆行鸟了。努力积攒军票。
 2,TEXT_SUBFST120_00700_SEQ_02,辛格尔牵来了专属陆行鸟。给陆行鸟取个好听的名字。

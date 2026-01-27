@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB408_00864_SEQ_00,瞭望阵营地的布鲁艾丁，想要借助冒险者的力量。
 1,TEXT_GAIUSB408_00864_SEQ_01,有3名地灵族突袭侦察部队的士兵登上了高台。搜索瞭望阵营地附近的<hex:02280CFF05>EObj<hex:F61E8CAA0103>，打倒<hex:02280FFF09>BNpcName<hex:F201750103>、<hex:02280FFF09>BNpcName<hex:F2017B0103>和<hex:02280FFF09>BNpcName<hex:F201710103>共计3个。
 2,TEXT_GAIUSB408_00864_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F201750103>、<hex:02280FFF09>BNpcName<hex:F2017B0103>和<hex:02280FFF09>BNpcName<hex:F201710103>。向瞭望阵营地的布鲁艾丁报告。

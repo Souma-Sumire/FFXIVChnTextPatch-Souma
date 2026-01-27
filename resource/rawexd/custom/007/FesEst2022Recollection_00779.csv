@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESEST2022RECOLLECTION_00779_NONOTTA_000_001,你要帮忙分发彩蛋吗？<hex:02100103>我这就去帮你准备好，<hex:02100103>拜托你啦！
 1,TEXT_FESEST2022RECOLLECTION_00779_SYSTEM_000_002,再次领取任务“彩蛋狩猎与狩猎幸福”分发彩蛋。<hex:02100103>也许能与尚未见过的人邂逅哦！
 2,TEXT_FESEST2022RECOLLECTION_00779_Q1_000_000,要开始帮忙吗？

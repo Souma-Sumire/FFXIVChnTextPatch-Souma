@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH307_01406_SEQ_00,诺布养育场的塞乌想委托冒险者打倒敌人。
 1,TEXT_BANSAH307_01406_SEQ_01,塞乌委托冒险者去讨伐盘踞在劫掠来的商船上的海蛇之舌干部。登上海上的商船，打倒3名<hex:02280FFF09>BNpcName<hex:F209EB0103>，再讨伐被引出来的<hex:02280FFF09>BNpcName<hex:F20AB50103>。诺布养育场的海兽驯养人帕阿会为冒险者准备前往海上的商船的水龙蜥。
 2,TEXT_BANSAH307_01406_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20AB50103>。向诺布养育场的塞乌报告。

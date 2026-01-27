@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKHZ101_03839_SEQ_00,新巢居住区慌张的居民正表现出一脸惊异的表情。
 1,TEXT_LUCKHZ101_03839_SEQ_01,
 2,TEXT_LUCKHZ101_03839_SEQ_02,

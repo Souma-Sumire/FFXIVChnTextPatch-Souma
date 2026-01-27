@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ208_02680_SEQ_00,痉挛寨的海山正在寻找胆子够大的人。
 1,TEXT_STMBDZ208_02680_SEQ_01,
 2,TEXT_STMBDZ208_02680_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESEST203_02130_SEQ_00,※本任务是特定期间内的任务。<hex:02100103><hex:02100103>米·凯特露天剧场的快活的彩蛋收集师想确认冒险者是不是要参加“追着蛋！”活动。 
 1,TEXT_FESEST203_02130_SEQ_01,※本任务只有在季节活动开放期间才能接受和进行。<hex:02100103>　季节活动结束后无法进行，敬请注意。<hex:02100103>　详情请参见官方网站。<hex:02100103><hex:02100103>从快活的彩蛋收集师那里听取了说明。对在格里达尼亚旧街滚动的<hex:02280FFF09>BNpcName<hex:F212B90103>使用<hex:022811FF0A>EventItem<hex:F61E8C320103>，获取<hex:022811FF0A>EventItem<hex:F61E8C330103>。
 2,TEXT_FESEST203_02130_SEQ_02,从<hex:02280FFF09>BNpcName<hex:F212B90103>上获取了<hex:022811FF0A>EventItem<hex:F61E8C330103>。将<hex:022811FF0A>EventItem<hex:F61E8C330103>交给米·凯特露天剧场的快活的彩蛋收集师。

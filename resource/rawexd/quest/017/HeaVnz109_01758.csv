@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ109_01758_SEQ_00,温杜属本杜集落的泰尔米奥坚决执行任务。
 1,TEXT_HEAVNZ109_01758_SEQ_01,泰尔米奥拜托冒险者夺回物资。在温杜属本杜集落获取3个<hex:022811FF0A>EventItem<hex:F61E8AC10103>。
 2,TEXT_HEAVNZ109_01758_SEQ_02,夺回了<hex:022811FF0A>EventItem<hex:F61E8AC10103>。向温杜属本杜集落入口附近的泰尔米奥报告。

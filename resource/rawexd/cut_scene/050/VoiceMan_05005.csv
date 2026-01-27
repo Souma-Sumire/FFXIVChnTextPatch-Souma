@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_05005_000010_WARRIOROFDARKNESS,这里的人真是坚强，<hex:02100103>大家都还有不屈的斗争意志。
 1,TEXT_VOICEMAN_05005_000020_WARRIOROFDARKNESS,所以你才更加痛苦，<hex:02100103>因为造成现状的元凶就是你自己。
 2,TEXT_VOICEMAN_05005_Q1_000_001_NONE_VOICE,要说什么？

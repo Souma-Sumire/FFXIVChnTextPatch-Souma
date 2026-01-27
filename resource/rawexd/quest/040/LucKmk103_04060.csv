@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMK103_04060_SEQ_00,德尔塔管区的埃斯蒂尼安想要前往提亚马特那里。
 1,TEXT_LUCKMK103_04060_SEQ_01,
 2,TEXT_LUCKMK103_04060_SEQ_02,

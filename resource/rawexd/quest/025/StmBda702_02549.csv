@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA702_02549_SEQ_00,天营门的阿尔菲诺有很在意的事情。
 1,TEXT_STMBDA702_02549_SEQ_01,和莉瑟对话
 2,TEXT_STMBDA702_02549_SEQ_02,再次和莉瑟对话

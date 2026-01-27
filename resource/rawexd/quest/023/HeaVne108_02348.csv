@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNE108_02348_SEQ_00,喀恩埋没圣堂前的帕帕力莫似乎有什么主意。
 1,TEXT_HEAVNE108_02348_SEQ_01,帕帕力莫提出了引出假铁面公卿的作战。将帕帕力莫给的<hex:022811FF0A>EventItem<hex:F61E89CA0103>交给南萨纳兰小阿拉米格的泰尔博特。
 2,TEXT_HEAVNE108_02348_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E89CA0103>交给了泰尔博特，获得了难民的服装。和小阿拉米格的阿尔菲诺谈谈。

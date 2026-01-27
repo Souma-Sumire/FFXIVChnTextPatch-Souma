@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILAETHEGUID_00060_NENEBARU_000,哟，冒险者。<hex:02100103>要我为你讲解下“传送魔法”和“以太之光”吗？<hex:02100103>当然是免费的哦。
 1,TEXT_REGWILAETHEGUID_00060_Q1_000_1,想了解什么？
 2,TEXT_REGWILAETHEGUID_00060_A1_000_1,什么是传送魔法？

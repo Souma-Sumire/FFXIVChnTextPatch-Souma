@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ307_02703_SEQ_00,翠水乡的小夜有事想要委托从外面来的旅行者。
 1,TEXT_STMBDZ307_02703_SEQ_01,
 2,TEXT_STMBDZ307_02703_SEQ_02,

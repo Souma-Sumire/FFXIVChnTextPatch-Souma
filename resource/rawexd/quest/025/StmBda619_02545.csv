@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA619_02545_SEQ_00,帝国白山堡前的劳班在确认作战情况。
 1,TEXT_STMBDA619_02545_SEQ_01,
 2,TEXT_STMBDA619_02545_SEQ_02,

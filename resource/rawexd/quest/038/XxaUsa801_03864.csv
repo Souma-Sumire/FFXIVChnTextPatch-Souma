@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSA801_03864_SEQ_00,秋瓜浮村的开山工埃蒂恩想和冒险者谈谈最近发现的尸体的事情。
 1,TEXT_XXAUSA801_03864_SEQ_01,埃蒂恩认为受害者们有可能是遭到了<hex:02280EFF09>BNpcName<hex:F0E00103>袭击。打倒3只<hex:02280EFF09>BNpcName<hex:F0E00103>，调查是否有怪异事件的线索。
 2,TEXT_XXAUSA801_03864_SEQ_02,打倒了3只<hex:02280EFF09>BNpcName<hex:F0E00103>，但是没发现任何线索。向埃蒂恩报告。

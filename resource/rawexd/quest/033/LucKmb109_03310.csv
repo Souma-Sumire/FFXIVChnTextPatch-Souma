@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMB109_03310_SEQ_00,群花馆的桑克瑞德给仙子们帮忙的工作稍微告一段落了。
 1,TEXT_LUCKMB109_03310_SEQ_01,和桑克瑞德等人商量过后，为了让给仙子族们帮忙一事有一个结果，决定找同伴相助。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入含有“Feo Ul”的词句，在群花馆的<hex:02280CFF05>EObj<hex:F61EAAE30103>附近呼唤菲奥·乌儿。
 2,TEXT_LUCKMB109_03310_SEQ_02,"菲奥·乌儿认为冒险者冷漠无情。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入含有“Please, Feo Ul, I need you.”的词句，在群花馆的<hex:02280CFF05>EObj<hex:F61EAAE30103>附近呼唤菲奥·乌儿。"

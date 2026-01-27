@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ725_01929_SEQ_00,不洁三塔的格林坎比正悲鸣不已。
 1,TEXT_HEAVNZ725_01929_SEQ_01,听格林坎比说明了情况。前往龙堡参天高地的悲叹飞泉，在附近讨伐<hex:02280FFF09>BNpcName<hex:F20E040103>，获取3个<hex:022811FF0A>EventItem<hex:F61E8B0B0103>。
 2,TEXT_HEAVNZ725_01929_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B0B0103>。将<hex:022811FF0A>EventItem<hex:F61E8B0B0103>交给不洁三塔的格林坎比。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESANV2023GUIDE_00828_NEWBORNINTERN_000_000,感谢过去，祝福现在，祈祷未来……<hex:02100103>怀着神圣的心情庆祝新生庆典吧！<hex:02100103>仰望夜空还能看到美丽的烟花哦。
 1,TEXT_FESANV2023GUIDE_00828_Q1_000_001,想了解什么？
 2,TEXT_FESANV2023GUIDE_00828_A1_000_001,什么是新生庆典

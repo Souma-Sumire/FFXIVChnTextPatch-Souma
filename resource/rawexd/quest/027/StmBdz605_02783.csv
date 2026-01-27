@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ605_02783_SEQ_00,晨曦王座的也速根希望冒险者帮忙收集食材。
 1,TEXT_STMBDZ605_02783_SEQ_01,和也速根进行了交谈。虽然也速根想马上进行锻炼，但是缺少用于做菜的肉，因此希望冒险者代为收集。代替在兄长桥附近锻炼身体的也速根，打倒周围的<hex:02280FFF09>BNpcName<hex:F216950103>，获取2个<hex:022811FF0A>EventItem<hex:F61E8DBA0103>。
 2,TEXT_STMBDZ605_02783_SEQ_02,从<hex:02280FFF09>BNpcName<hex:F216950103>身上得到了2个<hex:022811FF0A>EventItem<hex:F61E8DBA0103>。向兄长桥附近的也速根报告。

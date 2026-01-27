@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMH104_05302_SEQ_00,消遣地区的斯菲因想和玛拉凯特会合。
 1,TEXT_KINGMH104_05302_SEQ_01,
 2,TEXT_KINGMH104_05302_SEQ_02,

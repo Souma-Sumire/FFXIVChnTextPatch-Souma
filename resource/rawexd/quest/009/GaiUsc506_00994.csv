@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC506_00994_SEQ_00,圣寇伊纳克调查地的克林托塔，有件秘密的事想要委托给冒险者。
 1,TEXT_GAIUSC506_00994_SEQ_01,克林托塔想要调查卫月。前往圣寇伊纳克调查地北方的歌咏裂谷，在<hex:02280CFF05>EObj<hex:F61E8D230103>等待，从随后现身的<hex:02280FFF09>BNpcName<hex:F2080D0103>身上获得<hex:022811FF0A>EventItem<hex:F61E88260103>。对<hex:02280FFF09>BNpcName<hex:F2080D0103>使用<hex:022811FF0A>EventItem<hex:F61E88420103>可以削弱它的力量。
 2,TEXT_GAIUSC506_00994_SEQ_02,从<hex:02280FFF09>BNpcName<hex:F2080D0103>身上得到了<hex:022811FF0A>EventItem<hex:F61E88260103>。将其交给圣寇伊纳克调查地的克林托塔。

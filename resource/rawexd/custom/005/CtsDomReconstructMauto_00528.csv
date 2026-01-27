@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDOMRECONSTRUCTMAUTO_00528_MAUTO_000_000,又多出了几块新清理完的土地呢。<hex:02100103>我正想着这边的土地能不能留给我用。
 1,TEXT_CTSDOMRECONSTRUCTMAUTO_00528_MAUTO_000_005,白狼之外的狼人族，<hex:02100103>还有从前被征走的人们都回来了！
 2,TEXT_CTSDOMRECONSTRUCTMAUTO_00528_MAUTO_000_006,既然人手也变多了，<hex:02100103>我正想着能不能活用大家的力量，<hex:02100103>去干点什么工作。

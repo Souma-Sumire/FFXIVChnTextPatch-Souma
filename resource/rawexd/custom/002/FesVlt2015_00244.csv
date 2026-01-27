@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESVLT2015_00244_MAIDVLT2015_000_000,我在此负责回答有关“恋人节”活动的疑问。<hex:02100103>您有什么不明白的，请尽管开口。
 1,TEXT_FESVLT2015_00244_Q1_000_001,想了解什么？
 2,TEXT_FESVLT2015_00244_A1_000_001,你们在这里是做什么的？

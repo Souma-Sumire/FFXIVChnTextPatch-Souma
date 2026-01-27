@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA609_00771_SEQ_00,石场水车的卡斯伯特，有事想要委托给冒险者。
 1,TEXT_GAIUSA609_00771_SEQ_01,卡斯伯特想取回祖父的遗物——<hex:022811FF0A>EventItem<hex:F61E86E10103>。在红腹蜂巢附近获得<hex:022811FF0A>EventItem<hex:F61E86E10103>。
 2,TEXT_GAIUSA609_00771_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E86E10103>。向石场水车的卡斯伯特报告。

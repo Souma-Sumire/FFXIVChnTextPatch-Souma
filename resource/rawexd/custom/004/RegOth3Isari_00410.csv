@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3ISARI_00410_INUOI_000_000,这里是渔村。<hex:02100103>你是帮了我们村子的人？<hex:02100103>虽然我们这什么都没有，但你可以在这里好好休息。
 1,TEXT_REGOTH3ISARI_00410_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3ISARI_00410_A1_000_001,你是做什么的？

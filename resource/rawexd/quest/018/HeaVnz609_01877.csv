@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ609_01877_SEQ_00,圣女希瓦像附近的莫古嗡看起来很慌张。
 1,TEXT_HEAVNZ609_01877_SEQ_01,和莫古嗡进行了交谈。据说安祖们在人王像附近搭了<hex:022811FF0A>EventItem<hex:F61E8B130103>。前往翻云雾海的人王像，将附近的<hex:022811FF0A>EventItem<hex:F61E8B130103>全部拆除。
 2,TEXT_HEAVNZ609_01877_SEQ_02,成功拆除了<hex:022811FF0A>EventItem<hex:F61E8B130103>。将<hex:022811FF0A>EventItem<hex:F61E8B130103>交给圣女希瓦像附近的莫古嗡。

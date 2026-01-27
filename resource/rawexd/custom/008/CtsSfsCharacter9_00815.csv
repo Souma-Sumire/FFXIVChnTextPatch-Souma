@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSSFSCHARACTER9_00815_GREETING_ANDEN_000_000,<hex:022903EB0203>!<hex:02100103>我想试着看能不能回想起什么来，<hex:02100103>如果你能帮忙找来羊倌使用的工具就太好了！
 1,TEXT_CTSSFSCHARACTER9_00815_GREETING_ANDEN_000_001,你来了，<hex:022903EB0203>！<hex:02100103>现在这里早晚都很冷，能拜托你筹备一些山岳地区的日用品吗？
 2,TEXT_CTSSFSCHARACTER9_00815_GREETING_ANDEN_000_002,你好，<hex:022903EB0203>！<hex:02100103>每次都麻烦你，真是不好意思。<hex:02100103>你有没有带来跟食物相关的东西？

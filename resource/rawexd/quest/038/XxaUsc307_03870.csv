@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSC307_03870_SEQ_00,小麦酒港的西艾娜，有情报想要告诉冒险者。
 1,TEXT_XXAUSC307_03870_SEQ_01,获得了有关<hex:022811FF0A>EventItem<hex:F61E904C0103>的重要线索。向格里达尼亚旧街的赫丁询问详情。
 2,TEXT_XXAUSC307_03870_SEQ_02,从赫丁那里听说了关于拥有偏属性水晶的魔石精——格吉的事情。在中央林区中魔石精巢穴的<hex:02280CFF05>EObj<hex:F61E8D130103>使用<hex:022811FF0A>EventItem<hex:F61E904B0103>，并从出现的<hex:02280FFF09>BNpcName<hex:F207BE0103>身上获取<hex:022811FF0A>EventItem<hex:F61E904C0103>。

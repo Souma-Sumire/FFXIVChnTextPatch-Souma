@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNY001_02111_SEQ_00,圣菲内雅连队露营地的威尔德西奥正在寻找帮手。
 1,TEXT_HEAVNY001_02111_SEQ_01,接受了委托，前往暮卫塔取回<hex:022811FF0A>EventItem<hex:F61E8BDB0103>。为了进入暮卫塔，前往库尔札斯西部高地的暮卫塔附近，和警备员娜迪妮谈谈。
 2,TEXT_HEAVNY001_02111_SEQ_02,获得了进入暮卫塔的许可。突破冰雪废堡暮卫塔。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。

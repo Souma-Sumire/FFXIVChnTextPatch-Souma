@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB905_00928_SEQ_00,白云崖前哨的昂斯内黛尔想要委托冒险者运送东西。
 1,TEXT_GAIUSB905_00928_SEQ_01,为了获得龙族和异端者的情报，有必要将异端者的遗物送去大审门。调查异端者的尸体。
 2,TEXT_GAIUSB905_00928_SEQ_02,在异端者的尸体上发现了<hex:022811FF0A>EventItem<hex:F61E87560103>。将其送给大审门的肖诺来。

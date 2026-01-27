@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFRRP_00729_DRUSILLA_000_000,<hex:020813E905FF07>姐妹<hex:FF07>兄弟<hex:03>你来了啊。<hex:02100103>你尽管把这里当做自己的家就行。<hex:02100103>虽然没有什么情调可言，不过倒是可以没事来这里放松一下。
 1,TEXT_JOBDEFRRP_00729_Q1_000_000,想了解什么？
 2,TEXT_JOBDEFRRP_00729_A1_000_001,最近怎么样？

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFINNBED_00020_ASK,要做什么？
 1,TEXT_CMNDEFINNBED_00020_A1,什么都不做
 2,TEXT_CMNDEFINNBED_00020_A2,退出游戏

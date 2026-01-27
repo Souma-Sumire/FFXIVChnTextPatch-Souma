@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA603_02529_SEQ_00,威罗迪纳基地的康拉德有事情想要拜托冒险者。
 1,TEXT_STMBDA603_02529_SEQ_01,
 2,TEXT_STMBDA603_02529_SEQ_02,

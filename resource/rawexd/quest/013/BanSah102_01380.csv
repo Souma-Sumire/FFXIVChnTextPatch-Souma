@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH102_01380_SEQ_00,诺布养育场的菲乌想委托冒险者去牵制珊瑚尖枪的行动。
 1,TEXT_BANSAH102_01380_SEQ_01,珊瑚尖枪为了向人类挑衅而竖起了<hex:02280CFF05>EObj<hex:F61E939F0103>，菲乌委托冒险者将其烧掉。使用<hex:022811FF0A>EventItem<hex:F61E89790103>点燃南北防波堤前的<hex:02280CFF05>EObj<hex:F61E939F0103>。
 2,TEXT_BANSAH102_01380_SEQ_02,用火烧掉了<hex:02280CFF05>EObj<hex:F61E939F0103>。向诺布养育场的菲乌报告。

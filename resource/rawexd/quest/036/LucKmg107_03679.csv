@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMG107_03679_SEQ_00,光荣门附近的阿尔菲诺正在整理获得的情报。
 1,TEXT_LUCKMG107_03679_SEQ_01,
 2,TEXT_LUCKMG107_03679_SEQ_02,

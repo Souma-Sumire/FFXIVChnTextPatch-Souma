@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGFSTINNINFO_00022_ANTOINAUT_000_1,这里是“栖木旅馆”。<hex:02100103>……不过我们不向新手冒险者开放。
 1,TEXT_REGFSTINNINFO_00022_ANTOINAUT_000_2,如果你能以出色的表现得到人们的信赖，<hex:02100103>那么缪恩或许就会允许你使用客房。<hex:02100103>所以不要灰心，继续努力吧。
 2,TEXT_REGFSTINNINFO_00022_Q1_000_1,想了解什么？

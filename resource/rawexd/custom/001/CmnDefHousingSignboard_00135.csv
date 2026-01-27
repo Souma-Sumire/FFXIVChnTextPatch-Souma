@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFHOUSINGSIGNBOARD_00135_NO_PERMIT_TO_BUY1,要想以个人形式购买土地，必须有足够的金币支付费用，<hex:02100103>还要将任意职业升至50级。
 1,TEXT_CMNDEFHOUSINGSIGNBOARD_00135_NO_PERMIT_TO_BUY2,此外，所属黑涡团的情况下，军衔需在“协漩尉”以上，<hex:02100103>所属双蛇党的情况下，军衔需在“协牙尉”以上，<hex:02100103>所属恒辉队的情况下，军衔需在“协耀尉”以上。
 2,TEXT_CMNDEFHOUSINGSIGNBOARD_00135_KUGANE_NOT_OPENED,白银乡现还处于售前展示状态。<hex:02100103>在土地正式对外销售前，请您耐心等待。

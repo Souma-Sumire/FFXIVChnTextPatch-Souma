@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMD106_03611_SEQ_00,迦利克村的稚恩真很在意情况。
 1,TEXT_LUCKMD106_03611_SEQ_01,
 2,TEXT_LUCKMD106_03611_SEQ_02,

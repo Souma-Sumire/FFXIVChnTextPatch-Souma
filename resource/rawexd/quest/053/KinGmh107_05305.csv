@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMH107_05305_SEQ_00,王座大殿的斯菲因寂寞地站在那里。
 1,TEXT_KINGMH107_05305_SEQ_01,
 2,TEXT_KINGMH107_05305_SEQ_02,

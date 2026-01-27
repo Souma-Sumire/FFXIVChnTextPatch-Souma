@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ308_01800_SEQ_00,不洁三塔的特·伊斯拉又垂涎欲滴了。
 1,TEXT_HEAVNZ308_01800_SEQ_01,特·伊斯拉想要整吞<hex:022811FF0A>EventItem<hex:F61E8AD80103>。在龙堡参天高地的阿巴拉提亚山麓获取5个<hex:022811FF0A>EventItem<hex:F61E8AD80103>。
 2,TEXT_HEAVNZ308_01800_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AD80103>。将<hex:022811FF0A>EventItem<hex:F61E8AD80103>交给不洁三塔的特·伊斯拉。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ813_01943_SEQ_00,田园郡的米德奈特·迪尤想要找人帮忙配送。
 1,TEXT_HEAVNZ813_01943_SEQ_01,和米德奈特·迪尤进行了交谈，她委托冒险者配送商品。将<hex:022811FF0A>EventItem<hex:F61E8B1E0103>交给龙堡内陆低地沙利亚克河的费尔茨默克斯。
 2,TEXT_HEAVNZ813_01943_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8B1E0103>交给了费尔茨默克斯，获得了<hex:022811FF0A>EventItem<hex:F61E8B1F0103>。将<hex:022811FF0A>EventItem<hex:F61E8B1F0103>交给田园郡的米德奈特·迪尤。

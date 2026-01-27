@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD150_00614_SEQ_00,雕金匠行会的会长赛伦蒂碧提接到了委托，想要找冒险者帮忙。
 1,TEXT_CLSGLD150_00614_SEQ_01,制作<hex:02280BFF05>Item<hex:F2106C0103>和<hex:02280BFF05>Item<hex:F210D50103>，交给雕金匠行会的赛伦蒂碧提查看。
 2,TEXT_CLSGLD150_00614_SEQ_02,前往雕金匠行会前的广场，将<hex:02280BFF05>Item<hex:F2106C0103>和<hex:02280BFF05>Item<hex:F210D50103>交给罗伯特。

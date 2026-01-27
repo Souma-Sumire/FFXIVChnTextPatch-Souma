@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKSA105_03945_SEQ_00,乌特亚前哨的德米塔尔想要将占领了敌方据点一事告诉冒险者。
 1,TEXT_LUCKSA105_03945_SEQ_01,
 2,TEXT_LUCKSA105_03945_SEQ_02,

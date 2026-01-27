@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMH108_04533_SEQ_00,巴尔德西昂分馆的蒙蒂谢涅准备告诉冒险者如何进入禁书库。
 1,TEXT_AKTKMH108_04533_SEQ_01,
 2,TEXT_AKTKMH108_04533_SEQ_02,

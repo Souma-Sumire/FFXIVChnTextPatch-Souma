@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILMATERIALIZE_00084_MUTAMIX_000_01,呼哧……呼哧……<hex:02100103>武器防具上 散发光辉的 亮闪闪魔晶石，<hex:02100103>现在可以自己 拧一拧 转一转 咔嚓一下 摘下来了哥布。
 1,TEXT_REGWILMATERIALIZE_00084_MUTAMIX_000_02,装备上镶嵌着的魔晶石现可以通过装备次级指令中的<hex:02100103>“回收魔晶石”将魔晶石摘除回收。<hex:02100103>此时，将有一定几率能获得摘下的魔晶石。

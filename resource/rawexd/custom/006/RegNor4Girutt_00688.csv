@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4GIRUTT_00688_GIRUTT_000_000,我打算在这里大赚一笔。<hex:02100103>现在正在准备开业，你稍后再来吧。
 1,TEXT_REGNOR4GIRUTT_00688_GIRUTT_000_001,你好啊，<hex:022903EB0203>！<hex:02100103>要不要试试在我的酒馆“鲁卡的首饰”里当调酒师？
 2,TEXT_REGNOR4GIRUTT_00688_GIRUTT_000_002,你只需要根据客人的对话来判断其喜好，<hex:02100103>然后加入2种辅助材料调制鸡尾酒即可。<hex:02100103>想要确认配方的话，可以从这边的食谱中确认。

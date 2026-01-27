@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ404_01822_SEQ_00,莫古力之家的莫古莫莫有些在意北方的情况。
 1,TEXT_HEAVNZ404_01822_SEQ_01,莫古莫莫委托冒险者采摘<hex:022811FF0A>EventItem<hex:F61E8AE00103>。前往翻云雾海的人王遗迹寻找并获取<hex:022811FF0A>EventItem<hex:F61E8AE00103>。
 2,TEXT_HEAVNZ404_01822_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8AE00103>。将<hex:022811FF0A>EventItem<hex:F61E8AE00103>交给莫古力之家的莫古莫莫。

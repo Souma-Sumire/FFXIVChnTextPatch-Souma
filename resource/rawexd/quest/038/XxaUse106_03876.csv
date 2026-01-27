@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSE106_03876_SEQ_00,沙之家的敏菲利亚有事情要向冒险者说明。
 1,TEXT_XXAUSE106_03876_SEQ_01,将总部迁移至丧灵钟的计划终于开始了。和沙之家的敏菲利亚谈谈。
 2,TEXT_XXAUSE106_03876_SEQ_02,和敏菲利亚进行了交谈。她与贤人们正忙着进行总部迁移的准备。将<hex:022811FF0A>EventItem<hex:F61E90350103>交给摩杜纳丧灵钟的斯拉佛伯恩。

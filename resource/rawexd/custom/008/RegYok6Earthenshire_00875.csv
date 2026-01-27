@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6EARTHENSHIRE_00875_TARNOTIK_000_000,哼哧……哼哧……<hex:02100103>我来负责 为你介绍土陶郡！
 1,TEXT_REGYOK6EARTHENSHIRE_00875_TARNOTIK_000_001,新任联王 已经定下来了啊……<hex:02100103>相信 对于这里的解读 也会更进一步！<hex:02100103>好了 我来负责 为你介绍土陶郡！
 2,TEXT_REGYOK6EARTHENSHIRE_00875_TARNOTIK_000_002,罐子工 和看护人 大家通力协作 一起制作东西。<hex:02100103>好了 我来负责 为你介绍土陶郡！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA154_01145_SEQ_00,小麦酒港的阿尔德福特有事想要拜托冒险者。
 1,TEXT_SUBSEA154_01145_SEQ_01,接受了阿尔德福特的委托。从小麦酒港周围的<hex:02280FFF09>BNpcName<hex:F2016B0103>身上得到5个<hex:022811FF0A>EventItem<hex:F61E88480103>。
 2,TEXT_SUBSEA154_01145_SEQ_02,从<hex:02280FFF09>BNpcName<hex:F2016B0103>身上得到了5个<hex:022811FF0A>EventItem<hex:F61E88480103>。将<hex:022811FF0A>EventItem<hex:F61E88480103>交给小麦酒港的阿尔德福特。

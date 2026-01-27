@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ802_01932_SEQ_00,田园郡的米德奈特·迪尤想要试探冒险者。
 1,TEXT_HEAVNZ802_01932_SEQ_01,为了适应这里的生活，接受了米德奈特·迪尤的委托的工作。和田园郡的运货的冒险者谈谈。
 2,TEXT_HEAVNZ802_01932_SEQ_02,运货的冒险者将<hex:022811FF0A>EventItem<hex:F61E8B1A0103>散落了一地。在田园郡获取5个<hex:022811FF0A>EventItem<hex:F61E8B1A0103>。

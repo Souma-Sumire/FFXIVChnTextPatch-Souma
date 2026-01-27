@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA102_01223_SEQ_00,灰阵营的菲布布·夏有事想要拜托冒险者帮忙。
 1,TEXT_BANAMA102_01223_SEQ_01,接受了菲布布·夏的委托。讨伐赞拉克的<hex:02280EFF09>BNpcName<hex:F0F50103>和<hex:02280FFF09>BNpcName<hex:F201020103>各2名。
 2,TEXT_BANAMA102_01223_SEQ_02,讨伐了<hex:02280EFF09>BNpcName<hex:F0F50103>和<hex:02280FFF09>BNpcName<hex:F201020103>。向灰阵营的菲布布·夏报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ120_01769_SEQ_00,圣菲内雅连队露营地的多米尼亚克对圣特雷尔莫有些放心不下。
 1,TEXT_HEAVNZ120_01769_SEQ_01,多米尼亚克拜托冒险者去看看圣特雷尔莫的情况。和圣菲内雅连队露营地北方的圣特雷尔莫谈谈。
 2,TEXT_HEAVNZ120_01769_SEQ_02,圣特雷尔莫让冒险者查看<hex:02280CFF05>EObj<hex:F61E9BFD0103>。调查圣菲内雅连队露营地北方的<hex:02280CFF05>EObj<hex:F61E9BFD0103>。

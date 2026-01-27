@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA611_00773_SEQ_00,姆恩·图伊酿造库的酿造师埃里蒙，有件简单的工作想委托给冒险者。
 1,TEXT_GAIUSA611_00773_SEQ_01,冒险者要帮忙制作<hex:022811FF0A>EventItem<hex:F61E86E30103>。获得<hex:022811FF0A>EventItem<hex:F61E86E20103>、<hex:022811FF0A>EventItem<hex:F61E87C30103>和<hex:022811FF0A>EventItem<hex:F61E87C40103>。
 2,TEXT_GAIUSA611_00773_SEQ_02,将获得的<hex:022811FF0A>EventItem<hex:F61E86E20103>、<hex:022811FF0A>EventItem<hex:F61E87C30103>和<hex:022811FF0A>EventItem<hex:F61E87C40103>放入姆恩·图伊酿造库的锅中。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME111_03640_SEQ_00,侏儒烟囱的水晶公似乎想到了什么。
 1,TEXT_LUCKME111_03640_SEQ_01,水晶公拜托冒险者将扣鲁图送回村。和珂露西亚岛图姆拉村的扎莫图谈谈。
 2,TEXT_LUCKME111_03640_SEQ_02,从扎莫图那里得到了<hex:022811FF0A>EventItem<hex:F61E8EB30103>。和珂露西亚岛梯顶的阿莉塞谈谈。

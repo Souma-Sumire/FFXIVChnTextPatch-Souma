@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT40RHALGRSREACH_00430_HRUODLAND_000_000,我想我也能为守护基拉巴尼亚的治安出一份力……<hex:02100103>所以就决定协助解放军了。
 1,TEXT_CTSHNT40RHALGRSREACH_00430_HRUODLAND_000_001,你不觉得讨伐怪物能够对<hex:02100103>稳定基拉巴尼亚的治安起到作用吗？<hex:02100103>如果你需要什么情报，我可以提供给你。
 2,TEXT_CTSHNT40RHALGRSREACH_00430_HRUODLAND_Q1_000_000,想了解什么？

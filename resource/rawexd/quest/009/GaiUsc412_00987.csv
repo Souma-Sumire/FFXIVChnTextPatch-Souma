@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC412_00987_SEQ_00,丧灵钟的阿加恩博尔德，想要请求冒险者帮忙。
 1,TEXT_GAIUSC412_00987_SEQ_01,阿加恩博尔德想要拿到<hex:022811FF0A>EventItem<hex:F61E87740103>。讨伐<hex:02280DFF09>BNpcName<hex:2F0103>，获得3块<hex:022811FF0A>EventItem<hex:F61E87750103>。
 2,TEXT_GAIUSC412_00987_SEQ_02,得到了<hex:022811FF0A>EventItem<hex:F61E87750103>。在早霜顶的3处<hex:02280CFF05>EObj<hex:F61E8D1B0103>上撒下<hex:022811FF0A>EventItem<hex:F61E87750103>。

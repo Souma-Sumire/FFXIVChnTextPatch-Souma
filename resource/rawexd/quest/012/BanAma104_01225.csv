@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA104_01225_SEQ_00,灰阵营的菲布布·夏遇到了无法容忍的事。
 1,TEXT_BANAMA104_01225_SEQ_01,接受了菲布布·夏的委托。前往赞拉克，首先讨伐3只<hex:02280FFF09>BNpcName<hex:F209CF0103>，再讨伐现身的头目<hex:02280FFF09>BNpcName<hex:F209380103>。
 2,TEXT_BANAMA104_01225_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F209CF0103>及其头目<hex:02280FFF09>BNpcName<hex:F209380103>。向灰阵营的菲布布·夏报告。

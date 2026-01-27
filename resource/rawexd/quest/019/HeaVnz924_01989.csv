@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ924_01989_SEQ_00,第六传送环的制造系统安静地伫立着。
 1,TEXT_HEAVNZ924_01989_SEQ_01,为了供给资源，制造系统委托冒险者破坏老化的兵器。在阿济兹拉的古代大教堂讨伐3个<hex:02280FFF09>BNpcName<hex:F20DE10103>。
 2,TEXT_HEAVNZ924_01989_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20DE10103>。向第六传送环的制造系统报告。

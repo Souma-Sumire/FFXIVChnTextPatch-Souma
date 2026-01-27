@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKHZ008_04006_SEQ_00,有一个小袋子掉落在了升歌文化区的一角。
 1,TEXT_LUCKHZ008_04006_SEQ_01,
 2,TEXT_LUCKHZ008_04006_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3HUNDREDANDONE_00420_BAAVGAI_000_000,是旅人呀……如你所见，<hex:02100103>这黑乎乎的洞里没什么能让你看得上的好东西。<hex:02100103>你是有什么事吗？
 1,TEXT_REGOTH3HUNDREDANDONE_00420_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3HUNDREDANDONE_00420_A1_000_001,你是做什么的？

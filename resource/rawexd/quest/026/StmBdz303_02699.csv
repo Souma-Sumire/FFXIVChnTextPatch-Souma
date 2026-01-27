@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ303_02699_SEQ_00,翠水乡的峰有事想要委托给从地上来的人。
 1,TEXT_STMBDZ303_02699_SEQ_01,
 2,TEXT_STMBDZ303_02699_SEQ_02,

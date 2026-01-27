@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSWKSEMERGENCYTRANSPORT_00958_TALK_000_000,我负责紧急情况时的人员运输。<hex:02100103>情况发生时，我会按照模拟演练的流程召集参与者，<hex:02100103>你能先去和查明威谈谈吗？
 1,TEXT_CTSWKSEMERGENCYTRANSPORT_00958_TALK_010_000,我叫蕾芙蕾达，请多指教。<hex:02100103>我平时负责在紧急情况发生时进行人员运输。
 2,TEXT_CTSWKSEMERGENCYTRANSPORT_00958_TALK_010_005,憧憬湾的环境相对稳定，<hex:02100103>不过，偶尔会产生磁暴和孢子雾，<hex:02100103>另外，有时也会落下陨石。

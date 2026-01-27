@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSAK6SHESHENEWEZISPRINGS_00883_LOASAKWE_000_000,哎呀，累死了……<hex:02100103>旅行者，陪我聊聊天帮我转换一下心情吧。<hex:02100103>趁着下一位患者还没到。
 1,TEXT_REGSAK6SHESHENEWEZISPRINGS_00883_LOASAKWE_000_001,我听说图莱尤拉发生了战斗……<hex:02100103>你是不是也在为此而担心啊？
 2,TEXT_REGSAK6SHESHENEWEZISPRINGS_00883_LOASAKWE_000_002,那个黑色物体从空中消失之后，感觉心情舒畅多了！<hex:02100103>之前一直感觉被什么东西压着脑袋一样，很是不爽。<hex:02100103>话说你想问什么？

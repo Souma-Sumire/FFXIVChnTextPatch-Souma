@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKYR201_04176_SEQ_00,旧萨雷安的小个子拾穗人正在寻找冒险者。
 1,TEXT_AKTKYR201_04176_SEQ_01,
 2,TEXT_AKTKYR201_04176_SEQ_02,

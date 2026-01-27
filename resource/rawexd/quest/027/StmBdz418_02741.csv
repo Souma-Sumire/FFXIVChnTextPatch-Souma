@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ418_02741_SEQ_00,弓束官邸的鱼鼓有事想要拜托人类。
 1,TEXT_STMBDZ418_02741_SEQ_01,
 2,TEXT_STMBDZ418_02741_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC405_00980_SEQ_00,阿德内尔占星台的波特莱纳，可以为冒险者提供方便。
 1,TEXT_GAIUSC405_00980_SEQ_01,在泽梅尔要塞可以获得更多加雷马帝国的情报。将<hex:022811FF0A>EventItem<hex:F61E87CA0103>交给布里塞尔，他在西边的泽梅尔要塞。
 2,TEXT_GAIUSC405_00980_SEQ_02,据布里塞尔所说，有人从迫降的帝国飞空艇中逃走了。前往西南面的黄金谷，与目击者皮埃尔蒙交谈。

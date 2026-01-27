@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBBRD350_01086_SEQ_00,让泰尔想要教给冒险者掌握新战歌的方法。
 1,TEXT_JOBBRD350_01086_SEQ_01,让泰尔教授了掌握新战歌的方法。在东拉诺西亚接雨草树林的<hex:02280CFF05>EObj<hex:F61E8DBD0103>等待，讨伐出现的亡灵。
 2,TEXT_JOBBRD350_01086_SEQ_02,成功讨伐了亡灵。向南部林区石场水车西边的让泰尔报告。

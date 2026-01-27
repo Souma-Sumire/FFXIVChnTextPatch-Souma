@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04005_000010_PIPIN,首先，让我们由衷祝贺拂晓各位远征归来。<hex:02100103>能请你们汇报一下这次的战果吗？
 1,TEXT_VOICEMAN_04005_000020_ALISAIE,那就由我来汇报吧。
 2,TEXT_VOICEMAN_04005_000030_RAUBAHN,虽然付出了莫大的牺牲，<hex:02100103>但你们最终还是从帝国的统治下解放了多玛。

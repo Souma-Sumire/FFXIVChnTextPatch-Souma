@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANGNA401_02266_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整（限定职业）<hex:0249020103><hex:0248020103><hex:02100103>自由脑窟穴的眼神好看起来很自豪。
 1,TEXT_BANGNA401_02266_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整（限定职业）任务，<hex:02100103>　需要与接受任务时的职业相同才可继续进行任务。<hex:02100103><hex:02100103>眼神好委托冒险者收集圣菲内雅连队需要的火药材料。在阿瓦隆尼亚古陆获取3袋<hex:022811FF0A>EventItem<hex:F61E8C240103>，在荒烟野地获取3根<hex:022811FF0A>EventItem<hex:F61E8C250103>。
 2,TEXT_BANGNA401_02266_SEQ_02,获得了3袋<hex:022811FF0A>EventItem<hex:F61E8C240103>和3根<hex:022811FF0A>EventItem<hex:F61E8C250103>。将<hex:022811FF0A>EventItem<hex:F61E8C240103>和<hex:022811FF0A>EventItem<hex:F61E8C250103>交给自由脑窟穴的眼神好。

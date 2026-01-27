@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBAOZ200_03195_SEQ_00,乌尔达哈的马丁想要给予冒险者试炼。
 1,TEXT_JOBAOZ200_03195_SEQ_01,和马丁进行了交谈，冒险者将再次接受试炼。和中萨纳兰的无刺盆地的马丁谈谈。
 2,TEXT_JOBAOZ200_03195_SEQ_02,和马丁进行了交谈，冒险者需要前去讨伐魔物。在无刺盆地的<hex:02280CFF05>EObj<hex:F61EAA470103>张望并讨伐狂暴的鼹鼠。

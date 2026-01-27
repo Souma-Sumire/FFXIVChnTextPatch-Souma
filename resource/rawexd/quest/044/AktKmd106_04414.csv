@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMD106_04414_SEQ_00,波洛伽护法村的摩提夏惶惶不安。
 1,TEXT_AKTKMD106_04414_SEQ_01,
 2,TEXT_AKTKMD106_04414_SEQ_02,

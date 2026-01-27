@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFRDC_00610_KUIHLUD_000_000,拉娜妹子又有长进了，<hex:02100103>我们也得加把劲，努力创作出新的曲目和演奏方式才行。<hex:02100103>艺术之路是永无止境的。
 1,TEXT_JOBDEFRDC_00610_Q1_000_000,想了解什么？
 2,TEXT_JOBDEFRDC_00610_A1_000_001,最近怎么样？

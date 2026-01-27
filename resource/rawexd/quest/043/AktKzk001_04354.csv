@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKZK001_04354_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>奥密克戎基地的N-4486正在寻找模拟战的对手。
 1,TEXT_AKTKZK001_04354_SEQ_01,※本任务为<hex:024804F201FC03><hex:024904F201FD03><hex:0249020103><hex:0248020103> 等级调整任务。<hex:02100103><hex:02100103>接受了委托，帮忙配合与侵略者的模拟战。前往奥密克戎基地的东边，将那里的<hex:02280FFF09>BNpcName<hex:F22B090103>削弱，然后使用<hex:022811FF0A>EventItem<hex:F61E91490103>。
 2,TEXT_AKTKZK001_04354_SEQ_02,从束缚住的<hex:02280FFF09>BNpcName<hex:F22B090103>身上回收等级检测仪。将<hex:022811FF0A>EventItem<hex:F61E914A0103>交给奥密克戎基地的N-4486。

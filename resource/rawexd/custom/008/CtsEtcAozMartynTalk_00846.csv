@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSETCAOZMARTYNTALK_00846_MARTYN_000_000,<hex:022903EB0203>。<hex:02100103>青魔法师修行过程中最重要的是腿脚。<hex:02100103>总之你需要踏遍全世界去学习青魔法才行！
 1,TEXT_CTSETCAOZMARTYNTALK_00846_MARTYN_000_010,<hex:022903EB0203>。<hex:02100103>正在修行之中的你绝对不能沉溺物欲。<hex:02100103>尤其是执着于金钱等物，那更是不成体统，你一定要自省啊……
 2,TEXT_CTSETCAOZMARTYNTALK_00846_MARTYN_000_020,<hex:022903EB0203>。<hex:02100103>可能有时你会觉得周围的人比自己更好，但千万不要被迷惑。<hex:02100103>幸福的青鸟总是在你身边……

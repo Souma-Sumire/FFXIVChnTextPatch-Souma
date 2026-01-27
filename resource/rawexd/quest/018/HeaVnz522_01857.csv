@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ522_01857_SEQ_00,惋惜之晶遗迹目光闪烁的莫古力在瑟瑟发抖。
 1,TEXT_HEAVNZ522_01857_SEQ_01,目光闪烁的莫古力委托冒险者清理从卵中孵化出的幼虫。在惋惜之晶遗迹讨伐3只<hex:02280FFF09>BNpcName<hex:F210C00103>。
 2,TEXT_HEAVNZ522_01857_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F210C00103>。向惋惜之晶遗迹目光闪烁的莫古力报告。

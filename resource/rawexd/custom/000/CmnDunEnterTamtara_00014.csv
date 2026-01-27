@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDUNENTERTAMTARA_00014_SCENE00000,里面的塔姆·塔拉墓园是<hex:02100103>格里达尼亚“鬼哭队第二枪队”的管辖范围。
 1,TEXT_CMNDUNENTERTAMTARA_00014_SCENE00001,有什么事？
 2,TEXT_CMNDUNENTERTAMTARA_00014_SCENE00002,询问“地下灵殿塔姆·塔拉墓园”的开始条件

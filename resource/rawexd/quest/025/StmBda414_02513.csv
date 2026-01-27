@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA414_02513_SEQ_00,朵塔儿水洲的豪雪想要确认打听到的成果。
 1,TEXT_STMBDA414_02513_SEQ_01,
 2,TEXT_STMBDA414_02513_SEQ_02,

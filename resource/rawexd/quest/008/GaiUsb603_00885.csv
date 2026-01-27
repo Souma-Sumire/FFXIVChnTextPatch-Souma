@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB603_00885_SEQ_00,弗洛朗泰尔哨塔的神勇队士兵伊德里斯唐想要委托冒险者消灭魔物。
 1,TEXT_GAIUSB603_00885_SEQ_01,伊德里斯唐想要驱逐从库尔札斯流窜来的<hex:02280FFF09>BNpcName<hex:F2018F0103>。将<hex:022811FF0A>EventItem<hex:F61E87320103>放置在弗洛朗泰尔哨塔南面的<hex:02280CFF05>EObj<hex:F61E8CBA0103>，讨伐随之出现的<hex:02280FFF09>BNpcName<hex:F2018F0103>。
 2,TEXT_GAIUSB603_00885_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F2018F0103>。向弗洛朗泰尔哨塔的伊德里斯唐报告。

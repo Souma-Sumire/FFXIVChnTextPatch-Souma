@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAROGGUILD_00215_JACKE_000,……嗯？怎么了？<hex:02100103>关于双剑师，你有什么想了解的吗？
 1,TEXT_REGSEAROGGUILD_00215_Q1_010,想了解什么？
 2,TEXT_REGSEAROGGUILD_00215_A1_011,你是做什么的？

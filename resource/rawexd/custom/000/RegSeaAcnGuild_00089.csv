@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAACNGUILD_00089_THUBYRGEIM_000_1,哎呀，欢迎你的到来。<hex:02100103>秘术在梅尔凡海关的业务环节里可是不可或缺的一部分，<hex:02100103>如果你有什么不懂的可以尽管来问我。
 1,TEXT_REGSEAACNGUILD_00089_Q1_000_1,想了解什么？
 2,TEXT_REGSEAACNGUILD_00089_A1_000_1,你是做什么的？

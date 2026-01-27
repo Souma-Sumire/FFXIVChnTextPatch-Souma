@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ306_01798_SEQ_00,尾羽集落的马塞尚正在准备应战。
 1,TEXT_HEAVNZ306_01798_SEQ_01,接受委托，帮忙驱赶大陆行鸟。前往龙堡参天高地的陆行鸟之森，和前去查看坏掉的陷阱的老练的猎人谈谈。
 2,TEXT_HEAVNZ306_01798_SEQ_02,老练的猎人遭到了<hex:02280FFF09>BNpcName<hex:F20FCF0103>的袭击。追赶逃往陆行鸟之森东北边的<hex:02280FFF09>BNpcName<hex:F20FCF0103>，对方发起攻击的话就将其讨伐。

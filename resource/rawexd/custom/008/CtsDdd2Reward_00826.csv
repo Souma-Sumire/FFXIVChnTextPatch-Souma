@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSDDD2REWARD_00826_DD2SHOP_000_000,虽然这可能听起来有些矛盾，<hex:02100103>但是真的是很闲，一点事情都没有。<hex:02100103>啊，我是指警备的工作啦。
 1,TEXT_CTSDDD2REWARD_00826_DD2SHOP_000_010,哎呀……已经到了干活的时间了吗？<hex:02100103>呵呵呵……我正等你呢。<hex:02100103>你需要我做些什么呢？
 2,TEXT_CTSDDD2REWARD_00826_DD2SHOP_000_020,看来到了展现鬼师众技术的时候了呢。<hex:02100103>你来告诉我需要做些什么吧。

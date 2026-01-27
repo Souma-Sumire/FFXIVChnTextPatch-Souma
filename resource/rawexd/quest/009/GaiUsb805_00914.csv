@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB805_00914_SEQ_00,巨龙首营地的朱莉娜想要寻找某样东西。
 1,TEXT_GAIUSB805_00914_SEQ_01,朱莉娜想要寻找曾接受异端审问的恋人戴在身上的水晶念锁。为了寻找装饰在念锁上的<hex:022811FF0A>EventItem<hex:F61E874D0103>，在巨龙首营地东边的落魔崖谷底进行搜索。
 2,TEXT_GAIUSB805_00914_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E874D0103>。返回巨龙首营地，将<hex:022811FF0A>EventItem<hex:F61E874D0103>交给朱莉娜。

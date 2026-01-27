@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA608_00770_SEQ_00,石场水车的福瑟尔托，希望冒险者去讨伐某些人。
 1,TEXT_GAIUSA608_00770_SEQ_01,福瑟尔托想从寄生蜂团手中夺回村子。分别讨伐1名红腹蜂巢附近的<hex:02280DFF09>BNpcName<hex:350103>、<hex:02280DFF09>BNpcName<hex:540103>和<hex:02280DFF09>BNpcName<hex:AD0103>。
 2,TEXT_GAIUSA608_00770_SEQ_02,成功讨伐了寄生蜂团。向石场水车的福瑟尔托报告。

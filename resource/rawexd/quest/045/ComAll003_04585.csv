@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_COMALL003_04585_SEQ_00,
 1,TEXT_COMALL003_04585_SEQ_01,从古恩吉·佐尔恩吉处听说了新的玩家对战“水晶冲突”。挑战令人热血沸腾的激战吧。<hex:02100103><hex:02100103>※可以通过任务搜索器参加。
 2,TEXT_COMALL003_04585_SEQ_02,

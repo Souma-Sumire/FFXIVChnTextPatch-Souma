@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB106_00825_SEQ_00,遗忘绿洲的乌·库巴·提亚，有东西想要冒险者帮忙收集。
 1,TEXT_GAIUSB106_00825_SEQ_01,乌·库巴·提亚想要筹备箭头。从<hex:02280FFF09>BNpcName<hex:F2011D0103>身上获得6个<hex:022811FF0A>EventItem<hex:F61E87060103>。
 2,TEXT_GAIUSB106_00825_SEQ_02,获得了6个<hex:022811FF0A>EventItem<hex:F61E87060103>。将其交给遗忘绿洲的乌·库巴·提亚。

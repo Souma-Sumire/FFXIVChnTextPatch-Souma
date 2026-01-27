@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA304_00736_SEQ_00,在撒拉奥斯的遗骸，塔恩嘉·托恩嘉正在找人帮忙挖掘化石。
 1,TEXT_GAIUSA304_00736_SEQ_01,接受了塔恩嘉·托恩嘉的委托，挖掘化石。在撒拉奥斯的遗骸周围寻找1个<hex:022811FF0A>EventItem<hex:F61E86D10103>和2个<hex:022811FF0A>EventItem<hex:F61E86D00103>。
 2,TEXT_GAIUSA304_00736_SEQ_02,找到了<hex:022811FF0A>EventItem<hex:F61E86D10103>和<hex:022811FF0A>EventItem<hex:F61E86D00103>。将<hex:022811FF0A>EventItem<hex:F61E86D10103>和<hex:022811FF0A>EventItem<hex:F61E86D00103>交给贫女材场的塔恩嘉·托恩嘉。

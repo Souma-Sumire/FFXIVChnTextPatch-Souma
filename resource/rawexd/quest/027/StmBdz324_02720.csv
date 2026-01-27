@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ324_02720_SEQ_00,渔村的名吉有事要委托冒险者。
 1,TEXT_STMBDZ324_02720_SEQ_01,名吉委托冒险者陪他进行钓鱼训练。和渔村的名吉汇合，如果有魔物被钓上来，则进行讨伐。
 2,TEXT_STMBDZ324_02720_SEQ_02,讨伐了名吉钓上来的魔物。救助惧怕魔物的名吉。

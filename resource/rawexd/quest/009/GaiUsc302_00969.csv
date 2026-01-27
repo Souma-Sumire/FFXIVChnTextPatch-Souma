@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC302_00969_SEQ_00,格里达尼亚旧街的园艺工塞蕾恩，有东西想要派送出去。
 1,TEXT_GAIUSC302_00969_SEQ_01,接受了派送物品的委托，并被认定为优秀的冒险者。将<hex:022811FF0A>EventItem<hex:F61E88360103>交给妖精暂留地的热勒兰。
 2,TEXT_GAIUSC302_00969_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E88360103>交给了热勒兰。不知他到底为何要寻找优秀的冒险者。

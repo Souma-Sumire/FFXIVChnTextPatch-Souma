@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ414_01832_SEQ_00,人王遗迹的莫古雷欧又发现了有困难的同胞。
 1,TEXT_HEAVNZ414_01832_SEQ_01,莫古雷欧想要向有困难的同胞了解情况。一起和翻云雾海人王遗迹的护卫团莫古力谈谈。
 2,TEXT_HEAVNZ414_01832_SEQ_02,护卫团莫古力想要<hex:022811FF0A>EventItem<hex:F61E8B740103>。和人王遗迹的莫古雷欧谈谈，制定作战计划。

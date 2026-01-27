@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSHNT50RISKYMOBTEMPEST_00619_JUDRIC_000,游末邦距离魔物混杂的陆地有一段距离，<hex:02100103>所以单纯的城市防卫工作不会有多困难，<hex:02100103>不过外海的各种海兽是需要注意的重点。
 1,TEXT_CTSHNT50RISKYMOBTEMPEST_00619_JUDRIC_001,没想到竟然有人能到达黑风海的海底……<hex:02100103>你要帮忙将我们一直束手无策的海中恶名精英们清理掉吗？
 2,TEXT_CTSHNT50RISKYMOBTEMPEST_00619_JUDRIC_Q1_000_000,想了解什么？

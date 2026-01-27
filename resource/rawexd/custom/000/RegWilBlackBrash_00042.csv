@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILBLACKBRASH_00042_ELURED_000_1,哟，你这个冒险者有什么事？<hex:02100103>我没什么时间，有话快说。
 1,TEXT_REGWILBLACKBRASH_00042_SCENE00000Q,想了解什么？
 2,TEXT_REGWILBLACKBRASH_00042_SCENE00000A1,你在这里是做什么的？

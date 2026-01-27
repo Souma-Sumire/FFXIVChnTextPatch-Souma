@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB510_00879_SEQ_00,圣阿达玛·兰达玛教会的芬德蕾克，想要冒险者帮忙找人。
 1,TEXT_GAIUSB510_00879_SEQ_01,要来参加葬礼的亲戚似乎还没到场。前往日影地修炼所附近，寻找不务正业的旅人，那就是芬德蕾克的亲戚。
 2,TEXT_GAIUSB510_00879_SEQ_02,打倒<hex:02280FFF09>BNpcName<hex:F204A40103>，搭救了旅人。向圣阿达玛·兰达玛教会的芬德蕾克报告。

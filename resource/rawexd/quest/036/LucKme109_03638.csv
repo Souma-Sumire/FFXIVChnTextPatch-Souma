@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKME109_03638_SEQ_00,图姆拉村的扎莫图似乎有重要的事情要说。
 1,TEXT_LUCKME109_03638_SEQ_01,
 2,TEXT_LUCKME109_03638_SEQ_02,

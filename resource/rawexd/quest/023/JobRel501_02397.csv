@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBREL501_02397_SEQ_00,加工系统正在对设计图进行确认。
 1,TEXT_JOBREL501_02397_SEQ_01,阿尔达希尔向冒险者讲解了<hex:02280BFF05>Item<hex:F242240103>的制作方法。通过各种途径收集15个<hex:02280BFF05>Item<hex:F242250103>，交给阿济兹拉螺旋港的加工系统。
 2,TEXT_JOBREL501_02397_SEQ_02,将材料交给了加工系统。在阿尔达希尔和加工系统的联合作业下，成功制造出了<hex:02280BFF05>Item<hex:F242240103>。人造元灵的灵魂凝聚度升满后，将<hex:02280BFF05>Item<hex:F242240103>交给盖罗尔特。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB908_00931_SEQ_00,大审门的神殿骑士肖诺来想要拆除瓦砾。
 1,TEXT_GAIUSB908_00931_SEQ_01,被龙族击碎的<hex:02280CFF05>EObj<hex:F61E8CEF0103>堵塞了道路。拆除<hex:02280CFF05>EObj<hex:F61E8CEF0103>。
 2,TEXT_GAIUSB908_00931_SEQ_02,拆除了<hex:02280CFF05>EObj<hex:F61E8CEF0103>。向大审门的神殿骑士肖诺来报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMG114_04463_SEQ_00,无命镇的阿莉塞看起来并没有灰心。
 1,TEXT_AKTKMG114_04463_SEQ_01,和阿莉塞等人一起探索城镇。在天外天垓的无命镇收集情报。
 2,TEXT_AKTKMG114_04463_SEQ_02,没有找到任何活物。和无命镇的阿莉塞谈谈。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ622_01890_SEQ_00,圣菲内雅连队露营地的玛吉特还有事情想委托给冒险者。
 1,TEXT_HEAVNZ622_01890_SEQ_01,玛吉特拜托冒险者收集被龙族所杀的战士们的遗物。讨伐库尔札斯西部高地红沿的<hex:02280FFF09>BNpcName<hex:F20DA20103>，获得5个<hex:022811FF0A>EventItem<hex:F61E8B550103>。
 2,TEXT_HEAVNZ622_01890_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F20DA20103>，获得了5个<hex:022811FF0A>EventItem<hex:F61E8B550103>。将<hex:022811FF0A>EventItem<hex:F61E8B550103>交给库尔札斯西部高地隼巢的艾蕾丝。

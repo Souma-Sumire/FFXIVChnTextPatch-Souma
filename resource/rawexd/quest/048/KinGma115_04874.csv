@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMA115_04874_SEQ_00,伊库乌洛商旅馆的乌克·拉玛特想要去找下一个交易对象。
 1,TEXT_KINGMA115_04874_SEQ_01,
 2,TEXT_KINGMA115_04874_SEQ_02,

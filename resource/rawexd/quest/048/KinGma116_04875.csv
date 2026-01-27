@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMA116_04875_SEQ_00,米普露马黛茶园的乌克·拉玛特想要获取最高级梅斯卡酒。
 1,TEXT_KINGMA116_04875_SEQ_01,
 2,TEXT_KINGMA116_04875_SEQ_02,

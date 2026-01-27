@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMG102_04451_SEQ_00,露天集市的塔塔露兴高采烈。
 1,TEXT_AKTKMG102_04451_SEQ_01,
 2,TEXT_AKTKMG102_04451_SEQ_02,

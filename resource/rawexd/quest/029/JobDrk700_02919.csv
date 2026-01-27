@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDRK700_02919_SEQ_00,忘忧骑士亭的希德勒格正在等待密斯托回来。
 1,TEXT_JOBDRK700_02919_SEQ_01,决定和希德勒格、莉艾勒一起寻找密斯托的踪迹。在神拳痕收集情报。
 2,TEXT_JOBDRK700_02919_SEQ_02,收集了有关密斯托的情报。和神拳痕的希德勒格汇合。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSPGL250_00566_SEQ_00,格斗家行会的哈蒙似乎修行过度了。
 1,TEXT_CLSPGL250_00566_SEQ_01,哈蒙修行过度，导致全身酸痛。由秋秋拓授予冒险者新的课题。
 2,TEXT_CLSPGL250_00566_SEQ_02,关于今天的修行，秋秋拓似乎有些新想法。前往小阿拉米格，与秋秋拓汇合。

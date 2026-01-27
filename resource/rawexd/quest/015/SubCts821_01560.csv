@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS821_01560_SEQ_00,弯枝牧场的饲养员吕凯洛有事要告诉冒险者。
 1,TEXT_SUBCTS821_01560_SEQ_01,吕凯洛要告诉冒险者饲养专属陆行鸟的秘诀。打扫鸟房是基础中的基础。首先在弯枝牧场的鸟房附近，捡起5堆<hex:02280CFF05>EObj<hex:F61E95D00103>。
 2,TEXT_SUBCTS821_01560_SEQ_02,捡完了鸟房附近的<hex:02280CFF05>EObj<hex:F61E95D00103>。向弯枝牧场的吕凯洛报告。

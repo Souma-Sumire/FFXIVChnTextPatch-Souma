@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKLA305_04150_SEQ_00,精制堂的德布罗依似乎充满干劲。
 1,TEXT_AKTKLA305_04150_SEQ_01,
 2,TEXT_AKTKLA305_04150_SEQ_02,

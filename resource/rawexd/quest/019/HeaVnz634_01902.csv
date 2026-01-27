@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ634_01902_SEQ_00,云顶营地的卡里博正眺望着农田。
 1,TEXT_HEAVNZ634_01902_SEQ_01,卡里博委托冒险者收集<hex:022811FF0A>EventItem<hex:F61E8AF80103>。在阿巴拉提亚云海的牧牛台获取<hex:022811FF0A>EventItem<hex:F61E8AF80103>。
 2,TEXT_HEAVNZ634_01902_SEQ_02,收集了<hex:022811FF0A>EventItem<hex:F61E8AF80103>。将<hex:022811FF0A>EventItem<hex:F61E8AF80103>交给云顶营地的卡里博。

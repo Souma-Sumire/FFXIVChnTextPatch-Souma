@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3DOTHARLKHAA_00419_KHORIJIN_000_000,是旅行者呀。<hex:02100103>如果不是来攻击我们的，那你可以随便四处看看。<hex:02100103>有什么疑问也可以来问我。
 1,TEXT_REGOTH3DOTHARLKHAA_00419_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3DOTHARLKHAA_00419_A1_000_001,你是做什么的？

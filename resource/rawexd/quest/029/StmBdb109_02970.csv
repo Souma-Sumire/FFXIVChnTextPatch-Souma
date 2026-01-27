@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDB109_02970_SEQ_00,沙之家的娜娜莫·乌尔·娜莫想要开始下一步行动。
 1,TEXT_STMBDB109_02970_SEQ_01,
 2,TEXT_STMBDB109_02970_SEQ_02,

@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_DUNGEONYTC3_00000_2B_000_000,又是那家伙？<hex:02100103>可恶……真是没完没了……
 1,TEXT_DUNGEONYTC3_00000_9S_000_001,必须阻止她们的计划！

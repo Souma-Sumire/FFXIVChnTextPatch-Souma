@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC605_01005_SEQ_00,为了修理魔导装甲，西德有事想要拜托冒险者。
 1,TEXT_GAIUSC605_01005_SEQ_01,魔导装甲的心脏部位魔导核心所受的损伤过大，需要制作一个新的来替换。和魏吉谈谈，了解问题的解决方案。
 2,TEXT_GAIUSC605_01005_SEQ_02,修复魔导核心需要<hex:022811FF0A>EventItem<hex:F61E87840103>。前往乌尔达哈的雕金匠行会，和会长赛伦蒂碧提谈谈。

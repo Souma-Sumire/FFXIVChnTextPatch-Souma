@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ506_01841_SEQ_00,赎罪天廊的莫古萌无法平静下来。
 1,TEXT_HEAVNZ506_01841_SEQ_01,莫古萌委托冒险者夺取<hex:022811FF0A>EventItem<hex:F61E8B100103>。前往翻云雾海的天极白垩宫前面广场上<hex:02280FFF09>BNpcName<hex:F210BA0103>的巢。
 2,TEXT_HEAVNZ506_01841_SEQ_02,接近巢时，<hex:02280FFF09>BNpcName<hex:F210BA0103>袭击了过来。击退阻碍，取得<hex:022811FF0A>EventItem<hex:F61E8B100103>。

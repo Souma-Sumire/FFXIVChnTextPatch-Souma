@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKSA212_04028_SEQ_00,甘戈斯的安妮斯想要在地下遗迹女王古殿找东西。
 1,TEXT_LUCKSA212_04028_SEQ_01,
 2,TEXT_LUCKSA212_04028_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMG104_03676_SEQ_00,上路客店的拜克·拉各想要说一下自己的想法。
 1,TEXT_LUCKMG104_03676_SEQ_01,
 2,TEXT_LUCKMG104_03676_SEQ_02,

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ310_01802_SEQ_00,不洁三塔的艾斯·卡斯正在打量冒险者。
 1,TEXT_HEAVNZ310_01802_SEQ_01,艾斯·卡斯委托冒险者去和幼龙战斗。和龙堡参天高地阿瓦隆尼亚古陆的<hex:02280FFF09>BNpcName<hex:F210B10103>谈谈。
 2,TEXT_HEAVNZ310_01802_SEQ_02,和<hex:02280FFF09>BNpcName<hex:F210B10103>进行了交谈。和阿瓦隆尼亚古陆的<hex:02280FFF09>BNpcName<hex:F210B10103>对战。

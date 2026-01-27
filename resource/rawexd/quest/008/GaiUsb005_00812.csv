@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB005_00812_SEQ_00,太阳海岸的维斯凯特想让冒险者在正式工作前先练练手。
 1,TEXT_GAIUSB005_00812_SEQ_01,在接受格格鲁玖的委托之前，需要去打倒<hex:02280FFF09>BNpcName<hex:F207B80103>。将<hex:022811FF0A>EventItem<hex:F61E86FC0103>设置在<hex:02280CFF05>EObj<hex:F61E8C730103>。
 2,TEXT_GAIUSB005_00812_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E8ECF0103>等待并打倒<hex:02280FFF09>BNpcName<hex:F207B80103>。获取<hex:022811FF0A>EventItem<hex:F61E86FD0103>。

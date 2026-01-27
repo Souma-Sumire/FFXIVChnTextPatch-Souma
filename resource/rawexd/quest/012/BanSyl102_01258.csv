@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL102_01258_SEQ_00,妖精暂留地的特那克希亚想到了新的恶作剧点子。
 1,TEXT_BANSYL102_01258_SEQ_01,接受了特那克希亚的委托。在百灵啼讨伐<hex:02280EFF09>BNpcName<hex:F0ED0103>，获取1份<hex:022811FF0A>EventItem<hex:F61E88DE0103>；讨伐<hex:02280EFF09>BNpcName<hex:F0E90103>，获取1份<hex:022811FF0A>EventItem<hex:F61E88DF0103>；讨伐<hex:02280EFF09>BNpcName<hex:F0DE0103>，获取2份<hex:022811FF0A>EventItem<hex:F61E88E00103>。
 2,TEXT_BANSYL102_01258_SEQ_02,成功讨伐了魔物，获得了委托品。将<hex:022811FF0A>EventItem<hex:F61E88DE0103>、<hex:022811FF0A>EventItem<hex:F61E88DF0103>和<hex:022811FF0A>EventItem<hex:F61E88E00103>交给妖精暂留地的特那克希亚。

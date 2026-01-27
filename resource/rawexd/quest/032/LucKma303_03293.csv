@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMA303_03293_SEQ_00,冒险者的努力卡萨德都看在眼里。
 1,TEXT_LUCKMA303_03293_SEQ_01,
 2,TEXT_LUCKMA303_03293_SEQ_02,

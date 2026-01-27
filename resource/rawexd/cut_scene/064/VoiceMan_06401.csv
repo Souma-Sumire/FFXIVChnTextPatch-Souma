@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_06401_000010_SOULEATER,灵魂——收集灵魂——<hex:02100103>不会 让你们 妨碍我的使命！！
 1,TEXT_VOICEMAN_06401_000015_SOULEATER,灵魂——收集灵魂——<hex:02100103>不会 让你们 妨碍我的使命！！
 2,TEXT_VOICEMAN_06401_000020_PANDAEMONIUM,我的名字是 万魔殿

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFRELICWEAPONTALK_00169_JALZAHN_000_000,我听说艾欧泽亚第一的武器工匠在这里，<hex:02100103>才从遥远的异国慕名而来……<hex:02100103>没想到是那么个粗俗不堪的男人。
 1,TEXT_CMNDEFRELICWEAPONTALK_00169_JALZAHN_000_005,多亏了你，我的研究看起来也能有进展了。<hex:02100103>不枉我千里迢迢来到艾欧泽亚啊。
 2,TEXT_CMNDEFRELICWEAPONTALK_00169_JALZAHN_000_010,我真想亲眼看看注满了灵魂的上古武器啊……<hex:02100103>这大概会是一场很漫长的试炼，希望你能坚持到底。

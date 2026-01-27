@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CHRHDB652_02372_SEQ_00,不洁三塔的希尔迪布兰德十分感谢大家。
 1,TEXT_CHRHDB652_02372_SEQ_01,为了从苍雄骑士团手中夺回吉吉，众人决定前往天极白垩宫。前往翻云雾海的天极白垩宫，与希尔迪布兰德汇合。
 2,TEXT_CHRHDB652_02372_SEQ_02,与希尔迪布兰德汇合了。他的伤还在隐隐作痛，于是便委托冒险者帮他涂<hex:022811FF0A>EventItem<hex:F61E8C720103>。先给天极白垩宫的希尔迪布兰德将<hex:022811FF0A>EventItem<hex:F61E8C720103>洒在身上。

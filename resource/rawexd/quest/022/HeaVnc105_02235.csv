@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNC105_02235_SEQ_00,隼巢的埃马内兰正在发呆。
 1,TEXT_HEAVNC105_02235_SEQ_01,埃马内兰把巡逻的工作推给了冒险者。前往库尔札斯西部高地的交汇河，巡视2处<hex:02280CFF05>EObj<hex:F61E9F550103>，讨伐<hex:02280FFF09>BNpcName<hex:F212680103>。
 2,TEXT_HEAVNC105_02235_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F212680103>。向隼巢的埃马内兰报告。

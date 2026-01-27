@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGABR2SKYISLAND2EXCHANGESHOPINFO_00388_COINTI_000_000,我们在寻找被魔物杀死的同伴们的遗物。<hex:02100103>但是这里的风太大了，小件的遗物很容易被吹走。<hex:02100103>因此我们就把目标放在了同伴们穿着的装备上。
 1,TEXT_REGABR2SKYISLAND2EXCHANGESHOPINFO_00388_COINTI_000_001,你知道以太装备吧？<hex:02100103>就是指那些寄宿了主人在死去的时候所释放的以太的装备。<hex:02100103>这些东西是不会被风吹走的。
 2,TEXT_REGABR2SKYISLAND2EXCHANGESHOPINFO_00388_COINTI_000_002,但是想必你也知道，<hex:02100103>最近很多人喜欢在自己的装备上用幻象棱晶附上幻影。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKZF004_04259_SEQ_00,<hex:024804F201FC03><hex:024904F201FD03>特殊规则： 等级调整<hex:0249020103><hex:0248020103><hex:02100103>波洛伽护法村的星战士团兵长想要请冒险者帮忙。
 1,TEXT_AKTKZF004_04259_SEQ_01,
 2,TEXT_AKTKZF004_04259_SEQ_02,

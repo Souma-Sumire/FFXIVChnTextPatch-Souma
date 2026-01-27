@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST122_01428_SEQ_00,魔女咖啡馆的斯皮宁·布雷德有事情要委托冒险者。
 1,TEXT_SUBFST122_01428_SEQ_01,从斯皮宁·布雷德那里获得了雷蒙多的<hex:022811FF0A>EventItem<hex:F61E88BA0103>。和格里达尼亚飞艇坪的雷蒙多谈谈。
 2,TEXT_SUBFST122_01428_SEQ_02,雷蒙多确认了行李。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入“Hail fellow well met!”，向格里达尼亚飞艇坪的雷蒙多问好。

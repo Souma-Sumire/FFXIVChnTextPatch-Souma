@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ511_02762_SEQ_00,重逢集市的佳斯科特正在思考和凯苏提尔部改善关系的方法。
 1,TEXT_STMBDZ511_02762_SEQ_01,佳斯科特提议，向凯苏提尔部之外的人宣传他的商品。和刚到重逢集市的人谈谈。
 2,TEXT_STMBDZ511_02762_SEQ_02,格希部的哲别对此很感兴趣，并出了一个主意。为了改善和凯苏提尔部的关系，前往太阳神草原的刃海打倒<hex:02280FFF09>BNpcName<hex:F2168E0103>，获取<hex:022811FF0A>EventItem<hex:F61E8D350103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSE503_00365_SEQ_00,火墙的伊尔伯德，希望冒险者搬运收缴的武器。
 1,TEXT_GAIUSE503_00365_SEQ_01,接受了伊尔伯德的委托，将收缴的武器送到乌尔达哈。回收火墙的<hex:022811FF0A>EventItem<hex:F61E8A5A0103>。
 2,TEXT_GAIUSE503_00365_SEQ_02,回收了<hex:022811FF0A>EventItem<hex:F61E8A5A0103>。前往乌尔达哈，将<hex:022811FF0A>EventItem<hex:F61E8A5A0103>交给第三分队队长尤尤哈塞。

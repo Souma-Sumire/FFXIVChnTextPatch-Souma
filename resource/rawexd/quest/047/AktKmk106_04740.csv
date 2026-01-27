@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMK106_04740_SEQ_00,第三站的于里昂热打算继续推进计划。
 1,TEXT_AKTKMK106_04740_SEQ_01,
 2,TEXT_AKTKMK106_04740_SEQ_02,

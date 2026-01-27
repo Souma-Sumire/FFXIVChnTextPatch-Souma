@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA204_00727_SEQ_00,巴斯卡隆酒家的伊安娜，希望冒险者去讨伐魔物。
 1,TEXT_GAIUSA204_00727_SEQ_01,巴斯卡隆酒家附近出现了残暴的魔物，贸易商们受到了袭击。对栖息在巴斯卡隆酒家南面的<hex:02280FFF09>BNpcName<hex:F207C80103>使用<hex:022811FF0A>EventItem<hex:F61E87BC0103>，之后再打倒它。
 2,TEXT_GAIUSA204_00727_SEQ_02,打倒了<hex:02280FFF09>BNpcName<hex:F207C80103>。返回巴斯卡隆酒家，向伊安娜报告。

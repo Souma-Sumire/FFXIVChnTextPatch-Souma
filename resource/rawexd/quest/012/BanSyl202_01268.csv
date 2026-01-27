@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL202_01268_SEQ_00,妖精暂留地的颇妮希亚想要寻求乳根的极致调味。
 1,TEXT_BANSYL202_01268_SEQ_01,接受了颇妮希亚的委托。讨伐妖精领的<hex:02280DFF09>BNpcName<hex:A50103>或<hex:02280DFF09>BNpcName<hex:450103>，获取4份<hex:022811FF0A>EventItem<hex:F61E88E10103>。
 2,TEXT_BANSYL202_01268_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E88E10103>。向颇妮希亚报告。

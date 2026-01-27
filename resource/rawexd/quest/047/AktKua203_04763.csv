@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKUA203_04763_SEQ_00,开拓据点的联络小员又有事想要告诉冒险者。
 1,TEXT_AKTKUA203_04763_SEQ_01,和联络小员进行了交谈。前往无人岛西南方向的海滩，在<hex:02280CFF05>EObj<hex:F61EB88A0103>等待塔塔露。
 2,TEXT_AKTKUA203_04763_SEQ_02,和塔塔露等人汇合了。和海滩的埃马内兰交谈，进入同行状态。

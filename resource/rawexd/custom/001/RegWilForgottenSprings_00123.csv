@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILFORGOTTENSPRINGS_00123_UMOLLPA_000_000,你找我有什么事吗？<hex:02100103>要买水的话到别处去啊。
 1,TEXT_REGWILFORGOTTENSPRINGS_00123_UMOLLPA_000_010,我是居住在这个村落的乌氏一员。<hex:02100103>你看这猎物不错吧！这可是乌·拉尔嘉捕获到的！
 2,TEXT_REGWILFORGOTTENSPRINGS_00123_UMOLLPA_000_011,我们乌氏一族，每个人都要能独立狩猎才会得到大家的承认。<hex:02100103>因为撒沟厉沙漠是个环境恶劣的地方，<hex:02100103>每个人必须都要很强才行。

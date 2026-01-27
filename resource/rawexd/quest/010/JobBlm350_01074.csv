@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBBLM350_01074_SEQ_00,密尔瓦内斯礼拜堂的菈菈伊有事情找冒险者。
 1,TEXT_JOBBLM350_01074_SEQ_01,接受了菈菈伊的委托。前往南萨纳兰撒沟厉沙漠的东南部，调查<hex:02280CFF05>EObj<hex:F61E8DFE0103>，并讨伐出现的妖异，获取<hex:022811FF0A>EventItem<hex:F61E87A90103>。
 2,TEXT_JOBBLM350_01074_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E87A90103>。在南萨纳兰撒沟厉沙漠的东南部，将<hex:022811FF0A>EventItem<hex:F61E87A90103>铭刻于<hex:02280CFF05>EObj<hex:F61E8DFE0103>。

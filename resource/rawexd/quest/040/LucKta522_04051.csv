@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKTA522_04051_SEQ_00,古姆拉村的口齿伶俐的村民有工作想要委托冒险者。
 1,TEXT_LUCKTA522_04051_SEQ_01,
 2,TEXT_LUCKTA522_04051_SEQ_02,

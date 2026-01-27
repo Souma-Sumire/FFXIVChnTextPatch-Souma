@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBSCH600_01676_SEQ_00,放浪神古神殿的斯里托·卡里托有事情想要拜托冒险者。
 1,TEXT_JOBSCH600_01676_SEQ_01,斯里托·卡里托找到了追踪“隐身妖异”的方法。前往拉诺西亚外地，调查尼姆浮游遗迹的<hex:02280CFF05>EObj<hex:F61E9A180103>。
 2,TEXT_JOBSCH600_01676_SEQ_02,小仙女在<hex:02280CFF05>EObj<hex:F61E9A180103>处发现了妖异的痕迹。前往拉诺西亚高地，调查泽尔玛溪谷的<hex:02280CFF05>EObj<hex:F61E9A190103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMC106_03327_SEQ_00,蛇行枝的鲁纳尔继续自己的工作。
 1,TEXT_LUCKMC106_03327_SEQ_01,
 2,TEXT_LUCKMC106_03327_SEQ_02,

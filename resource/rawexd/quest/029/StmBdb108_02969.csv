@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDB108_02969_SEQ_00,金碟游乐场的娜娜莫·乌尔·娜莫正在重新考虑援助方案。
 1,TEXT_STMBDB108_02969_SEQ_01,
 2,TEXT_STMBDB108_02969_SEQ_02,

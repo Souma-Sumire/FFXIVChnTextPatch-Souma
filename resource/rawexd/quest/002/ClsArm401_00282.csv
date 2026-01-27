@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSARM401_00282_SEQ_00,铸甲匠行会的赫·纳恩萨，有封信想要交给冒险者。
 1,TEXT_CLSARM401_00282_SEQ_01,接受了赫·纳恩萨的委托。与利姆萨·罗敏萨铸甲匠行会的布兰修提尔交谈。
 2,TEXT_CLSARM401_00282_SEQ_02,和布兰修提尔进行了交谈。制作1件<hex:022813FF07>ItemHQ<hex:FF08>　3149<hex:0103>，让利姆萨·罗敏萨铸甲匠行会的赫·纳恩萨查看。

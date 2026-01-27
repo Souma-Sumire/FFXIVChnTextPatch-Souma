@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMI111_03781_SEQ_00,笃学者庄园的于里昂热露出了温柔的微笑。
 1,TEXT_LUCKMI111_03781_SEQ_01,
 2,TEXT_LUCKMI111_03781_SEQ_02,

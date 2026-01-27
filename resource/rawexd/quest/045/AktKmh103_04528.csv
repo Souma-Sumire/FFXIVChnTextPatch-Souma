@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMH103_04528_SEQ_00,白滨村的埃斯蒂尼安想把麦剌德送到安全地带。
 1,TEXT_AKTKMH103_04528_SEQ_01,
 2,TEXT_AKTKMH103_04528_SEQ_02,

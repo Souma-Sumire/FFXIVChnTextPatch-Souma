@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ111_01760_SEQ_00,圣菲内雅连队露营地的让泰洛建议冒险者去狩猎龙族的眷属。
 1,TEXT_HEAVNZ111_01760_SEQ_01,让泰洛建议冒险者在狩猎龙族眷属前先热热身。前往库尔札斯西部高地的双子池，讨伐3只<hex:02280FFF09>BNpcName<hex:F20D9A0103>。
 2,TEXT_HEAVNZ111_01760_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20D9A0103>。向圣菲内雅连队露营地的让泰洛报告。

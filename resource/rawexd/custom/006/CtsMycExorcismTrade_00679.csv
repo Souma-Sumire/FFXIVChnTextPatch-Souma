@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMYCEXORCISMTRADE_00679_RESISTANCESUPPLY_000_000,十分抱歉……<hex:02100103>现在正在确认补给物资，还请耐心等待。
 1,TEXT_CTSMYCEXORCISMTRADE_00679_Q1_000_000,要做什么？（博兹雅晶簇的持有数量：<hex:022003E80203>个）
 2,TEXT_CTSMYCEXORCISMTRADE_00679_A1_000_000,取得“紧急遭遇战”的优先参战权（所需数量：<hex:022003E80203>个）

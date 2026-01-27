@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKHZ005_03962_SEQ_00,落羽商业区的菲莱斯蒂奥正在仰望眼前的设施。
 1,TEXT_LUCKHZ005_03962_SEQ_01,
 2,TEXT_LUCKHZ005_03962_SEQ_02,

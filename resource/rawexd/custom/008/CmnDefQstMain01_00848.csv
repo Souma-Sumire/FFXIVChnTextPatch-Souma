@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFQSTMAIN01_00848_WUKLAMAT_100_001,我相信你的直觉！
 1,TEXT_CMNDEFQSTMAIN01_00848_KRILE_000_001,你对哪一个种族更感兴趣？
 2,TEXT_CMNDEFQSTMAIN01_00848_ERENVILLE_000_005,虽然与其他两位王子相比，<hex:02100103>乌克·拉玛特不论是经验还是功绩都较为逊色，<hex:02100103>但她的平易近人是个优势，所以才能很快找到协助者。

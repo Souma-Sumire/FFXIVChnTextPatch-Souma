@@ -373,7 +373,7 @@ Int32,String,String,String,String,String
 368,CHL P-0005,,,,
 369,,,SE_Bt_Etc_Mount_BigManatee_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_BigManatee_bye
 370,,,,,
-371,,,,,
+371,宇宙面像,,SE_Bt_Etc_Mount_Blocks_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Blocks_bye
 372,恶魔板,,SE_Bt_Etc_Mount_DemonWallMKD_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_DemonWallMKD_call_bye
 373,瓣齿鲨,,SE_Bt_Etc_Mount_SameNingen_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_SameNingen_bye
 374,陪伴雪人,,SE_Bt_Etc_SnowmanWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_SnowmanBye
@@ -417,18 +417,18 @@ Int32,String,String,String,String,String
 412,,,,,
 413,跳跳车T1,,SE_Bt_Etc_Mount_Lowrider_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_Lowrider_bye
 414,呜噜怪,,SE_Bt_Etc_Mount_Troll_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Troll_bye
-415,,,,,
-416,,,,,
+415,特定地区专用型强力机兵,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
+416,宇宙武装重甲,,SE_Bt_Etc_Mount_ArmedWeapon_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_ArmedWeapon_bye
 417,,,,,
 418,,,,,
 419,,,,,
 420,,,,,
 421,,,,,
 422,浓雾之翼,,SE_Bt_Etc_Mount_Wing_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Wing_bye
-423,,,,,
-424,,,,,
-425,,,,,
-426,,,,,
+423,CHL P-0006B,,,,
+424,CAM-I,,,,
+425,量产型强力机兵,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
+426,红色轮式工程车,,SE_Bt_Etc_Mount_WKSMech2_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech2_bye
 427,,,,,
 428,图拉尔雪人,,SE_Bt_Etc_Mount_PvPYukidaruma_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_PvPYukidaruma_bye
 429,,,,,

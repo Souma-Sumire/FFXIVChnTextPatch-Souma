@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANAMA204_01235_SEQ_00,灰阵营的纳尔基·冬有事想要委托冒险者。
 1,TEXT_BANAMA204_01235_SEQ_01,接受了纳尔基·冬的委托。对赞拉克侧翼阵周围的<hex:02280CFF05>EObj<hex:F61E917B0103>使用<hex:022811FF0A>EventItem<hex:F61E89260103>。此外，火扑灭后很可能会遭到炎牙众爪牙的袭击。讨伐现身的<hex:02280FFF09>BNpcName<hex:F208FA0103>。
 2,TEXT_BANAMA204_01235_SEQ_02,对<hex:02280CFF05>EObj<hex:F61E917B0103>使用了<hex:022811FF0A>EventItem<hex:F61E89260103>。向灰阵营的纳尔基·冬报告。

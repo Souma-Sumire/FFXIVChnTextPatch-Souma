@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGYOK6TULIYOLLAL_00864_HAKEELJA_000_000,我记得你是乌克·拉玛特大人的客人，<hex:02100103>应该是……来自艾欧泽亚的冒险者吧。<hex:02100103>有什么想问的尽管问，我知无不言。
 1,TEXT_REGYOK6TULIYOLLAL_00864_Q1_000_000,想了解什么？
 2,TEXT_REGYOK6TULIYOLLAL_00864_A1_000_001,你是做什么的？

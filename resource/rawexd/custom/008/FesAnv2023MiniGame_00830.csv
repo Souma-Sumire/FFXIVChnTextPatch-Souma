@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESANV2023MINIGAME_00830_NONORA_000_009,冒险者你好，<hex:02100103>请看，这就是为新生庆典准备的游乐项目。
 1,TEXT_FESANV2023MINIGAME_00830_NONORA_000_010,不过，非常可惜的是，游乐项目还在准备中……<hex:02100103>请你稍作等待，之后再来看看吧。
 2,TEXT_FESANV2023MINIGAME_00830_NONORA_000_011,哎呀，你莫非是那位……<hex:02100103>是以前在新生庆典的时候帮我们解决过故障虫的冒险者吧？<hex:02100103>你好啊，好久不见。

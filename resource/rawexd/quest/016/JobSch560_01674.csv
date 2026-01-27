@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBSCH560_01674_SEQ_00,放浪神古神殿的斯里托·卡里托有事情想要拜托冒险者。
 1,TEXT_JOBSCH560_01674_SEQ_01,和斯里托·卡里托进行了交谈。和拉诺西亚高地石绿湖的哈尔加·特尔加谈谈。
 2,TEXT_JOBSCH560_01674_SEQ_02,和哈尔加·特尔加进行了交谈。将聊天频道设置为“说话”频道后，使用键盘或软键盘输入包含“come hells or high water”的词句回答哈尔加·特尔加。

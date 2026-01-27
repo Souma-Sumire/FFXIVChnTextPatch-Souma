@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB911_00934_SEQ_00,白云崖前哨的异端者博伊尔想要向龙族祈祷。
 1,TEXT_GAIUSB911_00934_SEQ_01,博伊尔想要能献给龙族的供品。和狱卒费尔蒂埃谈谈。
 2,TEXT_GAIUSB911_00934_SEQ_02,从费尔蒂埃那里得到了<hex:022811FF0A>EventItem<hex:F61E875A0103>，将其交给异端者博伊尔。

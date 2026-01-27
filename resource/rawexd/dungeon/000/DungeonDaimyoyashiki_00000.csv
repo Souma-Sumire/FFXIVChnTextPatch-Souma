@@ -1,6 +1,6 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_DUNGEONDAIMYOYASHIKI_00000_KAGEYAMA_000_000,能走到这里算你们有两下子！<hex:02100103>不过在我的保镖面前 终究是一群土鸡瓦狗而已！！
 1,TEXT_DUNGEONDAIMYOYASHIKI_00000_YOJIMBO_000_100,景山身上已经抽不出油水……<hex:02100103>那也没必要继续为他卖命了……恕不奉陪！

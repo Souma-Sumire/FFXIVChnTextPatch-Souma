@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA610_00772_SEQ_00,石场水车的爱德可，有件简单的工作想委托给冒险者。
 1,TEXT_GAIUSA610_00772_SEQ_01,给士兵们做饭所需的<hex:022811FF0A>EventItem<hex:F61E86E30103>用完了。前往姆恩·图伊酿造库，和酿造师埃里蒙交谈。
 2,TEXT_GAIUSA610_00772_SEQ_02,距离<hex:022811FF0A>EventItem<hex:F61E86E30103>完成还需一小段时间。不知能否来得及为士兵们做饭……

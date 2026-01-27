@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC602_01002_SEQ_00,丧灵钟的格拉乌蒙特在作战开始前有事情想要委托给冒险者。
 1,TEXT_GAIUSC602_01002_SEQ_01,为了伪装成帝国兵，学习他们的军礼是很重要的一件事情。在帝国中央堡附近的<hex:02280CFF05>EObj<hex:F61E8D3E0103>观察帝国兵，学习帝国式军礼。
 2,TEXT_GAIUSC602_01002_SEQ_02,学会了帝国式军礼。向丧灵钟的格拉乌蒙特报告。

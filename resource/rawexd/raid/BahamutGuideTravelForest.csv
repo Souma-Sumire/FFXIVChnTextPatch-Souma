@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BAHAMUTGUIDETRAVELFOREST_Q1_000_010,要前往“巴哈姆特大迷宫”吗？
 1,TEXT_BAHAMUTGUIDETRAVELFOREST_A1_000_011,询问“巴哈姆特大迷宫入侵之章”的开始条件
 2,TEXT_BAHAMUTGUIDETRAVELFOREST_A1_100_011,询问“巴哈姆特零式大迷宫入侵之章”的开始条件

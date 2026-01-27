@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4LIMBETH_00718_LIMBETH_000_000,这里是莫雯卓越商会的交易窗口。<hex:02100103>很抱歉，我们这里只接待经过推荐的客人，<hex:02100103>请多见谅。
 1,TEXT_REGNOR4LIMBETH_00718_LIMBETH_000_001,欢迎光临，<hex:022903EB0203>。<hex:02100103>这里是我们商会与老练的工匠合作，<hex:02100103>为制作特别的主工具而设立的交易窗口。
 2,TEXT_REGNOR4LIMBETH_00718_SYSTEM_000_002,如果想要制作特别的主工具“辉煌工具”，<hex:02100103>首先需要去找工票交易员用巧手工票换取第一次加工素材。

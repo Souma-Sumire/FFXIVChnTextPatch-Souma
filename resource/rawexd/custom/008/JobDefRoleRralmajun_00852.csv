@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDEFROLERRALMAJUN_00852_RRALMAJUN_000_000,唉……没想到他们真的去做坏事了……
 1,TEXT_JOBDEFROLERRALMAJUN_00852_RRALMAJUN_000_001,啊！欢迎光临！<hex:02100103>决定好要点什么了就叫我！
 2,TEXT_JOBDEFROLERRALMAJUN_00852_RRALMAJUN_000_010,欢迎光临！<hex:02100103>夺回祭器的委托要是有什么不明白的你就直说！<hex:02100103>只要是我知道的事，我一定都说给你听！

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSBSM351_00299_SEQ_00,锻铁匠行会的布瑞赛尔正在寻找可以接下工作的锻铁匠。
 1,TEXT_CLSBSM351_00299_SEQ_01,接受了布瑞赛尔的委托。向利姆萨·罗敏萨锻铁匠行会的费兹阿尔询问详情。
 2,TEXT_CLSBSM351_00299_SEQ_02,和费兹阿尔进行了交谈。制作1把<hex:022813FF07>ItemHQ<hex:FF08>　1778<hex:0103>，交给利姆萨·罗敏萨锻铁匠行会的费兹阿尔。

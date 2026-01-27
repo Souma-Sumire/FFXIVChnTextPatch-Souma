@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA105_02450_SEQ_00,神拳痕的阿莉塞在环视周围。
 1,TEXT_STMBDA105_02450_SEQ_01,
 2,TEXT_STMBDA105_02450_SEQ_02,

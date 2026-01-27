@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNGSCTRIPLETRIADCUP_00247_TTCUP_000_001,现在正在举办九宫幻卡大赛——<hex:02281CFF17>TripleTriadCompetition<hex:E8030103>！<hex:02100103>特等奖是<hex:02280AFF05>Item<hex:E8020103>哟！
 1,TEXT_CMNGSCTRIPLETRIADCUP_00247_TTCUP_000_002,我是九宫幻卡大赛的接待员。<hex:02100103>客人您好像还不了解对局的规则吧？
 2,TEXT_CMNGSCTRIPLETRIADCUP_00247_TTCUP_000_003,在参加大赛前，请先去找那边的幻卡大师。<hex:02100103>她会为您详细讲解九宫幻卡的知识。

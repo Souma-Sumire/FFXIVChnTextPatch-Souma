@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB110_00829_SEQ_00,乌·恰卡·提亚还有一件事想要委托给冒险者。
 1,TEXT_GAIUSB110_00829_SEQ_01,初出茅庐的猎人乌·卡兹娜前去打倒蜥蜴人族后，一直没有回来。前往撒沟厉沙漠的东面，打倒<hex:02280FFF09>BNpcName<hex:F2086B0103>、<hex:02280FFF09>BNpcName<hex:F201040103>或<hex:02280EFF09>BNpcName<hex:F0FC0103>，共打倒3个即可。
 2,TEXT_GAIUSB110_00829_SEQ_02,打倒了蜥蜴人族。对乌·卡兹娜做情感动作“激励”。

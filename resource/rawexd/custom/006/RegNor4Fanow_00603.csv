@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGNOR4FANOW_00603_IYLNA_000_000,<hex:022903EB0203>……你是作为隆卡的同盟者，<hex:02100103>第一个获得了进入村子许可的人啊。<hex:02100103>关于法诺村，你有什么想要了解的事情吗？
 1,TEXT_REGNOR4FANOW_00603_Q1_000_000,想了解什么？
 2,TEXT_REGNOR4FANOW_00603_A1_000_001,你是做什么的？

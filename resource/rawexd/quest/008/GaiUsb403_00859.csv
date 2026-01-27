@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB403_00859_SEQ_00,瞭望阵营地的布鲁艾丁，有事情想要委托给冒险者。
 1,TEXT_GAIUSB403_00859_SEQ_01,布鲁艾丁想将烤鱼分给即将执行监视任务的部下们。对瞭望阵营地的<hex:02280CFF05>EObj<hex:F61E8CA70103>使用<hex:022811FF0A>EventItem<hex:F61E871A0103>。
 2,TEXT_GAIUSB403_00859_SEQ_02,成功完成了烧烤工作。从<hex:02280CFF05>EObj<hex:F61E8CA70103>中取出<hex:022811FF0A>EventItem<hex:F61E871B0103>。

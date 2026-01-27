@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMJ103_04009_SEQ_00,生态园管理局的古·拉哈·提亚看上去有些兴奋。
 1,TEXT_LUCKMJ103_04009_SEQ_01,和古·拉哈·提亚进行了交谈。回到摩杜纳的石之家，和古·拉哈·提亚谈谈。
 2,TEXT_LUCKMJ103_04009_SEQ_02,和古·拉哈·提亚进行了交谈，并从可露儿处了解了会议的内容。在石之家未明之间的<hex:02280CFF05>EObj<hex:F61EB0C40103>等待西德。

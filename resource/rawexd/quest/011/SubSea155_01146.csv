@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA155_01146_SEQ_00,小麦酒港的阿尔德福特还有事想要拜托冒险者。
 1,TEXT_SUBSEA155_01146_SEQ_01,接受了阿尔德福特的委托。前往骷髅谷营地找威尔特希斯，将<hex:022811FF0A>EventItem<hex:F61E88490103>交给她。
 2,TEXT_SUBSEA155_01146_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E88490103>交给了她。寄信人是她的母亲。信上写着想要生活费……

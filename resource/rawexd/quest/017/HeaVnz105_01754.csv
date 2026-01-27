@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ105_01754_SEQ_00,隼巢的动摇的妇人非常慌乱地望着房顶上。
 1,TEXT_HEAVNZ105_01754_SEQ_01,动摇的妇人拜托冒险者救出小猫。救助隼巢的“瑟瑟发抖的小猫？”。
 2,TEXT_HEAVNZ105_01754_SEQ_02,救出了“瑟瑟发抖的小猫？”。将<hex:022811FF0A>EventItem<hex:F61E8AC60103>交给隼巢的动摇的妇人。

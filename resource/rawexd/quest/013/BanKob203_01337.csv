@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB203_01337_SEQ_00,第789洞穴团采矿地的第789团工匠博古，有事情想推给冒险者做。
 1,TEXT_BANKOB203_01337_SEQ_01,第789团工匠博古将第789团辅祭巴戈交给他的任务，推给了冒险者去做。代替他，向第789洞穴团采矿地的第789团辅祭巴戈询问详情。
 2,TEXT_BANKOB203_01337_SEQ_02,和第789团辅祭巴戈进行了交谈。对设置在黑金湖的<hex:02280CFF05>EObj<hex:F61E92E50103>使用<hex:022811FF0A>EventItem<hex:F61E894A0103>，讨伐<hex:02280FFF09>BNpcName<hex:F20A870103>。接下来，再讨伐随之出现的<hex:02280FFF09>BNpcName<hex:F20A880103>，获取<hex:022811FF0A>EventItem<hex:F61E894B0103>。

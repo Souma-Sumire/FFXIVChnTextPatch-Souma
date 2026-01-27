@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL089_00337_SEQ_00,铜刃团团员弗弗鲁帕想要捉拿盗贼。
 1,TEXT_SUBWIL089_00337_SEQ_01,仓库被盗的案件接连发生。为了捉拿犯人，在道路的周围布设4个捕兽夹。
 2,TEXT_SUBWIL089_00337_SEQ_02,顺利布设完了捕兽夹。向切切赞恩报告。

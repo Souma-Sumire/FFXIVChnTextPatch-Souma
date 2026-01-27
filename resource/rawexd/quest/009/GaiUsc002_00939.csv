@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC002_00939_SEQ_00,阿尔菲诺想要冒险者协助自己来对付异端审问官吉耶姆。
 1,TEXT_GAIUSC002_00939_SEQ_01,吉耶姆的行动存在可疑之处。前往他曾经去过的白云崖前哨东门外进行调查。
 2,TEXT_GAIUSC002_00939_SEQ_02,在<hex:02280CFF05>EObj<hex:F61E8CFA0103>发现了谜之尸体。对其进行调查，看看有没有什么线索。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMC109_04905_SEQ_00,战火炎石舞台西侧的米拉加想带冒险者一行人去某个地方。
 1,TEXT_KINGMC109_04905_SEQ_01,
 2,TEXT_KINGMC109_04905_SEQ_02,

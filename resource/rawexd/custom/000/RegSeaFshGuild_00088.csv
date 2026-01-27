@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSEAFSHGUILD_00088_SISIPU_000_000,欢迎来到利姆萨·罗敏萨的捕鱼人行会网仓！
 1,TEXT_REGSEAFSHGUILD_00088_Q1_000_001,想了解什么？
 2,TEXT_REGSEAFSHGUILD_00088_A1_000_001,你是做什么的？

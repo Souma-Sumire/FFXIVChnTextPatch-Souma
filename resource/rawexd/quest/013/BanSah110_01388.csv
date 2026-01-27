@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH110_01388_SEQ_00,诺布养育场的菲乌察觉了珊瑚尖枪的作战计划。
 1,TEXT_BANSAH110_01388_SEQ_01,菲乌委托冒险者去劝说潜伏在骷髅谷一带的珊瑚尖枪成员。和潜伏在骷髅谷一带的<hex:02280FFF09>BNpcName<hex:F20AA60103>对话，对方发起攻击的话就将其讨伐。
 2,TEXT_BANSAH110_01388_SEQ_02,交涉不成功，讨伐了发起攻击的<hex:02280FFF09>BNpcName<hex:F20AA60103>。向诺布养育场的菲乌报告。

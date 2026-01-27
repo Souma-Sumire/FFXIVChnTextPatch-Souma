@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD050_00611_SEQ_00,雕金匠行会的会长赛伦蒂碧提想委托冒险者制作东西。
 1,TEXT_CLSGLD050_00611_SEQ_01,为了熟练掌握锤子的用法，使用<hex:02280BFF05>Item<hex:F213C60103>，做出3个<hex:02280BFF05>Item<hex:F210D10103>。
 2,TEXT_CLSGLD050_00611_SEQ_02,得到了有助于工作的<hex:02280BFF05>Item<hex:F209650103>，与主工具搭配装备，磨练雕金匠的手艺。<hex:02100103><hex:02100103>※雕金匠的等级达到10级以上时，可以从赛伦蒂碧提那里领取下一个雕金匠任务。

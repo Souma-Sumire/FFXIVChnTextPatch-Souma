@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ505_02756_SEQ_00,重逢集市的查姆布亦正在寻找帮手。
 1,TEXT_STMBDZ505_02756_SEQ_01,
 2,TEXT_STMBDZ505_02756_SEQ_02,

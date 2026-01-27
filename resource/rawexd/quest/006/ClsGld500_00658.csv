@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSGLD500_00658_SEQ_00,雕金匠行会的赛伦蒂碧提，想要委托冒险者一件重要的工作。
 1,TEXT_CLSGLD500_00658_SEQ_01,接受了赛伦蒂碧提的委托。将镶有<hex:022811FF05>Item<hex:FF08>　5631<hex:0103>的<hex:022813FF07>ItemHQ<hex:FF08>　4514<hex:0103>交给乌尔达哈雕金匠行会的赛伦蒂碧提。
 2,TEXT_CLSGLD500_00658_SEQ_02,将<hex:022813FF07>ItemHQ<hex:FF08>　4514<hex:0103>交给了赛伦蒂碧提。和乌尔达哈雕金匠行会的赛伦蒂碧提谈谈。

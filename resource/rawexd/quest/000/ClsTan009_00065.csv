@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSTAN009_00065_SEQ_00,制革匠行会的盖娃，看上去十分忙碌。
 1,TEXT_CLSTAN009_00065_SEQ_01,接受了盖娃的委托。筹备<hex:022813FF07>ItemHQ<hex:FF08>　3651<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2270<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　4360<hex:0103>各1件，让格里达尼亚制革匠行会的盖娃查看它们。
 2,TEXT_CLSTAN009_00065_SEQ_02,让盖娃查看了<hex:022813FF07>ItemHQ<hex:FF08>　3651<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2270<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　4360<hex:0103>。将已完成的防具送给各位委托人。将<hex:022813FF07>ItemHQ<hex:FF08>　3651<hex:0103>交给丰饶神祭坛的皮茉·奈尔赫，将<hex:022813FF07>ItemHQ<hex:FF08>　2270<hex:0103>交给魔女咖啡馆中的勒里克，将<hex:022813FF07>ItemHQ<hex:FF08>　4360<hex:0103>交给树荫东屋的娜戈·嘉宛塔尔。

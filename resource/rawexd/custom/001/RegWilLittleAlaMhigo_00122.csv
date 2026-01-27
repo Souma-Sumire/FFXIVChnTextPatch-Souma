@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILLITTLEALAMHIGO_00122_GISILBEHRT_000_000,嗯？你是冒险者？有什么事吗？
 1,TEXT_REGWILLITTLEALAMHIGO_00122_GISILBEHRT_000_001,啊，是你呀。<hex:02100103>是不是你也察觉到了最近跟阿拉米格有关的动静，<hex:02100103>所以专程跑来看看？
 2,TEXT_REGWILLITTLEALAMHIGO_00122_GISILBEHRT_000_002,啊，是你呀。<hex:02100103>阿拉米格终于得到解放，<hex:02100103>你是不放心这里所以专程跑来看看？

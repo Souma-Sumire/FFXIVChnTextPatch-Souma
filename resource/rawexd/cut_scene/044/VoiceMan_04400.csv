@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04400_000010_THANCRED,唉，可算缓过来了。<hex:02100103>这可真是生命之源啊。
 1,TEXT_VOICEMAN_04400_000020_ALISAIE,这次潜入任务，真是辛苦你了……<hex:02100103>本来想让你先好好休息，<hex:02100103>但是看你这么快就返回，应该有什么重要的事情吧？
 2,TEXT_VOICEMAN_04400_000030_THANCRED,嗯，我一件一件说明吧。

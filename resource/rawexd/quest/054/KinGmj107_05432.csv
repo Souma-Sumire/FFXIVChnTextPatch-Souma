@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGMJ107_05432_SEQ_00,特雷诺小路的可露儿正在等待古·拉哈·提亚和鲁姆勒回来。
 1,TEXT_KINGMJ107_05432_SEQ_01,
 2,TEXT_KINGMJ107_05432_SEQ_02,

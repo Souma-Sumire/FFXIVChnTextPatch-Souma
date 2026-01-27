@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB404_00860_SEQ_00,瞭望阵营地的奥古斯丁，有一件十分在意的事。
 1,TEXT_GAIUSB404_00860_SEQ_01,运送物资所使用的气球，遭到了<hex:02280FFF09>BNpcName<hex:F2018E0103>的袭击。前往瞭望阵营地西面，讨伐5只<hex:02280FFF09>BNpcName<hex:F2018E0103>。
 2,TEXT_GAIUSB404_00860_SEQ_02,成功讨伐了5只<hex:02280FFF09>BNpcName<hex:F2018E0103>。向瞭望阵营地的奥古斯丁报告。

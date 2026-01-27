@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBNIN600_01688_SEQ_00,码头小屋的胧在警戒附近的情况。
 1,TEXT_JOBNIN600_01688_SEQ_01,码头小屋被什么人包围了。露出破绽引敌方上钩后将其击退。对码头小屋附近的<hex:02280CFF05>EObj<hex:F61E9BB40103>使用情感动作“打盹”，讨伐出现的灰犬家族。
 2,TEXT_JOBNIN600_01688_SEQ_02,讨伐了灰犬家族。回码头小屋和胧谈谈。

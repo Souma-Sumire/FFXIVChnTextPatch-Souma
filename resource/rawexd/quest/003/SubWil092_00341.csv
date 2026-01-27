@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL092_00341_SEQ_00,地平关的切切赞恩正在寻找能够帮助自己的人。
 1,TEXT_SUBWIL092_00341_SEQ_01,接受了切切赞恩的委托，去筹集土狗之血。打倒土狗，获取4份土狗之血。
 2,TEXT_SUBWIL092_00341_SEQ_02,获得了土狗之血，将其交给亚拉戈旭日路旁的诺诺恩佐。

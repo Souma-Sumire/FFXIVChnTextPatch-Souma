@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMF106_04444_SEQ_00,理性其一的厨行威要按捺不住了。
 1,TEXT_AKTKMF106_04444_SEQ_01,
 2,TEXT_AKTKMF106_04444_SEQ_02,

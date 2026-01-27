@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBWIL033_00225_SEQ_00,白银集市的法法弗诺好像十分焦躁的样子。
 1,TEXT_SUBWIL033_00225_SEQ_01,运货人草草了事，将法法弗诺的货物放到门口就回去了。去捡回三个法法弗诺的货物。
 2,TEXT_SUBWIL033_00225_SEQ_02,将法法弗诺的货物交给法法弗诺。

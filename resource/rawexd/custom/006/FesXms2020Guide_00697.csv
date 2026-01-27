@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESXMS2020GUIDE_00697_GUIDEXMS2020_000_000,我是星芒节宣传员，<hex:02100103>关于星芒节有什么不懂的，都可以来问我！
 1,TEXT_FESXMS2020GUIDE_00697_Q1_000_001,想了解什么？
 2,TEXT_FESXMS2020GUIDE_00697_A1_000_001,什么是“星芒节”？

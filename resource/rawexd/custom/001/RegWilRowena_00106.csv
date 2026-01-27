@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILROWENA_00106_TALK_ACTOR,我是罗薇娜，因为多少具备些鉴定的眼光，<hex:02100103>有幸被身份高贵的客人们所赏识。<hex:02100103>我可以用一些上等的货物交换你手里的稀有玩意。
 1,TEXT_REGWILROWENA_00106_ROWENA_000_010,你竟然使唤盖罗尔特再现了上古武器？<hex:02100103>没想到能让那个酒鬼干活，你可真不简单。
 2,TEXT_REGWILROWENA_00106_ROWENA_000_020,你拿来的那些和蛮神相关的物品，<hex:02100103>十分吸引收藏家们的目光……<hex:02100103>今后也要拜托你了。

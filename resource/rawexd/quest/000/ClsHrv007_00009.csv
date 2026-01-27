@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSHRV007_00009_SEQ_00,园艺工行会的弗弗茶好像有什么烦恼，一筹莫展……
 1,TEXT_CLSHRV007_00009_SEQ_01,由于遭受虫害，园艺工行会所种植的<hex:02280BFF05>Item<hex:F212CD0103>绝收了。弗弗茶说，也许其他地方还有希望。去弯枝牧场找索琉斯问问情况。
 2,TEXT_CLSHRV007_00009_SEQ_02,据索琉斯所说，在石场水车的东北方能采到<hex:02280BFF05>Item<hex:F212CD0103>。采集15个<hex:02280BFF05>Item<hex:F212CD0103>，交给园艺工行会的弗弗茶。

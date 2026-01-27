@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNB103_02158_SEQ_00,不洁三塔的阿尔菲诺想要与塔塔露请来的帮手碰面。
 1,TEXT_HEAVNB103_02158_SEQ_01,塔塔露请来的帮手会由雅·修特拉去迎接。和田园郡的雅·修特拉谈谈。
 2,TEXT_HEAVNB103_02158_SEQ_02,和雅·修特拉进行了交谈。那位帮手正在田园郡四处游览。在田园郡封面桥附近的<hex:02280CFF05>EObj<hex:F61E9E4D0103>等待，迎接帮手。

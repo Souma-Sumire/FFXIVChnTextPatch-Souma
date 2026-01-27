@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSTHM250_00352_SEQ_00,咒术师行会会长可可比格有话要对冒险者说。
 1,TEXT_CLSTHM250_00352_SEQ_01,可可布奇的样子有些奇怪。去和可可布奇谈谈。
 2,TEXT_CLSTHM250_00352_SEQ_02,听说委托破坏壶的妖异学者在枯骨营地。向他们索取三本茉门论文集。

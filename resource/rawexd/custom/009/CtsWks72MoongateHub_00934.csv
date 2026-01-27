@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSWKS72MOONGATEHUB_00934_WHISPERINGWILLOW_000_000,咦，你是……太荣幸了！真没想到会在这里遇到你！<hex:02100103>我正在负责为新加入探索计划的协助者们介绍这里的信息。<hex:02100103>如果你有什么想了解的，请尽管问我！
 1,TEXT_CTSWKS72MOONGATEHUB_00934_Q1_000_000,想了解什么？
 2,TEXT_CTSWKS72MOONGATEHUB_00934_A1_000_001,你是做什么的？

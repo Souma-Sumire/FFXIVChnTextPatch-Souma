@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ715_02818_SEQ_00,勇巢的耆延缇正在为狩猎做准备。
 1,TEXT_STMBDZ715_02818_SEQ_01,
 2,TEXT_STMBDZ715_02818_SEQ_02,

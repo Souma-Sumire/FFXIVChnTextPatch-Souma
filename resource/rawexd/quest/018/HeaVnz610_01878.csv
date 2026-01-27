@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ610_01878_SEQ_00,飞龙港的玛艾娜感到一股奇怪的视线。
 1,TEXT_HEAVNZ610_01878_SEQ_01,玛艾娜感觉有人在盯着他们。巡视翻云雾海的飞龙港，出现敌人则将其讨伐。
 2,TEXT_HEAVNZ610_01878_SEQ_02,讨伐了出现的<hex:02280FFF09>BNpcName<hex:F210C60103>。向飞龙港的玛艾娜报告。

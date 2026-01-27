@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDZ420_02743_SEQ_00,弓束官邸的鱼木正在寻找有实力的人类。
 1,TEXT_STMBDZ420_02743_SEQ_01,
 2,TEXT_STMBDZ420_02743_SEQ_02,

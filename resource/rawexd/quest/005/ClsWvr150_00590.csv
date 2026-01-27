@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSWVR150_00590_SEQ_00,裁衣匠行会的雷多伦特·罗斯想要交给冒险者一份工作。
 1,TEXT_CLSWVR150_00590_SEQ_01,雷多伦特·罗斯想向裁衣匠行会的老主顾赠送礼物。代替他缝制礼物。先去采矿工行会，询问瓦瓦鲁卡有没有想要的东西。
 2,TEXT_CLSWVR150_00590_SEQ_02,瓦瓦鲁卡想要<hex:02280BFF05>Item<hex:F20A6E0103>和<hex:02280BFF05>Item<hex:F20CFA0103>。备齐这两样东西，交给裁衣匠行会的雷多伦特·罗斯。

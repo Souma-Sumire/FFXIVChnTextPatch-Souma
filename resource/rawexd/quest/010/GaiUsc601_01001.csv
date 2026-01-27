@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC601_01001_SEQ_00,在作战计划进行准备的同时，西德想让冒险者协助自己去做一件事情。
 1,TEXT_GAIUSC601_01001_SEQ_01,西德为了防患于未然，准备干扰帝国军的通信。前往西德在地图上标记的地点，对<hex:02280CFF05>EObj<hex:F61E8D360103>使用<hex:022811FF0A>EventItem<hex:F61E877E0103>。
 2,TEXT_GAIUSC601_01001_SEQ_02,顺利地完成了调查。返回丧灵钟，将<hex:022811FF0A>EventItem<hex:F61E877E0103>交给西德。

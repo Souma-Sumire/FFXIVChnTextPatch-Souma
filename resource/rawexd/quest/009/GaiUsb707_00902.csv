@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSB707_00902_SEQ_00,巨龙首营地的阿蒂里乌有工作想要委托给冒险者。
 1,TEXT_GAIUSB707_00902_SEQ_01,阿蒂里乌希望冒险者能去给灭掉的篝火点上火。用<hex:022811FF0A>EventItem<hex:F61E87420103>点亮<hex:02280CFF05>EObj<hex:F61E8CCE0103>。
 2,TEXT_GAIUSB707_00902_SEQ_02,给全部的<hex:02280CFF05>EObj<hex:F61E8CCE0103>点上了火。向巨龙首营地的阿蒂里乌报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSAH305_01404_SEQ_00,诺布养育场的塞乌有事情想要委托给冒险者。
 1,TEXT_BANSAH305_01404_SEQ_01,塞乌委托冒险者去海蛇巢穴打倒统领海蛇之舌的3名干部。讨伐2名<hex:02280FFF09>BNpcName<hex:F2015B0103>后<hex:02280FFF09>BNpcName<hex:F20AB20103>就会出现，讨伐2名<hex:02280FFF09>BNpcName<hex:F2022F0103>后<hex:02280FFF09>BNpcName<hex:F20AB30103>就会出现，讨伐2名<hex:02280FFF09>BNpcName<hex:F201590103>后<hex:02280FFF09>BNpcName<hex:F20AB40103>就会出现，等他们出现后就将其讨伐。
 2,TEXT_BANSAH305_01404_SEQ_02,成功讨伐了海蛇之舌的干部。向诺布养育场的塞乌报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_AKTKMC106_04404_SEQ_00,最佳威兔洞的增盈威一脸无精打采的样子。
 1,TEXT_AKTKMC106_04404_SEQ_01,
 2,TEXT_AKTKMC106_04404_SEQ_02,

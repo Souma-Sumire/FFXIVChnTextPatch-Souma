@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBFST057_00378_SEQ_00,鬼哭队的洛兹琳，正在寻找能够帮忙清理架台的人。
 1,TEXT_SUBFST057_00378_SEQ_01,据说矮凶蛛蝎在鬼哭队管理的架台上产卵了。代替洛兹琳去清除蛛蝎卵。
 2,TEXT_SUBFST057_00378_SEQ_02,成功清除了蛛蝎卵。向地母神忘迹的洛兹琳报告。

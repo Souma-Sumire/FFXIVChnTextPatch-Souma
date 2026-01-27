@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGSAK6METEM_00972_METEM_000_000,这不是我们不戴调魂器的全量级冠军<hex:022903EB0203>吗！<hex:02100103>今天是来阿卡狄亚玩的吗？
 1,TEXT_REGSAK6METEM_00972_METEM_000_001,哎呀，我很荣幸陪我们的名誉全量级冠军聊两句！<hex:02100103>如今我也再没有什么好隐瞒的事了，<hex:02100103>有什么问题，请尽管发问吧！
 2,TEXT_REGSAK6METEM_00972_Q1_000_000,想了解什么？

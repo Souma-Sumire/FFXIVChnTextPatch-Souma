@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL110_01266_SEQ_00,妖精暂留地的特那克希亚因为污浊的空气而感到很痛苦。
 1,TEXT_BANSYL110_01266_SEQ_01,接受了特那克希亚的委托。在百灵啼驱逐2只污染空气的<hex:02280FFF09>BNpcName<hex:F2090A0103>。
 2,TEXT_BANSYL110_01266_SEQ_02,成功驱逐了<hex:02280FFF09>BNpcName<hex:F2090A0103>。向妖精暂留地的特那克希亚报告。

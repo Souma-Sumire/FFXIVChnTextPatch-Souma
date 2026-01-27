@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_KINGME113_04944_SEQ_00,后房的喀赫奇瓦想要举行作战会议。
 1,TEXT_KINGME113_04944_SEQ_01,
 2,TEXT_KINGME113_04944_SEQ_02,

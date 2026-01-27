@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA922_01430_SEQ_00,捕鱼人行会的希希蒲有事情想要委托给冒险者。
 1,TEXT_SUBSEA922_01430_SEQ_01,接受了希希蒲的委托。和利姆萨·罗敏萨网仓的瓦瓦拉哥谈谈。
 2,TEXT_SUBSEA922_01430_SEQ_02,和瓦瓦拉哥进行了交谈。瓦瓦拉哥想要冒险者去钓鱼。将1条<hex:02280BFF05>Item<hex:F2133C0103>交给瓦瓦拉哥。在西萨纳兰的西风岬钓场，用<hex:02280BFF05>Item<hex:F20A190103>作鱼饵钓到<hex:02280BFF05>Item<hex:F213050103>，再用这个鱼当饵，以小钓大，可以钓到<hex:02280BFF05>Item<hex:F213280103>，再一次以小钓大，就可以钓到<hex:02280BFF05>Item<hex:F2133C0103>。

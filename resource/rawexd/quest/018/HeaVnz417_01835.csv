@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ417_01835_SEQ_00,休岛园东张西望的莫古力按着肚子摇摇晃晃地飞着。
 1,TEXT_HEAVNZ417_01835_SEQ_01,和东张西望的莫古力进行了交谈。在休岛园周边讨伐4只<hex:02280FFF09>BNpcName<hex:F20E1F0103>。
 2,TEXT_HEAVNZ417_01835_SEQ_02,讨伐了<hex:02280FFF09>BNpcName<hex:F20E1F0103>。向休岛园东张西望的莫古力报告。

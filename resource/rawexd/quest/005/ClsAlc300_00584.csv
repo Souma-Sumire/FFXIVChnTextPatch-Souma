@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CLSALC300_00584_SEQ_00,炼金术士行会的塞文利安希望再次试探冒险者的实力。
 1,TEXT_CLSALC300_00584_SEQ_01,这次要完成的任务是制作毒药。制作3个<hex:02280DFF07>ItemHQ<hex:F211DF0103>交给炼金术士行会的塞文利安。
 2,TEXT_CLSALC300_00584_SEQ_02,塞文利安赞扬冒险者制作的毒药足以引起大惨案，并要求冒险者将<hex:02280DFF07>ItemHQ<hex:F211DF0103>交给盗贼团伙的走私者。去找白玉小巷的女猫魅。

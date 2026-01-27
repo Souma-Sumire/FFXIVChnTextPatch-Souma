@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA506_00758_SEQ_00,小阿拉米格的少女希希菈，有一件事想要拜托冒险者。
 1,TEXT_GAIUSA506_00758_SEQ_01,希希菈想将药品分配给生病的阿拉米格人。代替希希菈，将<hex:022811FF0A>EventItem<hex:F61E87BB0103>交给3位生病的阿拉米格人。
 2,TEXT_GAIUSA506_00758_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E87BB0103>交给了生病的阿拉米格人。向小阿拉米格的希希菈报告。

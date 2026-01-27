@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HOUFIXMANSIONOFFICER_00363_TALK_000_000,欢迎来到<hex:020949E802FF0A>中桅塔<hex:FF0A>百合岭<hex:FF13>娜娜莫大风车<hex:FF0D>红梅御殿<hex:FF0D>皓天炉舍<hex:03>公寓！<hex:02100103>在这个窗口可以购买房间或听取说明。
 1,TEXT_HOUFIXMANSIONOFFICER_00363_SELECT_001_000,询问有关公寓的事情
 2,TEXT_HOUFIXMANSIONOFFICER_00363_SELECT_001_001,取消

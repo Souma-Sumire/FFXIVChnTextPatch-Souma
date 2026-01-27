@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSC803_01027_SEQ_00,小麦酒港的黑涡团团员乌鲁兹·科古鲁兹，希望船能出港。
 1,TEXT_GAIUSC803_01027_SEQ_01,货船靠岸了。和小麦酒港的道森对话，请他准备好开船。
 2,TEXT_GAIUSC803_01027_SEQ_02,商人被海盗团海蛇之舌袭击了。调查<hex:02280CFF05>EObj<hex:F61E8E160103>，打倒海盗团海蛇之舌。

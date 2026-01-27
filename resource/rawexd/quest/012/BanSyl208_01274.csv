@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL208_01274_SEQ_00,妖精暂留地的颇妮希亚有事情想请冒险者帮忙。
 1,TEXT_BANSYL208_01274_SEQ_01,对妖精领的<hex:02280CFF05>EObj<hex:F61E90600103>使用<hex:022811FF0A>EventItem<hex:F61E89020103>，讨伐3名随之出现的<hex:02280FFF09>BNpcName<hex:F209090103>。
 2,TEXT_BANSYL208_01274_SEQ_02,成功讨伐了伪装成<hex:02280CFF05>EObj<hex:F61E90600103>的<hex:02280FFF09>BNpcName<hex:F209090103>。向妖精暂留地的颇妮希亚报告。

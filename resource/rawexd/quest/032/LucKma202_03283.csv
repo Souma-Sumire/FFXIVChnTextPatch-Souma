@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKMA202_03283_SEQ_00,碎贝海岸的柴莫田梅有秘密要告诉冒险者。
 1,TEXT_LUCKMA202_03283_SEQ_01,
 2,TEXT_LUCKMA202_03283_SEQ_02,

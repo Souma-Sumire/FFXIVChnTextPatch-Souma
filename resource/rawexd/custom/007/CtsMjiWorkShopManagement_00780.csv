@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSMJIWORKSHOPMANAGEMENT_00780_SALE_SUCCESS,主人！主人！<hex:02100103>按照你的指示！我们做成的海岛产品都卖出去啦！<hex:02100103>快来看看群岛贸易的收益吧！
 1,TEXT_CTSMJIWORKSHOPMANAGEMENT_00780_OWNER_OTHER,抱歉啦！<hex:02100103>这座小岛的开拓工房的管理情报，<hex:02100103>除了我家主人以外谁都不许看！
 2,TEXT_CTSMJIWORKSHOPMANAGEMENT_00780_CHECK_OVER_GILLS,谢尔达莱青船币数量已达到上限，无法获得全额报酬。<hex:02100103>确定要领取报酬吗？

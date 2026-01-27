@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_JOBDRK400_02056_SEQ_00,云雾街的弗雷正在等待冒险者。
 1,TEXT_JOBDRK400_02056_SEQ_01,和弗雷再会，挑战新的仪式。和东萨纳兰火墙的弗雷汇合。
 2,TEXT_JOBDRK400_02056_SEQ_02,和弗雷汇合，获得了指示，去打倒新的敌人。在火墙的<hex:02280CFF05>EObj<hex:F61E9D170103>进行张望，讨伐出现的<hex:02280FFF09>BNpcName<hex:F210180103>和<hex:02280FFF09>BNpcName<hex:F210190103>。

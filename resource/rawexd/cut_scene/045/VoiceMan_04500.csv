@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_VOICEMAN_04500_000010_ALISAIE,你来啦。
 1,TEXT_VOICEMAN_04500_000020_ALISAIE,我后来又去向炼金术士行会和幻术师行会求助，<hex:02100103>想看看有没有什么治疗方法……
 2,TEXT_VOICEMAN_04500_000030_ALISAIE,还是不行，<hex:02100103>他们几个依然处于昏迷状态，我们却连原因都查不出来。<hex:02100103>唯一能确认的就是，他们的问题不是药品或寻常魔法导致的……

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGOTH3MOLILOH_00417_CARAGAI_000_000,啊，是旅行者呀。<hex:02100103>你有什么问题吗？<hex:02100103>如果是关于我们部落的事情，我可以为你解答。
 1,TEXT_REGOTH3MOLILOH_00417_Q1_000_000,想了解什么？
 2,TEXT_REGOTH3MOLILOH_00417_A1_000_001,你是做什么的？

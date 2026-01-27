@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ007_01732_SEQ_00,隼巢的努瓦尔特雷尔正为物资不足而头疼不已。
 1,TEXT_HEAVNZ007_01732_SEQ_01,努瓦尔特雷尔需要一些食物。打倒库尔札斯西部高地交汇河附近的<hex:02280FFF09>BNpcName<hex:F20D8E0103>，获得3个<hex:022811FF0A>EventItem<hex:F61E8ABA0103>。
 2,TEXT_HEAVNZ007_01732_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8ABA0103>。将<hex:022811FF0A>EventItem<hex:F61E8ABA0103>交给隼巢的努瓦尔特雷尔。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS806_01421_SEQ_00,丧灵钟的维斯卡德有事想要告诉冒险者。
 1,TEXT_SUBCTS806_01421_SEQ_01,如果完成维斯卡德的委托，他就会传授获得华丽外表的秘诀。将<hex:022811FF0A>EventItem<hex:F61E89560103>交给丧灵钟的罗薇娜。
 2,TEXT_SUBCTS806_01421_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E89560103>交给了罗薇娜。向丧灵钟的维斯卡德报告。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_GAIUSA507_00759_SEQ_00,小阿拉米格的少女希希菈，有一件事想要拜托冒险者。
 1,TEXT_GAIUSA507_00759_SEQ_01,难道就没有让小阿拉米格人接受药品的办法么。经希希菈介绍，向名为阿尔法恩的老人询问办法。
 2,TEXT_GAIUSA507_00759_SEQ_02,小阿拉米格人似乎将<hex:022811FF0A>EventItem<hex:F61E86DD0103>熬成的东西作为药品来使用。打倒5只<hex:02280FFF09>BNpcName<hex:F2011E0103>，得到<hex:022811FF0A>EventItem<hex:F61E86DD0103>。

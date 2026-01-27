@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANSYL206_01272_SEQ_00,妖精暂留地的颇妮希亚感到森林里空气在变差。
 1,TEXT_BANSYL206_01272_SEQ_01,接受了委托，去阻止空气污染的恶化。前往妖精领，对喷雾孢子袋周围的<hex:02280CFF05>EObj<hex:F61E90C60103>使用<hex:022811FF0A>EventItem<hex:F61E89170103>。
 2,TEXT_BANSYL206_01272_SEQ_02,破坏了<hex:02280CFF05>EObj<hex:F61E90C60103>，从喷雾孢子袋上面除下了<hex:02280CFF05>EObj<hex:F61E90C90103>。对妖精领的<hex:02280CFF05>EObj<hex:F61E90C90103>使用<hex:022811FF0A>EventItem<hex:F61E89180103>。

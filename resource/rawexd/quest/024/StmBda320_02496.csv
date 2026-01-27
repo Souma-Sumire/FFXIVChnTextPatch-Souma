@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDA320_02496_SEQ_00,帝国河畔堡的夕雾想要营救被征召的多玛村民。
 1,TEXT_STMBDA320_02496_SEQ_01,
 2,TEXT_STMBDA320_02496_SEQ_02,

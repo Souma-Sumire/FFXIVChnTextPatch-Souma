@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGWILCERULEUMPROCESSINGPLANT_00120_EDELSTEIN_000_000,你好，请问你有什么事？<hex:02100103>如果是我知道的我会尽量解答。
 1,TEXT_REGWILCERULEUMPROCESSINGPLANT_00120_EDELSTEIN_000_010,我负责管理驻扎在这里的恒辉队。<hex:02100103>因为在青磷精炼所制作的青磷水是重要的战略物资，<hex:02100103>我们必须要死守。
 2,TEXT_REGWILCERULEUMPROCESSINGPLANT_00120_EDELSTEIN_000_011,多亏劳班局长亲自率兵征战，扩张了防御线，<hex:02100103>形成了默认的军事缓冲区……劳班缓冲地。<hex:02100103>不过依然不可松懈半分。

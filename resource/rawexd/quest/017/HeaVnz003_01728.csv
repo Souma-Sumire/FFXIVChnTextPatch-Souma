@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ003_01728_SEQ_00,忘忧骑士亭的吉布里隆想请老顾客喝杯酒。
 1,TEXT_HEAVNZ003_01728_SEQ_01,吉布里隆想请老顾客喝杯酒。将<hex:022811FF0A>EventItem<hex:F61E8B890103>交给忘忧骑士亭台阶下的嗜酒的男子。
 2,TEXT_HEAVNZ003_01728_SEQ_02,将<hex:022811FF0A>EventItem<hex:F61E8B890103>交给了嗜酒的男子。嗜酒的男子原本侍奉着一位贵族，但贵族家的女主人和异端者私通一事被发现，贵族家被治罪，他也被解雇了。将<hex:022811FF0A>EventItem<hex:F61E8B890103>交给伊修加德飞艇坪的原贵族的老爷。

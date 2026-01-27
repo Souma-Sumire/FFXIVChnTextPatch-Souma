@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_STMBDF103_03181_SEQ_00,归燕馆的飞燕想要开始青龙壁的试启动。
 1,TEXT_STMBDF103_03181_SEQ_01,
 2,TEXT_STMBDF103_03181_SEQ_02,

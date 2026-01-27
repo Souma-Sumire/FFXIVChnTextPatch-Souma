@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBCTS825_03200_SEQ_00,转魂塔广场的卖报人有事想要询问冒险者。
 1,TEXT_SUBCTS825_03200_SEQ_01,卖报人被拜托和身着红衣的武士见面。和在延夏的茨菰村等待冒险者的人谈谈。
 2,TEXT_SUBCTS825_03200_SEQ_02,原来在等待冒险者的是异国的诗人。他认为收服了所有被诸神祝福的圣犬的冒险者，有资格成为传说中的瑞兽九尾的搭档。在延夏的玄水连山附近的<hex:02280CFF05>EObj<hex:F61EAA3F0103>，吹响<hex:022811FF0A>EventItem<hex:F61E8E400103>。

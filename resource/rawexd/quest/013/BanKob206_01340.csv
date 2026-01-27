@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_BANKOB206_01340_SEQ_00,第789洞穴团采矿地的第789团工匠博古，想要消除不满。
 1,TEXT_BANKOB206_01340_SEQ_01,第789团工匠博古想除掉守护第13洞穴团炼金工房的<hex:02280FFF09>BNpcName<hex:F20A8C0103>。和黑金湖的第13团炼金术士加吉谈谈，他知道通往第13洞穴团炼金工房的暗道。
 2,TEXT_BANKOB206_01340_SEQ_02,第13团炼金术士加吉告诉了冒险者破坏控制<hex:02280FFF09>BNpcName<hex:F20A8C0103>的<hex:02280CFF05>EObj<hex:F61E92BF0103>的方法。为了让<hex:02280CFF05>EObj<hex:F61E92BF0103>过热，讨伐4只第13洞穴团炼金工房<hex:02280CFF05>EObj<hex:F61E92BF0103>附近的<hex:02280FFF09>BNpcName<hex:F20A8C0103>。

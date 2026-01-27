@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CMNDEFNPCREPAIR_00019_AMALJAAREPAIR_000_000,我是从事修理工作的。<hex:02100103>但与灰党无缘的人还请离开吧，<hex:02100103>我是不会接受委托的。
 1,TEXT_CMNDEFNPCREPAIR_00019_KOBOLDREPAIR_000_000,想拜托我 修理东西？才 不要呢！<hex:02100103>我 凭什么 要为来历不明的 人类工作啊。
 2,TEXT_CMNDEFNPCREPAIR_00019_SAHUAGINREPAIR_000_000,呼嘶……想拜托我修理东西？<hex:02100103>抱歉我拒绝……没有老爹的许可，我是不会随便帮人修东西的。<hex:02100103>这是我们诺布一伙的规矩。

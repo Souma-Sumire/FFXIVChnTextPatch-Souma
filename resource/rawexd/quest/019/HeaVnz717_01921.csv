@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_HEAVNZ717_01921_SEQ_00,曲石祭坛的尊杜族活祭品在向冒险者求助。
 1,TEXT_HEAVNZ717_01921_SEQ_01,尊杜族活祭品为了解除身体的麻痹，委托冒险者去拿来<hex:022811FF0A>EventItem<hex:F61E8B090103>。和阿巴拉提亚云海尊杜集落的亚努瓦努谈谈。
 2,TEXT_HEAVNZ717_01921_SEQ_02,获得了<hex:022811FF0A>EventItem<hex:F61E8B090103>。对曲石祭坛的尊杜族活祭品使用<hex:022811FF0A>EventItem<hex:F61E8B090103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_SUBSEA152_01143_SEQ_00,小麦酒港的丝·萘若又有事想要拜托冒险者。
 1,TEXT_SUBSEA152_01143_SEQ_01,接受了丝·萘若的委托。在小麦酒港附近讨伐5只<hex:02280FFF09>BNpcName<hex:F201930103>。
 2,TEXT_SUBSEA152_01143_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F201930103>。向小麦酒港的丝·萘若报告。

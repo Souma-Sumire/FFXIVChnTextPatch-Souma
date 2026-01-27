@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_LUCKYB001_03597_SEQ_00,水晶都的健壮的尘族有事情想要传达给冒险者。
 1,TEXT_LUCKYB001_03597_SEQ_01,
 2,TEXT_LUCKYB001_03597_SEQ_02,

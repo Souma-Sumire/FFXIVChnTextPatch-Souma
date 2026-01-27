@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_FESVLT2019DIVINATION_00556_FAKELUCKTELLER00556_000_000,不好意思，现在还在准备中。<hex:02100103>听说不参加恋人节的活动，就没法来占卜呢……嘻嘻嘻。
 1,TEXT_FESVLT2019DIVINATION_00556_FAKELUCKTELLER00556_000_010,哎呀，你想占卜一下吗？<hex:02100103>我跟那些路边的占卜师不同，可是很灵的。<hex:02100103>而且就算你没组队，我也能给你占卜出结果。
 2,TEXT_FESVLT2019DIVINATION_00556_Q1_000_000,要进行占卜吗？

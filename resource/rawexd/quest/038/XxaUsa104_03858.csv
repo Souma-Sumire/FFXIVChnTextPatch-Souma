@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSA104_03858_SEQ_00,帕帕力莫想要让冒险者得到妖精族的认可。
 1,TEXT_XXAUSA104_03858_SEQ_01,向法师伊梅狄亚询问有没有可以帮得上忙的事情。
 2,TEXT_XXAUSA104_03858_SEQ_02,打倒影响妖精族正常生活的<hex:02280EFF09>BNpcName<hex:F0DF0103>和<hex:02280FFF09>BNpcName<hex:F2086D0103>各1只。另外，再筹备3份<hex:022811FF0A>EventItem<hex:F61E903D0103>。

@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_REGROC2SKYISLAND2ENTRANCE_00385_AURVAEL_000_000,我们艾因哈特家在召集探索阿巴拉提亚云海的暗礁空域——<hex:02100103>云冠群岛的勇士！<hex:02100103>有勇气直面危险的人请务必来参加！
 1,TEXT_REGROC2SKYISLAND2ENTRANCE_00385_SYSTEM_000_001,要开始“云冠群岛探索”需要满足以下条件。
 2,TEXT_REGROC2SKYISLAND2ENTRANCE_00385_SYSTEM_000_002,1.完成“苍穹之禁城主线任务”中的“苍穹之禁城”。

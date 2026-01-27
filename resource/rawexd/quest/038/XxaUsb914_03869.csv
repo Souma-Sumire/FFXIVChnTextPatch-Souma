@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSB914_03869_SEQ_00,野战医院的西德想要冒险者帮忙。
 1,TEXT_XXAUSB914_03869_SEQ_01,西德需要一些材料来对配药用的蒸馏器进行改良。打倒<hex:02280DFF09>BNpcName<hex:730103>，获取3个<hex:022811FF0A>EventItem<hex:F61E904A0103>。
 2,TEXT_XXAUSB914_03869_SEQ_02,收集齐了西德需要的材料。将<hex:022811FF0A>EventItem<hex:F61E904A0103>交给白云崖前哨的西德。

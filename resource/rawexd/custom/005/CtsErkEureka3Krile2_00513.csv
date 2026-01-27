@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_CTSERKEUREKA3KRILE2_00513_KRILE_000_000,欢迎来到我们巴尔德西昂委员会的研究设施——实验魔器工房。<hex:02100103>你眼前的这个就是咱们寻找的原型以太之光。
 1,TEXT_CTSERKEUREKA3KRILE2_00513_KRILE_000_001,在你来之前我已经简单地调查了一下，<hex:02100103>看来没什么问题可以正常使用。<hex:02100103>状态也相当良好，真是太好了。
 2,TEXT_CTSERKEUREKA3KRILE2_00513_KRILE_000_002,那我就赶紧用原型以太之光进行调查了。<hex:02100103>在结果出来之前，请你等一段时间吧。

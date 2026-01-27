@@ -1,7 +1,7 @@
 ﻿key,0,1
 #,,
 offset,0,4
-int32,str,str
+Int32,String,String
 0,TEXT_XXAUSC603_03871_SEQ_00,丧灵钟的萨尔克·贸尔克想要冒险者筹备某些东西。
 1,TEXT_XXAUSC603_03871_SEQ_01,萨尔克·贸尔克委托冒险者筹备帝国兵的装备。讨伐<hex:02280FFF09>BNpcName<hex:F207150103>、<hex:02280FFF09>BNpcName<hex:F207140103>或是<hex:02280FFF09>BNpcName<hex:F207130103>，获取<hex:022811FF0A>EventItem<hex:F61E904D0103>。再讨伐<hex:02280FFF09>BNpcName<hex:F207110103>或<hex:02280FFF09>BNpcName<hex:F207120103>，获取<hex:022811FF0A>EventItem<hex:F61E904E0103>。
 2,TEXT_XXAUSC603_03871_SEQ_02,成功拿到了帝国兵的军装和头盔。让丧灵钟的萨尔克·贸尔克查看<hex:022811FF0A>EventItem<hex:F61E904D0103>和<hex:022811FF0A>EventItem<hex:F61E904E0103>。
