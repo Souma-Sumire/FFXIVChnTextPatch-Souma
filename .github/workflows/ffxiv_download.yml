@@ -2,10 +2,8 @@ name: FFXIV Data Downloader
 
 on:
   workflow_dispatch:
-
-  push:
-    tags:
-      - "v*"
+  schedule:
+    - cron: '0 0 * * *' # 每天 UTC 0 点执行（北京时间早上 8 点）
 
 jobs:
   download_files:
@@ -32,21 +30,19 @@ jobs:
         with:
           output-path: exd-data
           regex: '^sqpack\/ffxiv\/0a0000\..+$'
-          verbose: true
 
-      - name: Create GitHub Release if updated and triggered by tag
-        if: |
-          startsWith(github.ref, 'refs/tags/') &&
-          steps.download.outputs.updated == 'true'
+      - name: Create GitHub Release if updated
+        if: steps.download.outputs.updated == 'true'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ steps.download.outputs.version }}
           name: 国际服原文件备份 ${{ steps.download.outputs.version }}
           files: exd-data/**
           draft: false
           prerelease: false
+          generate_release_notes: true
 
       - name: Upload Downloaded Artifact
         uses: actions/upload-artifact@v4
