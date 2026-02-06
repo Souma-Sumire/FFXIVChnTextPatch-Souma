@@ -3,7 +3,7 @@ name: FFXIV Data Downloader
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # 每天 UTC 0 点执行（北京时间早上 8 点）
+    - cron: "0 0 * * *" # 每天 UTC 0 点执行（北京时间早上 8 点）
 
 jobs:
   download_files:
@@ -24,7 +24,30 @@ jobs:
           restore-keys: |
             ffxiv-exd-data-
 
+      - name: Check Remote Version
+        id: check
+        uses: WorkingRobot/ffxiv-downloader@v8
+        with:
+          output-path: exd-data
+          # 使用不匹配任何文件的正则来仅获取版本号，不下载大文件
+          regex: "^$"
+
+      - name: Check if already released
+        id: release_check
+        run: |
+          VERSION="${{ steps.check.outputs.version }}"
+          echo "Current remote version: $VERSION"
+          if gh release view "$VERSION" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Version $VERSION already released. Will skip download."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Download EXD Files
+        if: steps.release_check.outputs.exists == 'false'
         id: download
         uses: WorkingRobot/ffxiv-downloader@v8
         with:
@@ -32,13 +55,13 @@ jobs:
           regex: '^sqpack\/ffxiv\/0a0000\..+$'
 
       - name: Create GitHub Release if updated
-        if: steps.download.outputs.updated == 'true'
+        if: steps.release_check.outputs.exists == 'false' && steps.download.outputs.updated == 'true'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.download.outputs.version }}
-          name: 国际服原文件备份 ${{ steps.download.outputs.version }}
+          tag_name: ${{ steps.check.outputs.version }}
+          name: 国际服原文件备份 ${{ steps.check.outputs.version }}
           files: exd-data/**
           draft: false
           prerelease: false
