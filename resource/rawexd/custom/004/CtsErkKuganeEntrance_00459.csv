@@ -35,7 +35,7 @@ Int32,String,String
 30,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_041,在“禁地优雷卡”任务中陷入无法战斗状态时，<hex:02100103>“元素经验值”将会有所减少。
 31,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_042,不过，如果在陷入无法战斗状态10分钟以内<hex:02100103>被其他玩家救助的话，<hex:02100103>“元素经验值”将不会减少。
 32,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_043,另外，当“元素等级”低于5级时，<hex:02100103>即使陷入无法战斗状态，“元素经验值”也不会减少。
-33,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_044,当“元素等级”在11级以上且“元素经验值”因减少而降至0以下时，<hex:02100103>如果陷入无法战斗状态，<hex:02100103>将会导致“元素等级”下降。
+33,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_044,当“元素等级”在11或更高等级且“元素经验值”因减少而降至0以下时，<hex:02100103>如果陷入无法战斗状态，<hex:02100103>将会导致“元素等级”下降。
 34,TEXT_CTSERKKUGANEENTRANCE_00459_RODNEY_000_050,栖息在优雷卡的魔物受到环境的影响，<hex:02100103>拥有强烈的属性之力。<hex:02100103>在战斗中需要看清对手的属性。
 35,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_051,“禁地优雷卡”任务中出现的敌人都拥有某一种属性之力。
 36,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_052,敌人所拥有的属性之力将以图标的形式显示在名牌左侧。<hex:02100103>由于关系到战斗是否能够有利地进行，还请多加留意。
@@ -51,5 +51,5 @@ Int32,String,String
 46,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_091,“禁地优雷卡”任务与其他副本任务不同，<hex:02100103>任务中可以使用参加小队、邀请队员、离开小队、解散小队等功能。
 47,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_092,还可以从玩家名单中搜寻和自己“元素等级”相近的玩家。<hex:02100103>请多加利用！
 48,TEXT_CTSERKKUGANEENTRANCE_00459_RODNEY_000_100,优雷卡的调查有新的进展了，<hex:02100103>不过看你的装备——应该是在忙别的事情吧？<hex:02100103>等你做好冒险的准备再来找我吧。
-49,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_101,需要当前职业为设限特职外70级以上的战斗精英或魔法导师<hex:02100103>才能开启“<hex:02281CFF17>ContentFinderCondition<hex:E8022C03>”。
+49,TEXT_CTSERKKUGANEENTRANCE_00459_SYSTEM_000_101,需要当前职业为设限特职外达到70或更高等级的战斗精英或魔法导师<hex:02100103>才能开启“<hex:02281CFF17>ContentFinderCondition<hex:E8022C03>”。
 50,TEXT_CTSERKKUGANEENTRANCE_00459_RODNEY_000_010,（★未使用／削除予定★）

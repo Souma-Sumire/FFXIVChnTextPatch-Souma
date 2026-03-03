@@ -28,10 +28,10 @@ Int32,String,String
 23,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_020_030,伊修加德重建所需要的素材情报，<hex:02100103>可以从“采集笔记”的“伊修加德重建”项目中进行确认。
 24,TEXT_CTSHWDSKYISLAND_00636_AURVAEL_030_000,嗯，你虽然是个熟练的冒险者，也是我们的大英雄……<hex:02100103>不过你作为采集家好像还只是初出茅庐啊？
 25,TEXT_CTSHWDSKYISLAND_00636_AURVAEL_030_010,就算魔物减少了，可云冠群岛还是以太紊乱的危险地区。<hex:02100103>为了防止事故发生，希望你能历练一段时间之后再来参加。
-26,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_030_020,前往“天上福地云冠群岛”需要<hex:02100103>“采矿工/园艺工/捕鱼人”任意职业达到10级以上才能参加。
+26,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_030_020,前往“天上福地云冠群岛”需要<hex:02100103>“采矿工/园艺工/捕鱼人”任意职业达到10或更高等级才能参加。
 27,TEXT_CTSHWDSKYISLAND_00636_AURVAEL_040_000,嗯，我确认了一下，<hex:02100103>你作为采集家的本事无可挑剔！<hex:02100103>那我就正式带你去“天上福地云冠群岛”吧！
 28,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_040_010,开放了“天上福地云冠群岛”！<hex:02100103>为了伊修加德重建工程，请积极参加！
-29,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_040_020,参加该任务时需要<hex:02100103>职业为10级以上的采矿工或园艺工或捕鱼人。
+29,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_040_020,参加该任务时需要<hex:02100103>职业为10或更高等级的采矿工或园艺工或捕鱼人。
 30,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_040_030,此外，该任务从单人到满编小队（8人），<hex:02100103>可以以任意人数参加。<hex:02100103>任务中也可以自由组建小队。
 31,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_040_040,另外，部分钓场需要完成职业任务取得特定的“特性”。
 32,TEXT_CTSHWDSKYISLAND_00636_AURVAEL_050_000,<hex:022903EB0203>，要前往“天上福地云冠群岛”吗？
@@ -41,7 +41,7 @@ Int32,String,String
 36,TEXT_CTSHWDSKYISLAND_00636_MENU_003,听取“以太钻孔机”的说明
 37,TEXT_CTSHWDSKYISLAND_00636_MENU_CANCEL,取消
 38,TEXT_CTSHWDSKYISLAND_00636_ASK_TITLE,要出发前往“天上福地云冠群岛”吗？
-39,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_060_000,前往“天上福地云冠群岛”时需要<hex:02100103>职业为10级以上的采矿工或园艺工或捕鱼人。
+39,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_060_000,前往“天上福地云冠群岛”时需要<hex:02100103>职业为10或更高等级的采矿工或园艺工或捕鱼人。
 40,TEXT_CTSHWDSKYISLAND_00636_AURVAEL_070_000,“以太钻孔机”是通过采集活动，<hex:02100103>将云冠群岛特有的以太积攒起来，<hex:02100103>最后通过压缩一口气释放出来的最新型机工工具！
 41,TEXT_CTSHWDSKYISLAND_00636_AURVAEL_070_010,通过打倒以太学定义上已经变异的魔物，<hex:02100103>能够获得大量的资材，此事已经得到了证实！<hex:02100103>请你到当地多多使用，拿回大量的资材吧！
 42,TEXT_CTSHWDSKYISLAND_00636_SYSTEM_070_020,“以太钻孔机”是只能在云冠群岛内使用的<hex:02100103>特殊任务指令。

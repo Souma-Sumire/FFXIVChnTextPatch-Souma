@@ -55,6 +55,6 @@ Int32,String,String
 50,TEXT_BANAMA304_01245_YADOVVGAH_000_002,所以，只要和他们对决，夺取他们的士兵证<hex:022811FF05>Item<hex:FF08>　7001<hex:0103>，<hex:02100103>敌人必定士气大跌，我党即可奋起追击。
 51,TEXT_BANAMA304_01245_YADOVVGAH_100_003,并且这份功勋也会令阁下的勇武名扬天下。<hex:02100103>获得<hex:022811FF05>Item<hex:FF08>　7001<hex:0103>后请拿来给我看看。<hex:02100103>……阁下去试试自己的实力如何？
 52,TEXT_BANAMA304_01245_YADOVVGAH_000_005,空栏
-53,TEXT_BANAMA304_01245_YADOVVGAH_000_010,只要和<hex:02280FFF09>BNpcName<hex:F209410103>和<hex:02280FFF09>BNpcName<hex:F209400103>对决，<hex:02100103>成功夺取他们的士兵证<hex:022811FF05>Item<hex:FF08>　7001<hex:0103>，<hex:02100103>敌人必定士气大跌，我党即可奋起追击。
+53,TEXT_BANAMA304_01245_YADOVVGAH_000_010,只要和<hex:02280FFF09>BNpcName<hex:F209410103>以及<hex:02280FFF09>BNpcName<hex:F209400103>对决，<hex:02100103>成功夺取他们的士兵证<hex:022811FF05>Item<hex:FF08>　7001<hex:0103>，<hex:02100103>敌人必定士气大跌，我党即可奋起追击。
 54,TEXT_BANAMA304_01245_YADOVVGAH_000_011,噢！这正是<hex:022811FF05>Item<hex:FF08>　7001<hex:0103>！<hex:02100103>那些家伙把这个饰品刺入体内以提高斗志，<hex:02100103>对他们而言是比生命还重要的炎牙众之证！
 55,TEXT_BANAMA304_01245_YADOVVGAH_000_012,三头六臂，勇闯敌营……<hex:02100103>你的表现实在是太精彩了，冒险者阁下。

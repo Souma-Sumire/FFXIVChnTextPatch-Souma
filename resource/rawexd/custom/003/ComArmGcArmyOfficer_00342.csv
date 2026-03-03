@@ -121,7 +121,7 @@ Int32,String,String
 116,TEXT_COMARMGCARMYOFFICER_00342_SYSTEM_000_362,作战分为重视攻击的“攻势”、<hex:02100103>稳健平衡的“定式”，还有重视防御的“守势”。<hex:02100103>它们不仅影响分队员的行动方针，更会为分队员附加专属的状态效果。
 117,TEXT_COMARMGCARMYOFFICER_00342_SYSTEM_000_363,另外，作战的“作战熟练度”会随着不断完成分队攻略任务而提升，<hex:02100103>加强作战的效果。
 118,TEXT_COMARMGCARMYOFFICER_00342_SYSTEM_000_364,与各分队员对话，即可在“作战指示”中更改作战。
-119,TEXT_COMARMGCARMYOFFICER_00342_SYSTEM_000_370,分队员达到51级以上时，<hex:02100103>与分队员对话，即可在“武具投影”中更改其装备的外观。
+119,TEXT_COMARMGCARMYOFFICER_00342_SYSTEM_000_370,分队员达到51或更高等级时，<hex:02100103>与分队员对话，即可在“武具投影”中更改其装备的外观。
 120,TEXT_COMARMGCARMYOFFICER_00342_SYSTEM_000_371,投影用的外观装备可以在背包中选择。<hex:02100103>进行投影时需要消耗触媒、不会消耗外观装备。
 121,TEXT_COMARMGCARMYOFFICER_00342_PLATOONINSTRUCTOR_000_100,恭候多时了，<hex:022903EB0203>分队长阁下！<hex:02100103>从今天开始，您就要负责指挥分队了。<hex:02100103>话虽如此，想必您现在还对应该做些什么感到困惑吧？
 122,TEXT_COMARMGCARMYOFFICER_00342_PLATOONINSTRUCTOR_000_136,首先第一点，分队员的补充就拜托您了。<hex:02100103>我们分队现在有3名分队员，<hex:02100103>希望您能把分队员数量增加到4名。
