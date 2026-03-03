@@ -6,7 +6,7 @@ Int32,String,String
 1,TEXT_JOBMNK350_01062_SEQ_01,不知不觉间，冒险者加入了划时代的尝试，和维达盖尔特同时调查两个古战场。在东拉诺西亚的鲜血滨设置<hex:022811FF0A>EventItem<hex:F61E87B10103>。
 2,TEXT_JOBMNK350_01062_SEQ_02,测量了以太。回收<hex:022811FF0A>EventItem<hex:F61E87B10103>。
 3,TEXT_JOBMNK350_01062_SEQ_03,将回收的<hex:022811FF0A>EventItem<hex:F61E87B10103>交给乌尔达哈雕金匠行会的艾里克。
-4,TEXT_JOBMNK350_01062_SEQ_04,这次使用的<hex:022811FF0A>EventItem<hex:F61E87B10103>有些损坏了。在完成测量仪的修理、决定下一次的测量地点之前，继续努力锻炼。<hex:02100103><hex:02100103>※武僧的等级达到40级以上时，可以从艾里克那里领取下一个武僧任务。
+4,TEXT_JOBMNK350_01062_SEQ_04,这次使用的<hex:022811FF0A>EventItem<hex:F61E87B10103>有些损坏了。在完成测量仪的修理、决定下一次的测量地点之前，继续努力锻炼。<hex:02100103><hex:02100103>※武僧的等级达到40或更高等级时，可以从艾里克那里领取下一个武僧任务。
 5,TEXT_JOBMNK350_01062_SEQ_05,
 6,TEXT_JOBMNK350_01062_SEQ_06,
 7,TEXT_JOBMNK350_01062_SEQ_07,

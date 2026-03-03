@@ -6,7 +6,7 @@ Int32,String,String
 1,TEXT_CLSBSM451_00301_SEQ_01,接受了布瑞赛尔的委托。和利姆萨·罗敏萨锻铁匠行会的费兹阿尔谈谈。
 2,TEXT_CLSBSM451_00301_SEQ_02,和费兹阿尔进行了交谈。筹备<hex:022813FF07>ItemHQ<hex:FF08>　1723<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1796<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　1659<hex:0103>各1件，让费兹阿尔查看。
 3,TEXT_CLSBSM451_00301_SEQ_03,让费兹阿尔查看了<hex:022813FF07>ItemHQ<hex:FF08>　1723<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1796<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　1659<hex:0103>。将<hex:022813FF07>ItemHQ<hex:FF08>　1723<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1796<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　1659<hex:0103>交给利姆萨·罗敏萨阿斯塔利西亚号的缪丽尔。
-4,TEXT_CLSBSM451_00301_SEQ_04,将<hex:022813FF07>ItemHQ<hex:FF08>　1723<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1796<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　1659<hex:0103>交给了缪丽尔。缪丽尔收下了装备，她为能和冒险者这样真正的手艺人相遇而感动，觉得这是最大的收获。用她的话激励自己，继续磨练自己的锻铁本领。<hex:02100103><hex:02100103>※锻铁匠的等级达到50级以上时，可以从布瑞赛尔那里领取下一个锻铁匠任务。
+4,TEXT_CLSBSM451_00301_SEQ_04,将<hex:022813FF07>ItemHQ<hex:FF08>　1723<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1796<hex:0103>和<hex:022813FF07>ItemHQ<hex:FF08>　1659<hex:0103>交给了缪丽尔。缪丽尔收下了装备，她为能和冒险者这样真正的手艺人相遇而感动，觉得这是最大的收获。用她的话激励自己，继续磨练自己的锻铁本领。<hex:02100103><hex:02100103>※锻铁匠的等级达到50或更高等级时，可以从布瑞赛尔那里领取下一个锻铁匠任务。
 5,TEXT_CLSBSM451_00301_SEQ_05,
 6,TEXT_CLSBSM451_00301_SEQ_06,
 7,TEXT_CLSBSM451_00301_SEQ_07,

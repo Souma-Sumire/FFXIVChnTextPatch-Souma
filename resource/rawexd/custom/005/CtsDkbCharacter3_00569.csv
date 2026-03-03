@@ -21,7 +21,7 @@ Int32,String,String
 16,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_105,我也要学一学你才行啊……<hex:02100103>不能一直逃避过去……
 17,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_106,……不，没什么。<hex:02100103>请务必再来协助我！<hex:02100103>跳跳也还会需要我们的帮助。
 18,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_140,嗯……根据检查结果和牧场管理员的报告，<hex:02100103>治疗过程良好……接下来要考虑的就是……
-19,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_145,炼金术士或烹调师的等级达到73级以上时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取下一个交纳委托品的任务。
+19,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_145,炼金术士或烹调师的等级达到73或更高等级时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取下一个交纳委托品的任务。
 20,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_150,<hex:022903EB0203>！<hex:02100103>你来得正是时候。
 21,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_151,我正要去给跳跳诊疗，<hex:02100103>顺便把你做的药饵送过去。<hex:02100103>你能一起来吗？
 22,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_152,跳跳虽说恢复得很顺利，<hex:02100103>但还很难靠自己吃下饵料，<hex:02100103>所以需要我以流食的方法喂到它嘴里。
@@ -50,7 +50,7 @@ Int32,String,String
 45,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_305,……毕竟，都是过去的事了。
 46,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_306,现在的我是温厚善良的兽医！<hex:02100103>哎呀呀，我对<hex:022903EB0203><hex:02100103>真是可以无话不谈啊。
 47,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_307,从今往后，也请继续关照！
-48,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_320,炼金术士或烹调师的等级达到75级以上时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取下一个交纳委托品的任务。
+48,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_320,炼金术士或烹调师的等级达到75或更高等级时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取下一个交纳委托品的任务。
 49,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_350,<hex:022903EB0203>，真是惊人！<hex:02100103>跳跳的体力才刚恢复到可以站起来，<hex:02100103>它就能自己进食了！
 50,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_351,我们赶快去牧场看看情况吧！
 51,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_352,虽然要飞起来还是有些困难，<hex:02100103>但它现在确实做到用自己的脚踩在大地上了。<hex:02100103>这都多亏了你的帮助啊！
@@ -101,7 +101,7 @@ Int32,String,String
 96,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_515,对了，我要和你商量跳跳以后的事情，<hex:02100103>你方便的时候就来跟我谈谈吧。
 97,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_516,"此外,可以领取中庸工艺馆交易的剧情任务了。<hex:02100103>和贝斯里克对话即可接受任务。"
 98,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_540,嗯……<hex:02100103>心情变得平静一些了！<hex:02100103>话说回来，关于跳跳……
-99,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_545,炼金术士或烹调师的等级达到78级以上时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取下一个交纳委托品的任务。
+99,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_545,炼金术士或烹调师的等级达到78或更高等级时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取下一个交纳委托品的任务。
 100,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_550,绝对没错，跳跳确实回到牧场了！<hex:02100103>我们快去圣林牧场吧。
 101,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_551,跳跳！<hex:02100103>你最喜欢的<hex:022903EB0203>来了哟！
 102,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_552,为什么回来了呢？<hex:02100103>是那边的阿马罗伙伴欺负你了吗？
@@ -142,7 +142,7 @@ Int32,String,String
 137,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_704,呵呵呵……真是败给你了！<hex:02100103>是啊，无论如何我都要保护它们。<hex:02100103>为此我会不择手段！
 138,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_705,现在的我跟那时已经不一样了，<hex:02100103>一直以来逃避制作药饵，现在说不定也能做到，<hex:02100103>我向过去的搭档发誓……同样的错误不会犯第二次了。
 139,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_706,对了，关于收留跳跳的事，<hex:02100103>牧场的聂莫琴闵有些事情想要说明。<hex:02100103>稍微休息一下，然后再来找我吧！
-140,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_707,此外，可以领取中庸工艺馆交易的剧情任务了。<hex:02100103>炼金术士或烹调师的等级达到80级以上时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取任务。
+140,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_707,此外，可以领取中庸工艺馆交易的剧情任务了。<hex:02100103>炼金术士或烹调师的等级达到80或更高等级时，<hex:02100103>可以从中庸工艺馆的贝斯里克那里领取任务。
 141,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_750,哎呀，<hex:022903EB0203>！<hex:02100103>你来找我了啊，<hex:02100103>是对藏在神秘面纱后的我产生兴趣了吗？
 142,TEXT_CTSDKBCHARACTER3_00569_BETHRIC_000_751,呵呵呵……这可是个秘密！
 143,TEXT_CTSDKBCHARACTER3_00569_SYSTEM_000_800,背包已满，<hex:02100103>无法获得报酬。<hex:02100103>请整理背包后再次和贝斯里克对话。

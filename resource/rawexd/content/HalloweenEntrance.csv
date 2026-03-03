@@ -71,7 +71,7 @@ Int32,String,String
 66,TEXT_HALLOWEENENTRANCE_MEMBERC01548_000_131,道具效果持续时间有15秒！<hex:02100103>如果找到了这种道具就灵活运用它来完成小游戏吧，嘿嘿！
 67,TEXT_HALLOWEENENTRANCE_MEMBERC01548_000_110,亡灵府邸闹鬼庄园每次招待4名客人进入！<hex:02100103>我们不过问客人的冒险资历，<hex:02100103>大家都可以自由参加。
 68,TEXT_HALLOWEENENTRANCE_SYSTEM_000_111,亡灵府邸闹鬼庄园是4人小队参加的任务。<hex:02100103>无等级限制，可以使用任意战斗职业进行挑战。
-69,TEXT_HALLOWEENENTRANCE_SYSTEM_000_112,如果3人及以下人数的小队申请参加，<hex:02100103>系统会自动匹配需要的队员。
+69,TEXT_HALLOWEENENTRANCE_SYSTEM_000_112,如果以不足4人的小队申请参加，<hex:02100103>系统会自动匹配需要的队员。
 70,TEXT_HALLOWEENENTRANCE_SYSTEM_000_113,另外，组队参加的时候，需要所有队员都在同一区域。
 71,TEXT_HALLOWEENENTRANCE_MEMBERC01548_000_150,我们为参加亡灵府邸闹鬼庄园的所有人<hex:02100103>都准备了<hex:02280BFF05>Item<hex:F25E7A0103>作为纪念！
 72,TEXT_HALLOWEENENTRANCE_MEMBERC01548_000_151,收集到的<hex:02280BFF05>Item<hex:F25E7A0103>，<hex:02100103>可以用来和奇怪的店员交换有趣的道具！<hex:02100103>请多多参加闹鬼庄园的舞会吧！

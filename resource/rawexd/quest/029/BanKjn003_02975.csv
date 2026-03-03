@@ -8,7 +8,7 @@ Int32,String,String
 3,TEXT_BANKJN003_02975_SEQ_03,找到了关于宝物的情报。一位名叫兀赤金的凯苏提尔部人，持有能射中太阳的宝弓。和重逢集市的武盔进行交谈。
 4,TEXT_BANKJN003_02975_SEQ_04,和武盔进行了交谈。在重逢集市附近寻找名为兀赤金的凯苏提尔部人。
 5,TEXT_BANKJN003_02975_SEQ_05,和兀赤金进行了交谈。他的弓被什么人夺走了。在太阳神草原寻找强盗，夺回<hex:022811FF0A>EventItem<hex:F61E8DFB0103>。
-6,TEXT_BANKJN003_02975_SEQ_06,讨伐了红甲族并夺回了<hex:022811FF0A>EventItem<hex:F61E8DFB0103>。把<hex:022811FF0A>EventItem<hex:F61E8DFB0103>交还重逢集市的兀赤金。
+6,TEXT_BANKJN003_02975_SEQ_06,讨伐了红甲族并夺回了<hex:022811FF0A>EventItem<hex:F61E8DFB0103>。把<hex:022811FF0A>EventItem<hex:F61E8DFB0103>交还给重逢集市附近的兀赤金。
 7,TEXT_BANKJN003_02975_SEQ_07,把<hex:022811FF0A>EventItem<hex:F61E8DFB0103>交给了兀赤金。因冒险者取回来宝弓，和凯苏提尔部顺利结缘了。和红玉海碧玉水的武盔交谈。
 8,TEXT_BANKJN003_02975_SEQ_08,和武盔进行了交谈。武盔再一次因为依靠冒险者的帮助结缘而反省自己的实力不足。
 9,TEXT_BANKJN003_02975_SEQ_09,

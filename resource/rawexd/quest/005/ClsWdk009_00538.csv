@@ -8,7 +8,7 @@ Int32,String,String
 3,TEXT_CLSWDK009_00538_SEQ_03,和盖伊尔哈德进行了交谈。分别制作<hex:022813FF07>ItemHQ<hex:FF08>　1937<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1862<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2039<hex:0103>各1把，让格里达尼亚刻木匠行会的贝亚坦查看。
 4,TEXT_CLSWDK009_00538_SEQ_04,让贝亚坦查看了<hex:022813FF07>ItemHQ<hex:FF08>　1937<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1862<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2039<hex:0103>。将<hex:022813FF07>ItemHQ<hex:FF08>　1937<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1862<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2039<hex:0103>交给蛇巢司令部的盖伊尔哈德。
 5,TEXT_CLSWDK009_00538_SEQ_05,将<hex:022813FF07>ItemHQ<hex:FF08>　1937<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　1862<hex:0103>、<hex:022813FF07>ItemHQ<hex:FF08>　2039<hex:0103>交给了盖伊尔哈德。向刻木匠行会的贝亚坦报告。
-6,TEXT_CLSWDK009_00538_SEQ_06,向贝亚坦报告完毕。盖伊尔哈德再次出发远征，贝亚坦为自己最后也没能把新的弓交给他而长吁短叹。希望盖伊尔哈德能从残酷的战场平安归来。继续锻炼自己的手艺。<hex:02100103><hex:02100103>※刻木匠的等级达到50级以上时，可以从贝亚坦那里领取下一个刻木匠任务。
+6,TEXT_CLSWDK009_00538_SEQ_06,向贝亚坦报告完毕。盖伊尔哈德再次出发远征，贝亚坦为自己最后也没能把新的弓交给他而长吁短叹。希望盖伊尔哈德能从残酷的战场平安归来。继续锻炼自己的手艺。<hex:02100103><hex:02100103>※刻木匠的等级达到50或更高等级时，可以从贝亚坦那里领取下一个刻木匠任务。
 7,TEXT_CLSWDK009_00538_SEQ_07,
 8,TEXT_CLSWDK009_00538_SEQ_08,
 9,TEXT_CLSWDK009_00538_SEQ_09,
