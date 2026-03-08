@@ -20,7 +20,7 @@
       - 韩服请选择 `韩文`。
    1. 替换字体：如果你没有通过其他插件加载中文字体，则需要勾选，否则无法正常显示中文。
    1. 替换文本：请勾选，否则不会执行汉化动作。
-   1. 通过”详细设定“，可以选择汉化的范围，文件具体含义可查询 [WIKI](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV文件)
+   1. 通过”详细设定“，选择汉化的范围。（默认未勾选 `BnpcName`（敌人名称））。文件具体含义可查询 [WIKI](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV文件)
    1. 点击确认按钮。
    1. 点击汉化按钮。
 
@@ -86,3 +86,4 @@
 请下载后24小时内删除
 使用汉化补丁属于修改客户端行为，使用者需自愿承担风险
 ```
+
