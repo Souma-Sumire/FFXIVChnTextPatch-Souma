@@ -66,6 +66,10 @@
 
 ![捐赠二维码](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/1fec3974-0b6d-43df-9afc-2d760c33f9b5)
 
+## 开发者须知
+
+如果你 fork 了本项目进行开发，请先参照 [git_track_guide.md](git_track_guide.md) 取消 `conf/global.properties` 的本地跟踪，以避免将个人配置意外提交到仓库。
+
 ## 许可证相关
 
 本项目遵循 [GPL-3.0 License](https://www.gnu.org/licenses/gpl-3.0.html)，基于原项目 [FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP) 进行修改与扩展。
