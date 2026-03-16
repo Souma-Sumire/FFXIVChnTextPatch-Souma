@@ -1,0 +1,35 @@
+name: Bug 反馈（汉化补丁）
+description: 汉化器或补丁出现异常、报错、崩溃等问题
+labels: [bug, needs-review]
+body:
+  - type: checkboxes
+    id: precheck
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已阅读 README，并按步骤操作过至少一次
+          required: true
+        - label: 我使用的不是旧版本客户端或二次修改包
+          required: true
+        - label: 我已开启高分辨率贴图
+          required: true
+        - label: 我已选择正确的原始语言与汉化范围
+          required: true
+        - label: 我已搜索 Issues，未发现相同问题
+          required: true
+  - type: input
+    id: summary
+    attributes:
+      label: 简要描述
+      description: 用一句话说明问题是什么
+      placeholder: 例：运行汉化器点击“汉化”后闪退
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 日志与附件
+      description: 请拖拽 `debug.log`、报错截图、或相关日志文件
+      placeholder: 将文件拖到此处
+    validations:
+      required: true
