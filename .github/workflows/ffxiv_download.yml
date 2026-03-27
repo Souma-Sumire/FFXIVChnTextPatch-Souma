@@ -16,14 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Retrieve FFXIV Data Cache
-        uses: actions/cache@v4
-        with:
-          path: exd-data
-          key: ffxiv-exd-data-${{ hashFiles('exd-data/.cachemeta.json') }}
-          restore-keys: |
-            ffxiv-exd-data-
-
       - name: Check Remote Version
         id: check
         uses: WorkingRobot/ffxiv-downloader@v8
@@ -33,6 +25,14 @@ jobs:
           # 使用不匹配任何文件的正则来仅获取版本号，不下载大文件
           regex: "^$"
           skip-cache: true
+
+      - name: Retrieve FFXIV Data Cache
+        uses: actions/cache@v4
+        with:
+          path: exd-data
+          key: ffxiv-exd-data-${{ steps.check.outputs.version }}
+          restore-keys: |
+            ffxiv-exd-data-
 
       - name: Check if already released
         id: release_check
