@@ -28,9 +28,11 @@ jobs:
         id: check
         uses: WorkingRobot/ffxiv-downloader@v8
         with:
-          output-path: exd-data
+          # 用独立目录并跳过 cache，避免改写 exd-data/.cachemeta.json
+          output-path: exd-version
           # 使用不匹配任何文件的正则来仅获取版本号，不下载大文件
           regex: "^$"
+          skip-cache: true
 
       - name: Check if already released
         id: release_check
@@ -52,10 +54,12 @@ jobs:
         uses: WorkingRobot/ffxiv-downloader@v8
         with:
           output-path: exd-data
+          # 固定为刚刚检测到的版本，避免与缓存状态冲突
+          version: ${{ steps.check.outputs.version }}
           regex: '^sqpack\/ffxiv\/0a0000\..+$'
 
       - name: Create GitHub Release if updated
-        if: steps.release_check.outputs.exists == 'false' && steps.download.outputs.updated == 'true'
+        if: steps.release_check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
