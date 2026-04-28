@@ -4,8 +4,8 @@ offset,0,4
 Int32,String,String
 0,TEXT_LUCKHA104_03728_SEQ_00,圣罗埃勒广场的弗朗塞尔想要听马尔塞卢瓦的讲述。
 1,TEXT_LUCKHA104_03728_SEQ_01,原本是工匠的马尔塞卢瓦决定制作居民需要的东西。为了帮助他进行制作，前往新巢居住区和马尔塞卢瓦谈谈。
-2,TEXT_LUCKHA104_03728_SEQ_02,从马尔塞卢瓦那里听取了需要的物品。准备2个<hex:02280BFF05>Item<hex:F216880103>交给新巢居住区的马尔塞卢瓦。<hex:02280BFF05>Item<hex:F216880103>也可以从无名众人广场的艾洛薇那里获得。
-3,TEXT_LUCKHA104_03728_SEQ_03,将<hex:02280BFF05>Item<hex:F216880103>交给了马尔塞卢瓦。为了召集居民集合，和新巢居住区的奥黛娜谈谈。
+2,TEXT_LUCKHA104_03728_SEQ_02,从马尔塞卢瓦那里听取了需要的物品。准备2个<hex:02280BFF05>Item<hex:F2CC1E0103>交给新巢居住区的马尔塞卢瓦。<hex:02280BFF05>Item<hex:F2CC1E0103>也可以从无名众人广场的艾洛薇那里获得。
+3,TEXT_LUCKHA104_03728_SEQ_03,将<hex:02280BFF05>Item<hex:F2CC1E0103>交给了马尔塞卢瓦。为了召集居民集合，和新巢居住区的奥黛娜谈谈。
 4,TEXT_LUCKHA104_03728_SEQ_04,成功说服了奥黛娜。前往圣罗埃勒广场西边的<hex:02280CFF05>EObj<hex:F61EAF2C0103>。
 5,TEXT_LUCKHA104_03728_SEQ_05,马尔塞卢瓦的家人和居民们收下了他制作的物品，并接纳了他。马尔塞卢瓦想要对圣罗埃勒广场的弗朗塞尔表达谢意，跟他一同前往。
 6,TEXT_LUCKHA104_03728_SEQ_06,弗朗塞尔和冒险者分别收下了马尔塞卢瓦赠送的谢礼。马尔塞卢瓦一家今后也会在天穹街幸福地生活下去吧。今后请继续协助天穹街的运营工作。
@@ -27,7 +27,7 @@ Int32,String,String
 22,TEXT_LUCKHA104_03728_SEQ_22,
 23,TEXT_LUCKHA104_03728_SEQ_23,
 24,TEXT_LUCKHA104_03728_TODO_00,和马尔塞卢瓦对话
-25,TEXT_LUCKHA104_03728_TODO_01,<hex:020844E3E802E803FF15>获得<hex:02280BFF05>Item<hex:F216880103><hex:FF27>将<hex:02280BFF05>Item<hex:F216880103>交给马尔塞卢瓦<hex:03>
+25,TEXT_LUCKHA104_03728_TODO_01,<hex:020844E3E802E803FF15>获得<hex:02280BFF05>Item<hex:F2CC1E0103><hex:FF27>将<hex:02280BFF05>Item<hex:F2CC1E0103>交给马尔塞卢瓦<hex:03>
 26,TEXT_LUCKHA104_03728_TODO_02,和奥黛娜对话
 27,TEXT_LUCKHA104_03728_TODO_03,在<hex:02280CFF05>EObj<hex:F61EAF2C0103>等待
 28,TEXT_LUCKHA104_03728_TODO_04,和弗朗塞尔对话
@@ -86,9 +86,9 @@ Int32,String,String
 81,TEXT_LUCKHA104_03728_MARCELLOIX_000_061,我知道这样的请求有点不太合适，<hex:02100103>可我要是自己去的话又会引起恐慌了……
 82,TEXT_LUCKHA104_03728_MARCELLOIX_000_062,而英雄就能自由行走在街上，<hex:02100103>艾尔·图又有翅膀可以飞，<hex:02100103>所以还是得麻烦你们了！
 83,TEXT_LUCKHA104_03728_EHLLTOU_000_063,哼哼！这点小事简单得很！<hex:02100103>那我就去采集药草了！
-84,TEXT_LUCKHA104_03728_MARCELLOIX_000_064,那就麻烦英雄大人帮我准备一下<hex:02280BFF05>Item<hex:F216880103>吧，<hex:02100103>最少也得需要2个才行……
+84,TEXT_LUCKHA104_03728_MARCELLOIX_000_064,那就麻烦英雄大人帮我准备一下<hex:02280BFF05>Item<hex:F2CC1E0103>吧，<hex:02100103>最少也得需要2个才行……
 85,TEXT_LUCKHA104_03728_MARCELLOIX_000_065,我听居民们说无名众人广场的商人艾洛薇在贩卖各种商品，<hex:02100103>没准在那里可能买到……
-86,TEXT_LUCKHA104_03728_MARCELLOIX_000_070,麻烦英雄大人帮我准备一下<hex:02280BFF05>Item<hex:F216880103>吧，<hex:02100103>最少也得需要2个才行……
+86,TEXT_LUCKHA104_03728_MARCELLOIX_000_070,麻烦英雄大人帮我准备一下<hex:02280BFF05>Item<hex:F2CC1E0103>吧，<hex:02100103>最少也得需要2个才行……
 87,TEXT_LUCKHA104_03728_MARCELLOIX_000_071,我听居民们说无名众人广场的商人艾洛薇在贩卖各种商品，<hex:02100103>没准在那里可能买到……
 88,TEXT_LUCKHA104_03728_MARCELLOIX_000_080,英雄大人，<hex:02100103>拜托你的染剂准备好了吗？
 89,TEXT_LUCKHA104_03728_MARCELLOIX_000_081,谢谢你！就是这个！<hex:02100103>我这就拿去制作！

@@ -15,7 +15,9 @@ Int32,String,String
 10,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W1,要乘坐银河威号前往其他星球吗？
 11,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W2,要乘坐银河威号前往其他星球吗？
 12,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W3,要乘坐银河威号前往其他星球吗？
-13,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W1,乘坐银河威号的感觉如何？<hex:02100103>就用这应用了诸神黄昏号技术的宙脉跳跃，<hex:02100103>尽情享受在宇宙航行吧！
-14,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W2,除了受中控水晶控制的这一带以外，<hex:02100103>法恩娜行星基本上都漂浮着能下起玻璃雨的硅云。<hex:02100103>能安全向大气圈外出发的只有这里！
-15,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W3,在俄匊斯行星上降落真是太考验驾驶技术了！<hex:02100103>除了要小心行星环的碎片冲击，还不能太靠近空中的重力球，<hex:02100103>不然飞船的推力就会直接崩溃，到时候恐怕就只能尝试迫降了。
-16,TEXT_CTSWKSENTRANCE_00921_SYSTEM_000_008,移动到其他探索场景
+13,TEXT_CTSWKSENTRANCE_00921_FIRST_TALK_C1W4,ギャラクティックウェイ号に乗って、<hex:02100103>他の星に向かわれますか？
+14,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W1,乘坐银河威号的感觉如何？<hex:02100103>就用这应用了诸神黄昏号技术的宙脉跳跃，<hex:02100103>尽情享受在宇宙航行吧！
+15,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W2,除了受中控水晶控制的这一带以外，<hex:02100103>法恩娜行星基本上都漂浮着能下起玻璃雨的硅云。<hex:02100103>能安全向大气圈外出发的只有这里！
+16,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W3,在俄匊斯行星上降落真是太考验驾驶技术了！<hex:02100103>除了要小心行星环的碎片冲击，还不能太靠近空中的重力球，<hex:02100103>不然飞船的推力就会直接崩溃，到时候恐怕就只能尝试迫降了。
+17,TEXT_CTSWKSENTRANCE_00921_TOPIC_TALK_C1W4,アウクセシアは、着陸しやすい場所が多くて助かりますね。<hex:02100103>整備された道路や有人ドローンらしき遺物も見受けられますし、<hex:02100103>惑星全体に、高度な交通網が発達していたのでしょう。
+18,TEXT_CTSWKSENTRANCE_00921_SYSTEM_000_008,移动到其他探索场景
