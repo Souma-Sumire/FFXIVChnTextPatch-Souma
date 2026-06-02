@@ -2,4 +2,4 @@
 #,,
 offset,0,4
 Int32,String,String
-0,TEXT_CTSWKSMECHATANK_00994_TALK_ACTOR,特製のグロースフォーミュラが注入されたタンクだ。<hex:02100103>接近すると対象者へ自動的に錬金剤を補充する。
+0,TEXT_CTSWKSMECHATANK_00994_TALK_ACTOR,这是注入了特制植物成长剂的水罐，<hex:02100103>能够自动补充靠近的对象所持有的炼金药。

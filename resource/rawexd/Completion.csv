@@ -1572,10 +1572,10 @@ Int32,String,String,String
 1667,,法恩娜信用点,faennaxinyongdian
 1668,,俄匊斯信用点,ejusixinyongdian
 1669,,俄匊斯无人机晶片,ejusiwurenjijingpian
-1670,,,
-1671,,,
-1672,,,
-1673,,,
+1670,,奥克塞西亚信用点,aokesaixiyaxinyongdian
+1671,,奥克塞西亚无人机晶片,aokesaixiyawurenjijingpian
+1672,,熟练探索任务,shuliantansuorenwu
+1673,,熟练点,shuliandian
 1674,,,
 1675,,,
 1676,,,
@@ -3006,7 +3006,7 @@ Int32,String,String,String
 5197,,,
 5198,,,
 5199,,温达斯：第三巡行,wendasidisanxunxing
-5200,,,
+5200,,妖星乱舞绝境战,yaoxingluanwujuejingzhan
 5201,,休兵书库,xiubingshuku
 5202,,,
 5203,,,

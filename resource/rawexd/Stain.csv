@@ -1,5 +1,5 @@
 ﻿key,3,4
-#,Shade,SubOrder
+#,Item[0],Item[1]
 offset,12,16
 Int32,UInt32,UInt32
 0,,
