@@ -24,6 +24,34 @@
    1. 点击确认按钮。
    1. 点击汉化按钮。
 
+### macOS
+
+本项目的 `FFXIVChnTextPatch-SM.exe` 是 Launch4j 包装的 Java 程序。macOS 可使用本机 Java 启动，游戏路径仍选择含有 `ffxiv_dx11.exe` 的 FFXIV 客户端目录。
+
+#### 使用图形界面
+
+```bash
+./run-macos.command
+```
+
+脚本会自动尝试填写官方 macOS 客户端的默认 CrossOver/Wine Bottle 路径：
+
+```text
+~/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn
+```
+
+若自动填写失败，请手动选择含有 `ffxiv_dx11.exe` 的客户端目录。其余选项与上文汉化步骤一致。
+
+#### 使用命令行
+
+```bash
+./patch-macos.command
+```
+
+命令行脚本会根据 `conf/global.properties` 执行汉化，并在写入前将 `000000.*` 与 `0a0000.*` 备份到 `backup/` 目录。已有备份不会被覆盖。
+
+macOS 命令行脚本需要 JDK（可执行 `javac`），图形界面脚本仅需要 Java Runtime。
+
 #### 我希望汉化为繁体中文
 
 運行轉換腳本 `converter.exe` 並輸入1，程序會將 CSV 內的文本轉換至繁體中文。
