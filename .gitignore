@@ -6,3 +6,4 @@ debug.*
 /scripts/exd
 hashPaths.txt
 conf/global.properties
+MacPatchCli.class
