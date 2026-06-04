@@ -2,9 +2,9 @@
 #,,
 offset,0,4
 Int32,String,String
-0,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_000,准备好素材了啊，<hex:02100103>那我就用附着了半魂晶的锻铁工具，<hex:02100103>为你展现一下只有这里才能实现的加工方法！
-1,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_001,怎么样？很棒吧！<hex:02100103>将以太生成的虚影化作实影，<hex:02100103>并附着在了武器之上……
-2,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_002,这就是我倾注全力制作出的幻境武器——<hex:02280AFF05>Item<hex:E8020103>！
-3,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_003,这就是我倾注全力制作出的幻境武器——<hex:02100103><hex:02280AFF05>Item<hex:E8020103>和<hex:02280AFF05>Item<hex:E8030103>！
-4,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_004,不用我说你也知道，<hex:02100103>武器只有在使用的时候才能发挥其真正的价值，<hex:02100103>否则……就如同虚像的幻境一样毫无用处。
-5,TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_005,为了不让幻境就此消散，<hex:02100103>需要你拿在手中多多使用才行！
+0,"TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_000","准备好素材了啊，<hex:02100103>那我就用附着了半魂晶的锻铁工具，<hex:02100103>为你展现一下只有这里才能实现的加工方法！"
+1,"TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_001","怎么样？很棒吧！<hex:02100103>将以太生成的虚影化作实影，<hex:02100103>并附着在了武器之上……"
+2,"TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_002","这就是我倾注全力制作出的幻境武器——<hex:02280AFF05>Item<hex:E8020103>！"
+3,"TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_003","这就是我倾注全力制作出的幻境武器——<hex:02100103><hex:02280AFF05>Item<hex:E8020103>和<hex:02280AFF05>Item<hex:E8030103>！"
+4,"TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_004","不用我说你也知道，<hex:02100103>武器只有在使用的时候才能发挥其真正的价值，<hex:02100103>否则……就如同虚像的幻境一样毫无用处。"
+5,"TEXT_CTSMKDWEPTRADE1_00933_GEROLT_000_005","为了不让幻境就此消散，<hex:02100103>需要你拿在手中多多使用才行！"

@@ -2,6 +2,6 @@
 #,,
 offset,0,4
 Int32,String,String
-0,TEXT_VOICEMAN_05101_000010_2P,出现了！他就是操控机械的元凶！！
-1,TEXT_VOICEMAN_05101_000020_9S,找到你了……
-2,TEXT_VOICEMAN_05101_000030_9S,这次我要将你……完全破坏！
+0,"TEXT_VOICEMAN_05101_000010_2P","出现了！他就是操控机械的元凶！！"
+1,"TEXT_VOICEMAN_05101_000020_9S","找到你了……"
+2,"TEXT_VOICEMAN_05101_000030_9S","这次我要将你……完全破坏！"
