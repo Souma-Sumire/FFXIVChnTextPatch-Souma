@@ -1,0 +1,25 @@
+﻿key,0
+#,Name
+offset,0
+Int32,String
+0,"Unknown"
+1,"Elemental"
+2,"Gaia"
+3,"Mana"
+4,"Aether"
+5,"Primal"
+6,"Chaos"
+7,"Light"
+8,"Crystal"
+9,"Materia"
+10,"Meteor"
+11,"Dynamis"
+12,"Shadow"
+13,"NA Cloud DC (Beta)"
+99,"Beta"
+101,"陆行鸟"
+102,"莫古力"
+103,"猫小胖"
+104,"豆豆柴"
+151,""
+201,"Eorzea"
