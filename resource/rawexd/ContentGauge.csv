@@ -65,7 +65,7 @@ Int32,String,String
 60,斯卡米留尼的魔力,ContentGaugeMax_negative
 61,拉哈布雷亚的魔力,ContentGaugeMax_negative
 62,尼德霍格的魔力,ContentGaugeMax_negative
-63,饱食度,
+63,饱腹度,
 64,外层魔法障壁的耐久度,
 65,露琪亚等人的体力,
 66,凯纳槽的魔力,ContentGaugeMax_negative
@@ -94,9 +94,9 @@ Int32,String,String
 89,格莱杨拉波尔的魔力,ContentGaugeMax_negative
 90,可露儿的魔力,ContentGaugeMax_positive
 91,割草之魂,
-92,,
+92,石剑的魔力,ContentGaugeMax_negative
 93,巨大重力块,
-94,,
+94,赤龙的魔力,ContentGaugeMax_negative
 95,,
 96,,
 97,以太供给率,ContentGaugeMax_negative
