@@ -1,5 +1,5 @@
 ﻿key,0,1,2
-#,,,
+#,DisplayName,AddonName,
 offset,0,4,8
 Int32,String,String,String
 0,热键栏1,Hotbar1,
