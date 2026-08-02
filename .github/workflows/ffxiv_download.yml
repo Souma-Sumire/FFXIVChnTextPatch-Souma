@@ -18,13 +18,13 @@ jobs:
 
       - name: Check Remote Version
         id: check
-        uses: WorkingRobot/ffxiv-downloader@v8
+        uses: WorkingRobot/ffxiv-downloader@v9
         with:
           # 用独立目录并跳过 cache，避免改写 exd-data/.cachemeta.json
           output-path: exd-version
           # 使用不匹配任何文件的正则来仅获取版本号，不下载大文件
           regex: "^$"
-          skip-cache: true
+          use-cache: false
 
       - name: Retrieve FFXIV Data Cache
         uses: actions/cache@v4
