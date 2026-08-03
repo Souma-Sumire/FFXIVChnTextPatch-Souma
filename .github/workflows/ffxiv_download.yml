@@ -13,12 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Check Remote Version
         id: check
-        uses: WorkingRobot/ffxiv-downloader@v9
+        uses: WorkingRobot/ffxiv-downloader@v9.0.0
         with:
           # 用独立目录并跳过 cache，避免改写 exd-data/.cachemeta.json
           output-path: exd-version
@@ -51,7 +48,7 @@ jobs:
       - name: Download EXD Files
         if: steps.release_check.outputs.exists == 'false'
         id: download
-        uses: WorkingRobot/ffxiv-downloader@v8
+        uses: WorkingRobot/ffxiv-downloader@v9.0.0
         with:
           output-path: exd-data
           # 固定为刚刚检测到的版本，避免与缓存状态冲突
@@ -72,6 +69,7 @@ jobs:
           generate_release_notes: true
 
       - name: Upload Downloaded Artifact
+        if: steps.release_check.outputs.exists == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: ffxiv-exd-files
