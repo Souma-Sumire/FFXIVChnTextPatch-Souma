@@ -36,14 +36,18 @@ jobs:
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           echo "Current remote version: $VERSION"
-          if gh release view "$VERSION" > /dev/null 2>&1; then
+          if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Version $VERSION already released. Will skip download."
           else
             echo "exists=false" >> $GITHUB_OUTPUT
+            echo "No release found for version $VERSION."
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Debug release_check output
+        run: echo "exists=${{ steps.release_check.outputs.exists }}"
 
       - name: Download EXD Files
         if: steps.release_check.outputs.exists == 'false'
