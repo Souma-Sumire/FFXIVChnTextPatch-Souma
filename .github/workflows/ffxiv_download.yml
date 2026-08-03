@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Check Remote Version
         id: check
-        uses: WorkingRobot/ffxiv-downloader@v9.0.0
+        uses: WorkingRobot/ffxiv-downloader@v11
         with:
           # 用独立目录并跳过 cache，避免改写 exd-data/.cachemeta.json
           output-path: exd-version
@@ -52,7 +52,7 @@ jobs:
       - name: Download EXD Files
         if: steps.release_check.outputs.exists == 'false'
         id: download
-        uses: WorkingRobot/ffxiv-downloader@v9.0.0
+        uses: WorkingRobot/ffxiv-downloader@v11
         with:
           output-path: exd-data
           # 固定为刚刚检测到的版本，避免与缓存状态冲突
