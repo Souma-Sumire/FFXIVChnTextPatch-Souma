@@ -24,7 +24,7 @@ jobs:
           use-cache: false
 
       - name: Retrieve FFXIV Data Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: exd-data
           key: ffxiv-exd-data-${{ steps.check.outputs.version }}
@@ -57,7 +57,7 @@ jobs:
 
       - name: Create GitHub Release if updated
         if: steps.release_check.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Upload Downloaded Artifact
         if: steps.release_check.outputs.exists == 'false'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ffxiv-exd-files
           path: exd-data
