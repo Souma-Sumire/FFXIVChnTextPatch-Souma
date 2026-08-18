@@ -14,7 +14,7 @@
     - [国际服原始文件备份](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)
     - [繁中服原始文件备份](https://github.com/NaofumiRaphtalia/FFXIVChnTextPatch-Souma/releases)
 1. 运行 `FFXIVChnTextPatch-SM.exe`
-   1. 游戏路径：选择含有 `ffxiv_dx11.exe` 的 FFXIV 客户端目录。
+   1. 游戏路径：选择 FFXIV 客户端目录（里面有 `boot` 与 `game` 文件夹）。
    1. 文件语言：固定选择 `CSV`。
    1. 原始语言：
       - 国际服请选择 `日文` 或 `英文` ，取决于你设置的界面语言。
