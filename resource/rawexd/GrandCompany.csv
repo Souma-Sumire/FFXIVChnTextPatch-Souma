@@ -1,5 +1,5 @@
 ﻿key,0,2,8
-#,Name,,
+#,Singular,Plural,NamePrepositional
 offset,0,4,8
 Int32,String,String,String
 0,平民,,

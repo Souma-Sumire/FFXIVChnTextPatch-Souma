@@ -97,8 +97,8 @@ Int32,String,String
 92,石剑的魔力,ContentGaugeMax_negative
 93,巨大重力块,
 94,赤龙的魔力,ContentGaugeMax_negative
-95,,
-96,,
+95,以太填充率,ContentGaugeMax_negative
+96,萨尔镇压隶的魔力,ContentGaugeMax_negative
 97,以太供给率,ContentGaugeMax_negative
 98,普罗玛西亚的魔力,ContentGaugeMax_negative
 99,无之力,ContentGaugeMax_negative
