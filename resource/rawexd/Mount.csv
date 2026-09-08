@@ -369,7 +369,7 @@ Int32,String,String,String,String,String
 364,强力机兵,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
 365,商贾神威,,SE_Bt_Etc_InugamiWhistle,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_InugamiBye
 366,,,,,
-367,,,,,
+367,碧玺巨像,,SE_Bt_Etc_Mount_RainbowGolem_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_RainbowGolem_bye
 368,CHL P-0005,,,,
 369,,,SE_Bt_Etc_Mount_BigManatee_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_BigManatee_bye
 370,,,,,
@@ -436,9 +436,9 @@ Int32,String,String,String,String,String
 431,,,,,
 432,火箭飞拳,,SE_Bt_Etc_Mount_RocketPunch_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_RocketPunch_bye
 433,喷洒型强力机兵,,SE_Bt_Etc_Mount_WKSMech1_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_WKSMech1_bye
-434,,,,,
+434,库西,,SE_Bt_Etc_Mount_XBMPet_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_XBMPet_bye
 435,安静蜂鸟,,SE_Bt_Etc_Mount_FF11Colibri_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_FF11Colibri_bye
-436,,,,,
+436,海德拉,,SE_Bt_Etc_Mount_Hydra_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_Hydra_bye
 437,脚夫鸭,,SE_Bt_Etc_Mount_RockSmith_call,SE_Bt_Etc_GuuBooWhistle_only,SE_Bt_Etc_Mount_RockSmith_bye
 438,改良型宇宙武装重甲,,SE_Bt_Etc_Mount_ArmedWeapon_call,SE_Bt_Etc_MadoWhistle_only,SE_Bt_Etc_Mount_ArmedWeapon_bye
 439,CAM-II,,,,

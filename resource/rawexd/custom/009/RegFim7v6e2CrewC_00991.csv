@@ -2,9 +2,9 @@
 #,,
 offset,0,4
 Int32,String,String
-0,,
-1,,
-2,,
-3,,
-4,,
-5,,
+0,TEXT_REGFIM7V6E2CREWC_00991_SALVAGECREWC_000_000,虽然我们很少有机会碰到遇险者，<hex:02100103>但平时都做着救助的准备，<hex:02100103>所以你们不用担心住宿和食物的问题。
+1,TEXT_REGFIM7V6E2CREWC_00991_SALVAGECREWC_000_001,
+2,TEXT_REGFIM7V6E2CREWC_00991_SALVAGECREWC_000_100,抵达纳格尔法还需要一点时间，<hex:02100103>为了让你们过得舒坦一些，我已经搭好帐篷了。
+3,TEXT_REGFIM7V6E2CREWC_00991_SALVAGECREWC_000_101,话说那个叫埃斯蒂尼安的……<hex:02100103>不是巡逻就是锻炼，我就没见他闲着，<hex:02100103>他是干哪一行的？
+4,TEXT_REGFIM7V6E2CREWC_00991_SALVAGECREWC_000_200,哎呀，大家辛苦了！<hex:02100103>虽然这次旅途比预想的要长，<hex:02100103>但有你们做伴，我觉得这一路很充实！
+5,TEXT_REGFIM7V6E2CREWC_00991_SALVAGECREWC_000_201,正好，浮岛上的冰也化得差不多了，<hex:02100103>等到了地方就能着手移交啦！

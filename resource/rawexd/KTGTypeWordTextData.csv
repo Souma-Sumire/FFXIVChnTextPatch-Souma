@@ -110,7 +110,7 @@ Int32,String,String
 105,魔晄中毒,
 106,暴力是不对的！,BaoLiShiBuDuiDe
 107,爸爸，欢迎回来！,BaBaHuanYingHuiLai
-108,当店名物コスモキャニオンでございます,
+108,,
 109,我们似乎特别走运呢,WoMenSiHuTeBieZouYunNe
 110,罗榭,LuoXie
 111,五台,WuTai
@@ -120,11 +120,11 @@ Int32,String,String
 115,,
 116,,
 117,激光扫射机,JiGuangSaoSheJi
-118,ターゲットは伍番魔晄炉,
+118,,
 119,暴风破坏者,BaoFengPoHuaiZhe
 120,元ソルジャーだ,
 121,全都讨厌得不得了！,QuanDouTaoYanDeBuDeLiao
-122,魔晄を浴びた者の目,
+122,,
 123,可别忘了微笑啊,KeBieWangLeWeiXiaoA
 124,肮脏的鼠辈，欢迎你们！,AngZangDeShuBeiHuanYingNiMen
 125,,
@@ -140,7 +140,7 @@ Int32,String,String
 135,绿叶之家,LüYeZhiJia
 136,打扰了,DaRaoLe
 137,第伍区贫民窟,DiWuQuPinMinKu
-138,这样的话，我跟你约会１次！,"Zhe Yang De Hua, Wo Gen Ni Yue Hui 1 Ci!"
+138,じゃあね、デート1回！,
 139,我想多跟你在一起嘛,WoXiangDuoGenNiZaiYiQiMa
 140,,
 141,,
@@ -203,7 +203,7 @@ Int32,String,String
 198,万事通琪里耶的特大新闻哦！,WanShiTongQiLiYeDeTeDaXinWenO
 199,螺旋飞行重炮,LuoXuanFeiXingZhongPao
 200,热身运动结束了,ReShenYunDongJieShuLe
-201,３ｒｄ神罗战士,3rd Shen Luo Zhan Shi
+201,,
 202,我会给你一个难忘的夜晚,WoHuiGeiNiYiGeNanWangDeYeWan
 203,米德加的市长最棒了！,MiDeJiaDeShiZhangZuiBangLe
 204,うひょ,
@@ -216,7 +216,7 @@ Int32,String,String
 211,路法斯,LuFaSi
 212,应许之地,YingXuZhiDi
 213,科学部门,KeXueBuMen
-214,赤红XIII,Chi Hong XIII
+214,レッドXIII,
 215,多米诺市长,DuoMiNuoShiZhang
 216,贫民窟的卖花女,PinMinKuDeMaiHuaNü
 217,都市开发部门,DuShiKaiFaBuMen
@@ -255,7 +255,7 @@ Int32,String,String
 250,分会,FenHui
 251,莫古力,MoGuLi
 252,吉杰,JiJie
-253,ＩＤ卡,ID Ka
+253,,
 254,魏斯,WeiSi
 255,五字辈,WuZiBei
 256,不是莫古力,BuShiMoGuLi
@@ -265,7 +265,7 @@ Int32,String,String
 260,龟纵乐,GuiZongLe
 261,绯红梦魇,FeiHongMengYan
 262,没错，莫古力！,MeiCuoMoGuLi
-263,ＤＧ神罗战士,DG Shen Luo Zhan Shi
+263,,
 264,来自五台的使者,LaiZiWuTaiDeShiZhe
 265,夺取究极魔晶石,DuoQuJiuJiMoJingShi
 266,是谁在妨碍我？,ShiShuiZaiFangAiWo
@@ -310,7 +310,7 @@ Int32,String,String
 305,マッスルな者達,
 306,真夜中のまちぶせ,
 307,狂気の培養,
-308,すりつぶねじりキル,
+308,,
 309,永遠のかくれんぼ,
 310,3秒後を悔いろ,
 311,星に選ばれし者,
@@ -333,7 +333,7 @@ Int32,String,String
 328,神羅社員の日常,
 329,ここであったが百年目,
 330,父ちゃん、いってらっしゃい,
-331,エアリス救出作戦,
+331,,
 332,,
 333,神羅ビル脱出！,
 334,培養される闇,
@@ -362,7 +362,7 @@ Int32,String,String
 357,神羅の裏の顔,
 358,エアリスにロックオン,
 359,ゴーストシンフォニー,
-360,走れ走れ走れ！,
+360,,
 361,屋根裏の静寂,
 362,神羅役員会議,
 363,夜空のパラシュート,
@@ -373,7 +373,7 @@ Int32,String,String
 368,マッスルファンファーレ,
 369,めちゃくちゃしやがって,
 370,アバランチへの信念,
-371,狙われた七番街,
+371,,
 372,宝条実験室,
 373,チョコボ車を追って,
 374,教会の逃走劇,
@@ -415,7 +415,7 @@ Int32,String,String
 410,アバランチ本家のテーマ,
 411,屈辱のエレベーター,
 412,スカーレットの冷笑,
-413,ペインリアリティマックス,
+413,,
 414,ぬきあしさしあしシノビアシ,
 415,神羅兵器開発部門,
 416,兵器実験クオリファイ,
@@ -471,14 +471,14 @@ Int32,String,String
 466,驱魔,QuMo
 467,みやぶる,
 468,チャクラ,
-469,吸魔,Xi Mo
+469,アスピル,
 470,モルボル,
 471,トンベリ,
 472,无名者,WuMingZhe
 473,エーテル,
 474,解毒药,JieDuYao
 475,魔晄炉,
-476,强打,Qiang Da
+476,強打,
 477,玛姆女士,MaMuNüShi
 478,伊弗利特,YiFuLiTe
 479,巴哈姆特,BaHaMuTe
@@ -538,7 +538,7 @@ Int32,String,String
 533,星命学,XingMingXue
 534,琪里耶·卡南,QiLiYeKaNan
 535,雷兹利·凯尔,LeiZiLiKaiEr
-536,ＡＴＢ增幅,ATB Zeng Fu
+536,,
 537,リヴァイアサン,
 538,枪榴炸弹,QiangLiuZhaDan
 539,カタストロフィ,
@@ -560,7 +560,7 @@ Int32,String,String
 555,穿透狂眼,ChuanTouKuangYan
 556,尾针爆怪,WeiZhenBaoGuai
 557,飞天爆怪,FeiTianBaoGuai
-558,头颅瓮,Tou Lu Weng
+558,ブレインポッド,
 559,堆尘机,DuiChenJi
 560,コルネオの部下,
 561,失落之牙,ShiLuoZhiYa
@@ -592,7 +592,7 @@ Int32,String,String
 587,爆燃射击,BaoRanSheJi
 588,アンガーマックス,
 589,能量上钩拳,NengLiangShangGouQuan
-590,增驱,Zeng Qu
+590,オーバードライブ,
 591,レーザーキャノン,
 592,原型猎敌者,YuanXingLieDiZhe
 593,原型机关枪,YuanXingJiGuanQiang
@@ -606,7 +606,7 @@ Int32,String,String
 601,漆黑猎犬,QiHeiLieQuan
 602,フェニックスの尾,
 603,やまびこえんまく,
-604,加速药,Jia Su Yao
+604,スピードドリンク,
 605,ティファのテーマ,
 606,バレットのテーマ,
 607,タークスのテーマ,
@@ -651,7 +651,7 @@ Int32,String,String
 646,深夜追逐战,ShenYeZhuiZhuZhan
 647,毁灭的世界,HuiMieDeShiJie
 648,太陽の海岸,
-649,星降る峡谷,
+649,,
 650,亡灵的恶作剧,WangLingDeEZuoJu
 651,十字手里剑,ShiZiShouLiJian
 652,吸收灵气,XiShouLingQi
@@ -678,7 +678,7 @@ Int32,String,String
 673,强化战斗员,QiangHuaZhanDouYuan
 674,强魔战斗员,QiangMoZhanDouYuan
 675,蒂法·洛克哈特,DiFaLuoKeHaTe
-676,FFVIIメインテーマ,
+676,,
 677,五台临时政府,WuTaiLinShiZhengFu
 678,更に闘う者達,
 679,特殊空中兵,TeShuKongZhongBing
@@ -692,7 +692,7 @@ Int32,String,String
 687,クレイジーモーターサイクル,
 688,重装甲战斗员,ZhongZhuangJiaZhanDouYuan
 689,特殊作战兵,TeShuZuoZhanBing
-690,２ｎｄ神罗战士,2nd Shen Luo Zhan Shi
+690,,
 691,ジュノン警備兵,
 692,ジュノン上級警備兵,
 693,ジュノン擲弾兵,
@@ -710,8 +710,8 @@ Int32,String,String
 705,电击之牙,DianJiZhiYa
 706,白色之牙,BaiSeZhiYa
 707,尼福尔狼,NiFuErLang
-708,哮吼狼,Xiao Hou Lang
-709,测试０,Ce Shi 0
+708,ハウルウルフ,
+709,テスト0,
 710,剧毒鼠,JuDuShu
 711,振翅翼蜥,ZhenChiYiXi
 712,风暴翼蜥,FengBaoYiXi
@@ -789,10 +789,10 @@ Int32,String,String
 784,虫型龟,ChongXingGui
 785,机甲龟,JiJiaGui
 786,蛇鸡兽,SheJiShou
-787,死亡厉爪,Si Wang Li Zhao
+787,デスクロー,
 788,杀手烙印,ShaShouLaoYin
 789,双面相,ShuangMianXiang
-790,陆蠕虫,Lu Ru Chong
+790,ランドウォーム,
 791,沙丘蠕虫,ShaQiuRuChong
 792,巨型蠕虫,JuXingRuChong
 793,史宾赛飞鱼,ShiBinSaiFeiYu
@@ -844,12 +844,12 @@ Int32,String,String
 839,赭红浮游死神,ZheHongFuYouSiShen
 840,浮游死神,FuYouSiShen
 841,ゴールドサボテンダー,
-842,サポテンダー,
-843,オレンジサポテンダー,
+842,,
+843,,
 844,コルテンダー,
 845,ジャボテンダー,
-846,ジャポテンダー,
-847,基德Ｇ,Ji De G
+846,,
+847,,
 848,尖叫者,JianJiaoZhe
 849,探测眼,TanCeYan
 850,新尾针爆怪,XinWeiZhenBaoGuai
@@ -871,7 +871,7 @@ Int32,String,String
 866,ミドガルズオルム,
 867,秘银魔像,MiYinMoXiang
 868,摆尾龙鱼,BaiWeiLongYu
-869,十亿鸡兽,Shi Yi Ji Shou
+869,ギガトリス,
 870,义·纳塔塔克,YiNaTaTaKe
 871,灵魂火焰,LingHunHuoYan
 872,红龙,HongLong
@@ -919,7 +919,7 @@ Int32,String,String
 914,シノビ・パルクール,
 915,裏切り者の烙印,
 916,ウェルカム・トゥ・ゴールドソーサー,
-917,3Dバトラー,
+917,,
 918,闹鬼酒店,NaoGuiJiuDian
 919,フィドル・デ・チョコボ,
 920,奇迹广场,QiJiGuangChang
@@ -940,7 +940,7 @@ Int32,String,String
 935,星殒天文台,XingYunTianWenTai
 936,送星仪式,SongXingYiShi
 937,义族的洞窟,YiZuDeDongKu
-938,谷を守る戦士,
+938,,
 939,血の池,
 940,偉大なる戦士セト,
 941,义族的村落,YiZuDeCunLuo
@@ -984,7 +984,7 @@ Int32,String,String
 979,卡片嘉年华,KaPianJiaNianHua
 980,陆行鸟钻圈,LuXingNiaoZuanQuan
 981,沙漠狂袭,ShaMoKuangXi
-982,Ｇ摩托车,G Mo Tuo Che
+982,,
 983,矿车射击,KuangCheSheJi
 984,平衡车约会,PingHengCheYueHui
 985,莫古力追逐赛,MoGuLiZhuiZhuSai
@@ -1030,15 +1030,15 @@ Int32,String,String
 1025,软羽手套,RuanYuShouTao
 1026,音速拳套,YinSuQuanTao
 1027,金属指虎,JinShuZhiHu
-1028,秘银手套,Mi Yin Shou Tao
+1028,ミスリルクロー,
 1029,高级手套,GaoJiShouTao
 1030,全金属长杖,QuanJinShuChangZhang
 1031,银制长杖,YinZhiChangZhang
-1032,秘银长杖,Mi Yin Chang Zhang
+1032,ミスリルロッド,
 1033,魔法长杖,MoFaChangZhang
 1034,强击长杖,QiangJiChangZhang
 1035,丝滑剑,SiHuaJian
-1036,符文剑,Fu Wen Jian
+1036,ルーンブレード,
 1037,原力吞噬者,YuanLiTunShiZhe
 1038,水晶剑,ShuiJingJian
 1039,火山剑,HuoShanJian
@@ -1050,16 +1050,16 @@ Int32,String,String
 1045,坚实火箭炮,JianShiHuoJianPao
 1046,高声嘶吼,GaoShengSiHou
 1047,风精手套,FengJingShouTao
-1048,帝王拳套,Di Wang Quan Tao
+1048,カイザーナックル,
 1049,龙爪,LongZhao
-1050,猛虎利牙,Meng Hu Li Ya
+1050,タイガーファング,
 1051,水晶手套,ShuiJingShouTao
 1052,雅恩格利佩尔,YaEnGeLiPeiEr
 1053,永恒长杖,YongHengChangZhang
 1054,女帝长杖,NüDiChangZhang
-1055,巫师长杖,Wu Shi Zhang Zhang
+1055,ウィザードロッド,
 1056,智者长杖,ZhiZheChangZhang
-1057,加姆班泰因,Jia Mu Ban Tai Yin
+1057,ガンバンテイン,
 1058,棱镜长杖,LengJingChangZhang
 1059,秘银项圈,MiYinXiangQuan
 1060,反叛项圈,FanPanXiangQuan
@@ -1086,7 +1086,7 @@ Int32,String,String
 1081,机械手镯,JiXieShouZhuo
 1082,力量手环,LiLiangShouHuan
 1083,哥特手镯,GeTeShouZhuo
-1084,秘银护腕,Mi Yin Hu Wan
+1084,ミスリルの腕輪,
 1085,星辰手环,XingChenShouHuan
 1086,钛手镯,TaiShouZhuo
 1087,皮革护腕,PiGeHuWan
@@ -1181,15 +1181,15 @@ Int32,String,String
 1176,魔晄の水晶,
 1177,明星腰带,MingXingYaoDai
 1178,自动重生耳环,ZiDongChongShengErHuan
-1179,羁绊绳结,Ji Ban Sheng Jie
+1179,絆のくみひも,
 1180,赤鬼内存,ChiGuiNeiCun
 1181,青鬼内存,QingGuiNeiCun
 1182,缎带,DuanDai
 1183,强力辟邪护符,QiangLiBiXieHuFu
 1184,魔力耳环,MoLiErHuan
 1185,高威力护腕,GaoWeiLiHuWan
-1186,陆行鸟羽毛,Lu Xing Niao Yu Mao
-1187,咕波幸运符,Gu Bo Xing Yun Fu
+1186,チョコボの羽根,
+1187,クポチャーム,
 1188,精神幸运符,JingShenXingYunFu
 1189,友爱耳环,YouAiErHuan
 1190,行人徽章,XingRenHuiZhang
@@ -1215,11 +1215,11 @@ Int32,String,String
 1210,破坏专家钥匙圈,PoHuaiZhuanJiaYaoShiQuan
 1211,陆行鸟王的斗篷,LuXingNiaoWangDeDouPeng
 1212,エルメスのくつ,
-1213,十亿治疗剂,Shi Yi Zhi Liao Ji
-1214,至高治疗剂,Zhi Gao Zhi Liao Ji
-1215,综合治疗剂,Zong He Zhi Liao Ji
+1213,ギガポーション,
+1214,エクスポーション,
+1215,ミックスポーション,
 1216,ミックスハイポーション,
-1217,喷雾治疗剂,Pen Wu Zhi Liao Ji
+1217,ミストポーション,
 1218,ミストハイポーション,
 1219,ミストメガポーション,
 1220,ミストギガポーション,
@@ -1265,7 +1265,7 @@ Int32,String,String
 1260,治疗,ZhiLiao
 1261,中毒,ZhongDu
 1262,ふうじる,
-1263,ほのお,
+1263,,
 1264,れいき,
 1265,属性,ShuXing
 1266,たいせい,
@@ -1322,14 +1322,14 @@ Int32,String,String
 1317,联合狂暴,LianHeKuangBao
 1318,傀儡马戏团,KuiLeiMaXiTuan
 1319,飞跃野兽,FeiYueYeShou
-1320,野兽哮吼,Ye Shou Xiao Hou
+1320,ビーストハウリング,
 1321,野蛮搭档,YeManDaDang
 1322,猫咪冲撞,MaoMiChongZhuang
 1323,云外苍天,YunWaiCangTian
 1324,超绝分身术,ChaoJueFenShenShu
 1325,螺旋台风,LuoXuanTaiFeng
 1326,クポ車輪の術,
-1327,神罗战士 On 莫古力,Shen Luo Zhan Shi  On  Mo Gu Li
+1327,ソルジャーオンモーグリ,
 1328,巨大莫古力,JuDaMoGuLi
 1329,转转木马,ZhuanZhuanMuMa
 1330,嚼嚼弹跳,JiaoJiaoTanTiao
@@ -1337,7 +1337,7 @@ Int32,String,String
 1332,交叉螺旋,JiaoChaLuoXuan
 1333,空洞爆发,KongDongBaoFa
 1334,连打重击,LianDaZhongJi
-1335,哮吼猛击,Xiao Hou Meng Ji
+1335,ハウルスマッシュ,
 1336,反击射击,FanJiSheJi
 1337,猛烈爆发,MengLieBaoFa
 1338,魔法爆发,MoFaBaoFa
@@ -1375,7 +1375,7 @@ Int32,String,String
 1370,愤怒烙印,FenNuLaoYin
 1371,旋风俯冲,XuanFengFuChong
 1372,天堂部落,TianTangBuLuo
-1373,陨石强击,Yun Shi Qiang Ji
+1373,メテオストライク,
 1374,连续斩,LianXuZhan
 1375,陨石乱击,YunShiLuanJi
 1376,额外弹药,EWaiDanYao
@@ -1392,7 +1392,7 @@ Int32,String,String
 1387,致命挥击,ZhiMingHuiJi
 1388,穿刺獠牙,ChuanCiLiaoYa
 1389,血腥獠牙,XueXingLiaoYa
-1390,月夜咆哮,Yue Ye Pao Xiao
+1390,ハウリングムーン,
 1391,大地狂啸,DaDiKuangXiao
 1392,投掷手里剑,TouZhiShouLiJian
 1393,忍术,RenShu
@@ -1408,7 +1408,7 @@ Int32,String,String
 1403,疾风迅雷,JiFengXunLei
 1404,血祭,XueJi
 1405,生者必灭,ShengZheBiMie
-1406,易如反掌,Yi Ru Fan Zhang
+1406,鎧袖一触,
 1407,头奖杀戮,TouJiangShaLu
 1408,抚猫光束,FuMaoGuangShu
 1409,全体破坏,QuanTiPoHuai
@@ -1421,7 +1421,7 @@ Int32,String,String
 1416,莫古力地雷,MoGuLiDiLei
 1417,莫古力召唤术,MoGuLiZhaoHuanShu
 1418,莫古力拳击,MoGuLiQuanJi
-1419,吃角子老虎,Chi Jiao Zi Lao Hu
+1419,スロット,
 1420,莫古力突击,MoGuLiTuJi
 1421,莫古箱,MoGuXiang
 1422,百万莫古箱,BaiWanMoGuXiang
@@ -1439,7 +1439,7 @@ Int32,String,String
 1434,攻击蓄力,GongJiXuLi
 1435,高度英勇斩击,GaoDuYingYongZhanJi
 1436,猛爆快攻,MengBaoKuaiGong
-1437,电浆放电,Dian Jiang Fang Dian
+1437,プラズマ放電,
 1438,疗愈之风,LiaoYuZhiFeng
 1439,ファイアインパルス,
 1440,ブリザドインパルス,
@@ -1453,7 +1453,7 @@ Int32,String,String
 1448,ブリザドウェーブ,
 1449,サンダーウェーブ,
 1450,エアロウェーブ,
-1451,超～臭气,Chao ～ Chou Qi
+1451,ちょ～くさい息,
 1452,最后轮盘,ZuiHouLunPan
 1453,針千本,
 1454,仙人掌炸弹,XianRenZhangZhaDan
@@ -1461,13 +1461,13 @@ Int32,String,String
 1456,超电磁幻光球,ChaoDianCiHuanGuangQiu
 1457,超级臭气,ChaoJiChouQi
 1458,怒发冲冠爆击,NuFaChongGuanBaoJi
-1459,同时射击,Tong Shi She Ji
+1459,一斉射撃,
 1460,大家的怨恨,DaJiaDeYuanHen
 1461,怨恨爆炸,YuanHenBaoZha
-1462,喝啊喝啊喝啊！,
+1462,,
 1463,阳露出了笑容,YangLouChuLeXiaoRong
 1464,阴生气了,YinShengQiLe
-1465,地狱火焰,Di Yu Huo Yan
+1465,地獄の火炎,
 1466,莫古炸弹,MoGuZhaDan
 1467,陆行鸟踢,LuXingNiaoTi
 1468,制裁之雷,ZhiCaiZhiLei
@@ -1482,10 +1482,10 @@ Int32,String,String
 1477,吉尔伽美什光束,JiErGaMeiShenGuangShu
 1478,莫古力紧急出动,MoGuLiJinJiChuDong
 1479,钻石星尘,ZuanShiXingChen
-1480,咕波华尔兹,Gu Bo Hua Er Zi
+1480,クポのワルツ,
 1481,大地之怒,DaDiZhiNu
 1482,转生之炎,ZhuanShengZhiYan
-1483,浪潮嘶吼,Lang Chao Si Hou
+1483,タイダルロア,
 1484,神圣审判,ShenShengShenPan
 1485,三重灾祸,SanZhongZaiHuo
 1486,魔晶耳环,MoJingErHuan
@@ -1543,7 +1543,7 @@ Int32,String,String
 1538,普莉希拉,PuLiXiLa
 1539,咻咻咻咻！,XiuXiuXiuXiu
 1540,喂！你干什么啊！,WeiNiGanShenMeA
-1541,谢啦～！,Xie La～!
+1541,,
 1542,艾米利欧,AiMiLiOu
 1543,下次就推心置腹地聊聊吧,XiaCiJiuTuiXinZhiFuDiLiaoLiaoBa
 1544,要比腹肌我是不会输的,YaoBiFuJiWoShiBuHuiShuDe
@@ -1583,7 +1583,7 @@ Int32,String,String
 1578,神罗度假村,ShenLuoDuJiaCun
 1579,用两只脚站立还真难啊,YongLiangZhiJiaoZhanLiHaiZhenNanA
 1580,黑斗篷,HeiDouPeng
-1581,饶了我吧～！,Rao Le Wo Ba ～!
+1581,,
 1582,卡波诺,KaBoNuo
 1583,太阳海岸度假村,TaiYangHaiAnDuJiaCun
 1584,纳纳奇,NaNaQi
@@ -1616,7 +1616,7 @@ Int32,String,String
 1611,北コレル,
 1612,迪欧,DiOu
 1613,ケット・シー,
-1614,Ｇ莫古力,G Mo Gu Li
+1614,,
 1615,トンベリロボ,
 1616,活动广场,HuoDongGuangChang
 1617,摩天轮广场,MoTianLunGuangChang
@@ -1627,7 +1627,7 @@ Int32,String,String
 1622,黄金剧场,HuangJinJuChang
 1623,実験サンプル,
 1624,劲歌热舞吧！,JinGeReWuBa
-1625,黄金乐园金碟游乐园,Huang Jin Le Yuan Jin Die You Le Yuan
+1625,黄金の楽園ゴールドソーサー,
 1626,黄金乐园,HuangJinLeYuan
 1627,超越极限,ChaoYueJiXian
 1628,别怨我,BieYuanWo
@@ -1640,7 +1640,7 @@ Int32,String,String
 1635,,
 1636,真的很抱歉,ZhenDeHenBaoQian
 1637,,
-1638,乖乖投降吧～！,Guai Guai Tou Xiang Ba ～!
+1638,おとなしく、投降しなさーい！,
 1639,不，香草不行,BuXiangCaoBuXing
 1640,双人……是指那种双人吗？,ShuangRenShiZhiNaZhongShuangRenMa
 1641,这是我的……我们之间的问题,ZheShiWoDeWoMenZhiJianDeWenTi
@@ -1651,7 +1651,7 @@ Int32,String,String
 1646,钩索枪,GouSuoQiang
 1647,西斯妮,XiSiNi
 1648,贡加加村,GongJiaJiaCun
-1649,我是猫～,Wo Shi Mao～
+1649,,
 1650,贡加菇,GongJiaGu
 1651,ゴンガガ魔晄炉,
 1652,黑迷利翁或红溪里,HeiMiLiWengHuoHongXiLi
@@ -1660,10 +1660,10 @@ Int32,String,String
 1655,陷入困境时，得到英雄拯救,XianRuKunJingShiDeDaoYingXiongZhengJiu
 1656,这次我会保护你,ZheCiWoHuiBaoHuNi
 1657,芳格,FangGe
-1658,希德,Xi De
+1658,シド,
 1659,小野马,XiaoYeMa
 1660,野马航空,YeMaHangKong
-1661,塞特,Sai Te
+1661,セト,
 1662,盖泽尔·布根哈根,GaiZeErBuGenHaGen
 1663,布根哈根,BuGenHaGen
 1664,メンター,
@@ -1676,19 +1676,19 @@ Int32,String,String
 1671,魔晄探知器,
 1672,星命学习器,XingMingXueXiQi
 1673,义族,YiZu
-1674,报酬算你２０００,Bao Chou Suan Ni 2000
+1674,報酬は2000だな,
 1675,,
 1676,因为我是来自星殒峡谷的纳纳奇！,YinWeiWoShiLaiZiXingYunXiaGuDeNaNaQi
 1677,漆黑的宝珠,QiHeiDeBaoZhu
 1678,文森特,WenSenTe
 1679,文森特·瓦伦丁,WenSenTeWaLunDing
-1680,谢谢你啰～,Xie Xie Ni Luo～ 
+1680,ほな、おおきに～,
 1681,村崎,CunQi
 1682,忍者,RenZhe
-1683,把我从恶梦中唤醒的,Ba Wo Cong E Meng Zhong Huan Xing De
+1683,私を悪夢から呼び起こすのは、誰だ？,
 1684,看来我的罪行又增加了一条,KanLaiWoDeZuiXingYouZengJiaLeYiTiao
 1685,楔石,XieShi
-1686,可不能小看猫哦～,Ke Bu Neng Xiao Kan Mao O ～
+1686,ネコなめたらあきませんで～,
 1687,克劳德，我想得到黑魔晶石,KeLaoDeWoXiangDeDaoHeiMoJingShi
 1688,过去被称为英雄的男人,GuoQuBeiChengWeiYingXiongDeNanRen
 1689,迦尔帝亚,JiaErDiYa
@@ -1698,7 +1698,7 @@ Int32,String,String
 1693,沃瓦道斯,WoWaDaoSi
 1694,遵命！,ZunMing
 1695,我今天不加班,WoJinTianBuJiaBan
-1696,我要来讨回你欠我的一大笔帐！,WoYaoLaiTaoHuiNiQianWoDeYiDaBiZhang
+1696,でっけえ借り、返してもらうぜ！,
 1697,搭档，说一下平常那句,DaDangShuoYiXiaPingChangNaJu
 1698,你可别小看塔克斯,NiKeBieXiaoKanTaKeSi
 1699,我得狠狠揍你这家伙一下才行,WoDeHenHenZouNiZheJiaHuoYiXiaCaiXing
@@ -1739,7 +1739,7 @@ Int32,String,String
 1734,复仇之旅启程,FuChouZhiLüQiCheng
 1735,逃离第捌区,TaoLiDiBaQu
 1736,万能帮手的工作,WanNengBangShouDeGongZuo
-1737,与雪崩的羁绊,Yu Xue Beng De Ji Ban
+1737,アバランチとの絆,
 1738,瓮中之鳖,WengZhongZhiBie
 1739,神罗战士的热身,ShenLuoZhanShiDeReShen
 1740,飞镖高手,FeiBiaoGaoShou
@@ -1764,11 +1764,11 @@ Int32,String,String
 1759,放马过来吧！,FangMaGuoLaiBa
 1760,宗达村长,ZongDaCunZhang
 1761,小心翼翼、忍耐安静……,XiaoXinYiYiRenNaiAnJing
-1762,痛觉的仿真度ＭＡＸ,Tong Jue De Fang Zhen Du MAX
+1762,,
 1763,忍者后裔,RenZheHouYi
 1764,,
 1765,,
-1766,陆行鸟＆莫古力,Lu Xing Niao & Mo Gu Li
+1766,,
 1767,,
 1768,如月,RuYue
 1769,,
@@ -1779,7 +1779,7 @@ Int32,String,String
 1774,,
 1775,,
 1776,,
-1777,就由我来占卜大家的未来～！,Jiu You Wo Lai Zhan Bu Da Jia De Wei Lai ～!
+1777,,
 1778,立刻停止抵抗并投降,LiKeTingZhiDiKangBingTouXiang
 1779,,
 1780,,
@@ -1815,7 +1815,7 @@ Int32,String,String
 1810,,
 1811,萨菲罗斯,SaFeiLuoSi
 1812,只是回归星球而已,ZhiShiHuiGuiXingQiuErYi
-1813,黑斗篷,Hei Dou Peng
+1813,,
 1814,,
 1815,,
 1816,,
@@ -1867,5 +1867,5 @@ Int32,String,String
 1862,来吧小猫咪，投入我的怀抱！,LaiBaXiaoMaoMiTouRuWoDeHuaiBao
 1863,宇宙不是我的对口专业,YuZhouBuShiWoDeDuiKouZhuanYe
 1864,,
-1865,地狱骑士ＶＲ２,Di Yu Qi Shi ü Ｒ ２
+1865,,
 1866,,
