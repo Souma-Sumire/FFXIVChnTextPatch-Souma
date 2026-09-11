@@ -1,14 +1,19 @@
 {
+	"exportMapChnAxisToFont": false,
+	"exportMapFontLobbyToFont": false,
+	"exportMapKrnAxisToFont": false,
+	"exportMapTcAxisToFont": false,
 	"fontSets": [
 		{
 			"discardStep": 1,
-			"expectedTexCount": 1,
+			"expectedTexCount": 2,
 			"faces": [
 				{
 					"elements": [
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -57,6 +62,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -131,6 +137,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -179,6 +186,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -253,6 +261,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -301,6 +310,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -368,13 +378,14 @@
 						}
 					],
 					"name": "AXIS_14",
-					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
+					"previewText": "！！Discover every location within the Tower of Babil.\r\nバブイルの塔（魔導神門）を踏破し、マップをすべて開示する72453     10000\r\n成功探索巴别塔（魔导神门）(魔导神门)的所有地区。2.46秒 1.97秒 123456789《称号》\r\n名称（暂译）：卓越工具的第五次加工灵砂：捕鱼\r\n描述（英）：A rare material acquired by the Boutique of Splendors from one of Norvrandt's eclectic collectors. Required to enhance a brilliant tool.\r\n描述（日）：モーエンツールの改良に適した性質を持つ霊砂。漁道具（主道具）用-"
 				},
 				{
 					"elements": [
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -423,6 +434,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -497,6 +509,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -545,6 +558,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -619,6 +633,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -667,6 +682,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -741,6 +757,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -789,6 +806,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -863,6 +881,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -911,6 +930,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -985,6 +1005,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "JupiterN",
 								"stretch": 5,
 								"style": 0,
@@ -1045,6 +1066,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1107,6 +1129,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -1155,6 +1178,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1229,6 +1253,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "JupiterN",
 								"stretch": 5,
 								"style": 0,
@@ -1289,6 +1314,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1351,6 +1377,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Meidinger",
 								"stretch": 5,
 								"style": 0,
@@ -1399,6 +1426,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1461,6 +1489,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Meidinger",
 								"stretch": 5,
 								"style": 0,
@@ -1509,6 +1538,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1571,6 +1601,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Meidinger",
 								"stretch": 5,
 								"style": 0,
@@ -1619,6 +1650,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1681,6 +1713,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -1729,6 +1762,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1803,6 +1837,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -1851,6 +1886,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -1925,6 +1961,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -1973,6 +2010,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2047,6 +2085,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -2095,6 +2134,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2169,6 +2209,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -2217,6 +2258,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2291,6 +2333,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -2339,6 +2382,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2413,6 +2457,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -2461,6 +2506,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2535,6 +2581,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -2583,6 +2630,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2657,6 +2705,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -2705,6 +2754,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2780,13 +2830,14 @@
 		},
 		{
 			"discardStep": 1,
-			"expectedTexCount": 1,
+			"expectedTexCount": 2,
 			"faces": [
 				{
 					"elements": [
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2835,6 +2886,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2909,6 +2961,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -2957,6 +3010,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3031,6 +3085,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3079,6 +3134,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3153,6 +3209,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "AXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3201,6 +3258,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3275,6 +3333,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -3323,6 +3382,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3397,6 +3457,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -3445,6 +3506,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3519,6 +3581,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -3567,6 +3630,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3641,6 +3705,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "JupiterN",
 								"stretch": 5,
 								"style": 0,
@@ -3695,6 +3760,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Jupiter",
 								"stretch": 5,
 								"style": 0,
@@ -3743,6 +3809,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -3817,6 +3884,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "JupiterN",
 								"stretch": 5,
 								"style": 0,
@@ -3871,6 +3939,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Meidinger",
 								"stretch": 5,
 								"style": 0,
@@ -3925,6 +3994,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Meidinger",
 								"stretch": 5,
 								"style": 0,
@@ -3979,6 +4049,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "Meidinger",
 								"stretch": 5,
 								"style": 0,
@@ -4033,6 +4104,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -4081,6 +4153,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4151,6 +4224,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -4199,6 +4273,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4269,6 +4344,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -4317,6 +4393,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4387,6 +4464,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -4435,6 +4513,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4505,6 +4584,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "MiedingerMid",
 								"stretch": 5,
 								"style": 0,
@@ -4553,6 +4633,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4623,6 +4704,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -4671,6 +4753,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4745,6 +4828,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -4793,6 +4877,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4867,6 +4952,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -4915,6 +5001,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
@@ -4989,6 +5076,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "TrumpGothic",
 								"stretch": 5,
 								"style": 0,
@@ -5037,6 +5125,7 @@
 						{
 							"gamma": 1.0,
 							"lookup": {
+								"features": [],
 								"name": "ChnAXIS",
 								"stretch": 5,
 								"style": 0,
