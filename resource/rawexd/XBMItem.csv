@@ -1,5 +1,5 @@
 ﻿key,3,5,11,12,13
-#,,,,,
+#,Singular,Plural,Name,Description,ShortDescription
 offset,0,4,8,12,16
 Int32,String,String,String,String,String
 0,,,,,
