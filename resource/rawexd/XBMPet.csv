@@ -1,5 +1,5 @@
 ﻿key,8,9,10
-#,,,
+#,Description,TrickDescription,TemperedDescription
 offset,0,4,8
 Int32,String,String,String
 0,,,
