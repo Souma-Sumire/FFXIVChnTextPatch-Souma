@@ -532,17 +532,48 @@ function generateManifestAndSnapshot(): void {
     fonts[key] = sha256File(path.join(RESOURCE_PATH, key));
   }
 
-  const fontZipEntries: ZipEntry[] = fontKeys.map((rel) => ({
-    name: rel,
-    absPath: path.join(RESOURCE_PATH, rel),
-  }));
-  const fontZipData = buildZip(fontZipEntries);
-  fs.writeFileSync(FONT_ZIP_PATH, fontZipData);
-  const fontZipInfo = {
-    sha256: createHash("sha256").update(fontZipData).digest("hex"),
-    size: fontZipData.length,
-    count: fontZipEntries.length,
-  };
+  let fontChanged = !fs.existsSync(FONT_ZIP_PATH);
+  if (!fontChanged && fs.existsSync(MANIFEST_PATH)) {
+    try {
+      const oldManifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf-8"));
+      if (!oldManifest.fonts || oldManifest.font?.size !== fs.statSync(FONT_ZIP_PATH).size) {
+        fontChanged = true;
+      } else {
+        for (const key of fontKeys) {
+          if (!oldManifest.fonts[key] || oldManifest.fonts[key].sha256 !== fonts[key]!.sha256) {
+            fontChanged = true;
+            break;
+          }
+        }
+      }
+    } catch {
+      fontChanged = true;
+    }
+  }
+
+  let fontZipInfo: { sha256: string; size: number; count: number };
+  if (fontChanged) {
+    const fontZipEntries: ZipEntry[] = fontKeys.map((rel) => ({
+      name: rel,
+      absPath: path.join(RESOURCE_PATH, rel),
+    }));
+    const fontZipData = buildZip(fontZipEntries);
+    fs.writeFileSync(FONT_ZIP_PATH, fontZipData);
+    fontZipInfo = {
+      sha256: createHash("sha256").update(fontZipData).digest("hex"),
+      size: fontZipData.length,
+      count: fontZipEntries.length,
+    };
+    console.log(`已重新生成字体快照包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipEntries.length} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
+  } else {
+    const zipHash = sha256File(FONT_ZIP_PATH);
+    fontZipInfo = {
+      sha256: zipHash.sha256,
+      size: zipHash.size,
+      count: fontKeys.length,
+    };
+    console.log(`字体文件未发生变更，复用现有: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}`);
+  }
 
   const rootHash = createHash("sha256");
   rootHash.update(`rawexd.zip:${zipInfo.sha256}\n`);
@@ -565,7 +596,7 @@ function generateManifestAndSnapshot(): void {
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   console.log(`已生成同步清单: ${path.relative(RESOURCE_PATH, MANIFEST_PATH)}（${fontKeys.length} 个字体）`);
   console.log(`已生成全量快照包: ${path.relative(RESOURCE_PATH, ZIP_PATH)}（${zipEntries.length} 个文件，${(zipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
-  console.log(`已生成字体快照包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipEntries.length} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
+  console.log(`已处理字体快照包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipInfo.count} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
 }
 
 function main(): void {

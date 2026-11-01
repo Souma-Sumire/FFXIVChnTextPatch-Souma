@@ -45,7 +45,7 @@ type Manifest struct {
 
 // DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像，已实测可用）。
 func DefaultNodes() []string {
-	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/main/resource/"
+	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/resource/"
 	return []string{
 		raw,
 		"https://gh-proxy.com/" + raw,

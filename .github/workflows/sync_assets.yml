@@ -1,0 +1,49 @@
+name: Sync Assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "resource/rawexd/**"
+      - "resource/font/**"
+      - "resource/rules.json"
+      - "resource/tables.json"
+      - "scripts/bundle.ts"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-assets:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Build Resource Bundles
+        run: node scripts/bundle.ts
+
+      - name: Deploy to assets branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 建立独立的孤儿分支（不包含任何历史分支图谱），保证分支历史永远只有 1 个 Commit
+          git checkout --orphan assets-temp
+          git reset
+
+          # 仅跟踪要发布的最新资源快照文件
+          git add -f resource/manifest.json resource/rules.json resource/tables.json resource/rawexd.zip resource/font.zip
+
+          git commit -m "chore: 自动化更新汉化资源快照 (${{ github.sha }})"
+          git push origin assets-temp:assets --force
