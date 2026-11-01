@@ -34,7 +34,16 @@
         <main class="workbench-main">
 
           <section class="form-section">
-            <h2 class="section-title">游戏客户端</h2>
+            <div class="section-header">
+              <h2 class="section-title">
+                <svg class="section-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                <span>游戏客户端</span>
+              </h2>
+              <div class="section-header-action">
+                <label class="header-action-label" for="language">目标区服</label>
+                <select id="language" class="select header-select" title="选择游戏客户端区服"></select>
+              </div>
+            </div>
 
             <div class="form-row">
               <label class="row-label" for="game-path">游戏目录</label>
@@ -51,20 +60,16 @@
                 <div class="diag-item"><span class="diag-k">状态</span><span class="diag-v">正在读取…</span></div>
               </div>
             </div>
-
-            <div class="form-row">
-              <label class="row-label" for="language">目标区服</label>
-              <div class="row-control">
-                <select id="language" class="select" title="选择游戏客户端区服"></select>
-              </div>
-            </div>
           </section>
 
           <section class="form-section">
-            <h2 class="section-title">汉化内容</h2>
+            <h2 class="section-title">
+              <svg class="section-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+              <span>汉化内容</span>
+            </h2>
 
-            <div class="form-row content-items-row">
-              <label class="content-toggle-card" title="替换文本数据">
+            <div class="form-row content-text-row">
+              <label class="toggle-control-label" for="replace-text" title="替换文本数据">
                 <span class="switch">
                   <input type="checkbox" id="replace-text" />
                   <span class="switch-track"></span>
@@ -72,17 +77,6 @@
                 <span class="content-toggle-title">文本数据</span>
               </label>
 
-              <label class="content-toggle-card" title="替换中文字体">
-                <span class="switch">
-                  <input type="checkbox" id="replace-font" />
-                  <span class="switch-track"></span>
-                </span>
-                <span class="content-toggle-title">游戏字体</span>
-              </label>
-            </div>
-
-            <div class="form-row">
-              <span class="row-label">数据表范围</span>
               <div class="row-control scope-control">
                 <select id="main-preset" class="select scope-select" title="选择汉化数据表范围预设">
                   <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
@@ -98,22 +92,52 @@
                 </button>
               </div>
             </div>
+
+            <div class="form-row content-font-row">
+              <label class="toggle-control-label" for="replace-font" title="替换为高清中文字体，解决官方原版字体无中文字符问题">
+                <span class="switch">
+                  <input type="checkbox" id="replace-font" />
+                  <span class="switch-track"></span>
+                </span>
+                <span class="content-toggle-title">游戏字体</span>
+              </label>
+              <span class="row-desc-text">替换为高清中文字体，解决官方原版字体无中文字符问题</span>
+            </div>
           </section>
 
           <section class="form-section">
-            <h2 class="section-title">扩展功能</h2>
+            <h2 class="section-title">
+              <svg class="section-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+              <span>扩展功能</span>
+            </h2>
             <div id="rules" class="rule-list"></div>
           </section>
 
         </main>
 
-        <aside id="console-drawer" class="log-pane">
+        <aside id="log-pane" class="log-pane">
           <div class="log-head">
-            <div class="log-head-title">
+            <div class="log-head-left">
               <span class="log-title">执行日志</span>
               <span id="version-badge" class="app-version">v--</span>
+              <div class="log-filters">
+                <button id="filter-log-all" class="log-filter-btn active" type="button" data-filter="all">全部</button>
+                <button id="filter-log-normal" class="log-filter-btn" type="button" data-filter="normal">常规</button>
+                <button id="filter-log-error" class="log-filter-btn" type="button" data-filter="error">
+                  异常 <span id="log-error-count" class="filter-count-badge hidden">0</span>
+                </button>
+              </div>
             </div>
-            <button id="btn-clear-log" class="btn btn-quiet btn-xs" type="button">清空</button>
+            <div class="log-head-right">
+              <button id="btn-copy-log" class="btn btn-quiet btn-xs" type="button" title="复制所有日志到剪贴板">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span id="btn-copy-log-text">复制</span>
+              </button>
+              <button id="btn-clear-log" class="btn btn-quiet btn-xs" type="button" title="清空日志">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <span>清空</span>
+              </button>
+            </div>
           </div>
           <div id="log" class="log-body"></div>
         </aside>

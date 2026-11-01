@@ -107,7 +107,7 @@ interface RestoreResponse {
   restored: string[] | null;
 }
 
-interface ProgressEvent {
+interface PatchProgressEvent {
   stage: string;
   detail: string;
   done: number;
@@ -162,11 +162,19 @@ function byId<T extends HTMLElement>(id: string): T {
   return node as T;
 }
 
+interface LogEntry {
+  id: number;
+  time: string;
+  level: "info" | "ok" | "warn" | "error" | "patched";
+  tag?: string;
+  message: string;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function asProgress(data: unknown): ProgressEvent {
+function asProgress(data: unknown): PatchProgressEvent {
   if (isRecord(data)) {
     return {
       stage: typeof data.stage === "string" ? data.stage : "",
@@ -185,7 +193,11 @@ let clientStatus: ClientStatusResult | null = null;
 let checkingClient = false;
 let modalResolver: ((ok: boolean) => void) | null = null;
 let busy = false;
-let lastProgressLogAt = 0;
+
+let logEntries: LogEntry[] = [];
+let nextLogId = 1;
+let currentLogFilter: "all" | "normal" | "error" = "all";
+let errorLogCount = 0;
 
 const selected = new Set<string>();
 const expandedFolders = new Set<string>();
@@ -230,7 +242,13 @@ const el = {
   progressBar: byId("progress-bar"),
   actionProgressWrap: byId("action-progress-wrap"),
   busyIndicator: byId("busy-indicator"),
-  consoleDrawer: byId("console-drawer"),
+  logPane: byId("log-pane"),
+  filterLogAll: byId<HTMLButtonElement>("filter-log-all"),
+  filterLogNormal: byId<HTMLButtonElement>("filter-log-normal"),
+  filterLogError: byId<HTMLButtonElement>("filter-log-error"),
+  logErrorCount: byId("log-error-count"),
+  btnCopyLog: byId<HTMLButtonElement>("btn-copy-log"),
+  btnCopyLogText: byId<HTMLElement>("btn-copy-log-text"),
   btnClearLog: byId<HTMLButtonElement>("btn-clear-log"),
   log: byId("log"),
 
@@ -258,13 +276,87 @@ function switchView(view: "provisioning" | "workbench" | "tables"): void {
   el.viewTables.classList.toggle("hidden", view !== "tables");
 }
 
-function log(message: string, kind: "info" | "ok" | "warn" | "error" | "patched" = "info"): void {
+function parseLogKind(message: string, explicitKind?: "info" | "ok" | "warn" | "error" | "patched"): "info" | "ok" | "warn" | "error" | "patched" {
+  if (explicitKind && explicitKind !== "info") {
+    return explicitKind;
+  }
+  const lower = message.toLowerCase();
+  if (message.includes("失败") || message.includes("错误") || lower.includes("error") || lower.includes("failed") || message.includes("超时")) {
+    return "error";
+  }
+  if (message.includes("警告") || message.includes("注意") || message.includes("跳过")) {
+    return "warn";
+  }
+  if (message.includes("成功") || message.includes("已是最新") || message.includes("已还原") || message.includes("已更新")) {
+    return "ok";
+  }
+  return "info";
+}
+
+function parseLogTag(message: string): { tag: string; cleanMessage: string } {
+  const match = /^\[([^\]]+)\]\s*(.*)$/.exec(message);
+  if (match) {
+    return { tag: match[1], cleanMessage: match[2] };
+  }
+  return { tag: "", cleanMessage: message };
+}
+
+function log(message: string, kind?: "info" | "ok" | "warn" | "error" | "patched"): void {
+  const { tag, cleanMessage } = parseLogTag(message);
+  const actualKind = parseLogKind(message, kind);
+  const timeStr = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+
+  const entry: LogEntry = {
+    id: nextLogId++,
+    time: timeStr,
+    level: actualKind,
+    tag: tag || undefined,
+    message: cleanMessage,
+  };
+  logEntries.push(entry);
+  if (logEntries.length > 500) {
+    logEntries.shift();
+  }
+
+  if (actualKind === "error" || actualKind === "warn") {
+    errorLogCount++;
+    el.logErrorCount.textContent = String(errorLogCount);
+    el.logErrorCount.classList.remove("hidden");
+  }
+
   const line = document.createElement("div");
-  line.className = `log-line ${kind === "info" ? "" : kind}`.trim();
-  const time = document.createElement("span");
-  time.className = "time";
-  time.textContent = new Date().toLocaleTimeString("zh-CN", { hour12: false });
-  line.append(time, document.createTextNode(message));
+  line.className = `log-line ${actualKind === "info" ? "" : actualKind}`.trim();
+  line.dataset.level = actualKind;
+
+  if (
+    (currentLogFilter === "normal" && (actualKind === "error" || actualKind === "warn")) ||
+    (currentLogFilter === "error" && actualKind !== "error" && actualKind !== "warn")
+  ) {
+    line.classList.add("filter-hidden");
+  }
+
+  const timeEl = document.createElement("span");
+  timeEl.className = "time";
+  timeEl.textContent = timeStr;
+  line.append(timeEl);
+
+  if (tag) {
+    const tagEl = document.createElement("span");
+    tagEl.className = "log-tag";
+    if (tag.includes("更新")) tagEl.classList.add("tag-update");
+    else if (tag.includes("资源")) tagEl.classList.add("tag-res");
+    else if (tag.includes("错误") || tag.includes("失败")) tagEl.classList.add("tag-err");
+    else if (tag.includes("提示") || tag.includes("警告")) tagEl.classList.add("tag-warn");
+    else if (tag.includes("补丁") || tag.includes("完成")) tagEl.classList.add("tag-ok");
+    tagEl.textContent = tag;
+    line.append(tagEl);
+  }
+
+  const textEl = document.createElement("span");
+  textEl.className = "log-text";
+  textEl.textContent = cleanMessage;
+  line.append(textEl);
+
   el.log.append(line);
   while (el.log.childElementCount > 500) {
     el.log.firstElementChild?.remove();
@@ -272,10 +364,57 @@ function log(message: string, kind: "info" | "ok" | "warn" | "error" | "patched"
   el.log.scrollTop = el.log.scrollHeight;
 }
 
-function toggleConsole(open?: boolean): void {
-  const isCollapsed = el.consoleDrawer.classList.contains("collapsed");
-  const nextOpen = open !== undefined ? open : isCollapsed;
-  el.consoleDrawer.classList.toggle("collapsed", !nextOpen);
+function setLogFilter(filter: "all" | "normal" | "error"): void {
+  currentLogFilter = filter;
+  el.filterLogAll.classList.toggle("active", filter === "all");
+  el.filterLogNormal.classList.toggle("active", filter === "normal");
+  el.filterLogError.classList.toggle("active", filter === "error");
+
+  const lines = el.log.querySelectorAll<HTMLDivElement>(".log-line");
+  for (const line of lines) {
+    const level = line.dataset.level;
+    const isErr = level === "error" || level === "warn";
+    const hide = (filter === "normal" && isErr) || (filter === "error" && !isErr);
+    line.classList.toggle("filter-hidden", hide);
+  }
+  el.log.scrollTop = el.log.scrollHeight;
+}
+
+async function copyLogs(): Promise<void> {
+  if (logEntries.length === 0) return;
+  const text = logEntries
+    .map((e) => `[${e.time}] [${e.level.toUpperCase()}] ${e.tag ? `[${e.tag}] ` : ""}${e.message}`)
+    .join("\n");
+  try {
+    await navigator.clipboard.writeText(text);
+    const orig = el.btnCopyLogText ? el.btnCopyLogText.textContent : el.btnCopyLog.textContent;
+    if (el.btnCopyLogText) {
+      el.btnCopyLogText.textContent = "已复制";
+    } else {
+      el.btnCopyLog.textContent = "已复制";
+    }
+    setTimeout(() => {
+      if (el.btnCopyLogText) {
+        el.btnCopyLogText.textContent = orig;
+      } else {
+        el.btnCopyLog.textContent = orig;
+      }
+    }, 1500);
+  } catch {
+    // 忽略剪贴板写入异常
+  }
+}
+
+function toggleConsole(_open?: boolean): void {
+  el.log.scrollTop = el.log.scrollHeight;
+}
+
+function updateTextScopeState(): void {
+  const isEnabled = el.replaceText.checked;
+  el.mainPreset.disabled = !isEnabled || busy;
+  el.btnOpenTables.disabled = !isEnabled || busy;
+  const scopeControl = el.mainPreset.closest(".scope-control");
+  scopeControl?.classList.toggle("disabled", !isEnabled);
 }
 
 function setBusy(value: boolean, label = ""): void {
@@ -287,9 +426,10 @@ function setBusy(value: boolean, label = ""): void {
   el.btnBrowse.disabled = value;
   el.btnDetect.disabled = value;
   el.preset.disabled = value;
-  el.mainPreset.disabled = value;
   el.language.disabled = value;
-  el.btnOpenTables.disabled = value;
+  el.replaceText.disabled = value;
+  el.replaceFont.disabled = value;
+  updateTextScopeState();
 }
 
 function setWindowTitle(): void {
@@ -393,6 +533,7 @@ async function loadBootstrap(): Promise<void> {
   el.gamePath.value = config.gameDir;
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
+  updateTextScopeState();
 
   renderRules();
   renderLanguages();
@@ -927,6 +1068,7 @@ function wireEvents(): void {
 
   el.replaceText.addEventListener("change", () => {
     config.replaceText = el.replaceText.checked;
+    updateTextScopeState();
     void persistConfig();
   });
 
@@ -1006,7 +1148,19 @@ function wireEvents(): void {
 
   el.btnClearLog.addEventListener("click", () => {
     el.log.replaceChildren();
+    logEntries = [];
+    errorLogCount = 0;
+    el.logErrorCount.textContent = "0";
+    el.logErrorCount.classList.add("hidden");
   });
+
+  el.btnCopyLog.addEventListener("click", () => {
+    void copyLogs();
+  });
+
+  el.filterLogAll.addEventListener("click", () => setLogFilter("all"));
+  el.filterLogNormal.addEventListener("click", () => setLogFilter("normal"));
+  el.filterLogError.addEventListener("click", () => setLogFilter("error"));
 
   el.btnRestore.addEventListener("click", async () => {
     if (busy) {
@@ -1111,7 +1265,7 @@ function wireRuntimeEvents(): void {
     return;
   }
 
-  let pendingResourceProgress: ProgressEventPayload | null = null;
+  let pendingResourceProgress: PatchProgressEvent | null = null;
   let resourceRafId = 0;
   on("resource-progress", (data: unknown) => {
     const ev = asProgress(data);
@@ -1138,10 +1292,10 @@ function wireRuntimeEvents(): void {
   });
 
   let lastDownloadDetail = "";
-  let pendingPatchProgress: ProgressEventPayload | null = null;
+  let pendingPatchProgress: PatchProgressEvent | null = null;
   let patchRafId = 0;
 
-  function renderPatchProgress(ev: ProgressEventPayload): void {
+  function renderPatchProgress(ev: PatchProgressEvent): void {
     if (ev.stage === "download") {
       if (ev.total > 0) {
         const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
@@ -1183,12 +1337,6 @@ function wireRuntimeEvents(): void {
         log(`[下载] 开始下载 ${ev.detail}${sizeInfo}`);
       }
       return;
-    }
-
-    const now = Date.now();
-    if (ev.detail && now - lastProgressLogAt > 1200) {
-      lastProgressLogAt = now;
-      log(`[${ev.stage}] ${ev.detail}`);
     }
   });
 

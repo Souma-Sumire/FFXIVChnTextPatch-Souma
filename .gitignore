@@ -12,5 +12,5 @@ patcher/frontend/dist/*
 !patcher/frontend/dist/.gitkeep
 patcher/frontend/node_modules/
 *.exe~
-FFXIVChnTextPatch-SM-v2.exe
+FFXIVChnTextPatch-SM-v2*
 resource/*.zip
