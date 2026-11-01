@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 )
 
 // 需要管理的 6 个客户端原文件。
@@ -159,7 +160,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		result.Plan.CloudState = CloudLocalOnly
 	}
 
-	originalText, originalFont := determineOriginal(reg, cloudState, version, meta, gameHashes, release)
+	originalText, originalFont := determineOriginal(reg, cloudState, version, meta, gameHashes, release, sqpackDir)
 
 	// 计划文本动作。
 	textPlan := FilePlan{Enabled: cfg.ReplaceText, Action: ActionNone, Files: TextFiles}
@@ -174,7 +175,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		case meta != nil && meta.Version == version && hasFiles(meta.Files, TextFiles):
 			textPlan.Action = ActionRestore
 		default:
-			textPlan.Action = ActionPatch
+			return nil, fmt.Errorf("当前游戏文本数据已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", version)
 		}
 	}
 
@@ -191,7 +192,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		case meta != nil && meta.Version == version && hasFiles(meta.Files, FontFiles):
 			fontPlan.Action = ActionRestore
 		default:
-			fontPlan.Action = ActionPatch
+			return nil, fmt.Errorf("当前游戏字体数据已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", version)
 		}
 	} else if reg != region.China && originalFont && cfg.ReplaceText {
 		fontPlan.Action = ActionSkip
@@ -281,8 +282,45 @@ func resolveCloud(ctx context.Context, cfg Config, version string, result *Resul
 	return release, CloudPending
 }
 
+// DetectModifiedSqPack 检查客户端数据包是否存在已被修改/汉化的特征。
+func DetectModifiedSqPack(sqpackDir string, reg region.Region) bool {
+	if st, err := os.Stat(filepath.Join(sqpackDir, "000000.win32.dat0")); err == nil {
+		if st.Size() > 90*1024*1024 {
+			return true
+		}
+	}
+	if reg == region.Global {
+		idxPath := filepath.Join(sqpackDir, "0a0000.win32.index")
+		idx, err := sqpack.OpenIndex(idxPath)
+		if err != nil {
+			return false
+		}
+		entry := idx.Lookup("exd", "addon_0_en.exd")
+		if entry == nil {
+			return false
+		}
+		datNum, off := sqpack.DatNumAndAlignedOffset(entry.DataOffset)
+		datPath := filepath.Join(sqpackDir, fmt.Sprintf("0a0000.win32.dat%d", datNum))
+		dat, err := sqpack.OpenDat(datPath)
+		if err != nil {
+			return false
+		}
+		defer dat.Close()
+		content, err := dat.ExtractFile(off)
+		if err != nil {
+			return false
+		}
+		for _, r := range string(content) {
+			if r >= 0x4e00 && r <= 0x9fa5 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func determineOriginal(reg region.Region, cloudState CloudState, version string, meta *BackupMeta,
-	gameHashes map[string]FileHash, release *Release) (bool, bool) {
+	gameHashes map[string]FileHash, release *Release, sqpackDir string) (bool, bool) {
 	if reg == region.Global {
 		if meta != nil && meta.Version == version && hasFiles(meta.Files, TextFiles) {
 			textOriginal := allMatchMeta(gameHashes, meta, TextFiles)
@@ -298,16 +336,26 @@ func determineOriginal(reg region.Region, cloudState CloudState, version string,
 			textOrig := true
 			if hasReleaseFiles(release, TextFiles) {
 				textOrig = allMatchRelease(gameHashes, release, TextFiles)
+			} else {
+				textOrig = !DetectModifiedSqPack(sqpackDir, reg)
 			}
 			fontOrig := true
 			if hasReleaseFiles(release, FontFiles) {
 				fontOrig = allMatchRelease(gameHashes, release, FontFiles)
+			} else {
+				fontOrig = !DetectModifiedSqPack(sqpackDir, reg)
 			}
 			return textOrig, fontOrig
+		}
+		if DetectModifiedSqPack(sqpackDir, reg) {
+			return false, false
 		}
 		return true, true
 	}
 	if meta == nil || meta.Version != version {
+		if DetectModifiedSqPack(sqpackDir, reg) {
+			return false, false
+		}
 		return true, true
 	}
 	textOriginal := allMatchMeta(gameHashes, meta, TextFiles)
@@ -731,6 +779,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 			}
 			meta.Files[name] = got
 		}
+		meta.Version = version
 		if err := writeBackupMeta(backupDir, meta); err != nil {
 			return nil, err
 		}

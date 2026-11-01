@@ -723,15 +723,6 @@ async function checkClientEnvironment(): Promise<void> {
   if (checkingClient || !config.gameDir) {
     return;
   }
-  if (!isGlobalLanguage(config.language)) {
-    clientStatus = {
-      status: "unsupported",
-      label: "不支持检测",
-      description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
-    };
-    renderGameInfo();
-    return;
-  }
   checkingClient = true;
   renderGameInfo();
   try {
@@ -1276,18 +1267,10 @@ function wireEvents(): void {
       setBusy(true, "正在还原官方原版文件…");
       const resp = await call("RestoreOriginal", config.gameDir, config.language);
       log(`已还原官方原版 (${(resp.restored ?? []).length} 个文件)`, "ok");
-      if (isGlobalLanguage(config.language)) {
-        try {
-          clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
-        } catch {
-          // 忽略静默更新失败
-        }
-      } else {
-        clientStatus = {
-          status: "unsupported",
-          label: "不支持检测",
-          description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
-        };
+      try {
+        clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+      } catch {
+        // 忽略静默更新失败
       }
       await refreshGameInfo();
     } catch (error) {
@@ -1346,18 +1329,10 @@ function wireEvents(): void {
       }
       log("汉化完成", "ok");
       el.progressBar.style.width = "100%";
-      if (isGlobalLanguage(config.language)) {
-        try {
-          clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
-        } catch {
-          // 忽略静默更新失败
-        }
-      } else {
-        clientStatus = {
-          status: "unsupported",
-          label: "不支持检测",
-          description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
-        };
+      try {
+        clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+      } catch {
+        // 忽略静默更新失败
       }
       await refreshGameInfo();
     } catch (error) {
