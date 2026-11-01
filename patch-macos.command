@@ -9,5 +9,5 @@ if ! command -v javac >/dev/null 2>&1; then
   exit 1
 fi
 
-javac -encoding UTF-8 -cp FFXIVChnTextPatch-SM.exe MacPatchCli.java
-java -cp ".:FFXIVChnTextPatch-SM.exe" MacPatchCli
+javac -encoding UTF-8 -cp FFXIVChnTextPatch-Legacy.exe MacPatchCli.java
+java -cp ".:FFXIVChnTextPatch-Legacy.exe" MacPatchCli

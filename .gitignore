@@ -5,5 +5,10 @@ debug.*
 /scripts/Chinese Text Patch
 /scripts/exd
 hashPaths.txt
-conf/global.properties
-MacPatchCli.class
+config.json
+resource/patched_record.json
+patcher/build/
+patcher/frontend/dist/*
+!patcher/frontend/dist/.gitkeep
+patcher/frontend/node_modules/
+*.exe~

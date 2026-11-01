@@ -1,10 +1,11 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
-const directoryPath = "resource\\rawexd";
-const filePath = "hashPaths.txt";
+const rootDir = path.resolve(import.meta.dirname, "..");
+const directoryPath = path.join(rootDir, "resource", "rawexd");
+const filePath = path.join(rootDir, "hashPaths.txt");
 
-function getAllFilePaths(dirPath: string) {
+function getAllFilePaths(dirPath: string): string[] {
   let filePaths: string[] = [];
   const files = fs.readdirSync(dirPath);
 
@@ -23,8 +24,9 @@ function getAllFilePaths(dirPath: string) {
 const allFilePaths = getAllFilePaths(directoryPath);
 
 const hashPaths = allFilePaths.map((v) =>
-  v
-    .replaceAll(directoryPath, "exd")
+  path
+    .relative(directoryPath, v)
+    .replace(/^/, "exd/")
     .replaceAll(/\\/g, "/")
     .replaceAll(/\.csv$/g, "_0_en.exd")
 );

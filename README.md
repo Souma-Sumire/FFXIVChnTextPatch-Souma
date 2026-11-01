@@ -1,115 +1,34 @@
 # FFXIVChnTextPatch-Souma
 
-基于 [FFXIVChnTextPatch](https://github.com/reusu/FFXIVChnTextPatch)、[FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP)
+基于 [FFXIVChnTextPatch](https://github.com/reusu/FFXIVChnTextPatch)、[FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP) 源码，使用 Go + Wails 构建了新的 V2 汉化器。
 
 ---
 
 ## 使用
 
-### 汉化步骤
-
-1. 本项目自带字体需要 **先开启** 高分辨率贴图，否则游戏会因字体渲染问题导致 DX 崩溃![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
-1. 下载本项目到本地。[【手把手教学】3分钟学会下载GitHub项目到本地！](https://www.bilibili.com/video/BV1ifawzYEUb/)
-1. 确保游戏文件为 **最新原版文件**。
-    - [国际服原始文件备份](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)
-    - [繁中服原始文件备份](https://github.com/NaofumiRaphtalia/FFXIVChnTextPatch-Souma/releases)
-1. 运行 `FFXIVChnTextPatch-SM.exe`
-   1. 游戏路径：选择 FFXIV 客户端目录（里面有 `boot` 与 `game` 文件夹）。
-   1. 文件语言：固定选择 `CSV`。
-   1. 原始语言：
-      - 国际服请选择 `日文` 或 `英文` ，取决于你设置的界面语言。
-      - 繁中服请选择 `繁体中文（TC）`，注意是 **TC** 不是 CHT。
-      - 韩服请选择 `韩文`。
-   1. 替换字体：如果你没有通过其他插件加载中文字体，则需要勾选，否则无法正常显示中文。
-   1. 替换文本：请勾选，否则不会执行汉化动作。
-   1. 通过”详细设定“，选择汉化的范围。（默认未勾选 `BnpcName`（敌人名称））。文件具体含义可查询 [WIKI](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/CSV文件)
-   1. 点击确认按钮。
-   1. 点击汉化按钮。
-
-### macOS
-
-本项目的 `FFXIVChnTextPatch-SM.exe` 是 Launch4j 包装的 Java 程序。macOS 可使用本机 Java 启动，游戏路径仍选择含有 `ffxiv_dx11.exe` 的 FFXIV 客户端目录。
-
-#### 使用图形界面
-
-```bash
-./run-macos.command
-```
-
-脚本会自动尝试填写官方 macOS 客户端的默认 CrossOver/Wine Bottle 路径：
-
-```text
-~/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn
-```
-
-若自动填写失败，请手动选择含有 `ffxiv_dx11.exe` 的客户端目录。其余选项与上文汉化步骤一致。
-
-#### 使用命令行
-
-```bash
-./patch-macos.command
-```
-
-命令行脚本会根据 `conf/global.properties` 执行汉化，并在写入前将 `000000.*` 与 `0a0000.*` 备份到 `backup/` 目录。已有备份不会被覆盖。
-
-macOS 命令行脚本需要 JDK（可执行 `javac`），图形界面脚本仅需要 Java Runtime。
-
-### 台灣玩家/繁體中文
-
-- **選項 1：** 執行轉換腳本 `converter.exe` 並輸入 `1`，程式就會自動將 CSV 裡的文本轉成繁體中文。（請勿重複多次執行）
-- **選項 2：** 改用 dks50217 專為台灣玩家維護的專案 [dks50217/FFXIVChnTextPatch-MC](https://github.com/dks50217/FFXIVChnTextPatch-MC)（此專案與本項目無關，若使用上遇到問題，請直接到該 GitHub 倉庫提 Issue）。
-
-### 与第三方插件的兼容性
-
-| 第三方插件 | 不要汉化 | 说明 |
-| -------------------------- | ------------------------------- | ---------------------------------- |
-| **FFLOGS 日志上传** | 敌人名称（BNpcName） | 否则会影响 ACT 日志生成 |
-| **Cactbot - Raidboss 触发器** | 敌人名称（BNpcName） | 否则无法运行；且 ACT 解析插件语言需保持原本的语言（英语或日语）。 |
-| **Cactbot - Radar 雷达** | 敌人名称（BNpcName）、系统日志（LogMessage） | 否则雷达无法正常识别目标、识别副本区切换。 |
-| **Lifestream** | 登录大厅（Lobby） | 否则自动登录等功能无法使用。 |
-
-表中未提及的插件，可自行举一反三，将相关字段保持为原文。
-
-### 额外注意事项
-
-- 当你 `<t>` 时，别人看到的有可能是中文，目前尚未确定机制。[可至此Issues讨论](https://github.com/GpointChen/FFXIVChnTextPatch-GP/issues/526)，可能的表有 BNpcname（大概率安全）、EObjName（怀疑）、Treasure（未经过测试）。我没有时间测试，欢迎 PR。
-
-### 制作PMP版本
-
-[查看wiki](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/wiki/%E5%88%B6%E4%BD%9CPMP%E7%89%88%E6%9C%AC)
-
-## 修改中文字体
-
-### 使用社区分享的成品
-
-- [HarmonyOS Sans](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.16.2/HarmonyOS.Sans.pmp)
-- [ChnAXIS](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.16.2/ChnAXIS.pmp)
-- [四款替换用 UI 字体(黑|宋|圆) 国际服国服双版本](https://bbs.tggfl.com/topic/221/%E5%9B%9B%E6%AC%BE%E6%9B%BF%E6%8D%A2%E7%94%A8-ui-%E5%AD%97%E4%BD%93-%E9%BB%91-%E5%AE%8B-%E5%9C%86-%E5%9B%BD%E9%99%85%E6%9C%8D%E5%9B%BD%E6%9C%8D%E5%8F%8C%E7%89%88%E6%9C%AC)
-
-### 我希望自制
-
-- [FFXIV-FontChanger（原版）](https://github.com/Soreepeong/FFXIV-FontChanger) / [中文汉化版](https://github.com/AtmoOmen/FFXIV-FontChanger)
-- 教程：[B站视频](https://www.bilibili.com/video/BV1XG411g7Gt) / [Imgur图文教程](https://imgur.com/a/Cojm6og)
+1. 开启高分辨率界面，否则会炸游戏。![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
+1. 从 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 下载对应系统的汉化器
+   - **Windows**：下载 `FFXIVChnTextPatch-SM-v2.exe`
+   - **macOS**：下载 `FFXIVChnTextPatch-SM-v2-macOS.zip`（若提示无法验证开发者，可在终端执行 `xattr -cr FFXIVChnTextPatch-SM-v2.app`）
 
 ## 捐赠支持
 
 ![捐赠二维码](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/33572696/1fec3974-0b6d-43df-9afc-2d760c33f9b5)
 
-## 开发者须知
+## Developer
 
-如果你 fork 了本项目进行开发，请先参照 [git_track_guide.md](git_track_guide.md) 取消 `conf/global.properties` 的本地跟踪，以避免将个人配置意外提交到仓库。
+Build：
 
-## 许可证相关
+```bash
+cd patcher/frontend && npm install && npm run build
+cd .. && go build -tags desktop,production -trimpath -ldflags "-H windowsgui -s -w" -o ../FFXIVChnTextPatch-SM-v2.exe .
+```
 
-本项目遵循 [GPL-3.0 License](https://www.gnu.org/licenses/gpl-3.0.html)，基于原项目 [FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP) 进行修改与扩展。
+CSV：
 
-修改的部分：
-
-- `FFXIVChnTextPatch-SM.exe`：汉化器本体。UI简体中文化，并添加韩服、繁中服支持。源码 [Souma-Sumire/FFXIVChnTextPatch-GP](https://github.com/Souma-Sumire/FFXIVChnTextPatch-GP)
-- `preset/`：中文字体预设JSON文件，用于更好的中文显示效果。
-- `resource/font/`：中文字体资源，用于更好的中文显示效果。
-- `resource/rawexd/`：汉化后的 CSV 文件，以国服文本为基准的改编。
-- `converter.exe`：CSV 繁体转换脚本，用于某些特殊需要。
+```bash
+pnpm run csv
+```
 
 ## 免责声明
 

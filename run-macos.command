@@ -41,4 +41,4 @@ EOF
   fi
 fi
 
-exec java -jar "$SCRIPT_DIR/FFXIVChnTextPatch-SM.exe"
+exec java -jar "$SCRIPT_DIR/FFXIVChnTextPatch-Legacy.exe"
