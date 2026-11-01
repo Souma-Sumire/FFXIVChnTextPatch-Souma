@@ -1,7 +1,6 @@
 {
   "name": "ffxiv-chn-text-patch-frontend",
   "private": true,
-  "version": "2.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

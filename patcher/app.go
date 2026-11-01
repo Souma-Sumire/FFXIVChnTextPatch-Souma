@@ -23,7 +23,7 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
 
-const appVersion = "2.1.0"
+var appVersion = "dev"
 
 const tcBackupURL = "https://github.com/NaofumiRaphtalia/FFXIVChnTextPatch-Souma/releases"
 
