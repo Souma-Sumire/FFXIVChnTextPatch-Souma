@@ -62,6 +62,15 @@ if (isMac) {
   }
 } else {
   const outExe = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2.exe");
+  if (fs.existsSync(outExe)) {
+    try {
+      const fd = fs.openSync(outExe, "r+");
+      fs.closeSync(fd);
+    } catch {
+      console.error(`\n构建失败: 目标文件 [${outExe}] 正在运行或被占用，请先退出程序后再试。`);
+      process.exit(1);
+    }
+  }
   run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", "-H windowsgui -s -w", "-o", outExe, "."], patcherDir);
   console.log(`\n构建成功: ${outExe}`);
 }

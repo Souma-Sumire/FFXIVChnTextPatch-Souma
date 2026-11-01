@@ -30,19 +30,12 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: patcher/frontend/pnpm-lock.yaml
 
-      - name: Build frontend
-        working-directory: patcher/frontend
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm run build
-
       - name: Run Go tests
         working-directory: patcher
         run: go test ./... -count=1
 
       - name: Build Windows executable
-        working-directory: patcher
-        run: go build -tags desktop,production -trimpath -ldflags "-H windowsgui -s -w" -o ../FFXIVChnTextPatch-SM-v2.exe .
+        run: pnpm run build
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
@@ -77,22 +70,12 @@ jobs:
       - name: Install Wails CLI
         run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.2
 
-      - name: Build frontend
-        working-directory: patcher/frontend
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm run build
-
       - name: Run Go tests
         working-directory: patcher
         run: go test ./... -count=1
 
       - name: Build macOS Universal App Bundle
-        working-directory: patcher
-        run: |
-          wails build -platform darwin/universal -skipbindings -s -trimpath
-          cd build/bin
-          ditto -c -k --sequesterRsrc --keepParent "FFXIVChnTextPatch-SM-v2.app" "../../../FFXIVChnTextPatch-SM-v2-macOS.zip"
+        run: pnpm run build
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v7
