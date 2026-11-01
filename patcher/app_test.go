@@ -187,3 +187,73 @@ func TestCheckClientStatusModifiedWithBackup(t *testing.T) {
 		t.Fatalf("本地备份不匹配且非本工具汉化时应判定为 modified，实际为 %s (%s)", status.Status, status.Label)
 	}
 }
+
+func TestCheckClientStatusNonGlobalUnsupported(t *testing.T) {
+	app := NewApp()
+	for _, lang := range []string{"CHS", "TC", "KO"} {
+		status, err := app.CheckClientStatus("any/path", lang)
+		if err != nil {
+			t.Fatalf("%s CheckClientStatus 失败: %v", lang, err)
+		}
+		if status.Status != "unsupported" {
+			t.Fatalf("%s 状态应为 unsupported，实际为 %s", lang, status.Status)
+		}
+	}
+}
+
+func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	if err := os.MkdirAll(filepath.Join(gameDir, "game"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(gameDir, "game", "ffxivgame.ver"), []byte("2026.10.16.0000.0000"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+
+	for _, lang := range []string{"CHS", "TC", "KO"} {
+		_, err := app.RestoreOriginal(gameDir, lang)
+		if err == nil {
+			t.Fatalf("%s 本地无备份时 RestoreOriginal 应该报错，但返回成功", lang)
+		}
+		if !strings.Contains(err.Error(), "未收录云端原版下载") && !strings.Contains(err.Error(), "不存在") {
+			t.Fatalf("%s 错误信息不符合预期: %v", lang, err)
+		}
+	}
+}
+
+func TestGetGameInfoNonGlobalBackup(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	backupDir := filepath.Join(tmpDir, "backup", "tc")
+	if err := os.MkdirAll(backupDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	meta := verifier.BackupMeta{
+		Region:  "tc",
+		Version: "2026.10.16.0000.0000",
+		Files: map[string]verifier.FileHash{
+			"0a0000.win32.index": {SHA256: "tc_hash", Size: 1024},
+		},
+	}
+	metaBytes, _ := json.Marshal(meta)
+	if err := os.WriteFile(filepath.Join(backupDir, "meta.json"), metaBytes, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	info, err := app.GetGameInfo(gameDir, "TC")
+	if err != nil {
+		t.Fatalf("GetGameInfo 失败: %v", err)
+	}
+	if !info.BackupExists || info.BackupVersion != "2026.10.16.0000.0000" {
+		t.Fatalf("其他服有本地备份时应正确识别: exists=%v, ver=%s", info.BackupExists, info.BackupVersion)
+	}
+}
