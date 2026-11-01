@@ -21,18 +21,17 @@ type ResourceStatus struct {
 	Offline         bool   `json:"offline"`
 	DownloadedFiles int    `json:"downloadedFiles"`
 	DownloadedBytes int64  `json:"downloadedBytes"`
-	LocalHash       string `json:"localHash,omitempty"`
-	RemoteHash      string `json:"remoteHash,omitempty"`
 	CSVHash         string `json:"csvHash,omitempty"`
+	FontHash        string `json:"fontHash,omitempty"`
+	CSVUpdated      bool   `json:"csvUpdated,omitempty"`
+	FontUpdated     bool   `json:"fontUpdated,omitempty"`
 }
 
 // ProgressFunc 接收资源下载进度。
 type ProgressFunc func(stage, detail string, done, total int64)
 
 // Provision 保证 resourceDir 拥有与云端清单一致的最新资源。
-//
-// 首次启动或资源缺失时：下载 rawexd.zip、font.zip、rules.json、tables.json；
-// 资源已是最新时只请求一次 manifest.json；网络不可用但本地资源完整时进入离线模式。
+// 各模块（CSV、字体、规则、表格）独立比对哈希与更新，互不捆绑。
 func (u *Updater) Provision(ctx context.Context, resourceDir string, progress ProgressFunc) (ResourceStatus, error) {
 	var st ResourceStatus
 	if progress == nil {
@@ -48,22 +47,19 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		if hasLocalResource(resourceDir) {
 			st.Offline = true
 			if local, _ := ReadLocalManifest(resourceDir); local != nil {
-				st.LocalHash = local.RootHash
 				st.CSVHash = local.RawEXD.SHA256
+				st.FontHash = local.Font.SHA256
 			}
 			return st, nil
 		}
 		return st, fmt.Errorf("获取云端资源清单失败: %w", err)
 	}
 
-	st.RemoteHash = remote.RootHash
 	st.CSVHash = remote.RawEXD.SHA256
+	st.FontHash = remote.Font.SHA256
 
 	local, _ := ReadLocalManifest(resourceDir)
-	if local != nil {
-		st.LocalHash = local.RootHash
-	}
-	if local != nil && local.RootHash == remote.RootHash && resourceComplete(resourceDir, remote) {
+	if modulesComplete(resourceDir, local, remote) {
 		return st, nil
 	}
 	// 本地资源比云端更新时保留本地，避免开发中的改动被旧快照覆盖。
@@ -80,6 +76,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		}); err != nil {
 			return st, err
 		}
+		st.CSVUpdated = true
 		st.DownloadedFiles++
 		st.DownloadedBytes += remote.RawEXD.Size
 	}
@@ -105,7 +102,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		st.DownloadedBytes += meta.want.Size
 	}
 
-	// 字体统一下载：优先使用整包 font.zip；缺失时回退为逐个下载。
+	// 字体独立检查与下载：仅当字体哈希不一致或缺失时才下载
 	if remote.Font.SHA256 != "" {
 		needFont := false
 		if local == nil || local.Font.SHA256 != remote.Font.SHA256 || !dirExists(filepath.Join(resourceDir, "font")) {
@@ -125,6 +122,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 			}); err != nil {
 				return st, err
 			}
+			st.FontUpdated = true
 			st.DownloadedFiles++
 			st.DownloadedBytes += remote.Font.Size
 		}
@@ -349,19 +347,31 @@ func dirExists(path string) bool {
 	return err == nil && st.IsDir()
 }
 
-func resourceComplete(resourceDir string, remote *Manifest) bool {
+func modulesComplete(resourceDir string, local, remote *Manifest) bool {
+	if local == nil || remote == nil {
+		return false
+	}
 	for _, name := range []string{"manifest.json", "rules.json", "tables.json"} {
 		if _, err := os.Stat(filepath.Join(resourceDir, name)); err != nil {
 			return false
 		}
 	}
-	if !dirExists(filepath.Join(resourceDir, "rawexd")) {
+	if local.RawEXD.SHA256 != remote.RawEXD.SHA256 || !dirExists(filepath.Join(resourceDir, "rawexd")) {
+		return false
+	}
+	if local.Font.SHA256 != remote.Font.SHA256 || !dirExists(filepath.Join(resourceDir, "font")) {
 		return false
 	}
 	for key, want := range remote.Fonts {
 		if !fileSizeMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want.Size) {
 			return false
 		}
+	}
+	if local.Rules.SHA256 != remote.Rules.SHA256 {
+		return false
+	}
+	if local.Tables.SHA256 != remote.Tables.SHA256 {
+		return false
 	}
 	return true
 }

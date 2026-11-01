@@ -13,3 +13,4 @@ patcher/frontend/dist/*
 patcher/frontend/node_modules/
 *.exe~
 FFXIVChnTextPatch-SM-v2.exe
+resource/*.zip
