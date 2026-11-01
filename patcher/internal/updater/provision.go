@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 )
 
 // ResourceStatus 描述资源自举结果。
@@ -223,8 +225,30 @@ func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want Fi
 	return fmt.Errorf("下载 %s 失败: %w", key, lastErr)
 }
 
+const ioBufferSize = 4 * 1024 * 1024
+
+var ioBufferPool = sync.Pool{
+	New: func() any {
+		b := make([]byte, ioBufferSize)
+		return &b
+	},
+}
+
+func getIOBuffer() *[]byte {
+	return ioBufferPool.Get().(*[]byte)
+}
+
+func putIOBuffer(b *[]byte) {
+	if b != nil && len(*b) == ioBufferSize {
+		ioBufferPool.Put(b)
+	}
+}
+
 func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress func(done, total int64)) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	streamCtx, cancelStream := context.WithCancel(ctx)
+	defer cancelStream()
+
+	req, err := http.NewRequestWithContext(streamCtx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
@@ -245,10 +269,19 @@ func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress fun
 	}
 	total := resp.ContentLength
 	done := int64(0)
-	buf := make([]byte, 256*1024)
+	bufPtr := getIOBuffer()
+	defer putIOBuffer(bufPtr)
+	buf := *bufPtr
+
+	stallTimer := time.AfterFunc(15*time.Second, func() {
+		cancelStream()
+	})
+	defer stallTimer.Stop()
+
 	for {
 		n, readErr := resp.Body.Read(buf)
 		if n > 0 {
+			stallTimer.Reset(15 * time.Second)
 			if _, err := out.Write(buf[:n]); err != nil {
 				_ = out.Close()
 				return err
@@ -263,6 +296,9 @@ func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress fun
 		}
 		if readErr != nil {
 			_ = out.Close()
+			if errors.Is(streamCtx.Err(), context.Canceled) && !errors.Is(ctx.Err(), context.Canceled) {
+				return fmt.Errorf("下载节点传输停滞超时（15秒无响应）: %s", url)
+			}
 			return readErr
 		}
 	}

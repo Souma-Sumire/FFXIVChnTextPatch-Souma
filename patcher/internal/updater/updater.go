@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -42,13 +43,17 @@ type Manifest struct {
 	Fonts       map[string]FileInfo `json:"fonts"`
 }
 
-// DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像）。
+// DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像，已实测可用）。
 func DefaultNodes() []string {
 	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/main/resource/"
 	return []string{
 		raw,
-		"https://ghfast.top/" + raw,
 		"https://gh-proxy.com/" + raw,
+		"https://cdn.gh-proxy.org/" + raw,
+		"https://hk.gh-proxy.org/" + raw,
+		"https://gh.monlor.com/" + raw,
+		"https://ghfast.top/" + raw,
+		"https://wget.la/" + raw,
 	}
 }
 
@@ -62,7 +67,22 @@ type Updater struct {
 
 // New 创建默认同步器。
 func New() *Updater {
-	return &Updater{HTTP: &http.Client{Timeout: 5 * time.Minute}, Nodes: DefaultNodes()}
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   8 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   8 * time.Second,
+		ResponseHeaderTimeout: 10 * time.Second,
+	}
+	return &Updater{
+		HTTP:  &http.Client{Timeout: 10 * time.Minute, Transport: transport},
+		Nodes: DefaultNodes(),
+	}
 }
 
 // SetPreferredNode 设置优先节点（通常为并发测速最快的镜像节点）。

@@ -44,6 +44,11 @@ type App struct {
 	resourceMu       sync.RWMutex
 	offline          bool
 
+	progressMu   sync.Mutex
+	lastProgress time.Time
+	lastDetail   string
+	lastStage    string
+
 	resourceDirOverride string
 }
 
@@ -332,11 +337,7 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 		}
 	}()
 
-	status, err := a.updater.Provision(context.Background(), resourceDir, func(stage, detail string, done, total int64) {
-		if total > 0 && done < total {
-			a.emitPatchLog(fmt.Sprintf("[资源同步] %s: %d/%d", detail, done, total))
-		}
-	})
+	status, err := a.updater.Provision(context.Background(), resourceDir, nil)
 	if err != nil {
 		a.resourceMu.Lock()
 		a.resourceErr = err
@@ -400,11 +401,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		})
 	} else {
 		// 本地无基础资源（首次运行或文件缺失）：同步执行准备并展示全屏进度条
-		status, err := a.updater.Provision(a.ctx, resourceDir, func(stage, detail string, done, total int64) {
-			runtime.EventsEmit(a.ctx, "resource-progress", ProgressEvent{
-				Stage: stage, Detail: detail, Done: done, Total: total,
-			})
-		})
+		status, err := a.updater.Provision(a.ctx, resourceDir, a.emitResourceProgress)
 		if err != nil {
 			a.resourceMu.Lock()
 			a.resourceErr = err
@@ -888,7 +885,32 @@ func (a *App) endBusy() {
 	a.mu.Unlock()
 }
 
+func (a *App) shouldThrottleProgress(stage, detail string, done, total int64) bool {
+	a.progressMu.Lock()
+	defer a.progressMu.Unlock()
+	now := time.Now()
+	isFinish := total > 0 && done >= total
+	isStageOrDetailChange := a.lastStage != stage || (a.lastDetail != detail && (total == 0 || done == 0))
+	if isFinish || isStageOrDetailChange || now.Sub(a.lastProgress) >= 500*time.Millisecond {
+		a.lastProgress = now
+		a.lastStage = stage
+		a.lastDetail = detail
+		return false
+	}
+	return true
+}
+
+func (a *App) emitResourceProgress(stage, detail string, done, total int64) {
+	if a.ctx == nil || a.shouldThrottleProgress(stage, detail, done, total) {
+		return
+	}
+	runtime.EventsEmit(a.ctx, "resource-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
+}
+
 func (a *App) emitProgress(stage, detail string, done, total int64) {
+	if a.ctx == nil || a.shouldThrottleProgress(stage, detail, done, total) {
+		return
+	}
 	runtime.EventsEmit(a.ctx, "patch-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 

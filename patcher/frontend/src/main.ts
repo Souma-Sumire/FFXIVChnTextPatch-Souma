@@ -1111,25 +1111,37 @@ function wireRuntimeEvents(): void {
     return;
   }
 
+  let pendingResourceProgress: ProgressEventPayload | null = null;
+  let resourceRafId = 0;
   on("resource-progress", (data: unknown) => {
     const ev = asProgress(data);
-    switchView("provisioning");
-    el.provisionDetail.textContent = ev.detail || ev.stage || "正在准备汉化资源包…";
-    if (ev.total > 0) {
-      const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
-      el.provisionProgressBar.style.width = `${pct.toFixed(1)}%`;
-      const doneMb = (ev.done / 1024 / 1024).toFixed(1);
-      const totalMb = (ev.total / 1024 / 1024).toFixed(1);
-      el.provisionMeta.textContent = `${doneMb} MB / ${totalMb} MB (${pct.toFixed(0)}%)`;
-    } else {
-      el.provisionProgressBar.style.width = "100%";
-      el.provisionMeta.textContent = "正在处理解压与哈希校验…";
+    pendingResourceProgress = ev;
+    if (!resourceRafId) {
+      resourceRafId = requestAnimationFrame(() => {
+        resourceRafId = 0;
+        if (!pendingResourceProgress) return;
+        const current = pendingResourceProgress;
+        switchView("provisioning");
+        el.provisionDetail.textContent = current.detail || current.stage || "正在准备汉化资源包…";
+        if (current.total > 0) {
+          const pct = Math.min(100, Math.max(0, (current.done / current.total) * 100));
+          el.provisionProgressBar.style.width = `${pct.toFixed(1)}%`;
+          const doneMb = (current.done / 1024 / 1024).toFixed(1);
+          const totalMb = (current.total / 1024 / 1024).toFixed(1);
+          el.provisionMeta.textContent = `${doneMb} MB / ${totalMb} MB (${pct.toFixed(0)}%)`;
+        } else {
+          el.provisionProgressBar.style.width = "100%";
+          el.provisionMeta.textContent = "正在处理解压与哈希校验…";
+        }
+      });
     }
   });
 
   let lastDownloadDetail = "";
-  on("patch-progress", (data: unknown) => {
-    const ev = asProgress(data);
+  let pendingPatchProgress: ProgressEventPayload | null = null;
+  let patchRafId = 0;
+
+  function renderPatchProgress(ev: ProgressEventPayload): void {
     if (ev.stage === "download") {
       if (ev.total > 0) {
         const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
@@ -1139,11 +1151,6 @@ function wireRuntimeEvents(): void {
         el.busyIndicator.textContent = `下载中: ${ev.detail} (${doneMb} / ${totalMb} MB)`;
       } else {
         el.busyIndicator.textContent = `下载中: ${ev.detail}`;
-      }
-      if (ev.detail && ev.detail !== lastDownloadDetail) {
-        lastDownloadDetail = ev.detail;
-        const sizeInfo = ev.total > 0 ? ` (${(ev.total / 1024 / 1024).toFixed(1)} MB)` : "";
-        log(`[下载] 开始下载 ${ev.detail}${sizeInfo}`);
       }
       return;
     }
@@ -1155,6 +1162,29 @@ function wireRuntimeEvents(): void {
     } else {
       el.busyIndicator.textContent = ev.detail || ev.stage;
     }
+  }
+
+  on("patch-progress", (data: unknown) => {
+    const ev = asProgress(data);
+    pendingPatchProgress = ev;
+    if (!patchRafId) {
+      patchRafId = requestAnimationFrame(() => {
+        patchRafId = 0;
+        if (pendingPatchProgress) {
+          renderPatchProgress(pendingPatchProgress);
+        }
+      });
+    }
+
+    if (ev.stage === "download") {
+      if (ev.detail && ev.detail !== lastDownloadDetail) {
+        lastDownloadDetail = ev.detail;
+        const sizeInfo = ev.total > 0 ? ` (${(ev.total / 1024 / 1024).toFixed(1)} MB)` : "";
+        log(`[下载] 开始下载 ${ev.detail}${sizeInfo}`);
+      }
+      return;
+    }
+
     const now = Date.now();
     if (ev.detail && now - lastProgressLogAt > 1200) {
       lastProgressLogAt = now;
