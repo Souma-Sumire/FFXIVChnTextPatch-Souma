@@ -133,9 +133,11 @@ type BootstrapInfo struct {
 	Rules       []pipeline.RuleMeta `json:"rules"`
 	Languages   []LanguageOption    `json:"languages"`
 	Config      AppConfig           `json:"config"`
-	Folders     map[string]string   `json:"folders"`
-	TableList   []TableEntry        `json:"tableList"`
-	Excluded    []string            `json:"excluded"`
+	Folders      map[string]string   `json:"folders"`
+	TableList    []TableEntry        `json:"tableList"`
+	Excluded     []string            `json:"excluded"`
+	ResourceTime string              `json:"resourceTime,omitempty"`
+	ResourceHash string              `json:"resourceHash,omitempty"`
 }
 
 // FileStatus 描述单个客户端文件状态。
@@ -154,6 +156,8 @@ type GameInfo struct {
 	BackupVersion string       `json:"backupVersion"`
 	BackupExists  bool         `json:"backupExists"`
 	Region        string       `json:"region"`
+	ResourceTime  string       `json:"resourceTime,omitempty"`
+	ResourceHash  string       `json:"resourceHash,omitempty"`
 }
 
 // PatchRequest 是汉化请求。
@@ -343,6 +347,17 @@ func shortHash(h string) string {
 	return h
 }
 
+func formatResourceTime(isoStr string) string {
+	if isoStr == "" {
+		return ""
+	}
+	t, err := time.Parse(time.RFC3339, isoStr)
+	if err != nil {
+		return isoStr
+	}
+	return t.Local().Format("2006-01-02 15:04")
+}
+
 func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 	defer func() {
 		select {
@@ -379,8 +394,14 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新（%s），已同步 %d 个文件（%.2f MB）。",
 			strings.Join(updates, ", "), status.DownloadedFiles, float64(status.DownloadedBytes)/1024/1024))
 	} else if !status.Offline && status.CSVHash != "" {
-		a.emitPatchLog(fmt.Sprintf("[资源] 汉化资源已是最新（CSV: %s, 字体: %s）。",
-			shortHash(status.CSVHash), shortHash(status.FontHash)))
+		resTime := formatResourceTime(status.GeneratedAt)
+		if resTime != "" {
+			a.emitPatchLog(fmt.Sprintf("[资源] 汉化资源已是最新（构建时间：%s，CSV: %s, 字体: %s）。",
+				resTime, shortHash(status.CSVHash), shortHash(status.FontHash)))
+		} else {
+			a.emitPatchLog(fmt.Sprintf("[资源] 汉化资源已是最新（CSV: %s, 字体: %s）。",
+				shortHash(status.CSVHash), shortHash(status.FontHash)))
+		}
 	}
 }
 
@@ -478,6 +499,12 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	isOffline := a.offline
 	a.resourceMu.RUnlock()
 
+	var resTime, resHash string
+	if mf, err := updater.ReadLocalManifest(resourceDir); err == nil && mf != nil {
+		resTime = formatResourceTime(mf.GeneratedAt)
+		resHash = shortHash(mf.RawEXD.SHA256)
+	}
+
 	return BootstrapInfo{
 		Version:     appVersion,
 		ResourceDir: resourceDir,
@@ -489,10 +516,12 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 			{Code: string(region.TC), Name: "繁中服", Region: string(region.Taiwan), BackupURL: tcBackupURL},
 			{Code: string(region.KO), Name: "韩服", Region: string(region.Korea)},
 		},
-		Config:    cfg,
-		Folders:   tables.Folders,
-		TableList: tableList,
-		Excluded:  recommendedExcludedTables,
+		Config:       cfg,
+		Folders:      tables.Folders,
+		TableList:    tableList,
+		Excluded:     recommendedExcludedTables,
+		ResourceTime: resTime,
+		ResourceHash: resHash,
 	}, nil
 }
 
@@ -638,6 +667,10 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 			info.BackupExists = len(meta.Files) > 0
 		}
 	}
+	if mf, err := updater.ReadLocalManifest(a.resourceDir()); err == nil && mf != nil {
+		info.ResourceTime = formatResourceTime(mf.GeneratedAt)
+		info.ResourceHash = shortHash(mf.RawEXD.SHA256)
+	}
 	return info, nil
 }
 
@@ -684,13 +717,14 @@ func (a *App) loadAllPatchedRecords() map[string]PatchedRecord {
 			return res
 		}
 	}
-	// 兼容迁移旧单记录格式
+	// 兼容迁移旧单记录格式并自动清理历史遗留文件
 	oldPath := filepath.Join(a.resourceDir(), "patched_record.json")
 	if oldData, err := os.ReadFile(oldPath); err == nil {
 		var single PatchedRecord
 		if err := json.Unmarshal(oldData, &single); err == nil && single.GameDir != "" {
 			res[filepath.Clean(single.GameDir)] = single
 		}
+		_ = os.Remove(oldPath)
 	}
 	return res
 }
@@ -1036,8 +1070,14 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 
 	resourceDir := a.resourceDir()
 	if manifest, err := updater.ReadLocalManifest(resourceDir); err == nil && manifest != nil {
-		a.emitPatchLog(fmt.Sprintf("[补丁] 当前使用资源版本（CSV: %s, 字体: %s）",
-			shortHash(manifest.RawEXD.SHA256), shortHash(manifest.Font.SHA256)))
+		resTime := formatResourceTime(manifest.GeneratedAt)
+		if resTime != "" {
+			a.emitPatchLog(fmt.Sprintf("[补丁] 当前使用资源构建时间：%s（CSV: %s, 字体: %s）",
+				resTime, shortHash(manifest.RawEXD.SHA256), shortHash(manifest.Font.SHA256)))
+		} else {
+			a.emitPatchLog(fmt.Sprintf("[补丁] 当前使用资源版本（CSV: %s, 字体: %s）",
+				shortHash(manifest.RawEXD.SHA256), shortHash(manifest.Font.SHA256)))
+		}
 	}
 	backupRoot := backupRootFor(resourceDir)
 	sqpackDir := filepath.Join(req.GameDir, "game", "sqpack", "ffxiv")
@@ -1070,8 +1110,17 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		},
 	}
 	cfg.ApplyText = func(ctx context.Context) error {
+		a.emitPatchLog("[文本] 开始汉化游戏文本数据...")
+		var lastLoggedPct int = -1
 		formatter := func(done, total int, file string) {
 			a.emitProgress("text", file, int64(done), int64(total))
+			if total > 0 {
+				pct := (done * 100) / total
+				if (pct == 25 || pct == 50 || pct == 75) && pct != lastLoggedPct {
+					lastLoggedPct = pct
+					a.emitPatchLog(fmt.Sprintf("[文本] 汉化进度：%d%% (%d/%d)", pct, done, total))
+				}
+			}
 		}
 		stats, err := replace.ReplaceEXDF(replace.Options{
 			TextIndexPath:   filepath.Join(sqpackDir, "0a0000.win32.index"),
@@ -1083,10 +1132,14 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			Progress:        formatter,
 			Log:             cfg.Log,
 		})
+		if err == nil {
+			a.emitPatchLog(fmt.Sprintf("[文本] 文本汉化完成：修改 %d 个数据表，更新 %d 个文件，替换 %d 条文本", stats.Tables, stats.Files, stats.Entries))
+		}
 		resp.Text = stats
 		return err
 	}
 	cfg.ApplyFont = func(ctx context.Context) error {
+		a.emitPatchLog("[字体] 开始写入高清中文字体...")
 		stats, err := replace.ReplaceFont(
 			filepath.Join(sqpackDir, "000000.win32.index"),
 			filepath.Join(resourceDir, "font"),
@@ -1094,13 +1147,20 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 				a.emitProgress("font", file, int64(done), int64(total))
 			},
 		)
+		if err == nil {
+			a.emitPatchLog(fmt.Sprintf("[字体] 字体写入完成：已替换 %d 个字体文件", stats.Files))
+		}
 		resp.Font = stats
 		return err
 	}
 
 	result, err := verifier.Run(a.ctx, cfg)
 	if err != nil {
+		a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v", err))
 		return resp, err
+	}
+	if !result.Cancelled {
+		a.emitPatchLog("[完成] 汉化补丁全部应用成功，可以启动游戏！")
 	}
 	resp.Plan = result.Plan
 	resp.Cancelled = result.Cancelled
@@ -1177,6 +1237,7 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 		return resp, err
 	}
 
+	a.emitPatchLog("[还原] 开始执行官方原版恢复流程...")
 	resourceDir := a.resourceDir()
 	restored, err := verifier.Restore(a.ctx, verifier.RestoreConfig{
 		GameDir:    gameDir,
@@ -1189,10 +1250,12 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 		},
 	})
 	if err != nil {
+		a.emitPatchLog(fmt.Sprintf("[错误] 还原失败：%v", err))
 		return resp, err
 	}
 	a.clearPatchedRecord(gameDir)
 	resp.Restored = restored
+	a.emitPatchLog(fmt.Sprintf("[完成] 官方原版文件已全部恢复（共 %d 个文件）", len(restored)))
 	return resp, nil
 }
 

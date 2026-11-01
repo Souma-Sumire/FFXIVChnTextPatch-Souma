@@ -92,6 +92,13 @@ jobs:
       contents: write
 
     steps:
+      - name: Resolve release title
+        id: ver
+        run: |
+          RAW_TAG="${{ github.ref_name }}"
+          CLEAN_VER="${RAW_TAG#patcher-}"
+          echo "version=${CLEAN_VER}" >> $GITHUB_OUTPUT
+
       - name: Download artifacts
         uses: actions/download-artifact@v7
         with:
@@ -103,7 +110,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          name: 汉化器 ${{ github.ref_name }}
+          name: 汉化器 ${{ steps.ver.outputs.version }}
           files: |
             FFXIVChnTextPatch-SM-v2.exe
             FFXIVChnTextPatch-SM-v2-macOS.zip
