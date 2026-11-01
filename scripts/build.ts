@@ -26,6 +26,53 @@ function run(cmd: string, args: string[], cwd: string): void {
   }
 }
 
+function resolveAppVersion(): string {
+  if (process.env.APP_VERSION) {
+    return process.env.APP_VERSION.replace(/^patcher-v?/, "").replace(/^v/, "");
+  }
+
+  const ref = process.env.GITHUB_REF_NAME || process.env.GITHUB_REF;
+  if (ref) {
+    const tag = ref.replace(/^refs\/tags\//, "");
+    if (tag.startsWith("patcher-v")) {
+      return tag.slice("patcher-v".length);
+    }
+    if (tag.startsWith("patcher-")) {
+      return tag.slice("patcher-".length);
+    }
+    if (tag.startsWith("v")) {
+      return tag.slice(1);
+    }
+    return tag;
+  }
+
+  try {
+    const tag = execFileSync("git", ["describe", "--tags", "--match", "patcher-v*", "--exact-match"], {
+      cwd: repoRoot,
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (tag.startsWith("patcher-v")) {
+      return tag.slice("patcher-v".length);
+    }
+    return tag;
+  } catch {
+    try {
+      const desc = execFileSync("git", ["describe", "--tags", "--match", "patcher-v*", "--always"], {
+        cwd: repoRoot,
+        encoding: "utf-8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim();
+      return desc.replace(/^patcher-v?/, "");
+    } catch {
+      return "dev";
+    }
+  }
+}
+
+const appVersion = resolveAppVersion();
+console.log(`\n构建版本: ${appVersion}`);
+
 // 1. 构建前端产物
 const nodeModules = path.join(frontendDir, "node_modules");
 if (!fs.existsSync(nodeModules)) {
@@ -48,7 +95,7 @@ if (isMac) {
   }
 
   if (hasWails) {
-    run("wails", ["build", "-platform", "darwin/universal", "-skipbindings", "-s", "-trimpath"], patcherDir);
+    run("wails", ["build", "-platform", "darwin/universal", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
     const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
     const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
     if (fs.existsSync(appPath)) {
@@ -57,7 +104,7 @@ if (isMac) {
     }
   } else {
     const outBin = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2");
-    run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", "-s -w", "-o", outBin, "."], patcherDir);
+    run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
     console.log(`\n构建成功: ${outBin}`);
   }
 } else {
@@ -71,6 +118,7 @@ if (isMac) {
       process.exit(1);
     }
   }
-  run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", "-H windowsgui -s -w", "-o", outExe, "."], patcherDir);
+  const ldflags = `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
+  run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
   console.log(`\n构建成功: ${outExe}`);
 }
