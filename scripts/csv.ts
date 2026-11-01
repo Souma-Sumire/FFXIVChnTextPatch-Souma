@@ -171,6 +171,67 @@ function resolveCellValue(params: {
   return cn;
 }
 
+const globalSummaryWarnings: string[] = [];
+
+function checkKTGTypeWordMissing(params: {
+  jaRows: string[][];
+  enMap: Map<string, Record<string, string>>;
+  outRows: string[][];
+  targetCols: string[];
+}): void {
+  const warnings: string[] = [];
+
+  const outMap = new Map<string, Record<string, string>>();
+  for (let i = 4; i < params.outRows.length; i++) {
+    const r = params.outRows[i];
+    if (!r || !r[0]) continue;
+    const vals: Record<string, string> = {};
+    for (let c = 0; c < params.targetCols.length; c++) {
+      vals[params.targetCols[c]!] = r[c + 1] ?? "";
+    }
+    outMap.set(r[0].trim(), vals);
+  }
+
+  const jaHeader = params.jaRows[0] ?? [];
+  const jaIdx0 = jaHeader.indexOf("0");
+
+  for (let i = 4; i < params.jaRows.length; i++) {
+    const r = params.jaRows[i];
+    if (!r) continue;
+    const key = r[0]?.trim();
+    if (!key || TOP_KEYS.has(key)) continue;
+
+    const jaText = (jaIdx0 !== -1 ? r[jaIdx0] : "") ?? "";
+    const enText = params.enMap.get(key)?.["0"] ?? "";
+    const outEntry = outMap.get(key);
+    const cnText = outEntry?.["0"] ?? "";
+
+    if (!jaText && !enText) continue;
+
+    if (!cnText) {
+      warnings.push(`  - [Key ${key}] 国际服有内容但汉化缺失 (日: "${jaText}", 英: "${enText}")`);
+    }
+  }
+
+  for (const [enKey, enVals] of params.enMap.entries()) {
+    if (TOP_KEYS.has(enKey) || outMap.has(enKey)) continue;
+    const enText = enVals["0"] ?? "";
+    if (enText) {
+      warnings.push(`  - [Key ${enKey}] 英文端存在新条目但数据表未收录 (英: "${enText}")`);
+    }
+  }
+
+  if (warnings.length > 0) {
+    const headerMsg = `[警告] KTGTypeWordTextData.csv 检测到 ${warnings.length} 个国际服词条缺少汉化或拼音：`;
+    console.warn(`\n${headerMsg}`);
+    for (const issue of warnings) {
+      console.warn(issue);
+    }
+    console.warn(`请在 scripts/ktg.ts 中补充对应的中文译名与击键拼音。\n`);
+    globalSummaryWarnings.push(headerMsg, ...warnings, `请在 scripts/ktg.ts 中补充对应的中文译名与击键拼音。`);
+  }
+}
+
 function processRootCsv(fileName: string): void {
   const jaPath = path.join(CSV_PATHS.ja, fileName);
   if (!fs.existsSync(jaPath)) {
@@ -244,6 +305,10 @@ function processRootCsv(fileName: string): void {
 
   fs.mkdirSync(OUTPUT_PATH, { recursive: true });
   fs.writeFileSync(soumaPath, serializeCsv(outRows), "utf8");
+
+  if (fileName === "KTGTypeWordTextData.csv") {
+    checkKTGTypeWordMissing({ jaRows, enMap, outRows, targetCols });
+  }
 }
 
 function readDialogueMap(filePath: string): Map<string, string> {
@@ -575,18 +640,8 @@ function generateManifestAndSnapshot(): void {
     console.log(`字体文件未发生变更，复用现有: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}`);
   }
 
-  const rootHash = createHash("sha256");
-  rootHash.update(`rawexd.zip:${zipInfo.sha256}\n`);
-  rootHash.update(`font.zip:${fontZipInfo.sha256}\n`);
-  rootHash.update(`rules.json:${rulesInfo.sha256}\n`);
-  rootHash.update(`tables.json:${tablesInfo.sha256}\n`);
-  for (const key of fontKeys) {
-    rootHash.update(`${key}:${fonts[key]!.sha256}\n`);
-  }
-
   const manifest = {
     generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
-    rootHash: rootHash.digest("hex"),
     rawexd: zipInfo,
     font: fontZipInfo,
     rules: { sha256: rulesInfo.sha256, size: rulesInfo.size },
@@ -601,6 +656,23 @@ function generateManifestAndSnapshot(): void {
 
 function main(): void {
   const args = new Set(process.argv.slice(2));
+  const singleFileArg = process.argv.slice(2).find((a) => a.endsWith(".csv"));
+
+  if (singleFileArg) {
+    const baseName = path.basename(singleFileArg);
+    console.log(`仅处理指定根目录 CSV 文件: ${baseName}`);
+    processRootCsv(baseName);
+    if (globalSummaryWarnings.length > 0) {
+      console.warn("\n" + "=".repeat(80));
+      console.warn("[注意] CSV 数据处理完成，但检测到以下未汉化词条，请及时处理：");
+      for (const msg of globalSummaryWarnings) {
+        console.warn(msg);
+      }
+      console.warn("=".repeat(80) + "\n");
+    }
+    return;
+  }
+
   const runRoot = args.size === 0 || args.has("--root");
   const runFolder = args.size === 0 || args.has("--folder");
 
@@ -626,6 +698,15 @@ function main(): void {
   writeRulesFile();
   writeTablesFile();
   generateManifestAndSnapshot();
+
+  if (globalSummaryWarnings.length > 0) {
+    console.warn("\n" + "=".repeat(80));
+    console.warn("[注意] CSV 数据处理完成，但检测到以下未汉化词条，请及时处理：");
+    for (const msg of globalSummaryWarnings) {
+      console.warn(msg);
+    }
+    console.warn("=".repeat(80) + "\n");
+  }
 }
 
 main();

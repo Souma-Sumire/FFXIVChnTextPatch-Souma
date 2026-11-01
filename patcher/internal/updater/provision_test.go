@@ -38,7 +38,6 @@ func newMockNode(t *testing.T, files, zipFiles map[string]string) *mockNode {
 	m.fontZipData = buildTestZip(t, fontFiles)
 	m.manifest = Manifest{
 		GeneratedAt: "2026-10-29T06:00:00Z",
-		RootHash:    "root-v1",
 		RawEXD:      bundleOfBytes(m.zipData, len(zipFiles)),
 		Font:        bundleOfBytes(m.fontZipData, len(fontFiles)),
 		Rules:       bundleOfText(files["rules.json"]),
