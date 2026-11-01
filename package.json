@@ -2,6 +2,7 @@
   "type": "module",
   "scripts": {
     "bundle": "node scripts/bundle.ts",
+    "build": "node scripts/build.ts",
     "csv": "node scripts/csv.ts",
     "csv:root": "node scripts/csv.ts --root",
     "csv:folder": "node scripts/csv.ts --folder",

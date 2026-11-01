@@ -20,8 +20,7 @@
 Build：
 
 ```bash
-cd patcher/frontend && pnpm install && pnpm run build
-cd .. && go build -tags desktop,production -trimpath -ldflags "-H windowsgui -s -w" -o ../FFXIVChnTextPatch-SM-v2.exe .
+pnpm run build
 ```
 
 CSV：
