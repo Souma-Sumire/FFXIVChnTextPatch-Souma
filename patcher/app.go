@@ -328,6 +328,13 @@ func (a *App) emitPatchLog(msg string) {
 	}
 }
 
+func shortHash(h string) string {
+	if len(h) > 8 {
+		return h[:8]
+	}
+	return h
+}
+
 func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 	defer func() {
 		select {
@@ -351,8 +358,12 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 	a.resourceMu.Unlock()
 
 	if status.Updated && status.DownloadedFiles > 0 {
-		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新至最新快照，已同步 %d 个文件（%.2f MB）。",
+		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新至最新快照（Root: %s, CSV: %s），已同步 %d 个文件（%.2f MB）。",
+			shortHash(status.RemoteHash), shortHash(status.CSVHash),
 			status.DownloadedFiles, float64(status.DownloadedBytes)/1024/1024))
+	} else if !status.Offline && status.RemoteHash != "" {
+		a.emitPatchLog(fmt.Sprintf("[资源] 汉化资源已是最新快照（Root: %s, CSV: %s）。",
+			shortHash(status.RemoteHash), shortHash(status.CSVHash)))
 	}
 }
 
@@ -938,6 +949,10 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 
 	resourceDir := a.resourceDir()
+	if manifest, err := updater.ReadLocalManifest(resourceDir); err == nil && manifest != nil {
+		a.emitPatchLog(fmt.Sprintf("[补丁] 当前使用资源快照（Root: %s, CSV: %s）",
+			shortHash(manifest.RootHash), shortHash(manifest.RawEXD.SHA256)))
+	}
 	backupRoot := backupRootFor(resourceDir)
 	sqpackDir := filepath.Join(req.GameDir, "game", "sqpack", "ffxiv")
 

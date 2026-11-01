@@ -17,10 +17,13 @@ import (
 
 // ResourceStatus 描述资源自举结果。
 type ResourceStatus struct {
-	Updated         bool  `json:"updated"`
-	Offline         bool  `json:"offline"`
-	DownloadedFiles int   `json:"downloadedFiles"`
-	DownloadedBytes int64 `json:"downloadedBytes"`
+	Updated         bool   `json:"updated"`
+	Offline         bool   `json:"offline"`
+	DownloadedFiles int    `json:"downloadedFiles"`
+	DownloadedBytes int64  `json:"downloadedBytes"`
+	LocalHash       string `json:"localHash,omitempty"`
+	RemoteHash      string `json:"remoteHash,omitempty"`
+	CSVHash         string `json:"csvHash,omitempty"`
 }
 
 // ProgressFunc 接收资源下载进度。
@@ -44,12 +47,22 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	if err != nil {
 		if hasLocalResource(resourceDir) {
 			st.Offline = true
+			if local, _ := ReadLocalManifest(resourceDir); local != nil {
+				st.LocalHash = local.RootHash
+				st.CSVHash = local.RawEXD.SHA256
+			}
 			return st, nil
 		}
 		return st, fmt.Errorf("获取云端资源清单失败: %w", err)
 	}
 
-	local, _ := readLocalManifest(resourceDir)
+	st.RemoteHash = remote.RootHash
+	st.CSVHash = remote.RawEXD.SHA256
+
+	local, _ := ReadLocalManifest(resourceDir)
+	if local != nil {
+		st.LocalHash = local.RootHash
+	}
 	if local != nil && local.RootHash == remote.RootHash && resourceComplete(resourceDir, remote) {
 		return st, nil
 	}
@@ -353,7 +366,8 @@ func resourceComplete(resourceDir string, remote *Manifest) bool {
 	return true
 }
 
-func readLocalManifest(resourceDir string) (*Manifest, error) {
+// ReadLocalManifest 读取本地资源目录中的 manifest.json。
+func ReadLocalManifest(resourceDir string) (*Manifest, error) {
 	data, err := os.ReadFile(filepath.Join(resourceDir, "manifest.json"))
 	if err != nil {
 		return nil, err
