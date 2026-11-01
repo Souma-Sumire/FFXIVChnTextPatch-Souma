@@ -1,4 +1,12 @@
 {
+  "type": "module",
+  "scripts": {
+    "csv": "node scripts/csv.ts",
+    "csv:root": "node scripts/csv.ts --root",
+    "csv:folder": "node scripts/csv.ts --folder",
+    "hash": "node scripts/hash.ts",
+    "mod": "node scripts/mod.ts"
+  },
   "devDependencies": {
     "@types/node": "^24.10.1"
   },

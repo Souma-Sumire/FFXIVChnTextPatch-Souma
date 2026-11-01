@@ -1,0 +1,214 @@
+package updater
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"sync/atomic"
+	"testing"
+)
+
+type mockNode struct {
+	srv         *httptest.Server
+	manifest    Manifest
+	zipData     []byte
+	fontZipData []byte
+	files       map[string]string
+	hits        atomic.Int64
+}
+
+func newMockNode(t *testing.T, files, zipFiles map[string]string) *mockNode {
+	t.Helper()
+	m := &mockNode{files: files}
+	if zipFiles == nil {
+		zipFiles = map[string]string{}
+	}
+	fontFiles := map[string]string{}
+	for k, v := range files {
+		if filepath.ToSlash(k) == "font/A.fdt" || filepath.ToSlash(k) == "font/B.tex" {
+			fontFiles[k] = v
+		}
+	}
+	m.zipData = buildTestZip(t, zipFiles)
+	m.fontZipData = buildTestZip(t, fontFiles)
+	m.manifest = Manifest{
+		GeneratedAt: "2026-10-29T06:00:00Z",
+		RootHash:    "root-v1",
+		RawEXD:      bundleOfBytes(m.zipData, len(zipFiles)),
+		Font:        bundleOfBytes(m.fontZipData, len(fontFiles)),
+		Rules:       bundleOfText(files["rules.json"]),
+		Tables:      bundleOfText(files["tables.json"]),
+		Fonts: map[string]FileInfo{
+			"font/A.fdt": fileInfoOf(files["font/A.fdt"]),
+			"font/B.tex": fileInfoOf(files["font/B.tex"]),
+		},
+	}
+	m.srv = httptest.NewServer(http.HandlerFunc(m.handle))
+	t.Cleanup(m.srv.Close)
+	return m
+}
+
+func bundleOfBytes(data []byte, count int) BundleInfo {
+	sum := sha256.Sum256(data)
+	return BundleInfo{SHA256: hex.EncodeToString(sum[:]), Size: int64(len(data)), Count: count}
+}
+
+func bundleOfText(content string) BundleInfo {
+	sum := sha256.Sum256([]byte(content))
+	return BundleInfo{SHA256: hex.EncodeToString(sum[:]), Size: int64(len(content))}
+}
+
+func fileInfoOf(content string) FileInfo {
+	sum := sha256.Sum256([]byte(content))
+	return FileInfo{SHA256: hex.EncodeToString(sum[:]), Size: int64(len(content))}
+}
+
+func (m *mockNode) handle(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/resource/manifest.json" {
+		m.hits.Add(1)
+	}
+	switch {
+	case r.URL.Path == "/resource/manifest.json":
+		_ = json.NewEncoder(w).Encode(m.manifest)
+	case r.URL.Path == "/resource/rawexd.zip":
+		_, _ = w.Write(m.zipData)
+	case r.URL.Path == "/resource/font.zip":
+		_, _ = w.Write(m.fontZipData)
+	case len(r.URL.Path) > len("/resource/"):
+		key := r.URL.Path[len("/resource/"):]
+		content, ok := m.files[key]
+		if !ok {
+			http.NotFound(w, r)
+			return
+		}
+		_, _ = w.Write([]byte(content))
+	default:
+		http.NotFound(w, r)
+	}
+}
+
+func (m *mockNode) updater() *Updater {
+	return &Updater{HTTP: m.srv.Client(), Nodes: []string{m.srv.URL + "/resource/"}}
+}
+
+func provisionFixture(t *testing.T) (*mockNode, map[string]string) {
+	t.Helper()
+	files := map[string]string{
+		"rules.json":  `{"specialWord":{}}`,
+		"tables.json": `{"folders":{},"tables":{},"files":[]}`,
+		"font/A.fdt":  "font-a",
+		"font/B.tex":  "font-b",
+	}
+	zipFiles := map[string]string{
+		"rawexd/A.csv":       "csv-a",
+		"rawexd/quest/B.csv": "csv-b",
+	}
+	return newMockNode(t, files, zipFiles), files
+}
+
+func TestProvisionDownloadsFullResource(t *testing.T) {
+	node, files := provisionFixture(t)
+	dir := t.TempDir()
+
+	status, err := node.updater().Provision(context.Background(), dir, nil)
+	if err != nil {
+		t.Fatalf("Provision 失败: %v", err)
+	}
+	if !status.Updated || status.Offline {
+		t.Fatalf("首次应下载资源: %+v", status)
+	}
+	for key, want := range files {
+		got, err := os.ReadFile(filepath.Join(dir, filepath.FromSlash(key)))
+		if err != nil {
+			t.Fatalf("缺少 %s: %v", key, err)
+		}
+		if string(got) != want {
+			t.Fatalf("%s 内容不一致: %q", key, got)
+		}
+	}
+	for _, key := range []string{"rawexd/A.csv", "rawexd/quest/B.csv"} {
+		if _, err := os.Stat(filepath.Join(dir, filepath.FromSlash(key))); err != nil {
+			t.Fatalf("快照包未解压出 %s", key)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(dir, "manifest.json")); err != nil {
+		t.Fatal("应写入 manifest.json")
+	}
+}
+
+func TestProvisionSkipsWhenUpToDate(t *testing.T) {
+	node, _ := provisionFixture(t)
+	dir := t.TempDir()
+	if _, err := node.updater().Provision(context.Background(), dir, nil); err != nil {
+		t.Fatal(err)
+	}
+	before := node.hits.Load()
+
+	status, err := node.updater().Provision(context.Background(), dir, nil)
+	if err != nil {
+		t.Fatalf("Provision 失败: %v", err)
+	}
+	if status.Updated || status.Offline {
+		t.Fatalf("资源已是最新时不应更新: %+v", status)
+	}
+	if got := node.hits.Load(); got != before {
+		t.Fatalf("已是最新时不应下载文件，新增请求 %d", got-before)
+	}
+}
+
+func TestProvisionRepairsMissingFile(t *testing.T) {
+	node, _ := provisionFixture(t)
+	dir := t.TempDir()
+	if _, err := node.updater().Provision(context.Background(), dir, nil); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(dir, "font", "A.fdt")); err != nil {
+		t.Fatal(err)
+	}
+
+	status, err := node.updater().Provision(context.Background(), dir, nil)
+	if err != nil {
+		t.Fatalf("Provision 失败: %v", err)
+	}
+	if !status.Updated {
+		t.Fatalf("缺失文件应触发修复: %+v", status)
+	}
+	if data, err := os.ReadFile(filepath.Join(dir, "font", "A.fdt")); err != nil || string(data) != "font-a" {
+		t.Fatalf("字体未修复: %v %q", err, data)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "font", "B.tex")); err != nil {
+		t.Fatal("已存在的字体不应被删除")
+	}
+}
+
+func TestProvisionOfflineWithLocalResource(t *testing.T) {
+	node, _ := provisionFixture(t)
+	dir := t.TempDir()
+	if _, err := node.updater().Provision(context.Background(), dir, nil); err != nil {
+		t.Fatal(err)
+	}
+
+	offline := &Updater{
+		HTTP:  node.updater().HTTP,
+		Nodes: []string{"http://127.0.0.1:1/resource/"},
+	}
+	status, err := offline.Provision(context.Background(), dir, nil)
+	if err != nil {
+		t.Fatalf("本地资源完整时应进入离线模式: %v", err)
+	}
+	if !status.Offline || status.Updated {
+		t.Fatalf("离线状态不正确: %+v", status)
+	}
+}
+
+func TestProvisionOfflineWithoutLocalResource(t *testing.T) {
+	offline := &Updater{Nodes: []string{"http://127.0.0.1:1/resource/"}}
+	if _, err := offline.Provision(context.Background(), t.TempDir(), nil); err == nil {
+		t.Fatal("无本地资源且网络不可用时应返回错误")
+	}
+}

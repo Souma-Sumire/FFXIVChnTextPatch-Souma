@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" type="image/png" href="/appicon.png" />
+  <title>FFXIV 汉化器</title>
+</head>
+
+<body>
+  <div id="app" class="app-root">
+
+    <section id="view-provisioning" class="fullscreen-view view-provisioning hidden">
+      <div class="provision-body">
+        <svg class="provision-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        <h1 class="provision-title">正在准备汉化资源</h1>
+        <p id="provision-detail" class="provision-detail">正在连接资源清单与镜像服务器…</p>
+        <div class="progress-track provision-track">
+          <div id="provision-progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="provision-meta" class="provision-meta">首次启动需下载游戏文本与字体资源，完成后自动进入工作台</p>
+      </div>
+    </section>
+
+    <section id="view-workbench" class="fullscreen-view view-workbench">
+      <div class="workbench-body">
+        <main class="workbench-main">
+
+          <section class="form-section">
+            <h2 class="section-title">游戏客户端</h2>
+
+            <div class="form-row">
+              <label class="row-label" for="game-path">游戏目录</label>
+              <div class="row-control path-control">
+                <input id="game-path" class="input input-mono" readonly placeholder="自动探测或手动浏览游戏目录" />
+                <button id="btn-browse" class="btn" type="button" title="手动浏览游戏客户端目录">浏览</button>
+                <button id="btn-detect" class="btn" type="button" title="自动搜索常见盘符与安装位置">自动探测</button>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <span class="row-label">客户端信息</span>
+              <div id="game-info" class="diag-list">
+                <div class="diag-item"><span class="diag-k">状态</span><span class="diag-v">正在读取…</span></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="row-label" for="language">目标区服</label>
+              <div class="row-control">
+                <select id="language" class="select" title="选择游戏客户端区服"></select>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h2 class="section-title">汉化内容</h2>
+
+            <div class="form-row content-items-row">
+              <label class="content-toggle-card" title="替换文本数据">
+                <span class="switch">
+                  <input type="checkbox" id="replace-text" />
+                  <span class="switch-track"></span>
+                </span>
+                <span class="content-toggle-title">文本数据</span>
+              </label>
+
+              <label class="content-toggle-card" title="替换中文字体">
+                <span class="switch">
+                  <input type="checkbox" id="replace-font" />
+                  <span class="switch-track"></span>
+                </span>
+                <span class="content-toggle-title">游戏字体</span>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <span class="row-label">数据表范围</span>
+              <div class="row-control scope-control">
+                <select id="main-preset" class="select scope-select" title="选择汉化数据表范围预设">
+                  <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
+                  <option value="all">全量汉化（全部数据表）</option>
+                  <option value="custom">自定义范围</option>
+                </select>
+                <button id="btn-open-tables" class="btn btn-scope-trigger" type="button" title="查看所有数据表详情及自定义勾选">
+                  <span>查看详情</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h2 class="section-title">扩展功能</h2>
+            <div id="rules" class="rule-list"></div>
+          </section>
+
+        </main>
+
+        <aside id="console-drawer" class="log-pane">
+          <div class="log-head">
+            <div class="log-head-title">
+              <span class="log-title">执行日志</span>
+              <span id="version-badge" class="app-version">v--</span>
+            </div>
+            <button id="btn-clear-log" class="btn btn-quiet btn-xs" type="button">清空</button>
+          </div>
+          <div id="log" class="log-body"></div>
+        </aside>
+      </div>
+
+      <footer class="action-bar">
+        <div class="action-bar-left">
+          <button id="btn-restore" class="btn btn-restore" type="button" title="恢复官方原始未汉化文件">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            <span>还原原版</span>
+          </button>
+        </div>
+
+        <div class="action-bar-center">
+          <span id="busy-indicator" class="action-status-text">准备就绪</span>
+          <div id="action-progress-wrap" class="progress-track action-progress-track hidden">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="action-bar-right">
+          <button id="btn-patch" class="btn btn-primary btn-patch" type="button" title="执行安全校验并向游戏客户端写入汉化文件">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="6 4 20 12 6 20 6 4" />
+            </svg>
+            <span id="btn-patch-text">开始汉化</span>
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <section id="view-tables" class="fullscreen-view view-tables hidden">
+      <header class="app-bar tables-bar">
+        <div class="tables-bar-left">
+          <button id="btn-back-workbench" class="btn btn-quiet back-btn" type="button" title="返回工作台">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            <span>返回</span>
+          </button>
+
+          <div class="search-field">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="20" y1="20" x2="16.65" y2="16.65" />
+            </svg>
+            <input id="search" placeholder="搜索表名或中文名称，如 Item / 道具" aria-label="搜索数据表" />
+          </div>
+
+          <button id="btn-filter-unselected" class="btn filter-toggle" type="button" title="仅显示未勾选的数据表">
+            <span class="filter-dot" aria-hidden="true"></span>
+            <span>仅看未选</span>
+            <span id="count-unselected" class="filter-count">0</span>
+          </button>
+        </div>
+
+        <div class="tables-bar-right">
+          <div class="preset-group">
+            <label class="preset-label" for="preset">预设</label>
+            <select id="preset" class="select preset-select" title="切换汉化数据表范围预设">
+              <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
+              <option value="all">全量汉化（全部数据表）</option>
+              <option value="custom">自定义范围</option>
+            </select>
+          </div>
+
+          <span class="bar-sep" aria-hidden="true"></span>
+
+          <div class="toolbar-actions">
+            <button id="btn-collapse-all" class="btn btn-quiet btn-xs" type="button" title="全部折叠">折叠</button>
+            <button id="btn-expand-all" class="btn btn-quiet btn-xs" type="button" title="全部展开">展开</button>
+            <span class="bar-sep" aria-hidden="true"></span>
+            <button id="btn-select-all" class="btn btn-quiet btn-xs" type="button">全选</button>
+            <button id="btn-select-none" class="btn btn-quiet btn-xs" type="button">清空</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="tables-scroll-viewport">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-sel"><span class="sr-only">选择</span></th>
+              <th class="col-filename">表文件名 / 目录</th>
+              <th class="col-chs">中文名称</th>
+              <th class="col-status">兼容说明</th>
+            </tr>
+          </thead>
+          <tbody id="table-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="modal" class="modal-overlay hidden">
+    <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span id="modal-title">提示</span>
+      </div>
+      <div class="modal-body" id="modal-text"></div>
+      <div class="modal-foot">
+        <button id="modal-cancel" class="btn" type="button">取消</button>
+        <button id="modal-ok" class="btn btn-primary" type="button">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
