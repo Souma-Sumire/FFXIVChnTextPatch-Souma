@@ -3,7 +3,7 @@ name: FFXIV Data Downloader
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *" # 每天 UTC 0 点执行（北京时间早上 8 点）
+    - cron: "17,47 * * * *"
 
 jobs:
   download_files:
@@ -15,33 +15,44 @@ jobs:
     steps:
       - name: Check Remote Version
         id: check
-        uses: WorkingRobot/ffxiv-downloader@v21
+        uses: WorkingRobot/ffxiv-downloader@main
         with:
-          # 用独立目录并跳过 cache，避免改写 exd-data/.cachemeta.json
           output-path: exd-version
-          # 使用不匹配任何文件的正则来仅获取版本号，不下载大文件
           regex: "^$"
           use-cache: false
-
-      - name: Retrieve FFXIV Data Cache
-        uses: actions/cache@v6
-        with:
-          path: exd-data
-          key: ffxiv-exd-data-${{ steps.check.outputs.version }}
-          restore-keys: |
-            ffxiv-exd-data-
 
       - name: Check if already released
         id: release_check
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           echo "Current remote version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "Error: Failed to obtain remote version."
+            exit 1
+          fi
+
+          REQUIRED_FILES=("000000.win32.dat0.zip" "000000.win32.index.zip" "000000.win32.index2.zip" "0a0000.win32.dat0.zip" "0a0000.win32.index.zip" "0a0000.win32.index2.zip" "hashes.json")
+          ALL_EXISTS=true
+
           if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            ASSETS=$(gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" --json assets -q ".assets[].name")
+            for file in "${REQUIRED_FILES[@]}"; do
+              if ! echo "$ASSETS" | grep -qx "$file"; then
+                echo "Release $VERSION 缺少关键附件: $file"
+                ALL_EXISTS=false
+                break
+              fi
+            done
+          else
+            ALL_EXISTS=false
+          fi
+
+          if [ "$ALL_EXISTS" = "true" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Version $VERSION already released. Will skip download."
+            echo "版本 $VERSION 已完整发布全部数据包附件，跳过下载。"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "No release found for version $VERSION."
+            echo "版本 $VERSION 尚未发布或附件不完整，将执行下载并更新 Release。"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -52,12 +63,44 @@ jobs:
       - name: Download EXD Files
         if: steps.release_check.outputs.exists == 'false'
         id: download
-        uses: WorkingRobot/ffxiv-downloader@v21
+        uses: WorkingRobot/ffxiv-downloader@main
         with:
           output-path: exd-data
-          # 固定为刚刚检测到的版本，避免与缓存状态冲突
           version: ${{ steps.check.outputs.version }}
-          regex: '^sqpack\/ffxiv\/0a0000\..+$'
+          regex: '^sqpack\/ffxiv\/0[0a]0000\.win32\.(dat0|index|index2)$'
+          use-cache: false
+
+      - name: Compress backup files and compute hashes
+        if: steps.release_check.outputs.exists == 'false'
+        run: |
+          mkdir -p release-assets
+          python3 -c '
+          import os, glob, zipfile, hashlib, json
+
+          names = [
+              "000000.win32.dat0", "000000.win32.index", "000000.win32.index2",
+              "0a0000.win32.dat0", "0a0000.win32.index", "0a0000.win32.index2"
+          ]
+          hashes = {}
+          for name in names:
+              matches = glob.glob(f"exd-data/**/{name}", recursive=True)
+              if not matches:
+                  print(f"Error: {name} not found in exd-data")
+                  exit(1)
+              src = matches[0]
+              with open(src, "rb") as f:
+                  data = f.read()
+              hashes[name] = hashlib.sha256(data).hexdigest()
+              zip_path = os.path.join("release-assets", f"{name}.zip")
+              with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+                  zf.writestr(name, data)
+              orig_mb = len(data) / 1024 / 1024
+              zip_mb = os.path.getsize(zip_path) / 1024 / 1024
+              print(f"Compressed {name}: {orig_mb:.2f} MB -> {zip_mb:.2f} MB")
+
+          with open(os.path.join("release-assets", "hashes.json"), "w", encoding="utf-8") as f:
+              json.dump(hashes, f, indent=2)
+          '
 
       - name: Create GitHub Release if updated
         if: steps.release_check.outputs.exists == 'false'
@@ -67,9 +110,12 @@ jobs:
         with:
           tag_name: ${{ steps.check.outputs.version }}
           name: 国际服原文件备份 ${{ steps.check.outputs.version }}
-          files: exd-data/**
+          files: |
+            release-assets/*.zip
+            release-assets/hashes.json
           draft: false
           prerelease: false
+          make_latest: false
           generate_release_notes: true
 
       - name: Upload Downloaded Artifact
