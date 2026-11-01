@@ -7,7 +7,7 @@
 ## 使用
 
 1. 开启高分辨率界面，否则会炸游戏。![系统设置](https://github.com/user-attachments/assets/7aa1867e-1151-47aa-85a2-f7694ca8b56b)
-1. 从 [Releases](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases) 下载对应系统的汉化器
+1. 前往 [最新发布页 (Releases)](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/latest) 下载对应系统的汉化器：
    - **Windows**：下载 `FFXIVChnTextPatch-SM-v2.exe`
    - **macOS**：下载 `FFXIVChnTextPatch-SM-v2-macOS.zip`（若提示无法验证开发者，可在终端执行 `xattr -cr FFXIVChnTextPatch-SM-v2.app`）
 
