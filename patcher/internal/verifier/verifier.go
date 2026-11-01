@@ -691,7 +691,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		}
 		downloadFiles := make([]string, 0, len(AllFiles))
 		for _, name := range AllFiles {
-			if _, ok := release.AssetSHA256(name); ok {
+			if _, ok := release.Assets[name]; ok {
 				downloadFiles = append(downloadFiles, name)
 			}
 		}
@@ -717,7 +717,11 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 				return nil, fmt.Errorf("下载 %s 失败: %w", name, err)
 			}
 			got, err := HashFile(backupPath)
-			if err != nil || got.SHA256 != want {
+			if err != nil {
+				_ = os.Remove(backupPath)
+				return nil, fmt.Errorf("计算 %s 哈希失败: %w", name, err)
+			}
+			if want != "" && !strings.EqualFold(got.SHA256, want) {
 				_ = os.Remove(backupPath)
 				return nil, fmt.Errorf("下载 %s 后 SHA256 校验失败", name)
 			}

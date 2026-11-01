@@ -1,10 +1,12 @@
 package verifier
 
 import (
+	"archive/zip"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -579,5 +581,223 @@ func TestRestoreWithCloudDownload(t *testing.T) {
 	}
 	if progressCalls == 0 {
 		t.Fatal("应触发下载进度回调")
+	}
+}
+
+func TestParseExpandedAssets(t *testing.T) {
+	sampleHTML := `<div data-view-component="true" class="Box Box--condensed tmp-mt-3">
+  <ul>
+    <li>
+      <a href="/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/2026.10.16.0000.0000/000000.win32.dat0" rel="nofollow">
+        <span class="text-bold">000000.win32.dat0</span>
+      </a>
+      <span class="Truncate-text">sha256:7bfc4a74d0c8a2e382a1914f2a5d8e03c0a8998fde711aa672eac3eb1ea53a89</span>
+    </li>
+    <li>
+      <a href="/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/2026.10.16.0000.0000/0a0000.win32.dat0" rel="nofollow">
+        <span class="text-bold">0a0000.win32.dat0</span>
+      </a>
+      <clipboard-copy value="sha256:c4b8fa2053b8425b329e33a5d31098248096e69c57b772e7f1fdac5934594f6c"></clipboard-copy>
+    </li>
+  </ul>
+</div>`
+
+	rel, err := parseExpandedAssets(sampleHTML, "2026.10.16.0000.0000")
+	if err != nil {
+		t.Fatalf("parseExpandedAssets 失败: %v", err)
+	}
+	if len(rel.Assets) != 2 {
+		t.Fatalf("应解析 2 个资产，实际解析 %d 个", len(rel.Assets))
+	}
+	f0 := rel.Assets["000000.win32.dat0"]
+	if f0.DownloadURL != "https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/2026.10.16.0000.0000/000000.win32.dat0" {
+		t.Fatalf("f0 download URL 错误: %s", f0.DownloadURL)
+	}
+	hash0, ok := rel.AssetSHA256("000000.win32.dat0")
+	if !ok || hash0 != "7bfc4a74d0c8a2e382a1914f2a5d8e03c0a8998fde711aa672eac3eb1ea53a89" {
+		t.Fatalf("f0 sha256 错误: %s (ok=%v)", hash0, ok)
+	}
+	hashA, ok := rel.AssetSHA256("0a0000.win32.dat0")
+	if !ok || hashA != "c4b8fa2053b8425b329e33a5d31098248096e69c57b772e7f1fdac5934594f6c" {
+		t.Fatalf("fA sha256 错误: %s (ok=%v)", hashA, ok)
+	}
+}
+
+func TestLiveFallbackWhenRateLimited(t *testing.T) {
+	client := NewGitHubClient()
+	rel, err := client.ReleaseByTag(context.Background(), "Souma-Sumire/FFXIVChnTextPatch-Souma", "2026.10.16.0000.0000")
+	if err != nil {
+		t.Fatalf("ReleaseByTag 失败: %v", err)
+	}
+	t.Logf("Tag: %s, Total assets found: %d", rel.Tag, len(rel.Assets))
+	for _, name := range AllFiles {
+		asset, ok := rel.Assets[name]
+		if !ok {
+			t.Errorf("缺少资产: %s", name)
+			continue
+		}
+		hash, hasHash := rel.AssetSHA256(name)
+		t.Logf("Asset %s: url=%s sha256=%s (hasHash=%v)", name, asset.DownloadURL, hash, hasHash)
+	}
+}
+
+func TestCandidateURLs(t *testing.T) {
+	client := NewGitHubClient()
+	const raw = "https://github.com/foo/bar/releases/download/v1.0/test.dat"
+	cands := client.candidateURLs(raw)
+	expectedCount := len(DefaultAssetMirrors()) + 1
+	if len(cands) != expectedCount {
+		t.Fatalf("候选数量期望 %d，实际 %d", expectedCount, len(cands))
+	}
+	if cands[0].mirror != "https://gh-proxy.com/" {
+		t.Errorf("首选镜像期望 gh-proxy.com，实际 %s", cands[0].mirror)
+	}
+	if cands[len(cands)-1].mirror != "direct" || cands[len(cands)-1].url != raw {
+		t.Errorf("末尾期望 direct 原链接，实际 %v", cands[len(cands)-1])
+	}
+
+	// 设置 preferredNode
+	client.SetPreferredNode("https://wget.la/")
+	cands2 := client.candidateURLs(raw)
+	if cands2[0].mirror != "https://wget.la/" {
+		t.Errorf("设置优先节点后首选期望 wget.la，实际 %s", cands2[0].mirror)
+	}
+}
+
+func TestParseRecentReleasesHTML(t *testing.T) {
+	html := `
+		<div><a href="/owner/repo/releases/tag/2026.10.16.0000.0000">v1</a></div>
+		<div><a href="/owner/repo/releases/tag/2026.10.15.0000.0000">v2</a></div>
+		<div><a href="/owner/repo/releases/tag/2026.10.16.0000.0000">dup</a></div>
+	`
+	rels := parseRecentReleasesHTML(html, 5)
+	if len(rels) != 2 {
+		t.Fatalf("解析 Release 数量期望 2，实际 %d", len(rels))
+	}
+	if rels[0].Tag != "2026.10.16.0000.0000" || rels[1].Tag != "2026.10.15.0000.0000" {
+		t.Errorf("解析结果异常: %+v", rels)
+	}
+}
+
+type roundTripFunc func(req *http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestDownloadWithCandidateFallback(t *testing.T) {
+	dir := t.TempDir()
+	dst := filepath.Join(dir, "out.bin")
+
+	attempted := make([]string, 0)
+	client := &GitHubClient{
+		APIBase:      "https://api.github.com",
+		AssetMirrors: []string{"https://mirror1.local/", "https://mirror2.local/"},
+		HTTP: &http.Client{
+			Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				attempted = append(attempted, req.URL.String())
+				if strings.Contains(req.URL.String(), "mirror1.local") {
+					// 模拟节点 1 失败
+					return &http.Response{
+						StatusCode: http.StatusBadGateway,
+						Body:       io.NopCloser(strings.NewReader("bad gateway")),
+						Header:     make(http.Header),
+					}, nil
+				}
+				// 节点 2 成功返回
+				content := "hello-world"
+				return &http.Response{
+					StatusCode:    http.StatusOK,
+					Body:          io.NopCloser(strings.NewReader(content)),
+					ContentLength: int64(len(content)),
+					Header:        make(http.Header),
+				}, nil
+			}),
+		},
+	}
+
+	err := client.Download(context.Background(), "https://github.com/foo/bar/releases/download/v1/test.bin", dst, nil)
+	if err != nil {
+		t.Fatalf("Download 失败: %v", err)
+	}
+	data, _ := os.ReadFile(dst)
+	if string(data) != "hello-world" {
+		t.Errorf("下载内容不符: %s", string(data))
+	}
+	if len(attempted) != 2 {
+		t.Errorf("尝试次数期望 2，实际 %d: %v", len(attempted), attempted)
+	}
+	if client.preferred() != "https://mirror2.local/" {
+		t.Errorf("优选节点未更新为成功节点，当前: %s", client.preferred())
+	}
+}
+
+func TestZipArchiveAutoExtractionAndAlias(t *testing.T) {
+	dir := t.TempDir()
+	rawContent := "sqpack-raw-data-sample-content"
+	expectedHash := "7b2d5f06126b4850fa104f69ad9d4439c7dc2e0e02ebf9149725f0a0d6e1564f"
+
+	// 制作一个包含 000000.win32.dat0 的 zip 内存字节
+	var zipBuf strings.Builder
+	zw := zip.NewWriter(&zipBuf)
+	f, err := zw.Create("000000.win32.dat0")
+	if err != nil {
+		t.Fatalf("创建 zip 内文件失败: %v", err)
+	}
+	if _, err := f.Write([]byte(rawContent)); err != nil {
+		t.Fatalf("写入 zip 失败: %v", err)
+	}
+	_ = zw.Close()
+	zipBytes := []byte(zipBuf.String())
+
+	client := &GitHubClient{
+		AssetMirrors: nil, // 仅走 direct
+		HTTP: &http.Client{
+			Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode:    http.StatusOK,
+					Body:          io.NopCloser(strings.NewReader(string(zipBytes))),
+					ContentLength: int64(len(zipBytes)),
+					Header:        make(http.Header),
+				}, nil
+			}),
+		},
+	}
+
+	dstFile := filepath.Join(dir, "000000.win32.dat0")
+	if err := client.Download(context.Background(), "https://github.com/foo/bar/releases/download/v1/000000.win32.dat0.zip", dstFile, nil); err != nil {
+		t.Fatalf("Download zip 自动解压失败: %v", err)
+	}
+
+	unzippedData, err := os.ReadFile(dstFile)
+	if err != nil {
+		t.Fatalf("读取解压后文件失败: %v", err)
+	}
+	if string(unzippedData) != rawContent {
+		t.Errorf("解压后文件内容不符: %s", string(unzippedData))
+	}
+
+	// 验证 linkZipAliases 与 FileHashes
+	rel := &Release{
+		Tag: "v1.0",
+		Assets: map[string]ReleaseAsset{
+			"000000.win32.dat0.zip": {
+				Name:        "000000.win32.dat0.zip",
+				DownloadURL: "https://example.com/000000.win32.dat0.zip",
+			},
+		},
+		FileHashes: map[string]string{
+			"000000.win32.dat0": expectedHash,
+		},
+	}
+	rel.linkZipAliases()
+
+	asset, ok := rel.Assets["000000.win32.dat0"]
+	if !ok || asset.DownloadURL != "https://example.com/000000.win32.dat0.zip" {
+		t.Errorf("未能通过原文件名别名索引到 zip 资产: %+v", asset)
+	}
+	hash, hasHash := rel.AssetSHA256("000000.win32.dat0")
+	if !hasHash || hash != expectedHash {
+		t.Errorf("AssetSHA256 未能正确获取 FileHashes: %s (hasHash=%v)", hash, hasHash)
 	}
 }
