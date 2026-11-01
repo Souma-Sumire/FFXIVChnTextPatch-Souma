@@ -41,7 +41,7 @@
               </h2>
               <div class="section-header-action">
                 <label class="header-action-label" for="language">目标区服</label>
-                <select id="language" class="select header-select" title="选择游戏客户端区服"></select>
+                <select id="language" class="select header-select"></select>
               </div>
             </div>
 
@@ -49,8 +49,8 @@
               <label class="row-label" for="game-path">游戏目录</label>
               <div class="row-control path-control">
                 <input id="game-path" class="input input-mono" readonly placeholder="自动探测或手动浏览游戏目录" />
-                <button id="btn-browse" class="btn" type="button" title="手动浏览游戏客户端目录">浏览</button>
-                <button id="btn-detect" class="btn" type="button" title="自动搜索常见盘符与安装位置">自动探测</button>
+                <button id="btn-browse" class="btn" type="button">浏览</button>
+                <button id="btn-detect" class="btn" type="button">自动探测</button>
               </div>
             </div>
 
@@ -69,7 +69,7 @@
             </h2>
 
             <div class="form-row content-text-row">
-              <label class="toggle-control-label" for="replace-text" title="替换文本数据">
+              <label class="toggle-control-label" for="replace-text">
                 <span class="switch">
                   <input type="checkbox" id="replace-text" />
                   <span class="switch-track"></span>
@@ -78,12 +78,12 @@
               </label>
 
               <div class="row-control scope-control">
-                <select id="main-preset" class="select scope-select" title="选择汉化数据表范围预设">
+                <select id="main-preset" class="select scope-select">
                   <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
                   <option value="all">全量汉化（全部数据表）</option>
                   <option value="custom">自定义范围</option>
                 </select>
-                <button id="btn-open-tables" class="btn btn-scope-trigger" type="button" title="查看所有数据表详情及自定义勾选">
+                <button id="btn-open-tables" class="btn btn-scope-trigger" type="button">
                   <span>查看详情</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -91,10 +91,15 @@
                   </svg>
                 </button>
               </div>
+
+              <div id="resource-build-meta" class="row-meta">
+                <span class="row-meta-label">词条构建时间</span>
+                <span id="resource-build-time" class="meta-tag">--</span>
+              </div>
             </div>
 
             <div class="form-row content-font-row">
-              <label class="toggle-control-label" for="replace-font" title="替换为高清中文字体，解决官方原版字体无中文字符问题">
+              <label class="toggle-control-label" for="replace-font">
                 <span class="switch">
                   <input type="checkbox" id="replace-font" />
                   <span class="switch-track"></span>
@@ -116,6 +121,7 @@
         </main>
 
         <aside id="log-pane" class="log-pane">
+          <div id="log-resizer" class="log-resizer" title="拖动调整高度"></div>
           <div class="log-head">
             <div class="log-head-left">
               <span class="log-title">执行日志</span>
@@ -129,13 +135,17 @@
               </div>
             </div>
             <div class="log-head-right">
-              <button id="btn-copy-log" class="btn btn-quiet btn-xs" type="button" title="复制所有日志到剪贴板">
+              <button id="btn-copy-log" class="btn btn-quiet btn-xs" type="button">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                 <span id="btn-copy-log-text">复制</span>
               </button>
-              <button id="btn-clear-log" class="btn btn-quiet btn-xs" type="button" title="清空日志">
+              <button id="btn-clear-log" class="btn btn-quiet btn-xs" type="button">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 <span>清空</span>
+              </button>
+              <button id="btn-toggle-log" class="btn btn-quiet btn-xs" type="button">
+                <svg id="icon-toggle-log" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                <span id="btn-toggle-log-text">折叠</span>
               </button>
             </div>
           </div>
@@ -145,7 +155,7 @@
 
       <footer class="action-bar">
         <div class="action-bar-left">
-          <button id="btn-restore" class="btn btn-restore" type="button" title="恢复官方原始未汉化文件">
+          <button id="btn-restore" class="btn btn-restore" type="button">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -156,14 +166,17 @@
         </div>
 
         <div class="action-bar-center">
-          <span id="busy-indicator" class="action-status-text">准备就绪</span>
+          <div class="action-status-row">
+            <span id="busy-indicator" class="action-status-text">准备就绪</span>
+            <span id="action-progress-percent" class="action-progress-percent hidden">0%</span>
+          </div>
           <div id="action-progress-wrap" class="progress-track action-progress-track hidden">
             <div id="progress-bar" class="progress-bar"></div>
           </div>
         </div>
 
         <div class="action-bar-right">
-          <button id="btn-patch" class="btn btn-primary btn-patch" type="button" title="执行安全校验并向游戏客户端写入汉化文件">
+          <button id="btn-patch" class="btn btn-primary btn-patch" type="button">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <polygon points="6 4 20 12 6 20 6 4" />
             </svg>
@@ -176,7 +189,7 @@
     <section id="view-tables" class="fullscreen-view view-tables hidden">
       <header class="app-bar tables-bar">
         <div class="tables-bar-left">
-          <button id="btn-back-workbench" class="btn btn-quiet back-btn" type="button" title="返回工作台">
+          <button id="btn-back-workbench" class="btn btn-quiet back-btn" type="button">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="15 18 9 12 15 6" />
@@ -193,7 +206,7 @@
             <input id="search" placeholder="搜索表名或中文名称，如 Item / 道具" aria-label="搜索数据表" />
           </div>
 
-          <button id="btn-filter-unselected" class="btn filter-toggle" type="button" title="仅显示未勾选的数据表">
+          <button id="btn-filter-unselected" class="btn filter-toggle" type="button">
             <span class="filter-dot" aria-hidden="true"></span>
             <span>仅看未选</span>
             <span id="count-unselected" class="filter-count">0</span>
@@ -203,7 +216,7 @@
         <div class="tables-bar-right">
           <div class="preset-group">
             <label class="preset-label" for="preset">预设</label>
-            <select id="preset" class="select preset-select" title="切换汉化数据表范围预设">
+            <select id="preset" class="select preset-select">
               <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
               <option value="all">全量汉化（全部数据表）</option>
               <option value="custom">自定义范围</option>
@@ -213,8 +226,8 @@
           <span class="bar-sep" aria-hidden="true"></span>
 
           <div class="toolbar-actions">
-            <button id="btn-collapse-all" class="btn btn-quiet btn-xs" type="button" title="全部折叠">折叠</button>
-            <button id="btn-expand-all" class="btn btn-quiet btn-xs" type="button" title="全部展开">展开</button>
+            <button id="btn-collapse-all" class="btn btn-quiet btn-xs" type="button">折叠</button>
+            <button id="btn-expand-all" class="btn btn-quiet btn-xs" type="button">展开</button>
             <span class="bar-sep" aria-hidden="true"></span>
             <button id="btn-select-all" class="btn btn-quiet btn-xs" type="button">全选</button>
             <button id="btn-select-none" class="btn btn-quiet btn-xs" type="button">清空</button>

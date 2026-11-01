@@ -467,25 +467,25 @@ svg {
 }
 
 .workbench-main {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  padding: 14px 28px;
+  padding: 10px 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   box-sizing: border-box;
   overflow-y: auto;
 }
 
 .form-section {
-  max-width: 980px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.012) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-lg);
-  padding: 12px 20px 8px;
+  padding: 10px 18px 6px;
   box-sizing: border-box;
 }
 
@@ -493,8 +493,8 @@ svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
-  min-height: 28px;
+  margin-bottom: 2px;
+  min-height: 26px;
 }
 
 .section-header .section-title {
@@ -530,9 +530,22 @@ svg {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+.meta-tag {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.2px;
+  user-select: text;
+}
+
 .section-title {
-  margin-bottom: 4px;
-  font-size: 13.5px;
+  margin-bottom: 2px;
+  font-size: 13px;
   font-weight: 600;
   color: #f8fafc;
   display: flex;
@@ -548,8 +561,8 @@ svg {
 }
 
 .form-row {
-  min-height: 42px;
-  padding: 4px 0;
+  min-height: 38px;
+  padding: 2px 0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -604,16 +617,16 @@ svg {
   flex: 1;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 10px;
 }
 
 .diag-item {
   min-width: 0;
-  padding: 7px 14px;
+  padding: 6px 12px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   background-color: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
@@ -747,6 +760,26 @@ svg {
   pointer-events: none;
 }
 
+.row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+
+.row-meta.disabled {
+  opacity: 0.45;
+}
+
+.row-meta-label {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
 .scope-select {
   flex: 1;
   min-width: 220px;
@@ -793,15 +826,15 @@ svg {
 .rule-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 16px;
-  padding: 4px 0 6px;
+  gap: 6px 12px;
+  padding: 2px 0 4px;
 }
 
 .rule-row {
   cursor: pointer;
   border-bottom: none !important;
   min-height: unset !important;
-  padding: 9px 14px !important;
+  padding: 6px 12px !important;
   background-color: rgba(255, 255, 255, 0.025);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -847,13 +880,74 @@ svg {
 /* ---------- 底部常驻执行日志面板 ---------- */
 
 .log-pane {
-  height: 140px;
-  flex-shrink: 0;
+  position: relative;
+  flex: 0 0 160px;
+  height: 160px;
+  min-height: 34px;
   display: flex;
   flex-direction: column;
   background-color: var(--bg-sunken);
   border-top: 1px solid var(--line);
-  overflow: hidden;
+  overflow: visible;
+  transition: height 0.22s var(--ease), flex-basis 0.22s var(--ease);
+}
+
+.log-pane.is-resizing {
+  transition: none !important;
+}
+
+.log-resizer {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: row-resize;
+  z-index: 20;
+  touch-action: none;
+}
+
+.log-resizer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 3px;
+  height: 2px;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.log-resizer:hover::before,
+.log-pane.is-resizing .log-resizer::before {
+  background-color: var(--accent);
+}
+
+body.is-resizing-log,
+body.is-resizing-log * {
+  cursor: row-resize !important;
+  user-select: none !important;
+}
+
+.log-pane.collapsed {
+  flex: 0 0 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+}
+
+.log-pane.collapsed .log-body,
+.log-pane.collapsed .log-filters,
+.log-pane.collapsed #btn-copy-log,
+.log-pane.collapsed #btn-clear-log {
+  display: none !important;
+}
+
+.log-pane.collapsed .log-head {
+  cursor: pointer;
+}
+
+.log-pane.collapsed #icon-toggle-log {
+  transform: rotate(180deg);
 }
 
 .log-head {
@@ -946,11 +1040,14 @@ svg {
 
 .log-line {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 1.5px 0;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
   white-space: pre-wrap;
   word-break: break-all;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  line-height: 20px;
 }
 
 .log-line.filter-hidden {
@@ -959,63 +1056,63 @@ svg {
 
 .log-line .time {
   color: var(--text-3);
-  opacity: 0.75;
+  font-size: 11.5px;
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
+  user-select: none;
 }
 
 .log-tag {
-  display: inline-block;
-  padding: 0 5px;
-  font-size: 10px;
-  line-height: 16px;
-  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 18px;
+  padding: 0 6px;
+  font-size: 10.5px;
   font-weight: 500;
+  border-radius: 3px;
   flex-shrink: 0;
-  background-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-2);
+  user-select: none;
+  box-sizing: border-box;
 }
 
-.log-tag.tag-update,
-.log-tag.tag-res {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+.log-tag.tag-primary {
+  background-color: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.22);
 }
 
 .log-tag.tag-ok {
-  background-color: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.22);
 }
 
 .log-tag.tag-warn {
-  background-color: rgba(234, 179, 8, 0.15);
-  color: #facc15;
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.22);
 }
 
 .log-tag.tag-err {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.14);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.24);
 }
 
 .log-text {
   flex: 1;
   min-width: 0;
-}
-
-.log-line.ok .log-text {
-  color: var(--ok);
-}
-
-.log-line.warn .log-text {
-  color: var(--warn);
+  color: #d1d5db;
 }
 
 .log-line.error .log-text {
-  color: var(--err);
+  color: #fca5a5;
 }
 
-.log-line.patched .log-text {
-  color: var(--status-patched);
+.log-line.warn .log-text {
+  color: #fde68a;
 }
 
 /* ---------- 底部操作栏 ---------- */
@@ -1041,12 +1138,39 @@ svg {
 .action-bar-center {
   flex: 1;
   min-width: 0;
-  max-width: 480px;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
+}
+
+.action-status-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.action-status-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-2);
+  letter-spacing: 0.2px;
+}
+
+.action-progress-percent {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 600;
+  color: #60a5fa;
+  letter-spacing: 0.3px;
 }
 
 .action-bar-right {
@@ -1057,8 +1181,38 @@ svg {
 
 .action-progress-track {
   width: 100%;
-  max-width: 320px;
-  height: 3px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.09);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+.action-progress-track .progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+  transition: width 0.15s ease-out;
+  position: relative;
+}
+
+.action-progress-track .progress-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%);
+  animation: progress-shimmer 2s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes progress-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .btn-restore {

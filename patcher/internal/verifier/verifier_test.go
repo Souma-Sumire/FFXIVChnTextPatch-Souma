@@ -15,6 +15,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 )
@@ -973,4 +974,86 @@ func TestFontConfirmRuleOnlyChinaSkips(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestNoRedundantBackupWhenAlreadyBackedUp 验证当前版本已有备份时汉化不会进行无意义的重复备份。
+func TestNoRedundantBackupWhenAlreadyBackedUp(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	files := allContents("original-data", AllFiles)
+
+	t.Run("原版客户端且已有备份不重复写备份", func(t *testing.T) {
+		env := newTestEnv(t, version, files)
+		env.seedBackup(t, region.GLOBAL, version, files)
+		backupDir := filepath.Join(env.backupRoot, "global")
+
+		modTimes := map[string]time.Time{}
+		for _, name := range AllFiles {
+			fi, err := os.Stat(filepath.Join(backupDir, name))
+			if err != nil {
+				t.Fatalf("读取备份文件失败: %v", err)
+			}
+			modTimes[name] = fi.ModTime()
+		}
+
+		time.Sleep(15 * time.Millisecond)
+
+		cfg := baseConfig(env, region.GLOBAL)
+		cfg.ReplaceText = true
+		cfg.ReplaceFont = true
+		cfg.ApplyText = func(ctx context.Context) error { return nil }
+		cfg.ApplyFont = func(ctx context.Context) error { return nil }
+
+		_, err := Run(context.Background(), cfg)
+		if err != nil {
+			t.Fatalf("Run 失败: %v", err)
+		}
+
+		for _, name := range AllFiles {
+			fi, err := os.Stat(filepath.Join(backupDir, name))
+			if err != nil {
+				t.Fatalf("读取备份文件失败: %v", err)
+			}
+			if !fi.ModTime().Equal(modTimes[name]) {
+				t.Errorf("文件 %s 被重复覆盖写入了", name)
+			}
+		}
+	})
+
+	t.Run("已汉化客户端二次汉化直接从现有备份还原不产生新备份", func(t *testing.T) {
+		patchedGame := allContents("patched-content", AllFiles)
+		env := newTestEnv(t, version, patchedGame)
+		env.seedBackup(t, region.GLOBAL, version, files)
+		backupDir := filepath.Join(env.backupRoot, "global")
+
+		metaBefore, err := readBackupMeta(backupDir)
+		if err != nil {
+			t.Fatalf("读取 meta 失败: %v", err)
+		}
+
+		cfg := baseConfig(env, region.GLOBAL)
+		cfg.ReplaceText = true
+		cfg.ReplaceFont = true
+		cfg.ApplyText = func(ctx context.Context) error { return nil }
+		cfg.ApplyFont = func(ctx context.Context) error { return nil }
+
+		res, err := Run(context.Background(), cfg)
+		if err != nil {
+			t.Fatalf("Run 失败: %v", err)
+		}
+
+		if res.Plan.Text.Action != ActionRestore || res.Plan.Font.Action != ActionRestore {
+			t.Fatalf("应为 ActionRestore，实际 Text=%s Font=%s", res.Plan.Text.Action, res.Plan.Font.Action)
+		}
+
+		metaAfter, err := readBackupMeta(backupDir)
+		if err != nil {
+			t.Fatalf("读取 meta 失败: %v", err)
+		}
+
+		for _, name := range AllFiles {
+			if metaBefore.Files[name].SHA256 != metaAfter.Files[name].SHA256 {
+				t.Fatalf("备份中的文件 %s 哈希被意外修改", name)
+			}
+		}
+	})
 }

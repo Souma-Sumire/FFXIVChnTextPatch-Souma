@@ -25,6 +25,7 @@ type ResourceStatus struct {
 	FontHash        string `json:"fontHash,omitempty"`
 	CSVUpdated      bool   `json:"csvUpdated,omitempty"`
 	FontUpdated     bool   `json:"fontUpdated,omitempty"`
+	GeneratedAt     string `json:"generatedAt,omitempty"`
 }
 
 // ProgressFunc 接收资源下载进度。
@@ -49,6 +50,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 			if local, _ := ReadLocalManifest(resourceDir); local != nil {
 				st.CSVHash = local.RawEXD.SHA256
 				st.FontHash = local.Font.SHA256
+				st.GeneratedAt = local.GeneratedAt
 			}
 			return st, nil
 		}
@@ -57,6 +59,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 
 	st.CSVHash = remote.RawEXD.SHA256
 	st.FontHash = remote.Font.SHA256
+	st.GeneratedAt = remote.GeneratedAt
 
 	local, _ := ReadLocalManifest(resourceDir)
 	if modulesComplete(resourceDir, local, remote) {

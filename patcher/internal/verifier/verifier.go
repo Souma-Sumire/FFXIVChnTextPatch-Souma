@@ -142,6 +142,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		return nil, err
 	}
 	result.Plan.GameVersion = version
+	cfg.log("[校验] 正在校验游戏客户端与备份完整性 (版本: %s)...", version)
 
 	gameHashes, err := hashAll(sqpackDir, AllFiles)
 	if err != nil {
@@ -387,6 +388,7 @@ func executeText(ctx context.Context, cfg Config, result *Result, reg region.Reg
 	cfg.event("text", "正在准备文本原文件")
 	switch plan.Action {
 	case ActionPatch:
+		cfg.log("[文本] 正在建立文本官方原版备份...")
 		if reg == region.Global && cloudState == CloudMatched {
 			if err := ensureBackupFromGame(cfg, backupDir, sqpackDir, version, meta, TextFiles, gameHashes); err != nil {
 				return err
@@ -401,11 +403,13 @@ func executeText(ctx context.Context, cfg Config, result *Result, reg region.Reg
 			}
 		}
 	case ActionRestore:
+		cfg.log("[文本] 正在从本地备份还原官方原版文本...")
 		if err := restoreFromBackup(backupDir, sqpackDir, TextFiles); err != nil {
 			return fmt.Errorf("从本地备份还原文本原文件失败: %w", err)
 		}
 		result.RestoredText = true
 	case ActionDownload:
+		cfg.log("[文本] 正在从云端拉取官方原版文本数据包...")
 		downloaded, err := ensureBackupForRelease(ctx, cfg, result, backupDir, sqpackDir, version, meta, TextFiles, gameHashes, release)
 		if err != nil {
 			return err
@@ -439,6 +443,7 @@ func executeFont(ctx context.Context, cfg Config, result *Result, reg region.Reg
 	cfg.event("font", "正在准备字体原文件")
 	switch plan.Action {
 	case ActionPatch:
+		cfg.log("[字体] 正在建立字体官方原版备份...")
 		if reg == region.Global && cloudState == CloudMatched {
 			if err := ensureBackupFromGame(cfg, backupDir, sqpackDir, version, meta, FontFiles, gameHashes); err != nil {
 				return err
@@ -453,11 +458,13 @@ func executeFont(ctx context.Context, cfg Config, result *Result, reg region.Reg
 			}
 		}
 	case ActionRestore:
+		cfg.log("[字体] 正在从本地备份还原官方原版字体...")
 		if err := restoreFromBackup(backupDir, sqpackDir, FontFiles); err != nil {
 			return fmt.Errorf("从本地备份还原字体原文件失败: %w", err)
 		}
 		result.RestoredFont = true
 	case ActionDownload:
+		cfg.log("[字体] 正在从云端拉取官方原版字体数据包...")
 		downloaded, err := ensureBackupForRelease(ctx, cfg, result, backupDir, sqpackDir, version, meta, FontFiles, gameHashes, release)
 		if err != nil {
 			return err
@@ -512,6 +519,10 @@ func backupFromGameOverwrite(cfg Config, backupDir, sqpackDir, version string, m
 	for _, name := range files {
 		gh, ok := gameHashes[name]
 		if !ok || gh.SHA256 == "" {
+			continue
+		}
+		if bh, err := HashFile(filepath.Join(backupDir, name)); err == nil && bh.SHA256 == gh.SHA256 {
+			meta.Files[name] = bh
 			continue
 		}
 		if err := copyFile(filepath.Join(sqpackDir, name), filepath.Join(backupDir, name)); err != nil {

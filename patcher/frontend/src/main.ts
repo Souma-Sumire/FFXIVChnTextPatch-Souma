@@ -41,6 +41,8 @@ interface BootstrapInfo {
   folders: Record<string, string>;
   tableList: TableEntry[];
   excluded?: string[];
+  resourceTime?: string;
+  resourceHash?: string;
 }
 
 interface FileStatus {
@@ -57,6 +59,8 @@ interface GameInfo {
   backupVersion: string;
   backupExists: boolean;
   region: string;
+  resourceTime?: string;
+  resourceHash?: string;
 }
 
 interface PatchRequest {
@@ -230,6 +234,8 @@ const el = {
   btnDetect: byId<HTMLButtonElement>("btn-detect"),
   replaceText: byId<HTMLInputElement>("replace-text"),
   replaceFont: byId<HTMLInputElement>("replace-font"),
+  resourceBuildMeta: byId("resource-build-meta"),
+  resourceBuildTime: byId("resource-build-time"),
   rules: byId("rules"),
 
   btnOpenTables: byId<HTMLButtonElement>("btn-open-tables"),
@@ -241,8 +247,13 @@ const el = {
 
   progressBar: byId("progress-bar"),
   actionProgressWrap: byId("action-progress-wrap"),
+  actionProgressPercent: byId("action-progress-percent"),
   busyIndicator: byId("busy-indicator"),
+  workbenchBody: document.querySelector<HTMLElement>(".workbench-body")!,
   logPane: byId("log-pane"),
+  logResizer: byId("log-resizer"),
+  btnToggleLog: byId<HTMLButtonElement>("btn-toggle-log"),
+  btnToggleLogText: byId<HTMLElement>("btn-toggle-log-text"),
   filterLogAll: byId<HTMLButtonElement>("filter-log-all"),
   filterLogNormal: byId<HTMLButtonElement>("filter-log-normal"),
   filterLogError: byId<HTMLButtonElement>("filter-log-error"),
@@ -287,30 +298,34 @@ function parseLogKind(message: string, explicitKind?: "info" | "ok" | "warn" | "
   if (message.includes("警告") || message.includes("注意") || message.includes("跳过")) {
     return "warn";
   }
-  if (message.includes("成功") || message.includes("已是最新") || message.includes("已还原") || message.includes("已更新")) {
+  if (message.includes("成功") || message.includes("已是最新") || message.includes("已还原") || message.includes("已更新") || message.includes("[完成]")) {
     return "ok";
   }
   return "info";
 }
 
-function parseLogTag(message: string): { tag: string; cleanMessage: string } {
+function parseLogTag(message: string, fallbackKind: string): { tag: string; cleanMessage: string } {
   const match = /^\[([^\]]+)\]\s*(.*)$/.exec(message);
   if (match) {
     return { tag: match[1], cleanMessage: match[2] };
   }
-  return { tag: "", cleanMessage: message };
+  let defaultTag = "信息";
+  if (fallbackKind === "error") defaultTag = "错误";
+  else if (fallbackKind === "warn") defaultTag = "警告";
+  else if (fallbackKind === "ok") defaultTag = "提示";
+  return { tag: defaultTag, cleanMessage: message };
 }
 
 function log(message: string, kind?: "info" | "ok" | "warn" | "error" | "patched"): void {
-  const { tag, cleanMessage } = parseLogTag(message);
   const actualKind = parseLogKind(message, kind);
+  const { tag, cleanMessage } = parseLogTag(message, actualKind);
   const timeStr = new Date().toLocaleTimeString("zh-CN", { hour12: false });
 
   const entry: LogEntry = {
     id: nextLogId++,
     time: timeStr,
     level: actualKind,
-    tag: tag || undefined,
+    tag: tag,
     message: cleanMessage,
   };
   logEntries.push(entry);
@@ -340,17 +355,19 @@ function log(message: string, kind?: "info" | "ok" | "warn" | "error" | "patched
   timeEl.textContent = timeStr;
   line.append(timeEl);
 
-  if (tag) {
-    const tagEl = document.createElement("span");
-    tagEl.className = "log-tag";
-    if (tag.includes("更新")) tagEl.classList.add("tag-update");
-    else if (tag.includes("资源")) tagEl.classList.add("tag-res");
-    else if (tag.includes("错误") || tag.includes("失败")) tagEl.classList.add("tag-err");
-    else if (tag.includes("提示") || tag.includes("警告")) tagEl.classList.add("tag-warn");
-    else if (tag.includes("补丁") || tag.includes("完成")) tagEl.classList.add("tag-ok");
-    tagEl.textContent = tag;
-    line.append(tagEl);
+  const tagEl = document.createElement("span");
+  tagEl.className = "log-tag";
+  if (tag.includes("错误") || tag.includes("失败") || actualKind === "error") {
+    tagEl.classList.add("tag-err");
+  } else if (tag.includes("警告") || tag.includes("注意") || actualKind === "warn") {
+    tagEl.classList.add("tag-warn");
+  } else if (tag.includes("完成") || tag.includes("成功")) {
+    tagEl.classList.add("tag-ok");
+  } else {
+    tagEl.classList.add("tag-primary");
   }
+  tagEl.textContent = tag;
+  line.append(tagEl);
 
   const textEl = document.createElement("span");
   textEl.className = "log-text";
@@ -405,8 +422,146 @@ async function copyLogs(): Promise<void> {
   }
 }
 
-function toggleConsole(_open?: boolean): void {
-  el.log.scrollTop = el.log.scrollHeight;
+const STORAGE_KEY_LOG_HEIGHT = "ffxiv_patcher_log_height";
+const DEFAULT_LOG_HEIGHT = 160;
+const MIN_LOG_HEIGHT = 70;
+const COLLAPSE_THRESHOLD = 50;
+
+let currentLogHeight = DEFAULT_LOG_HEIGHT;
+
+function getMaxLogHeight(): number {
+  const bodyHeight = el.workbenchBody?.clientHeight || 0;
+  return bodyHeight > 220 ? Math.floor(bodyHeight - 120) : 600;
+}
+
+function applyLogHeight(height: number, save = false): void {
+  const max = getMaxLogHeight();
+  const clamped = Math.min(Math.max(height, MIN_LOG_HEIGHT), max);
+  currentLogHeight = clamped;
+  el.logPane.style.height = `${clamped}px`;
+  el.logPane.style.flexBasis = `${clamped}px`;
+  if (save) {
+    try {
+      localStorage.setItem(STORAGE_KEY_LOG_HEIGHT, String(clamped));
+    } catch {
+      // 存储写入兼容防御
+    }
+  }
+}
+
+function initLogResizer(): void {
+  const resizer = el.logResizer;
+  if (!resizer) {
+    return;
+  }
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_LOG_HEIGHT);
+    if (saved) {
+      const parsed = parseInt(saved, 10);
+      if (!Number.isNaN(parsed) && parsed >= MIN_LOG_HEIGHT) {
+        applyLogHeight(parsed, false);
+      }
+    }
+  } catch {
+    // 存储读取兼容防御
+  }
+
+  let isDragging = false;
+
+  const onPointerDown = (e: PointerEvent) => {
+    if (e.button !== 0) {
+      return;
+    }
+    isDragging = true;
+    resizer.setPointerCapture(e.pointerId);
+    document.body.classList.add("is-resizing-log");
+    el.logPane.classList.add("is-resizing");
+    e.preventDefault();
+  };
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (!isDragging) {
+      return;
+    }
+    const containerRect = el.workbenchBody?.getBoundingClientRect();
+    if (!containerRect) {
+      return;
+    }
+    const targetHeight = Math.round(containerRect.bottom - e.clientY);
+
+    if (targetHeight < COLLAPSE_THRESHOLD) {
+      if (!el.logPane.classList.contains("collapsed")) {
+        el.logPane.classList.add("collapsed");
+        if (el.btnToggleLogText) {
+          el.btnToggleLogText.textContent = "展开";
+        }
+      }
+    } else {
+      if (el.logPane.classList.contains("collapsed")) {
+        el.logPane.classList.remove("collapsed");
+        if (el.btnToggleLogText) {
+          el.btnToggleLogText.textContent = "折叠";
+        }
+      }
+      applyLogHeight(targetHeight, false);
+    }
+  };
+
+  const onPointerUp = (e: PointerEvent) => {
+    if (!isDragging) {
+      return;
+    }
+    isDragging = false;
+    try {
+      if (resizer.hasPointerCapture(e.pointerId)) {
+        resizer.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      // 指针捕获释放兼容防御
+    }
+    document.body.classList.remove("is-resizing-log");
+    el.logPane.classList.remove("is-resizing");
+
+    if (!el.logPane.classList.contains("collapsed")) {
+      try {
+        localStorage.setItem(STORAGE_KEY_LOG_HEIGHT, String(currentLogHeight));
+      } catch {
+        // 存储写入兼容防御
+      }
+    }
+  };
+
+  resizer.addEventListener("pointerdown", onPointerDown);
+  resizer.addEventListener("pointermove", onPointerMove);
+  resizer.addEventListener("pointerup", onPointerUp);
+  resizer.addEventListener("pointercancel", onPointerUp);
+
+  resizer.addEventListener("dblclick", (e) => {
+    e.stopPropagation();
+    toggleConsole();
+  });
+
+  window.addEventListener("resize", () => {
+    if (!el.logPane.classList.contains("collapsed") && el.logPane.style.height) {
+      applyLogHeight(currentLogHeight, false);
+    }
+  });
+}
+
+function toggleConsole(open?: boolean): void {
+  const isCollapsed = el.logPane.classList.contains("collapsed");
+  const shouldOpen = open !== undefined ? open : isCollapsed;
+  el.logPane.classList.toggle("collapsed", !shouldOpen);
+  if (el.btnToggleLogText) {
+    el.btnToggleLogText.textContent = shouldOpen ? "折叠" : "展开";
+  }
+  if (shouldOpen) {
+    if (!el.logPane.style.height && currentLogHeight) {
+      applyLogHeight(currentLogHeight, false);
+    }
+    el.log.scrollTop = el.log.scrollHeight;
+  }
 }
 
 function updateTextScopeState(): void {
@@ -415,6 +570,7 @@ function updateTextScopeState(): void {
   el.btnOpenTables.disabled = !isEnabled || busy;
   const scopeControl = el.mainPreset.closest(".scope-control");
   scopeControl?.classList.toggle("disabled", !isEnabled);
+  el.resourceBuildMeta?.classList.toggle("disabled", !isEnabled);
 }
 
 function updateRestoreButtonState(): void {
@@ -434,11 +590,11 @@ function updateRestoreButtonState(): void {
       el.btnRestore.title = `游戏已更新至 v${gameInfo.version}，本地备份为旧版 v${gameInfo.backupVersion}，无法还原`;
     } else {
       el.btnRestore.disabled = busy;
-      el.btnRestore.title = "将本地原版备份恢复到游戏客户端目录";
+      el.btnRestore.removeAttribute("title");
     }
   } else {
     el.btnRestore.disabled = busy;
-    el.btnRestore.title = "将游戏客户端数据包还原为官方原版";
+    el.btnRestore.removeAttribute("title");
   }
 }
 
@@ -446,6 +602,11 @@ function setBusy(value: boolean, label = ""): void {
   busy = value;
   el.busyIndicator.textContent = value ? label || "执行中…" : "准备就绪";
   el.actionProgressWrap.classList.toggle("hidden", !value);
+  el.actionProgressPercent.classList.toggle("hidden", !value);
+  if (!value) {
+    el.progressBar.style.width = "0%";
+    el.actionProgressPercent.textContent = "0%";
+  }
   el.btnPatch.disabled = value;
   el.btnBrowse.disabled = value;
   el.btnDetect.disabled = value;
@@ -532,7 +693,7 @@ async function bootstrapApp(): Promise<void> {
       void call("DetectGamePaths").then(async (detected) => {
         if (!config.gameDir && detected.length > 0 && detected[0]) {
           setGameDir(detected[0]);
-          log(`自动探测并定位到游戏目录：${detected[0]}`);
+          log(`[配置] 自动探测并定位到游戏目录：${detected[0]}`);
           await refreshGameInfo();
           void checkClientEnvironment();
         }
@@ -541,6 +702,20 @@ async function bootstrapApp(): Promise<void> {
   } catch (error) {
     log(`初始化失败: ${describeError(error)}`, "error");
     switchView("workbench");
+  }
+}
+
+function updateResourceBuildMeta(time?: string, hash?: string): void {
+  if (!el.resourceBuildTime) {
+    return;
+  }
+  if (time) {
+    el.resourceBuildTime.textContent = time;
+    if (el.resourceBuildMeta) {
+      el.resourceBuildMeta.title = `内置词条资源构建时间: ${time}${hash ? ` (校验哈希: ${hash})` : ""}`;
+    }
+  } else {
+    el.resourceBuildTime.textContent = "--";
   }
 }
 
@@ -555,6 +730,7 @@ async function loadBootstrap(): Promise<void> {
   if (el.versionBadge) {
     el.versionBadge.textContent = `v${info.version}`;
   }
+  updateResourceBuildMeta(info.resourceTime, info.resourceHash);
   el.gamePath.value = config.gameDir;
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
@@ -684,7 +860,7 @@ function createClientStatusItem(): HTMLDivElement {
     v.textContent = "校验哈希中…";
     btn.disabled = true;
     btn.textContent = "校验中";
-  } else if (clientStatus && clientStatus.status !== "unsupported") {
+  } else if (clientStatus) {
     let cls = "";
     if (clientStatus.status === "original") {
       cls = "ok";
@@ -737,9 +913,9 @@ async function checkClientEnvironment(): Promise<void> {
     } else if (clientStatus.label === "文件损坏" || clientStatus.label === "文件缺失") {
       logKind = "error";
     }
-    log(`客户端状态: ${clientStatus.label}`, logKind);
+    log(`[状态] 客户端状态：${clientStatus.label}`, logKind);
   } catch (err) {
-    log(`客户端校验失败: ${describeError(err)}`, "error");
+    log(`[错误] 客户端校验失败: ${describeError(err)}`, "error");
   } finally {
     checkingClient = false;
     renderGameInfo();
@@ -790,11 +966,17 @@ function renderGameInfo(): void {
     backupItem.title = "本地暂无备份（该区服未收录云端原版下载，首次汉化将自动生成本地备份）";
   }
 
-  el.gameInfo.append(
+  const items = [
     createDiagItem("客户端版本", gameInfo.version || "未知", ""),
     createClientStatusItem(),
-    backupItem
-  );
+    backupItem,
+  ];
+
+  if (gameInfo.resourceTime) {
+    updateResourceBuildMeta(gameInfo.resourceTime, gameInfo.resourceHash);
+  }
+
+  el.gameInfo.append(...items);
 }
 
 async function refreshGameInfo(): Promise<void> {
@@ -1086,14 +1268,14 @@ function wireEvents(): void {
       if (dir) {
         const prevDir = config.gameDir;
         setGameDir(dir);
-        log(`已选择游戏目录：${dir}`);
+        log(`[配置] 已选择游戏目录：${dir}`);
         await refreshGameInfo();
         if (dir !== prevDir) {
           void checkClientEnvironment();
         }
       }
     } catch (error) {
-      log(`选择目录失败: ${describeError(error)}`, "error");
+      log(`[错误] 选择目录失败: ${describeError(error)}`, "error");
     }
   });
 
@@ -1105,13 +1287,13 @@ function wireEvents(): void {
       setBusy(true, "正在搜索本地客户端…");
       const list = await call("DetectGamePaths");
       if (list.length === 0) {
-        log("未在常用路径中找到 FFXIV 客户端，请点击“浏览”手动指定。", "info");
+        log("[探测] 未在常用路径中找到 FFXIV 客户端，请点击“浏览”手动指定。", "info");
         return;
       }
       const prevDir = config.gameDir;
       const detectedDir = list[0]!;
       setGameDir(detectedDir);
-      log(`自动探测到客户端：${detectedDir}`, "ok");
+      log(`[探测] 自动探测到客户端：${detectedDir}`);
       await refreshGameInfo();
       if (detectedDir !== prevDir) {
         void checkClientEnvironment();
@@ -1225,6 +1407,19 @@ function wireEvents(): void {
     void copyLogs();
   });
 
+  initLogResizer();
+
+  el.btnToggleLog?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleConsole();
+  });
+
+  el.logPane?.querySelector(".log-head")?.addEventListener("click", () => {
+    if (el.logPane.classList.contains("collapsed")) {
+      toggleConsole(true);
+    }
+  });
+
   el.filterLogAll.addEventListener("click", () => setLogFilter("all"));
   el.filterLogNormal.addEventListener("click", () => setLogFilter("normal"));
   el.filterLogError.addEventListener("click", () => setLogFilter("error"));
@@ -1240,15 +1435,15 @@ function wireEvents(): void {
       gameInfo.version !== gameInfo.backupVersion
     );
     if (!isGlobal && !gameInfo?.backupExists) {
-      log("本地原版备份不存在，且当前区服未收录云端原版下载；请使用对应官方启动器修复客户端。", "warn");
+      log("[警告] 本地原版备份不存在，且当前区服未收录云端原版下载；请使用对应官方启动器修复客户端。", "warn");
       return;
     }
     if (!isGlobal && versionMismatch) {
-      log(`当前游戏版本 (${gameInfo?.version}) 与本地备份版本 (${gameInfo?.backupVersion}) 不一致，游戏已更新，无法使用旧版备份还原；请使用官方启动器修复客户端。`, "warn");
+      log(`[警告] 当前游戏版本 (${gameInfo?.version}) 与本地备份版本 (${gameInfo?.backupVersion}) 不一致，游戏已更新，无法使用旧版备份还原；请使用官方启动器修复客户端。`, "warn");
       return;
     }
     if (!config.gameDir) {
-      log("请先指定游戏目录。", "error");
+      log("[错误] 请先指定游戏目录。", "error");
       return;
     }
     const confirmMsg = isGlobal && !gameInfo?.backupExists
@@ -1285,15 +1480,15 @@ function wireEvents(): void {
       return;
     }
     if (!config.gameDir) {
-      log("请先指定游戏目录。", "error");
+      log("[错误] 请先指定游戏目录。", "error");
       return;
     }
     if (!config.replaceText && !config.replaceFont) {
-      log("请至少勾选“替换文本”或“替换游戏字体”。", "error");
+      log("[错误] 请至少勾选“替换文本”或“替换游戏字体”。", "error");
       return;
     }
     if (config.replaceText && selected.size === 0) {
-      log("已勾选“替换文本”，但汉化范围中未选择任何数据表。", "error");
+      log("[错误] 已勾选“替换文本”，但汉化范围中未选择任何数据表。", "error");
       return;
     }
 
@@ -1301,7 +1496,7 @@ function wireEvents(): void {
       toggleConsole(true);
       setBusy(true, "正在执行安全校验与汉化流程…");
       el.progressBar.style.width = "0%";
-      log("开始汉化…");
+      log("[补丁] 开始汉化…");
 
       const req: PatchRequest = {
         gameDir: config.gameDir,
@@ -1315,19 +1510,12 @@ function wireEvents(): void {
 
       const resp = await call("StartPatch", req);
       if (resp.cancelled) {
-        log("汉化已取消", "info");
+        log("[提示] 汉化已取消", "info");
         return;
       }
       for (const w of resp.warnings ?? []) {
         log(`[警告] ${w}`, "warn");
       }
-      if (resp.text.Files > 0) {
-        log(`文本替换完成 (${resp.text.Tables} 个表, ${(resp.text.AppendedBytes / 1024 / 1024).toFixed(2)} MB)`, "ok");
-      }
-      if (resp.font.Files > 0) {
-        log("字体贴图替换完成", "ok");
-      }
-      log("汉化完成", "ok");
       el.progressBar.style.width = "100%";
       try {
         clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
@@ -1379,16 +1567,38 @@ function wireRuntimeEvents(): void {
   let pendingPatchProgress: PatchProgressEvent | null = null;
   let patchRafId = 0;
 
+  function formatStageTitle(stage: string): string {
+    switch (stage) {
+      case "verify":
+        return "校验原版";
+      case "backup":
+        return "建立备份";
+      case "restore":
+        return "还原原版";
+      case "download":
+        return "下载备份";
+      case "text":
+        return "汉化文本";
+      case "font":
+        return "写入字体";
+      default:
+        return "正在处理";
+    }
+  }
+
   function renderPatchProgress(ev: PatchProgressEvent): void {
+    const stageTitle = formatStageTitle(ev.stage);
     if (ev.stage === "download") {
       if (ev.total > 0) {
         const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
         el.progressBar.style.width = `${pct.toFixed(1)}%`;
         const doneMb = (ev.done / 1024 / 1024).toFixed(1);
         const totalMb = (ev.total / 1024 / 1024).toFixed(1);
-        el.busyIndicator.textContent = `下载中: ${ev.detail} (${doneMb} / ${totalMb} MB)`;
+        el.busyIndicator.textContent = `${stageTitle}：${ev.detail || "官方数据包"}`;
+        el.actionProgressPercent.textContent = `${doneMb} / ${totalMb} MB (${pct.toFixed(1)}%)`;
       } else {
-        el.busyIndicator.textContent = `下载中: ${ev.detail}`;
+        el.busyIndicator.textContent = `${stageTitle}：${ev.detail || "官方数据包"}`;
+        el.actionProgressPercent.textContent = "";
       }
       return;
     }
@@ -1396,9 +1606,11 @@ function wireRuntimeEvents(): void {
     if (ev.total > 0) {
       const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
       el.progressBar.style.width = `${pct.toFixed(1)}%`;
-      el.busyIndicator.textContent = `${ev.detail} (${ev.done}/${ev.total})`;
+      el.busyIndicator.textContent = `${stageTitle}：${ev.detail || "正在处理数据"}`;
+      el.actionProgressPercent.textContent = `${ev.done} / ${ev.total} (${pct.toFixed(1)}%)`;
     } else {
-      el.busyIndicator.textContent = ev.detail || ev.stage;
+      el.busyIndicator.textContent = `${stageTitle}：${ev.detail || "请稍候…"}`;
+      el.actionProgressPercent.textContent = "";
     }
   }
 
