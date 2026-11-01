@@ -452,9 +452,15 @@ func (a *App) waitResourceReady(ctx context.Context) error {
 	}
 }
 
+// GetAppVersion 返回补丁器自身版本号。
+func (a *App) GetAppVersion() string {
+	return appVersion
+}
+
 // GetBootstrap 返回前端启动数据。
 func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	resourceDir := a.resourceDir()
+	var isOffline bool
 
 	if updater.HasLocalResource(resourceDir) {
 		// 本地已有完整基础资源：立即秒开进入主工作台，后台并发比对与同步最新资源
@@ -469,12 +475,15 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 			a.resourceErr = err
 			a.resourceMu.Unlock()
 			close(a.resourceReady)
-			return BootstrapInfo{}, err
+			isOffline = true
+			a.emitPatchLog(fmt.Sprintf("[提示] 获取云端资源失败: %v，已进入离线模式。", err))
+		} else {
+			a.resourceMu.Lock()
+			a.offline = status.Offline
+			a.resourceMu.Unlock()
+			close(a.resourceReady)
+			isOffline = status.Offline
 		}
-		a.resourceMu.Lock()
-		a.offline = status.Offline
-		a.resourceMu.Unlock()
-		close(a.resourceReady)
 	}
 
 	cfg := a.loadConfig(resourceDir)
@@ -482,7 +491,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	var tables TablesDoc
 	if data, err := os.ReadFile(filepath.Join(resourceDir, "tables.json")); err == nil {
 		if err := json.Unmarshal(data, &tables); err != nil {
-			return BootstrapInfo{}, fmt.Errorf("解析 tables.json 失败: %w", err)
+			a.emitPatchLog(fmt.Sprintf("[警告] 解析本地 tables.json 失败: %v", err))
 		}
 	}
 	if tables.Folders == nil {
@@ -496,7 +505,9 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	}
 
 	a.resourceMu.RLock()
-	isOffline := a.offline
+	if !isOffline {
+		isOffline = a.offline
+	}
 	a.resourceMu.RUnlock()
 
 	var resTime, resHash string
