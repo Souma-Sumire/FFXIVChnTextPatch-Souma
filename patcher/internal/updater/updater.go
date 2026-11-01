@@ -35,6 +35,7 @@ type BundleInfo struct {
 // Manifest 对应 resource/manifest.json。
 type Manifest struct {
 	GeneratedAt string              `json:"generatedAt"`
+	RootHash    string              `json:"rootHash,omitempty"`
 	RawEXD      BundleInfo          `json:"rawexd"`
 	Font        BundleInfo          `json:"font"`
 	Rules       BundleInfo          `json:"rules"`
