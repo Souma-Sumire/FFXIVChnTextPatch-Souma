@@ -50,6 +50,14 @@ type App struct {
 	lastStage    string
 
 	resourceDirOverride string
+	cloudOverride       verifier.Cloud
+}
+
+func (a *App) getCloud() verifier.Cloud {
+	if a != nil && a.cloudOverride != nil {
+		return a.cloudOverride
+	}
+	return verifier.NewGitHubClient()
 }
 
 func (a *App) resourceDir() string {
@@ -385,19 +393,32 @@ func (a *App) waitResourceReady(ctx context.Context) error {
 		return nil
 	}
 
+	handleResourceErr := func(err error) error {
+		if err == nil {
+			return nil
+		}
+		if updater.HasLocalResource(a.resourceDir()) {
+			a.emitPatchLog(fmt.Sprintf("[提示] 检查云端最新资源失败 (%v)，已使用本地已有完整资源继续汉化。", err))
+			return nil
+		}
+		return err
+	}
+
 	select {
 	case <-readyCh:
 		a.resourceMu.RLock()
-		defer a.resourceMu.RUnlock()
-		return a.resourceErr
+		err := a.resourceErr
+		a.resourceMu.RUnlock()
+		return handleResourceErr(err)
 	default:
 		a.emitProgress("sync", "正在确认汉化资源为最新版本...", 0, 0)
 		a.emitPatchLog("[资源] 正在确认汉化资源为云端最新版本，请稍候...")
 		select {
 		case <-readyCh:
 			a.resourceMu.RLock()
-			defer a.resourceMu.RUnlock()
-			return a.resourceErr
+			err := a.resourceErr
+			a.resourceMu.RUnlock()
+			return handleResourceErr(err)
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-time.After(30 * time.Second):
@@ -639,67 +660,91 @@ type PatchedRecord struct {
 }
 
 func patchedRecordPath(resourceDir string) string {
-	return filepath.Join(resourceDir, "patched_record.json")
+	return filepath.Join(resourceDir, "patched_records.json")
 }
 
 func (a *App) savePatchedRecord(rec PatchedRecord) error {
-	data, err := json.MarshalIndent(rec, "", "  ")
+	p := patchedRecordPath(a.resourceDir())
+	records := a.loadAllPatchedRecords()
+	cleanDir := filepath.Clean(rec.GameDir)
+	records[cleanDir] = rec
+	data, err := json.MarshalIndent(records, "", "  ")
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(patchedRecordPath(a.resourceDir()), data, 0o644)
+	return os.WriteFile(p, data, 0o644)
 }
 
-func (a *App) loadPatchedRecord() (PatchedRecord, bool) {
-	var rec PatchedRecord
-	data, err := os.ReadFile(patchedRecordPath(a.resourceDir()))
-	if err != nil {
-		return rec, false
+func (a *App) loadAllPatchedRecords() map[string]PatchedRecord {
+	res := make(map[string]PatchedRecord)
+	p := patchedRecordPath(a.resourceDir())
+	data, err := os.ReadFile(p)
+	if err == nil {
+		if err := json.Unmarshal(data, &res); err == nil {
+			return res
+		}
 	}
-	if err := json.Unmarshal(data, &rec); err != nil {
-		return rec, false
+	// 兼容迁移旧单记录格式
+	oldPath := filepath.Join(a.resourceDir(), "patched_record.json")
+	if oldData, err := os.ReadFile(oldPath); err == nil {
+		var single PatchedRecord
+		if err := json.Unmarshal(oldData, &single); err == nil && single.GameDir != "" {
+			res[filepath.Clean(single.GameDir)] = single
+		}
 	}
-	return rec, true
+	return res
 }
 
-func (a *App) clearPatchedRecord() {
-	_ = os.Remove(patchedRecordPath(a.resourceDir()))
-}
-
-func detectModifiedSqPack(sqpackDir string, reg region.Region) bool {
-	if st, err := os.Stat(filepath.Join(sqpackDir, "000000.win32.dat0")); err == nil {
-		if st.Size() > 90*1024*1024 {
-			return true
+func (a *App) loadPatchedRecord(gameDir string) (PatchedRecord, bool) {
+	records := a.loadAllPatchedRecords()
+	cleanDir := filepath.Clean(gameDir)
+	for k, v := range records {
+		if strings.EqualFold(k, cleanDir) {
+			return v, true
 		}
 	}
-	if reg == region.Global {
-		idxPath := filepath.Join(sqpackDir, "0a0000.win32.index")
-		idx, err := sqpack.OpenIndex(idxPath)
-		if err != nil {
-			return false
+	return PatchedRecord{}, false
+}
+
+func (a *App) clearPatchedRecord(gameDir string) {
+	records := a.loadAllPatchedRecords()
+	cleanDir := filepath.Clean(gameDir)
+	deleteKey := ""
+	for k := range records {
+		if strings.EqualFold(k, cleanDir) {
+			deleteKey = k
+			break
 		}
-		entry := idx.Lookup("exd", "addon_0_en.exd")
-		if entry == nil {
-			return false
+	}
+	if deleteKey != "" {
+		delete(records, deleteKey)
+		data, err := json.MarshalIndent(records, "", "  ")
+		if err == nil {
+			_ = os.WriteFile(patchedRecordPath(a.resourceDir()), data, 0o644)
 		}
-		datNum, off := sqpack.DatNumAndAlignedOffset(entry.DataOffset)
-		datPath := filepath.Join(sqpackDir, fmt.Sprintf("0a0000.win32.dat%d", datNum))
-		dat, err := sqpack.OpenDat(datPath)
-		if err != nil {
-			return false
-		}
-		defer dat.Close()
-		content, err := dat.ExtractFile(off)
-		if err != nil {
-			return false
-		}
-		for _, r := range string(content) {
-			if r >= 0x4e00 && r <= 0x9fa5 {
-				return true
+	}
+	_ = os.Remove(filepath.Join(a.resourceDir(), "patched_record.json"))
+}
+
+func checkGameNotRunning(gameDir string) error {
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	testFiles := []string{
+		filepath.Join(sqpackDir, "0a0000.win32.index"),
+		filepath.Join(sqpackDir, "000000.win32.index"),
+	}
+	for _, p := range testFiles {
+		if _, err := os.Stat(p); err == nil {
+			f, err := os.OpenFile(p, os.O_RDWR, 0)
+			if err != nil {
+				if os.IsPermission(err) || strings.Contains(strings.ToLower(err.Error()), "used by another process") {
+					return errors.New("检测到游戏客户端文件正在被占用，请先退出游戏和启动器后再试")
+				}
+			} else {
+				_ = f.Close()
 			}
 		}
 	}
-	return false
+	return nil
 }
 
 // CheckClientStatus 手动计算并比对客户端文件哈希，返回当前客户端状态。
@@ -713,8 +758,42 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	}
 	reg := region.Of(lang)
 
-	// 非国际服（繁中服、韩服等）官方哈希未知，无法进行原版哈希检测
-	if reg != region.Global {
+	// 1. 优先检查本汉化器的已汉化记录（全区服通用，核对游戏目录、版本号及文件哈希）
+	if rec, ok := a.loadPatchedRecord(gameDir); ok {
+		cleanGameDir := filepath.Clean(gameDir)
+		cleanRecDir := filepath.Clean(rec.GameDir)
+		if strings.EqualFold(cleanGameDir, cleanRecDir) && len(rec.Files) > 0 {
+			sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+			allMatch := true
+			for fName, wantHash := range rec.Files {
+				curHash, err := verifier.HashFile(filepath.Join(sqpackDir, fName))
+				if err != nil || !strings.EqualFold(curHash.SHA256, wantHash.SHA256) {
+					allMatch = false
+					break
+				}
+			}
+			if allMatch {
+				return ClientStatusResult{
+					Status:      "patched",
+					Label:       "已汉化",
+					Description: fmt.Sprintf("已成功应用本汉化器补丁 (%s)", rec.Version),
+				}, nil
+			}
+		}
+	}
+
+	// 2. 检查本地官方原版备份（权威基准，支持所有已建立本地备份的区服）
+	metaPath := filepath.Join(backupRootFor(a.resourceDir()), string(reg), "meta.json")
+	var meta verifier.BackupMeta
+	hasBackupMeta := false
+	if data, err := os.ReadFile(metaPath); err == nil {
+		if json.Unmarshal(data, &meta) == nil && meta.Files != nil && len(meta.Files) > 0 {
+			hasBackupMeta = true
+		}
+	}
+
+	// 3. 非国际服无本地有效备份时，直接返回不支持原版检测
+	if reg != region.Global && !hasBackupMeta {
 		return ClientStatusResult{
 			Status:      "unsupported",
 			Label:       "不支持检测",
@@ -738,39 +817,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		return ClientStatusResult{Status: "unknown", Label: "文件缺失", Description: "无法读取客户端关键索引数据包"}, nil
 	}
 
-	// 1. 优先检查本汉化器的已汉化记录（核对游戏目录、版本号及文件哈希）
-	if rec, ok := a.loadPatchedRecord(); ok {
-		cleanGameDir := filepath.Clean(gameDir)
-		cleanRecDir := filepath.Clean(rec.GameDir)
-		if strings.EqualFold(cleanGameDir, cleanRecDir) && rec.Version == version && len(rec.Files) > 0 {
-			allMatch := true
-			for fName, wantHash := range rec.Files {
-				curHash, err := verifier.HashFile(filepath.Join(sqpackDir, fName))
-				if err != nil || !strings.EqualFold(curHash.SHA256, wantHash.SHA256) {
-					allMatch = false
-					break
-				}
-			}
-			if allMatch {
-				return ClientStatusResult{
-					Status:      "patched",
-					Label:       "已汉化",
-					Description: fmt.Sprintf("已成功应用本汉化器补丁 (%s)", version),
-				}, nil
-			}
-		}
-	}
-
-	// 2. 检查本地官方原版备份（权威基准）
-	metaPath := filepath.Join(backupRootFor(a.resourceDir()), string(reg), "meta.json")
-	var meta verifier.BackupMeta
-	hasBackupMeta := false
-	if data, err := os.ReadFile(metaPath); err == nil {
-		if json.Unmarshal(data, &meta) == nil && meta.Files != nil {
-			hasBackupMeta = true
-		}
-	}
-
+	// 如果有本地备份，核对本地备份
 	if hasBackupMeta && meta.Version == version {
 		matchedBackup := true
 		checkedCount := 0
@@ -801,7 +848,16 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}, nil
 	}
 
-	// 3. 校验客户端关键索引数据包结构有效性
+	// 非国际服在本地备份版本与当前游戏版本不一致时，也返回不支持检测（无法验证新版本的原版哈希）
+	if reg != region.Global {
+		return ClientStatusResult{
+			Status:      "unsupported",
+			Label:       "不支持检测",
+			Description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
+		}, nil
+	}
+
+	// 4. 校验客户端关键索引数据包结构有效性
 	if textErr == nil {
 		if _, err := sqpack.OpenIndex(filepath.Join(sqpackDir, textIndex)); err != nil {
 			return ClientStatusResult{Status: "unknown", Label: "文件损坏", Description: fmt.Sprintf("文本索引文件解析异常: %v", err)}, nil
@@ -813,8 +869,8 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}
 	}
 
-	// 4. 若云端 Release 存在且哈希完全吻合，标注云端验证通过
-	cloud := verifier.NewGitHubClient()
+	// 5. 若云端 Release 存在，进行严格的权威哈希核对（核对失败直接判定为非原版，严禁穿透）
+	cloud := a.getCloud()
 	repo := "Souma-Sumire/FFXIVChnTextPatch-Souma"
 	parentCtx := a.ctx
 	if parentCtx == nil {
@@ -839,18 +895,26 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 					matchedCloud = false
 				}
 			}
-			if checkedCloudCount > 0 && matchedCloud {
+			if checkedCloudCount > 0 {
+				if matchedCloud {
+					return ClientStatusResult{
+						Status:      "original",
+						Label:       "官方原版",
+						Description: fmt.Sprintf("与云端官方原版 (%s) 哈希完全一致", version),
+					}, nil
+				}
+				// 官方 Release 存在且哈希不匹配 -> 绝对是非原版！绝不能漏判为原版！
 				return ClientStatusResult{
-					Status:      "original",
-					Label:       "官方原版",
-					Description: fmt.Sprintf("与云端官方原版 (%s) 哈希完全一致", version),
+					Status:      "modified",
+					Label:       "非原版",
+					Description: fmt.Sprintf("与云端官方原版 (%s) 哈希不符，当前文件已被外部修改", version),
 				}, nil
 			}
 		}
 	}
 
-	// 5. 检查是否检测到第三方修改/汉化痕迹
-	if detectModifiedSqPack(sqpackDir, reg) {
+	// 6. 检查是否检测到第三方修改/汉化痕迹
+	if verifier.DetectModifiedSqPack(sqpackDir, reg) {
 		return ClientStatusResult{
 			Status:      "modified",
 			Label:       "非原版",
@@ -858,7 +922,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}, nil
 	}
 
-	// 6. 本地尚无备份且数据包结构完好的纯净客户端（首次使用或刚更新游戏）
+	// 7. 本地尚无备份且数据包结构完好的纯净客户端（首次使用或刚更新游戏）
 	return ClientStatusResult{
 		Status:      "original",
 		Label:       "官方原版",
@@ -961,6 +1025,10 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 	defer a.endBusy()
 
+	if err := checkGameNotRunning(req.GameDir); err != nil {
+		return resp, err
+	}
+
 	// 确保执行汉化时后台检查与同步已完成，必定使用最新资源
 	if err := a.waitResourceReady(a.ctx); err != nil {
 		return resp, fmt.Errorf("确保最新资源失败: %w", err)
@@ -992,7 +1060,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		Language:    lang,
 		ReplaceText: req.ReplaceText,
 		ReplaceFont: req.ReplaceFont,
-		Cloud:       verifier.NewGitHubClient(),
+		Cloud:       a.getCloud(),
 		ConfirmFont: a.waitFontConfirm,
 		OnEvent: func(ev verifier.Event) {
 			a.emitProgress(ev.Stage, ev.Detail, ev.Done, ev.Total)
@@ -1105,13 +1173,17 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 	}
 	defer a.endBusy()
 
+	if err := checkGameNotRunning(gameDir); err != nil {
+		return resp, err
+	}
+
 	resourceDir := a.resourceDir()
 	restored, err := verifier.Restore(a.ctx, verifier.RestoreConfig{
 		GameDir:    gameDir,
 		BackupRoot: backupRootFor(resourceDir),
 		Language:   lang,
 		Repo:       "Souma-Sumire/FFXIVChnTextPatch-Souma",
-		Cloud:      verifier.NewGitHubClient(),
+		Cloud:      a.getCloud(),
 		OnProgress: func(stage, detail string, done, total int64) {
 			a.emitProgress(stage, detail, done, total)
 		},
@@ -1119,7 +1191,7 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 	if err != nil {
 		return resp, err
 	}
-	a.clearPatchedRecord()
+	a.clearPatchedRecord(gameDir)
 	resp.Restored = restored
 	return resp, nil
 }

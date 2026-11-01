@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -9,6 +10,27 @@ import (
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
+
+type mockCloud struct {
+	releases map[string]*verifier.Release
+}
+
+func (m *mockCloud) ReleaseByTag(ctx context.Context, repo, tag string) (*verifier.Release, error) {
+	if m.releases != nil {
+		if r, ok := m.releases[tag]; ok {
+			return r, nil
+		}
+	}
+	return nil, verifier.ErrNotFound
+}
+
+func (m *mockCloud) RecentReleases(ctx context.Context, repo string, limit int) ([]*verifier.Release, error) {
+	return nil, nil
+}
+
+func (m *mockCloud) Download(ctx context.Context, url, dst string, onProgress func(done, total int64)) error {
+	return nil
+}
 
 func TestBuildTableListFromResource(t *testing.T) {
 	data, err := os.ReadFile("../resource/tables.json")
@@ -77,6 +99,7 @@ func TestCheckClientStatusOriginalNoBackup(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
 	if err != nil {
@@ -109,6 +132,7 @@ func TestCheckClientStatusPatched(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	if err := os.MkdirAll(app.resourceDirOverride, 0o755); err != nil {
 		t.Fatal(err)
@@ -161,6 +185,7 @@ func TestCheckClientStatusModifiedWithBackup(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	backupDir := filepath.Join(tmpDir, "backup", "global")
 	if err := os.MkdirAll(backupDir, 0o755); err != nil {
@@ -211,6 +236,7 @@ func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 	app := NewApp()
+	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 
 	for _, lang := range []string{"CHS", "TC", "KO"} {
@@ -232,6 +258,7 @@ func TestGetGameInfoNonGlobalBackup(t *testing.T) {
 		t.Fatal(err)
 	}
 	app := NewApp()
+	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	backupDir := filepath.Join(tmpDir, "backup", "tc")
 	if err := os.MkdirAll(backupDir, 0o755); err != nil {
@@ -255,5 +282,90 @@ func TestGetGameInfoNonGlobalBackup(t *testing.T) {
 	}
 	if !info.BackupExists || info.BackupVersion != "2026.10.16.0000.0000" {
 		t.Fatalf("其他服有本地备份时应正确识别: exists=%v, ver=%s", info.BackupExists, info.BackupVersion)
+	}
+}
+
+func TestCheckClientStatusCloudMismatchIsModified(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	verPath := filepath.Join(gameDir, "game", "ffxivgame.ver")
+	if err := os.WriteFile(verPath, []byte("2026.10.16.0000.0000"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := createMinimalIndexFile(filepath.Join(sqpackDir, "0a0000.win32.index")); err != nil {
+		t.Fatal(err)
+	}
+	if err := createMinimalIndexFile(filepath.Join(sqpackDir, "000000.win32.index")); err != nil {
+		t.Fatal(err)
+	}
+
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.cloudOverride = &mockCloud{
+		releases: map[string]*verifier.Release{
+			"2026.10.16.0000.0000": {
+				Tag: "2026.10.16.0000.0000",
+				FileHashes: map[string]string{
+					"0a0000.win32.index": "real_official_hash_diff_from_dummy",
+					"000000.win32.index": "real_official_font_hash_diff",
+				},
+			},
+		},
+	}
+
+	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
+	if status.Status != "modified" {
+		t.Fatalf("云端原版哈希不匹配时必须判定为 modified，实际判定为 %s (%s)", status.Status, status.Label)
+	}
+}
+
+func TestCheckClientStatusNonGlobalPatched(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	verPath := filepath.Join(gameDir, "game", "ffxivgame.ver")
+	if err := os.WriteFile(verPath, []byte("2026.10.16.0000.0000"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
+	if err := createMinimalIndexFile(textIndexPath); err != nil {
+		t.Fatal(err)
+	}
+	textHash, _ := verifier.HashFile(textIndexPath)
+
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	if err := os.MkdirAll(app.resourceDirOverride, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	rec := PatchedRecord{
+		GameDir:     gameDir,
+		Version:     "2026.10.16.0000.0000",
+		Language:    "TC",
+		ReplaceText: true,
+		Files: map[string]verifier.FileHash{
+			"0a0000.win32.index": textHash,
+		},
+	}
+	if err := app.savePatchedRecord(rec); err != nil {
+		t.Fatal(err)
+	}
+
+	status, err := app.CheckClientStatus(gameDir, "TC")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
+	if status.Status != "patched" {
+		t.Fatalf("繁中服在已汉化时应判定为 patched，实际为 %s (%s)", status.Status, status.Label)
 	}
 }
