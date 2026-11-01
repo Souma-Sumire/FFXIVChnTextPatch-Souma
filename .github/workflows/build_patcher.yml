@@ -12,16 +12,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: "1.24.x"
           cache-dependency-path: patcher/go.sum
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
 
@@ -40,7 +40,7 @@ jobs:
         run: go build -tags desktop,production -trimpath -ldflags "-H windowsgui -s -w" -o ../FFXIVChnTextPatch-SM-v2.exe .
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: FFXIVChnTextPatch-SM-v2-windows
           path: FFXIVChnTextPatch-SM-v2.exe
@@ -51,16 +51,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: "1.24.x"
           cache-dependency-path: patcher/go.sum
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
 
@@ -85,7 +85,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent "FFXIVChnTextPatch-SM-v2.app" "../../../FFXIVChnTextPatch-SM-v2-macOS.zip"
 
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: FFXIVChnTextPatch-SM-v2-macos
           path: FFXIVChnTextPatch-SM-v2-macOS.zip
@@ -94,13 +94,13 @@ jobs:
   release:
     needs: [build-windows, build-macos]
     if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
 
