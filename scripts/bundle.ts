@@ -195,8 +195,18 @@ export function generateManifestAndSnapshot(): void {
     console.log(`字体文件未变更，复用现有: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}`);
   }
 
+  const rootHash = createHash("sha256");
+  rootHash.update(`rawexd.zip:${zipInfo.sha256}\n`);
+  rootHash.update(`font.zip:${fontZipInfo.sha256}\n`);
+  rootHash.update(`rules.json:${rulesInfo.sha256}\n`);
+  rootHash.update(`tables.json:${tablesInfo.sha256}\n`);
+  for (const key of fontKeys) {
+    rootHash.update(`${key}:${fonts[key]!.sha256}\n`);
+  }
+
   const manifest = {
     generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+    rootHash: rootHash.digest("hex"),
     rawexd: zipInfo,
     font: fontZipInfo,
     rules: { sha256: rulesInfo.sha256, size: rulesInfo.size },
