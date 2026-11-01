@@ -417,12 +417,36 @@ function updateTextScopeState(): void {
   scopeControl?.classList.toggle("disabled", !isEnabled);
 }
 
+function updateRestoreButtonState(): void {
+  const isGlobal = isGlobalLanguage(config.language);
+  const versionMismatch = Boolean(
+    gameInfo?.version &&
+    gameInfo?.backupVersion &&
+    gameInfo.version !== gameInfo.backupVersion
+  );
+
+  if (!isGlobal) {
+    if (!gameInfo?.backupExists) {
+      el.btnRestore.disabled = true;
+      el.btnRestore.title = "本地暂无原版备份，且当前区服未收录云端原版下载（首次汉化将自动生成备份）";
+    } else if (versionMismatch) {
+      el.btnRestore.disabled = true;
+      el.btnRestore.title = `游戏已更新至 v${gameInfo.version}，本地备份为旧版 v${gameInfo.backupVersion}，无法还原`;
+    } else {
+      el.btnRestore.disabled = busy;
+      el.btnRestore.title = "将本地原版备份恢复到游戏客户端目录";
+    }
+  } else {
+    el.btnRestore.disabled = busy;
+    el.btnRestore.title = "将游戏客户端数据包还原为官方原版";
+  }
+}
+
 function setBusy(value: boolean, label = ""): void {
   busy = value;
   el.busyIndicator.textContent = value ? label || "执行中…" : "准备就绪";
   el.actionProgressWrap.classList.toggle("hidden", !value);
   el.btnPatch.disabled = value;
-  el.btnRestore.disabled = value;
   el.btnBrowse.disabled = value;
   el.btnDetect.disabled = value;
   el.preset.disabled = value;
@@ -430,6 +454,7 @@ function setBusy(value: boolean, label = ""): void {
   el.replaceText.disabled = value;
   el.replaceFont.disabled = value;
   updateTextScopeState();
+  updateRestoreButtonState();
 }
 
 function setWindowTitle(): void {
@@ -623,7 +648,17 @@ function createDiagItem(label: string, value: string, cls = ""): HTMLDivElement 
   return item;
 }
 
+function isGlobalLanguage(langCode: string): boolean {
+  const opt = bootstrap?.languages?.find((l) => l.code === langCode);
+  if (opt) {
+    return opt.region === "global";
+  }
+  const upper = (langCode || "").trim().toUpperCase();
+  return upper === "GLOBAL" || upper === "GL" || upper === "JA" || upper === "EN" || upper === "DE" || upper === "FR";
+}
+
 function createClientStatusItem(): HTMLDivElement {
+  const isGlobal = isGlobalLanguage(config.language);
   const item = document.createElement("div");
   item.className = "diag-item diag-item-actionable";
   const k = document.createElement("span");
@@ -639,12 +674,17 @@ function createClientStatusItem(): HTMLDivElement {
   btn.type = "button";
   btn.className = "btn btn-quiet btn-xs diag-check-btn";
 
-  if (checkingClient) {
+  if (!isGlobal) {
+    v.className = "diag-v muted";
+    v.textContent = "不支持检测";
+    v.title = "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测";
+    btn.style.display = "none";
+  } else if (checkingClient) {
     v.className = "diag-v";
     v.textContent = "校验哈希中…";
     btn.disabled = true;
     btn.textContent = "校验中";
-  } else if (clientStatus) {
+  } else if (clientStatus && clientStatus.status !== "unsupported") {
     let cls = "";
     if (clientStatus.status === "original") {
       cls = "ok";
@@ -683,6 +723,15 @@ async function checkClientEnvironment(): Promise<void> {
   if (checkingClient || !config.gameDir) {
     return;
   }
+  if (!isGlobalLanguage(config.language)) {
+    clientStatus = {
+      status: "unsupported",
+      label: "不支持检测",
+      description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
+    };
+    renderGameInfo();
+    return;
+  }
   checkingClient = true;
   renderGameInfo();
   try {
@@ -707,6 +756,7 @@ async function checkClientEnvironment(): Promise<void> {
 }
 
 function renderGameInfo(): void {
+  updateRestoreButtonState();
   el.gameInfo.replaceChildren();
   if (!config.gameDir) {
     el.gameInfo.append(createDiagItem("状态", "未选择游戏目录", "warn"));
@@ -717,10 +767,36 @@ function renderGameInfo(): void {
     return;
   }
 
-  const backupText = gameInfo.backupExists ? "已就绪" : "未备份";
-  const backupItem = createDiagItem("本地备份", backupText, gameInfo.backupExists ? "ok" : "");
-  if (gameInfo.backupExists && gameInfo.backupVersion) {
-    backupItem.title = `官方原版备份版本: v${gameInfo.backupVersion}`;
+  const isGlobal = isGlobalLanguage(config.language);
+  const versionMismatch = Boolean(
+    gameInfo.version &&
+    gameInfo.backupVersion &&
+    gameInfo.version !== gameInfo.backupVersion
+  );
+
+  let backupText = "未备份";
+  let backupCls = "";
+  if (gameInfo.backupExists) {
+    if (!isGlobal && versionMismatch) {
+      backupText = "已失效";
+      backupCls = "warn";
+    } else {
+      backupText = "已就绪";
+      backupCls = "ok";
+    }
+  }
+
+  const backupItem = createDiagItem("本地备份", backupText, backupCls);
+  if (gameInfo.backupExists) {
+    if (!isGlobal && versionMismatch) {
+      backupItem.title = `游戏已更新 (当前 v${gameInfo.version}，备份 v${gameInfo.backupVersion})，旧版备份无法还原`;
+    } else {
+      backupItem.title = `本地原版备份版本: v${gameInfo.backupVersion}`;
+    }
+  } else if (isGlobal) {
+    backupItem.title = "本地暂无备份，还原时将自动从云端下载官方原版";
+  } else {
+    backupItem.title = "本地暂无备份（该区服未收录云端原版下载，首次汉化将自动生成本地备份）";
   }
 
   el.gameInfo.append(
@@ -1166,13 +1242,30 @@ function wireEvents(): void {
     if (busy) {
       return;
     }
+    const isGlobal = isGlobalLanguage(config.language);
+    const versionMismatch = Boolean(
+      gameInfo?.version &&
+      gameInfo?.backupVersion &&
+      gameInfo.version !== gameInfo.backupVersion
+    );
+    if (!isGlobal && !gameInfo?.backupExists) {
+      log("本地原版备份不存在，且当前区服未收录云端原版下载；请使用对应官方启动器修复客户端。", "warn");
+      return;
+    }
+    if (!isGlobal && versionMismatch) {
+      log(`当前游戏版本 (${gameInfo?.version}) 与本地备份版本 (${gameInfo?.backupVersion}) 不一致，游戏已更新，无法使用旧版备份还原；请使用官方启动器修复客户端。`, "warn");
+      return;
+    }
     if (!config.gameDir) {
       log("请先指定游戏目录。", "error");
       return;
     }
+    const confirmMsg = isGlobal && !gameInfo?.backupExists
+      ? "本地暂无原版备份，将自动从云端下载官方原版文件恢复到客户端，已有汉化修改将被撤销。"
+      : "确定将本地原版备份文件恢复到游戏客户端目录吗？已有汉化修改将被撤销。";
     const ok = await showConfirm(
       "还原官方原版文件",
-      `确定将当前区服的本地原版备份文件恢复到游戏客户端目录吗？已有汉化修改将被撤销。`,
+      confirmMsg,
       "确认还原",
     );
     if (!ok) {
@@ -1183,10 +1276,18 @@ function wireEvents(): void {
       setBusy(true, "正在还原官方原版文件…");
       const resp = await call("RestoreOriginal", config.gameDir, config.language);
       log(`已还原官方原版 (${(resp.restored ?? []).length} 个文件)`, "ok");
-      try {
-        clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
-      } catch {
-        // 忽略静默更新失败
+      if (isGlobalLanguage(config.language)) {
+        try {
+          clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+        } catch {
+          // 忽略静默更新失败
+        }
+      } else {
+        clientStatus = {
+          status: "unsupported",
+          label: "不支持检测",
+          description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
+        };
       }
       await refreshGameInfo();
     } catch (error) {
@@ -1245,10 +1346,18 @@ function wireEvents(): void {
       }
       log("汉化完成", "ok");
       el.progressBar.style.width = "100%";
-      try {
-        clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
-      } catch {
-        // 忽略静默更新失败
+      if (isGlobalLanguage(config.language)) {
+        try {
+          clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+        } catch {
+          // 忽略静默更新失败
+        }
+      } else {
+        clientStatus = {
+          status: "unsupported",
+          label: "不支持检测",
+          description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
+        };
       }
       await refreshGameInfo();
     } catch (error) {

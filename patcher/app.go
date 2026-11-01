@@ -707,17 +707,26 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	if gameDir == "" {
 		return ClientStatusResult{Status: "unknown", Label: "未选择目录", Description: "请先指定游戏安装目录"}, nil
 	}
-	versionData, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver"))
-	if err != nil {
-		return ClientStatusResult{Status: "unknown", Label: "版本未知", Description: "无法读取 ffxivgame.ver"}, nil
-	}
-	version := strings.TrimSpace(string(versionData))
-
 	lang, err := region.ParseLanguage(language)
 	if err != nil {
 		lang = region.JA
 	}
 	reg := region.Of(lang)
+
+	// 非国际服（繁中服、韩服等）官方哈希未知，无法进行原版哈希检测
+	if reg != region.Global {
+		return ClientStatusResult{
+			Status:      "unsupported",
+			Label:       "不支持检测",
+			Description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
+		}, nil
+	}
+
+	versionData, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver"))
+	if err != nil {
+		return ClientStatusResult{Status: "unknown", Label: "版本未知", Description: "无法读取 ffxivgame.ver"}, nil
+	}
+	version := strings.TrimSpace(string(versionData))
 
 	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
 	fontIndex := "000000.win32.index"

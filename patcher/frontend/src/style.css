@@ -657,6 +657,11 @@ svg {
   color: var(--err);
 }
 
+.diag-v.muted {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
 .diag-v-row {
   display: flex;
   align-items: center;

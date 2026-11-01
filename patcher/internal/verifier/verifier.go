@@ -173,10 +173,8 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			textPlan.Action = ActionDownload
 		case meta != nil && meta.Version == version && hasFiles(meta.Files, TextFiles):
 			textPlan.Action = ActionRestore
-		case reg == region.Global:
-			textPlan.Action = ActionPatch
 		default:
-			return nil, fmt.Errorf("当前文本文件已被修改，且本地备份中没有版本 %s 的繁中服/韩服原文件；请先使用游戏启动器修复，或从对应区服的备份仓库下载原文件", version)
+			textPlan.Action = ActionPatch
 		}
 	}
 
@@ -192,12 +190,10 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			fontPlan.Action = ActionDownload
 		case meta != nil && meta.Version == version && hasFiles(meta.Files, FontFiles):
 			fontPlan.Action = ActionRestore
-		case reg == region.Global:
-			fontPlan.Action = ActionPatch
 		default:
-			return nil, fmt.Errorf("当前字体文件已被修改，且本地备份中没有版本 %s 的繁中服/韩服原版字体；请先使用游戏启动器修复，或从对应区服的备份仓库下载原文件", version)
+			fontPlan.Action = ActionPatch
 		}
-	} else if originalFont && cfg.ReplaceText {
+	} else if reg != region.China && originalFont && cfg.ReplaceText {
 		fontPlan.Action = ActionSkip
 		result.Plan.NeedFontConfirm = true
 	} else {
@@ -312,7 +308,7 @@ func determineOriginal(reg region.Region, cloudState CloudState, version string,
 		return true, true
 	}
 	if meta == nil || meta.Version != version {
-		return false, false
+		return true, true
 	}
 	textOriginal := allMatchMeta(gameHashes, meta, TextFiles)
 	fontOriginal := true
@@ -666,22 +662,30 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 	backupDir := filepath.Join(cfg.BackupRoot, region.BackupFolder(cfg.Language))
 	sqpackDir := filepath.Join(cfg.GameDir, "game", "sqpack", "ffxiv")
 
+	version, err := readGameVersion(cfg.GameDir)
+	if err != nil {
+		return nil, fmt.Errorf("读取当前客户端版本失败: %w", err)
+	}
+
 	meta, err := readBackupMeta(backupDir)
 	if err != nil {
 		return nil, err
 	}
 
-	// 1. 本地备份存在且有记录时，直接还原
+	// 1. 本地备份存在且有记录时，先比对版本与哈希（确保没经过游戏更新或外部修改）
 	if meta != nil && len(meta.Files) > 0 {
-		return restoreLocalBackup(backupDir, sqpackDir, meta, reg)
+		if meta.Version != "" && version != meta.Version {
+			if reg != region.Global {
+				return nil, fmt.Errorf("当前游戏版本 (%s) 与本地备份版本 (%s) 不一致，游戏已更新；无法使用旧版本备份还原，请使用官方启动器修复客户端", version, meta.Version)
+			}
+			// 国际服本地备份版本与游戏不一致时，若云端可用，走下方逻辑下载当前版本官方原版
+		} else {
+			return restoreLocalBackup(backupDir, sqpackDir, meta, reg)
+		}
 	}
 
-	// 2. 本地无备份时，若为国际服且配置了云端，尝试从云端下载官方原版备份
+	// 2. 本地无备份（或国际服本地备份已过时）时，国际服从云端下载当前游戏版本原版
 	if reg == region.Global && cfg.Cloud != nil {
-		version, err := readGameVersion(cfg.GameDir)
-		if err != nil {
-			return nil, fmt.Errorf("本地无备份且无法读取当前游戏版本: %w", err)
-		}
 		release, err := cfg.Cloud.ReleaseByTag(ctx, cfg.Repo, version)
 		if err != nil {
 			return nil, fmt.Errorf("本地原版备份不存在，且无法从云端获取版本 %s 的原文件: %w；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, err)
@@ -733,25 +737,37 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		return restoreLocalBackup(backupDir, sqpackDir, meta, reg)
 	}
 
-	return nil, fmt.Errorf("%s 的本地原文件备份不存在，无法还原；请先使用游戏启动器修复客户端", reg)
+	return nil, fmt.Errorf("%s 的本地原文件备份不存在，且未收录云端原版下载；请先使用游戏启动器修复客户端", reg)
 }
 
 func restoreLocalBackup(backupDir, sqpackDir string, meta *BackupMeta, reg region.Region) ([]string, error) {
+	if meta == nil || len(meta.Files) == 0 {
+		return nil, fmt.Errorf("%s 的本地备份中没有可还原的文件", reg)
+	}
+	// 还原前校验：现存备份文件哈希必须与之前汉化前记录的哈希完全一致（确保未被外部修改或损坏）
+	for name, want := range meta.Files {
+		src := filepath.Join(backupDir, name)
+		if _, err := os.Stat(src); err != nil {
+			return nil, fmt.Errorf("本地备份文件缺失: %s", name)
+		}
+		got, err := HashFile(src)
+		if err != nil {
+			return nil, fmt.Errorf("计算本地备份文件 %s 哈希失败: %w", name, err)
+		}
+		if want.SHA256 != "" && !strings.EqualFold(got.SHA256, want.SHA256) {
+			return nil, fmt.Errorf("本地备份文件 %s 现存哈希与汉化前记录不一致（可能已被外部修改或损坏），无法还原", name)
+		}
+	}
+
 	restored := make([]string, 0, len(meta.Files))
 	for name := range meta.Files {
 		src := filepath.Join(backupDir, name)
-		if _, err := os.Stat(src); err != nil {
-			continue
-		}
 		if err := copyFile(src, filepath.Join(sqpackDir, name)); err != nil {
 			return nil, err
 		}
 		restored = append(restored, name)
 	}
 	sort.Strings(restored)
-	if len(restored) == 0 {
-		return nil, fmt.Errorf("%s 的本地备份中没有可还原的文件", reg)
-	}
 	return restored, nil
 }
 

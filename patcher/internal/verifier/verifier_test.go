@@ -235,6 +235,40 @@ func TestMultiRegionIsolation(t *testing.T) {
 	}
 }
 
+// TestNonGlobalWithoutBackupSucceeds 验证繁中服 / 韩服在本地无备份时，因原版哈希未知不阻断汉化，而是自动备份当前文件并汉化。
+func TestNonGlobalWithoutBackupSucceeds(t *testing.T) {
+	for _, lang := range []region.Language{region.TC, region.KO} {
+		t.Run(string(lang), func(t *testing.T) {
+			version := "2026.10.16.0000.0000"
+			files := allContents("initial-game-files", AllFiles)
+			env := newTestEnv(t, version, files)
+			// 本地不提供任何预先备份
+
+			cfg := baseConfig(env, lang)
+			cfg.ReplaceFont = true
+			cfg.ApplyText = func(ctx context.Context) error { return nil }
+			cfg.ApplyFont = func(ctx context.Context) error { return nil }
+
+			result, err := Run(context.Background(), cfg)
+			if err != nil {
+				t.Fatalf("%s 首次汉化不应失败: %v", lang, err)
+			}
+			if !result.TextPatched || !result.FontPatched {
+				t.Fatalf("%s 汉化应成功完成", lang)
+			}
+			if result.Plan.Text.Action != ActionPatch || result.Plan.Font.Action != ActionPatch {
+				t.Fatalf("%s 动作应为 ActionPatch，实际 text=%s font=%s",
+					lang, result.Plan.Text.Action, result.Plan.Font.Action)
+			}
+			// 验证已自动生成备份
+			meta, err := readBackupMeta(filepath.Join(env.backupRoot, string(region.Of(lang))))
+			if err != nil || meta == nil || meta.Version != version {
+				t.Fatalf("%s 应自动生成当前版本备份", lang)
+			}
+		})
+	}
+}
+
 // TestVersionHigherThanCloud 验证本地版本高于云端时禁止下载旧版覆盖。
 func TestVersionHigherThanCloud(t *testing.T) {
 	localVersion := "2026.10.16.0000.0000"
@@ -799,5 +833,144 @@ func TestZipArchiveAutoExtractionAndAlias(t *testing.T) {
 	hash, hasHash := rel.AssetSHA256("000000.win32.dat0")
 	if !hasHash || hash != expectedHash {
 		t.Errorf("AssetSHA256 未能正确获取 FileHashes: %s (hasHash=%v)", hash, hasHash)
+	}
+}
+
+func TestRestoreNonGlobalRules(t *testing.T) {
+	for _, lang := range []region.Language{region.CHS, region.TC, region.KO} {
+		t.Run(string(lang)+"本地无备份报错", func(t *testing.T) {
+			env := newTestEnv(t, "2026.10.16.0000.0000", allContents("content", AllFiles))
+			_, err := Restore(context.Background(), RestoreConfig{
+				GameDir:    env.gameDir,
+				BackupRoot: env.backupRoot,
+				Language:   lang,
+			})
+			if err == nil {
+				t.Fatalf("%s 无本地备份且无云端下载时 Restore 应返回错误", lang)
+			}
+			if !strings.Contains(err.Error(), "未收录云端原版下载") && !strings.Contains(err.Error(), "不存在") {
+				t.Fatalf("%s 错误信息不符: %v", lang, err)
+			}
+		})
+
+		t.Run(string(lang)+"游戏更新后旧版本备份无法还原", func(t *testing.T) {
+			oldVersion := "2026.10.16.0000.0000"
+			newVersion := "2026.10.23.0000.0000"
+			original := allContents("tc-orig", AllFiles)
+			patched := allContents("tc-patched", AllFiles)
+			env := newTestEnv(t, newVersion, patched)
+			env.seedBackup(t, lang, oldVersion, original)
+
+			_, err := Restore(context.Background(), RestoreConfig{
+				GameDir:    env.gameDir,
+				BackupRoot: env.backupRoot,
+				Language:   lang,
+			})
+			if err == nil {
+				t.Fatalf("%s 游戏更新后旧备份 Restore 应报错", lang)
+			}
+			if !strings.Contains(err.Error(), "不一致") && !strings.Contains(err.Error(), "已更新") {
+				t.Fatalf("%s 错误信息不符: %v", lang, err)
+			}
+		})
+
+		t.Run(string(lang)+"备份文件被外部修改后无法还原", func(t *testing.T) {
+			version := "2026.10.16.0000.0000"
+			original := allContents("tc-orig", AllFiles)
+			patched := allContents("tc-patched", AllFiles)
+			env := newTestEnv(t, version, patched)
+			env.seedBackup(t, lang, version, original)
+
+			// 模拟备份文件被外部修改
+			backupFile := filepath.Join(env.backupRoot, string(region.Of(lang)), AllFiles[0])
+			_ = os.WriteFile(backupFile, []byte("externally-modified-content"), 0o644)
+
+			_, err := Restore(context.Background(), RestoreConfig{
+				GameDir:    env.gameDir,
+				BackupRoot: env.backupRoot,
+				Language:   lang,
+			})
+			if err == nil {
+				t.Fatalf("%s 备份文件被修改后 Restore 应报错", lang)
+			}
+			if !strings.Contains(err.Error(), "不一致") && !strings.Contains(err.Error(), "修改") {
+				t.Fatalf("%s 错误信息不符: %v", lang, err)
+			}
+		})
+
+		t.Run(string(lang)+"本地有备份且未被修改可成功还原", func(t *testing.T) {
+			version := "2026.10.16.0000.0000"
+			original := allContents("tc-orig", AllFiles)
+			patched := allContents("tc-patched", AllFiles)
+			env := newTestEnv(t, version, patched)
+			env.seedBackup(t, lang, version, original)
+
+			restored, err := Restore(context.Background(), RestoreConfig{
+				GameDir:    env.gameDir,
+				BackupRoot: env.backupRoot,
+				Language:   lang,
+			})
+			if err != nil {
+				t.Fatalf("%s 有本地备份时 Restore 失败: %v", lang, err)
+			}
+			if len(restored) == 0 {
+				t.Fatalf("%s 未还原任何文件", lang)
+			}
+			if got := env.read(t, AllFiles[0]); got != original[AllFiles[0]] {
+				t.Fatalf("%s 游戏文件未成功从本地备份还原", lang)
+			}
+		})
+	}
+}
+
+// TestFontConfirmRuleOnlyChinaSkips 验证字体弹窗规则：只有国服不需要字体弹窗，其他服（国际服、繁中服、韩服）都需要。
+func TestFontConfirmRuleOnlyChinaSkips(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	files := allContents("orig", AllFiles)
+
+	// 1. 国服不弹窗
+	t.Run("国服不需要弹窗", func(t *testing.T) {
+		env := newTestEnv(t, version, files)
+		cfg := baseConfig(env, region.CHS)
+		cfg.ReplaceText = true
+		cfg.ReplaceFont = false
+		confirmCalled := false
+		cfg.ConfirmFont = func(ctx context.Context) (bool, error) {
+			confirmCalled = true
+			return true, nil
+		}
+		cfg.ApplyText = func(ctx context.Context) error { return nil }
+
+		res, err := Run(context.Background(), cfg)
+		if err != nil {
+			t.Fatalf("Run 失败: %v", err)
+		}
+		if res.Plan.NeedFontConfirm || confirmCalled {
+			t.Fatalf("国服不应触发字体确认弹窗")
+		}
+	})
+
+	// 2. 其他服（国际服、繁中服、韩服）都需要弹窗
+	for _, lang := range []region.Language{region.GLOBAL, region.TC, region.KO} {
+		t.Run(string(lang)+"需要字体弹窗", func(t *testing.T) {
+			env := newTestEnv(t, version, files)
+			cfg := baseConfig(env, lang)
+			cfg.ReplaceText = true
+			cfg.ReplaceFont = false
+			confirmCalled := false
+			cfg.ConfirmFont = func(ctx context.Context) (bool, error) {
+				confirmCalled = true
+				return true, nil
+			}
+			cfg.ApplyText = func(ctx context.Context) error { return nil }
+
+			res, err := Run(context.Background(), cfg)
+			if err != nil {
+				t.Fatalf("%s Run 失败: %v", lang, err)
+			}
+			if !res.Plan.NeedFontConfirm || !confirmCalled {
+				t.Fatalf("%s 应触发字体确认弹窗", lang)
+			}
+		})
 	}
 }
