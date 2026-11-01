@@ -1,6 +1,9 @@
+import { ktgSpecialFile } from "./ktg.ts";
+
 export type LanguageSource = "ja" | "cn";
 
 export const specialFile: Record<string, Record<string, Record<string, string>>> = {
+  "KTGTypeWordTextData.csv": ktgSpecialFile,
   "SpecialShop.csv": {
     "0": {
       "1769930": "从前的稀少神典石",
