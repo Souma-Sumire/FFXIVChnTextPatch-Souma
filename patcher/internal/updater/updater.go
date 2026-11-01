@@ -35,7 +35,6 @@ type BundleInfo struct {
 // Manifest 对应 resource/manifest.json。
 type Manifest struct {
 	GeneratedAt string              `json:"generatedAt"`
-	RootHash    string              `json:"rootHash"`
 	RawEXD      BundleInfo          `json:"rawexd"`
 	Font        BundleInfo          `json:"font"`
 	Rules       BundleInfo          `json:"rules"`
@@ -159,9 +158,9 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 				}
 				return
 			}
-			if m.RootHash == "" {
+			if m.RawEXD.SHA256 == "" {
 				select {
-				case resCh <- response{node: n, err: errors.New("manifest.json 缺少 rootHash")}:
+				case resCh <- response{node: n, err: errors.New("manifest.json 缺少 rawexd")}:
 				case <-raceCtx.Done():
 				}
 				return
