@@ -125,6 +125,7 @@ interface ClientStatusResult {
 }
 
 interface GoApp {
+  GetAppVersion(): Promise<string>;
   GetBootstrap(): Promise<BootstrapInfo>;
   SaveConfig(config: AppConfig): Promise<void>;
   DetectGamePaths(): Promise<string[]>;
@@ -682,6 +683,15 @@ async function bootstrapApp(): Promise<void> {
     wireRuntimeEvents();
     wireEvents();
 
+    try {
+      const ver = await call("GetAppVersion");
+      if (ver && el.versionBadge) {
+        el.versionBadge.textContent = `v${ver}`;
+      }
+    } catch {
+      // 容错防御
+    }
+
     await loadBootstrap();
     switchView("workbench");
 
@@ -700,6 +710,14 @@ async function bootstrapApp(): Promise<void> {
       });
     }
   } catch (error) {
+    try {
+      const ver = await call("GetAppVersion");
+      if (ver && el.versionBadge) {
+        el.versionBadge.textContent = `v${ver}`;
+      }
+    } catch {
+      // 容错防御
+    }
     log(`初始化失败: ${describeError(error)}`, "error");
     switchView("workbench");
   }
