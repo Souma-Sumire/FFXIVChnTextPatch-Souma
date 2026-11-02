@@ -38,6 +38,7 @@ const IGNORED_ROOT_CSVS = new Set([
 const NO_TRANSLATION_REG = /^●|翻訳不要|^[<hex:A-Z0-9>\\!@#$%^&*()_+-=/ 《》]+$/;
 const SHOUTING_REG = /(?<=(?:“说话”频道.*输入).*?“)(?<str>(?!<hex).+?)(?=”)/;
 const SKIP_REG = /（★未使用／削除予定★）/;
+const KANA_REG = /[\u3040-\u309f\u30a0-\u30ff]/;
 
 function parseCsv(content: string): string[][] {
   const text = content.replace(/^\ufeff/, "");
@@ -205,11 +206,14 @@ function checkKTGTypeWordMissing(params: {
     const enText = params.enMap.get(key)?.["0"] ?? "";
     const outEntry = outMap.get(key);
     const cnText = outEntry?.["0"] ?? "";
+    const pinyinText = outEntry?.["1"] ?? "";
 
     if (!jaText && !enText) continue;
 
-    if (!cnText) {
+    if (!cnText || KANA_REG.test(cnText)) {
       warnings.push(`  - [Key ${key}] 国际服有内容但汉化缺失 (日: "${jaText}", 英: "${enText}")`);
+    } else if (!pinyinText) {
+      warnings.push(`  - [Key ${key}] 缺少击键拼音 (词条: "${cnText}")`);
     }
   }
 
