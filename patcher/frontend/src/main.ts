@@ -129,8 +129,29 @@ interface ClientStatusResult {
   description: string;
 }
 
+interface AppUpdateInfo {
+  hasUpdate: boolean;
+  currentVersion: string;
+  latestVersion: string;
+  title: string;
+  releaseNotes: string;
+  releaseUrl: string;
+  downloadUrl: string;
+}
+
+interface ImportResourceResult {
+  success: boolean;
+  cancelled: boolean;
+  message: string;
+  resourceTime?: string;
+  resourceHash?: string;
+  tableCount?: number;
+}
+
 interface GoApp {
   GetAppVersion(): Promise<string>;
+  CheckAppUpdate(): Promise<AppUpdateInfo>;
+  ImportOfflineResource(filePath?: string): Promise<ImportResourceResult>;
   GetBootstrap(): Promise<BootstrapInfo>;
   SaveConfig(config: AppConfig): Promise<void>;
   DetectGamePaths(language: string): Promise<string[]>;
@@ -138,6 +159,7 @@ interface GoApp {
   GetGameInfo(gameDir: string, language: string): Promise<GameInfo>;
   CheckClientStatus(gameDir: string, language: string): Promise<ClientStatusResult>;
   StartPatch(req: PatchRequest): Promise<PatchResponse>;
+  CancelPatch(): Promise<void>;
   AnswerFontConfirm(ok: boolean): Promise<void>;
   AnswerLauncherConfirm(ok: boolean): Promise<void>;
   KillLauncherProcesses(gameDir: string): Promise<string[]>;
@@ -212,11 +234,13 @@ let clientStatus: ClientStatusResult | null = null;
 let checkingClient = false;
 let modalResolver: ((ok: boolean) => void) | null = null;
 let busy = false;
+let isPatching = false;
+let isStopping = false;
+let latestUpdateInfo: AppUpdateInfo | null = null;
+let checkingAppUpdate = false;
 
 let logEntries: LogEntry[] = [];
 let nextLogId = 1;
-let currentLogFilter: "all" | "normal" | "error" = "all";
-let errorLogCount = 0;
 
 const selected = new Set<string>();
 const expandedFolders = new Set<string>();
@@ -240,8 +264,12 @@ const el = {
   provisionDetail: byId("provision-detail"),
   provisionProgressBar: byId("provision-progress-bar"),
   provisionMeta: byId("provision-meta"),
+  provisionOfflineWrap: byId("provision-offline-wrap"),
+  btnProvisionImportOffline: byId<HTMLButtonElement>("btn-provision-import-offline"),
 
-  versionBadge: byId("version-badge"),
+  versionBadge: byId<HTMLButtonElement>("version-badge"),
+  btnAppUpdate: byId<HTMLButtonElement>("btn-app-update"),
+  appUpdateTag: byId("app-update-tag"),
 
   gamePath: byId<HTMLInputElement>("game-path"),
   gameInfo: byId("game-info"),
@@ -254,6 +282,7 @@ const el = {
   fontUiAssetStatus: byId("font-ui-asset-status"),
   resourceBuildMeta: byId("resource-build-meta"),
   resourceBuildTime: byId("resource-build-time"),
+  btnImportOffline: byId<HTMLButtonElement>("btn-import-offline"),
   rules: byId("rules"),
 
   btnOpenTables: byId<HTMLButtonElement>("btn-open-tables"),
@@ -272,10 +301,6 @@ const el = {
   logResizer: byId("log-resizer"),
   btnToggleLog: byId<HTMLButtonElement>("btn-toggle-log"),
   btnToggleLogText: byId<HTMLElement>("btn-toggle-log-text"),
-  filterLogAll: byId<HTMLButtonElement>("filter-log-all"),
-  filterLogNormal: byId<HTMLButtonElement>("filter-log-normal"),
-  filterLogError: byId<HTMLButtonElement>("filter-log-error"),
-  logErrorCount: byId("log-error-count"),
   btnCopyLog: byId<HTMLButtonElement>("btn-copy-log"),
   btnCopyLogText: byId<HTMLElement>("btn-copy-log-text"),
   btnClearLog: byId<HTMLButtonElement>("btn-clear-log"),
@@ -336,81 +361,37 @@ function parseLogTag(message: string, fallbackKind: string): { tag: string; clea
 
 function log(message: string, kind?: "info" | "ok" | "warn" | "error" | "patched"): void {
   const actualKind = parseLogKind(message, kind);
-  const { tag, cleanMessage } = parseLogTag(message, actualKind);
   const timeStr = new Date().toLocaleTimeString("zh-CN", { hour12: false });
 
   const entry: LogEntry = {
     id: nextLogId++,
     time: timeStr,
     level: actualKind,
-    tag: tag,
-    message: cleanMessage,
+    tag: "",
+    message: message,
   };
   logEntries.push(entry);
   if (logEntries.length > 500) {
     logEntries.shift();
   }
 
-  if (actualKind === "error" || actualKind === "warn") {
-    errorLogCount++;
-    el.logErrorCount.textContent = String(errorLogCount);
-    el.logErrorCount.classList.remove("hidden");
-  }
-
   const line = document.createElement("div");
   line.className = `log-line ${actualKind === "info" ? "" : actualKind}`.trim();
   line.dataset.level = actualKind;
-
-  if (
-    (currentLogFilter === "normal" && (actualKind === "error" || actualKind === "warn")) ||
-    (currentLogFilter === "error" && actualKind !== "error" && actualKind !== "warn")
-  ) {
-    line.classList.add("filter-hidden");
-  }
 
   const timeEl = document.createElement("span");
   timeEl.className = "time";
   timeEl.textContent = timeStr;
   line.append(timeEl);
 
-  const tagEl = document.createElement("span");
-  tagEl.className = "log-tag";
-  if (tag.includes("错误") || tag.includes("失败") || actualKind === "error") {
-    tagEl.classList.add("tag-err");
-  } else if (tag.includes("警告") || tag.includes("注意") || actualKind === "warn") {
-    tagEl.classList.add("tag-warn");
-  } else if (tag.includes("完成") || tag.includes("成功")) {
-    tagEl.classList.add("tag-ok");
-  } else {
-    tagEl.classList.add("tag-primary");
-  }
-  tagEl.textContent = tag;
-  line.append(tagEl);
-
   const textEl = document.createElement("span");
   textEl.className = "log-text";
-  textEl.textContent = cleanMessage;
+  textEl.textContent = message;
   line.append(textEl);
 
   el.log.append(line);
   while (el.log.childElementCount > 500) {
     el.log.firstElementChild?.remove();
-  }
-  el.log.scrollTop = el.log.scrollHeight;
-}
-
-function setLogFilter(filter: "all" | "normal" | "error"): void {
-  currentLogFilter = filter;
-  el.filterLogAll.classList.toggle("active", filter === "all");
-  el.filterLogNormal.classList.toggle("active", filter === "normal");
-  el.filterLogError.classList.toggle("active", filter === "error");
-
-  const lines = el.log.querySelectorAll<HTMLDivElement>(".log-line");
-  for (const line of lines) {
-    const level = line.dataset.level;
-    const isErr = level === "error" || level === "warn";
-    const hide = (filter === "normal" && isErr) || (filter === "error" && !isErr);
-    line.classList.toggle("filter-hidden", hide);
   }
   el.log.scrollTop = el.log.scrollHeight;
 }
@@ -441,7 +422,7 @@ async function copyLogs(): Promise<void> {
 }
 
 const STORAGE_KEY_LOG_HEIGHT = "ffxiv_patcher_log_height";
-const DEFAULT_LOG_HEIGHT = 160;
+const DEFAULT_LOG_HEIGHT = 130;
 const MIN_LOG_HEIGHT = 70;
 const COLLAPSE_THRESHOLD = 50;
 
@@ -630,13 +611,21 @@ function setBusy(value: boolean, label = ""): void {
     el.progressBar.style.width = "0%";
     el.actionProgressPercent.textContent = "0%";
   }
-  el.btnPatch.disabled = value;
+  if (!isPatching) {
+    el.btnPatch.disabled = value;
+  }
   el.btnBrowse.disabled = value;
   el.btnDetect.disabled = value;
   el.preset.disabled = value;
   el.language.disabled = value;
   el.replaceText.disabled = value;
   el.replaceFont.disabled = value;
+  el.rules.querySelectorAll<HTMLInputElement>("input[type='checkbox']").forEach((cb) => {
+    cb.disabled = value;
+  });
+  el.rules.querySelectorAll(".rule-row").forEach((row) => {
+    row.classList.toggle("disabled", value);
+  });
   updateTextScopeState();
   updateFontUiAssetState();
   updateRestoreButtonState();
@@ -700,6 +689,85 @@ function describeError(error: unknown): string {
   return String(error);
 }
 
+async function checkAppUpdate(interactive = false): Promise<void> {
+  if (checkingAppUpdate) return;
+  checkingAppUpdate = true;
+  if (interactive) {
+    log("[检查] 正在检查汉化器主程序更新...");
+  }
+  try {
+    const info = await call("CheckAppUpdate");
+    latestUpdateInfo = info;
+    if (info.hasUpdate) {
+      el.btnAppUpdate.classList.remove("hidden");
+      el.btnAppUpdate.title = `发现新版本 v${info.latestVersion}，点击查看更新`;
+      log(`[更新] 发现新版本 v${info.latestVersion}，可点击右上角标签查看。`, "ok");
+      if (interactive) {
+        showUpdateDialog(info);
+      }
+    } else {
+      el.btnAppUpdate.classList.add("hidden");
+      if (interactive) {
+        log("[检查] 当前汉化器已是最新版本。", "ok");
+        await showConfirm("检查更新", `当前已是最新版本 (v${info.currentVersion})。`, "确定");
+      }
+    }
+  } catch (err) {
+    if (interactive) {
+      log(`[错误] 检查主程序更新失败: ${describeError(err)}`, "error");
+      await showConfirm("检查更新失败", `无法连接到更新服务器: ${describeError(err)}`, "确定");
+    }
+  } finally {
+    checkingAppUpdate = false;
+  }
+}
+
+function showUpdateDialog(info: AppUpdateInfo): void {
+  const notes = info.releaseNotes ? `\n\n更新说明：\n${info.releaseNotes}` : "";
+  const text = `发现新版本 v${info.latestVersion}（当前为 v${info.currentVersion}）${notes}`;
+  void showConfirm("发现新版本", text, "前往下载").then((ok) => {
+    if (ok) {
+      void call("OpenLink", info.downloadUrl || info.releaseUrl);
+    }
+  });
+}
+
+function setOfflineState(offline: boolean): void {
+  el.btnImportOffline.classList.toggle("hidden", !offline);
+  el.provisionOfflineWrap?.classList.toggle("hidden", !offline);
+  if (offline && !el.viewProvisioning.classList.contains("hidden")) {
+    el.provisionDetail.textContent = "连接云端或下载资源失败，已进入离线状态";
+    el.provisionMeta.textContent = "可点击下方按钮选择本地离线资源包 (*.zip) 导入";
+  }
+}
+
+async function handleImportOfflineResource(): Promise<void> {
+  if (busy) return;
+  try {
+    setBusy(true, "正在导入离线资源包…");
+    const res = await call("ImportOfflineResource", "");
+    if (res.cancelled) {
+      return;
+    }
+    if (res.success) {
+      log(`[离线包] ${res.message}，汉化资源已就绪。`, "ok");
+      setOfflineState(false);
+      await loadBootstrap();
+      if (config.gameDir) {
+        await refreshGameInfo();
+        void checkClientEnvironment();
+      }
+      switchView("workbench");
+      await showConfirm("导入成功", `成功导入离线资源包！\n共收录 ${res.tableCount ?? 0} 个数据表文件，汉化资源已就绪。`, "开始使用");
+    }
+  } catch (err) {
+    log(`[错误] 导入离线资源包失败: ${describeError(err)}`, "error");
+    await showConfirm("导入失败", `离线资源包解析失败: ${describeError(err)}`, "确定");
+  } finally {
+    setBusy(false);
+  }
+}
+
 async function bootstrapApp(): Promise<void> {
   try {
     await waitForBackend(8000);
@@ -717,6 +785,7 @@ async function bootstrapApp(): Promise<void> {
 
     await loadBootstrap();
     switchView("workbench");
+    void checkAppUpdate(false);
 
     if (config.gameDir) {
       await refreshGameInfo();
@@ -742,6 +811,7 @@ async function bootstrapApp(): Promise<void> {
       // 容错防御
     }
     log(`初始化失败: ${describeError(error)}`, "error");
+    setOfflineState(true);
     switchView("workbench");
   }
 }
@@ -775,6 +845,7 @@ async function loadBootstrap(): Promise<void> {
     el.versionBadge.textContent = `v${info.version}`;
   }
   updateResourceBuildMeta(info.resourceTime, info.resourceHash);
+  setOfflineState(info.offline);
   el.gamePath.value = config.gameDir;
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
@@ -1311,6 +1382,17 @@ function markCustomPreset(): void {
 }
 
 function wireEvents(): void {
+  el.versionBadge.addEventListener("click", () => void checkAppUpdate(true));
+  el.btnAppUpdate.addEventListener("click", () => {
+    if (latestUpdateInfo?.hasUpdate) {
+      showUpdateDialog(latestUpdateInfo);
+    } else {
+      void checkAppUpdate(true);
+    }
+  });
+  el.btnImportOffline.addEventListener("click", () => void handleImportOfflineResource());
+  el.btnProvisionImportOffline.addEventListener("click", () => void handleImportOfflineResource());
+
   el.btnBrowse.addEventListener("click", async () => {
     if (busy) {
       return;
@@ -1483,9 +1565,6 @@ function wireEvents(): void {
   el.btnClearLog.addEventListener("click", () => {
     el.log.replaceChildren();
     logEntries = [];
-    errorLogCount = 0;
-    el.logErrorCount.textContent = "0";
-    el.logErrorCount.classList.add("hidden");
   });
 
   el.btnCopyLog.addEventListener("click", () => {
@@ -1504,10 +1583,6 @@ function wireEvents(): void {
       toggleConsole(true);
     }
   });
-
-  el.filterLogAll.addEventListener("click", () => setLogFilter("all"));
-  el.filterLogNormal.addEventListener("click", () => setLogFilter("normal"));
-  el.filterLogError.addEventListener("click", () => setLogFilter("error"));
 
   el.btnRestore.addEventListener("click", async () => {
     if (busy) {
@@ -1556,9 +1631,9 @@ function wireEvents(): void {
       }
       const restoredCount = (resp.restored ?? []).length;
       if (restoredCount === 0) {
-        log("客户端全部核心文件均已是官方原版，无需重复还原", "ok");
+        log("客户端文件已是官方原版，无需重复还原", "ok");
       } else {
-        log(`已还原官方原版 (${restoredCount} 个变动文件)`, "ok");
+        log("官方原版文件已全部恢复完成", "ok");
       }
       try {
         clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
@@ -1573,7 +1648,33 @@ function wireEvents(): void {
     }
   });
 
+  el.btnPatch.addEventListener("mouseenter", () => {
+    if (isPatching && !isStopping) {
+      if (el.btnPatchText) el.btnPatchText.textContent = "停止";
+    }
+  });
+
+  el.btnPatch.addEventListener("mouseleave", () => {
+    if (isPatching && !isStopping) {
+      if (el.btnPatchText) el.btnPatchText.textContent = "正在汉化";
+    }
+  });
+
   el.btnPatch.addEventListener("click", async () => {
+    if (isPatching) {
+      if (isStopping) return;
+      isStopping = true;
+      if (el.btnPatchText) el.btnPatchText.textContent = "正在停止…";
+      el.btnPatch.classList.add("is-stopping");
+      el.btnPatch.disabled = true;
+      try {
+        await call("CancelPatch");
+      } catch {
+        // 忽略中止调用异常
+      }
+      return;
+    }
+
     if (busy) {
       return;
     }
@@ -1594,6 +1695,12 @@ function wireEvents(): void {
       return;
     }
 
+    isPatching = true;
+    isStopping = false;
+    el.btnPatch.classList.add("is-patching");
+    if (el.btnPatchText) el.btnPatchText.textContent = "正在汉化";
+    el.btnPatch.disabled = false;
+
     try {
       toggleConsole(true);
       setBusy(true, "正在执行安全校验与汉化流程…");
@@ -1612,7 +1719,7 @@ function wireEvents(): void {
 
       const resp = await call("StartPatch", req);
       if (resp.cancelled) {
-        log("[提示] 汉化已取消", "info");
+        log("[提示] 汉化已中止", "info");
         return;
       }
       for (const w of resp.warnings ?? []) {
@@ -1628,6 +1735,10 @@ function wireEvents(): void {
     } catch (error) {
       log(`汉化失败: ${describeError(error)}`, "error");
     } finally {
+      isPatching = false;
+      isStopping = false;
+      el.btnPatch.classList.remove("is-patching", "is-stopping");
+      if (el.btnPatchText) el.btnPatchText.textContent = "开始汉化";
       setBusy(false);
     }
   });
@@ -1639,10 +1750,18 @@ function wireRuntimeEvents(): void {
     return;
   }
 
+  on("resource-offline", (offline: unknown) => {
+    const isOff = typeof offline === "boolean" ? offline : true;
+    setOfflineState(isOff);
+  });
+
   let pendingResourceProgress: PatchProgressEvent | null = null;
   let resourceRafId = 0;
   on("resource-progress", (data: unknown) => {
     const ev = asProgress(data);
+    if (ev.stage === "rawexd" || ev.stage === "font" || ev.stage === "meta" || ev.stage === "done") {
+      setOfflineState(false);
+    }
     pendingResourceProgress = ev;
     if (!resourceRafId) {
       resourceRafId = requestAnimationFrame(() => {

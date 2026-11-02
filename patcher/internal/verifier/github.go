@@ -40,6 +40,9 @@ type ReleaseAsset struct {
 // Release 是精简后的 GitHub Release。
 type Release struct {
 	Tag        string
+	Title      string
+	Body       string
+	URL        string
 	Assets     map[string]ReleaseAsset
 	FileHashes map[string]string
 }
@@ -150,6 +153,9 @@ type githubAsset struct {
 
 type githubRelease struct {
 	TagName string        `json:"tag_name"`
+	Name    string        `json:"name"`
+	Body    string        `json:"body"`
+	HTMLURL string        `json:"html_url"`
 	Assets  []githubAsset `json:"assets"`
 }
 
@@ -178,7 +184,13 @@ func (c *GitHubClient) getJSON(ctx context.Context, path string, out any) error 
 }
 
 func toRelease(in githubRelease) *Release {
-	out := &Release{Tag: in.TagName, Assets: make(map[string]ReleaseAsset, len(in.Assets))}
+	out := &Release{
+		Tag:    in.TagName,
+		Title:  in.Name,
+		Body:   in.Body,
+		URL:    in.HTMLURL,
+		Assets: make(map[string]ReleaseAsset, len(in.Assets)),
+	}
 	for _, a := range in.Assets {
 		out.Assets[a.Name] = ReleaseAsset{Name: a.Name, Digest: a.Digest, DownloadURL: a.BrowserDownloadURL}
 	}
@@ -436,7 +448,11 @@ func parseRecentReleasesHTML(html string, limit int) []*Release {
 			continue
 		}
 		seen[tag] = true
-		out = append(out, &Release{Tag: tag, Assets: make(map[string]ReleaseAsset)})
+		out = append(out, &Release{
+			Tag:    tag,
+			URL:    "https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/tag/" + tag,
+			Assets: make(map[string]ReleaseAsset),
+		})
 		if limit > 0 && len(out) >= limit {
 			break
 		}
@@ -679,7 +695,20 @@ func HashFile(path string) (FileHash, error) {
 	return FileHash{SHA256: hex.EncodeToString(h.Sum(nil)), Size: n}, nil
 }
 
-// CompareVersion 按点分数字比较版本号（如 2026.10.16.0000.0000）。
+func parseSegmentNumber(s string) int64 {
+	s = strings.TrimSpace(s)
+	end := 0
+	for end < len(s) && s[end] >= '0' && s[end] <= '9' {
+		end++
+	}
+	if end == 0 {
+		return 0
+	}
+	v, _ := strconv.ParseInt(s[:end], 10, 64)
+	return v
+}
+
+// CompareVersion 按点分数字比较版本号（如 2026.10.16.0000.0000 或 2.1.1）。
 func CompareVersion(a, b string) int {
 	as := strings.Split(strings.TrimSpace(a), ".")
 	bs := strings.Split(strings.TrimSpace(b), ".")
@@ -690,10 +719,10 @@ func CompareVersion(a, b string) int {
 	for i := 0; i < n; i++ {
 		var av, bv int64
 		if i < len(as) {
-			av, _ = strconv.ParseInt(strings.TrimSpace(as[i]), 10, 64)
+			av = parseSegmentNumber(as[i])
 		}
 		if i < len(bs) {
-			bv, _ = strconv.ParseInt(strings.TrimSpace(bs[i]), 10, 64)
+			bv = parseSegmentNumber(bs[i])
 		}
 		if av < bv {
 			return -1

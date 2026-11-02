@@ -2,6 +2,7 @@
 package replace
 
 import (
+	"context"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -21,6 +22,7 @@ import (
 
 // Options 控制文本替换流程。
 type Options struct {
+	Context         context.Context
 	TextIndexPath   string
 	CSVResourceDir  string
 	SourceLanguage  string   // 单语言兼容 (如 JA / EN / TC / KO / DE / FR)
@@ -97,6 +99,9 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 		}
 	}
 	for idx, exhPath := range fileList {
+		if opts.Context != nil && opts.Context.Err() != nil {
+			return stats, opts.Context.Err()
+		}
 		if !strings.HasSuffix(strings.ToUpper(exhPath), ".EXH") {
 			continue
 		}
@@ -347,6 +352,11 @@ func shouldSkip(name string, skipFiles []string) bool {
 
 // ReplaceFont 把 resource/font 下的字体逐个打包为 Type2 / Type4 块并追加到 000000 dat0。
 func ReplaceFont(indexPath, fontDir string, progress func(done, total int, file string)) (Stats, error) {
+	return ReplaceFontWithContext(context.Background(), indexPath, fontDir, progress)
+}
+
+// ReplaceFontWithContext 支持 context 取消的字体替换。
+func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, progress func(done, total int, file string)) (Stats, error) {
 	var stats Stats
 	if progress == nil {
 		progress = func(int, int, string) {}
@@ -393,6 +403,9 @@ func ReplaceFont(indexPath, fontDir string, progress func(done, total int, file 
 	}
 
 	for i, name := range fonts {
+		if ctx != nil && ctx.Err() != nil {
+			return stats, ctx.Err()
+		}
 		progress(i+1, len(fonts), name)
 		entry := folder.Files[sqpack.ComputeCRCString(name)]
 		if entry == nil {
