@@ -1,6 +1,7 @@
 package gameproc
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -80,31 +81,26 @@ func TestIsPathUnder(t *testing.T) {
 func TestIsConflicting(t *testing.T) {
 	gameDir := filepath.Join("D:", "Games", "FFXIV")
 
-	// 游戏本体在目录内
 	p1 := ProcessInfo{Name: "ffxiv_dx11.exe", Path: filepath.Join(gameDir, "game", "ffxiv_dx11.exe"), Type: TypeGame}
 	if !isConflicting(p1, gameDir) {
 		t.Errorf("expected p1 to conflict")
 	}
 
-	// 游戏本体在其他目录（如同时打开国服）
 	p2 := ProcessInfo{Name: "ffxiv_dx11.exe", Path: filepath.Join("D:", "Games", "FFXIV_CN", "game", "ffxiv_dx11.exe"), Type: TypeGame}
 	if isConflicting(p2, gameDir) {
 		t.Errorf("expected p2 NOT to conflict")
 	}
 
-	// 游戏本体路径未获取（权限不足等），保守判定冲突
 	p3 := ProcessInfo{Name: "ffxiv_dx11.exe", Path: "", Type: TypeGame}
 	if !isConflicting(p3, gameDir) {
 		t.Errorf("expected p3 to conflict when path is empty")
 	}
 
-	// 官方启动器在目录内
 	p4 := ProcessInfo{Name: "ffxivboot64.exe", Path: filepath.Join(gameDir, "boot", "ffxivboot64.exe"), Type: TypeOfficialLauncher}
 	if !isConflicting(p4, gameDir) {
 		t.Errorf("expected p4 to conflict")
 	}
 
-	// 第三方启动器（如在 AppData 下）
 	p5 := ProcessInfo{Name: "XIVLauncher.exe", Path: filepath.Join("C:", "Users", "Test", "AppData", "Local", "XIVLauncher", "XIVLauncher.exe"), Type: TypeThirdPartyLauncher}
 	if !isConflicting(p5, gameDir) {
 		t.Errorf("expected third-party launcher p5 to conflict")
@@ -137,7 +133,11 @@ func TestFormatConflictError(t *testing.T) {
 
 func TestCheckGameNotRunningWithMock(t *testing.T) {
 	origLister := procLister
-	defer func() { procLister = origLister }()
+	origKiller := procKiller
+	defer func() {
+		procLister = origLister
+		procKiller = origKiller
+	}()
 
 	tmpDir := t.TempDir()
 	sqpackDir := filepath.Join(tmpDir, "game", "sqpack", "ffxiv")
@@ -157,23 +157,80 @@ func TestCheckGameNotRunningWithMock(t *testing.T) {
 		t.Errorf("expected no error, got %v", err)
 	}
 
-	// 2. 检测到启动器正在运行
+	// 2. 检测到启动器正在运行，未提供回调时直接报错
 	procLister = func() ([]ProcessInfo, error) {
 		return []ProcessInfo{
-			{Name: "XIVLauncher.exe", Type: TypeThirdPartyLauncher},
+			{PID: 101, Name: "XIVLauncher.exe", Type: TypeThirdPartyLauncher},
 		}, nil
 	}
 	if err := CheckGameNotRunning(tmpDir); err == nil || !strings.Contains(err.Error(), "XIVLauncher.exe") {
 		t.Errorf("expected launcher conflict error, got %v", err)
 	}
 
-	// 3. 检测到本体正在运行
+	// 3. 用户在确认弹窗中选择取消，返回 ErrCancelled
+	err := CheckGameNotRunningWithOpts(CheckOptions{
+		GameDir: tmpDir,
+		OnLauncherConfirm: func(names []string) (bool, error) {
+			return false, nil
+		},
+	})
+	if !errors.Is(err, ErrCancelled) {
+		t.Errorf("expected ErrCancelled, got %v", err)
+	}
+
+	// 4. 用户在确认弹窗中同意强制结束，成功杀死并放行
+	var killedPids []uint32
+	procKiller = func(pid uint32) error {
+		killedPids = append(killedPids, pid)
+		return nil
+	}
+	var killedNamesLogged []string
+	err = CheckGameNotRunningWithOpts(CheckOptions{
+		GameDir: tmpDir,
+		OnLauncherConfirm: func(names []string) (bool, error) {
+			return true, nil
+		},
+		OnLaunchersKilled: func(killed []string) {
+			killedNamesLogged = killed
+		},
+	})
+	if err != nil {
+		t.Errorf("expected success after killing launcher, got: %v", err)
+	}
+	if len(killedPids) != 1 || killedPids[0] != 101 {
+		t.Errorf("expected PID 101 killed, got %v", killedPids)
+	}
+	if len(killedNamesLogged) != 1 || killedNamesLogged[0] != "XIVLauncher.exe" {
+		t.Errorf("expected killedNamesLogged XIVLauncher.exe, got %v", killedNamesLogged)
+	}
+
+	// 5. 游戏本体正在运行，即使提供启动器回调也不允许杀死本体，直接报错阻断
 	procLister = func() ([]ProcessInfo, error) {
 		return []ProcessInfo{
-			{Name: "ffxiv_dx11.exe", Path: filepath.Join(tmpDir, "game", "ffxiv_dx11.exe"), Type: TypeGame},
+			{PID: 102, Name: "ffxiv_dx11.exe", Path: filepath.Join(tmpDir, "game", "ffxiv_dx11.exe"), Type: TypeGame},
+			{PID: 103, Name: "XIVLauncher.exe", Type: TypeThirdPartyLauncher},
 		}, nil
 	}
-	if err := CheckGameNotRunning(tmpDir); err == nil || !strings.Contains(err.Error(), "游戏客户端正在运行") {
-		t.Errorf("expected game running error, got %v", err)
+	err = CheckGameNotRunningWithOpts(CheckOptions{
+		GameDir: tmpDir,
+		OnLauncherConfirm: func(names []string) (bool, error) {
+			t.Fatal("game client running should not trigger launcher confirm")
+			return true, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "游戏客户端正在运行") {
+		t.Errorf("expected game client running error, got %v", err)
+	}
+
+	// 6. KillLauncherProcesses 独立调用验证
+	procLister = func() ([]ProcessInfo, error) {
+		return []ProcessInfo{
+			{PID: 201, Name: "ffxivboot64.exe", Path: filepath.Join(tmpDir, "boot", "ffxivboot64.exe"), Type: TypeOfficialLauncher},
+		}, nil
+	}
+	killedPids = nil
+	killedList, err := KillLauncherProcesses(tmpDir)
+	if err != nil || len(killedList) != 1 || killedList[0] != "ffxivboot64.exe" {
+		t.Errorf("KillLauncherProcesses failed: %v, killed: %v", err, killedList)
 	}
 }

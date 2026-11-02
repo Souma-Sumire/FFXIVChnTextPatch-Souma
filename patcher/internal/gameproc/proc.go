@@ -7,7 +7,11 @@ import (
 	"path/filepath"
 	goruntime "runtime"
 	"strings"
+	"time"
 )
+
+// ErrCancelled 表示用户取消了启动器退出确认。
+var ErrCancelled = errors.New("操作已取消：游戏启动器正在运行")
 
 type ProcessType int
 
@@ -124,6 +128,18 @@ func filterConflicting(procs []ProcessInfo, gameDir string) []ProcessInfo {
 	return conflicts
 }
 
+func uniqueNames(procs []ProcessInfo) []string {
+	var names []string
+	seen := make(map[string]bool)
+	for _, p := range procs {
+		if !seen[p.Name] {
+			seen[p.Name] = true
+			names = append(names, p.Name)
+		}
+	}
+	return names
+}
+
 func formatConflictError(conflicts []ProcessInfo) error {
 	if len(conflicts) == 0 {
 		return nil
@@ -153,7 +169,59 @@ func formatConflictError(conflicts []ProcessInfo) error {
 	return fmt.Errorf("检测到游戏启动器正在运行（%s），为防止文件冲突或更新损坏，请先关闭启动器后再试", strings.Join(launcherNames, "、"))
 }
 
-var procLister = findRunningProcesses
+var (
+	procLister = findRunningProcesses
+	procKiller = killProcess
+)
+
+// KillProcesses 强制结束给定的进程列表，并在退出后做缓冲等待。
+func KillProcesses(procs []ProcessInfo) ([]string, error) {
+	var killed []string
+	var lastErr error
+	for _, p := range procs {
+		if err := procKiller(p.PID); err == nil {
+			killed = append(killed, p.Name)
+		} else {
+			lastErr = err
+		}
+	}
+	if len(killed) == 0 && lastErr != nil {
+		return nil, fmt.Errorf("结束进程失败: %w", lastErr)
+	}
+	time.Sleep(200 * time.Millisecond)
+	return killed, nil
+}
+
+// KillLauncherProcesses 扫描并强制结束当前运行中的冲突启动器进程。
+func KillLauncherProcesses(gameDir string) ([]string, error) {
+	_, launcherConflicts, err := InspectConflicts(gameDir)
+	if err != nil {
+		return nil, err
+	}
+	if len(launcherConflicts) == 0 {
+		return nil, nil
+	}
+	return KillProcesses(launcherConflicts)
+}
+
+// InspectConflicts 检查与指定游戏目录相关的进程冲突，分别返回游戏和启动器冲突列表。
+func InspectConflicts(gameDir string) ([]ProcessInfo, []ProcessInfo, error) {
+	procs, err := procLister()
+	if err != nil {
+		return nil, nil, nil
+	}
+	conflicts := filterConflicting(procs, gameDir)
+	var gameConflicts []ProcessInfo
+	var launcherConflicts []ProcessInfo
+	for _, p := range conflicts {
+		if p.Type == TypeGame {
+			gameConflicts = append(gameConflicts, p)
+		} else if p.Type == TypeOfficialLauncher || p.Type == TypeThirdPartyLauncher {
+			launcherConflicts = append(launcherConflicts, p)
+		}
+	}
+	return gameConflicts, launcherConflicts, nil
+}
 
 func checkFileLocks(gameDir string) error {
 	if gameDir == "" {
@@ -179,12 +247,62 @@ func checkFileLocks(gameDir string) error {
 	return nil
 }
 
-func CheckGameNotRunning(gameDir string) error {
-	if procs, err := procLister(); err == nil && len(procs) > 0 {
-		conflicts := filterConflicting(procs, gameDir)
-		if len(conflicts) > 0 {
-			return formatConflictError(conflicts)
-		}
+// LauncherConfirmFunc 用于向用户请求是否强制结束启动器的确认回调。
+type LauncherConfirmFunc func(launcherNames []string) (bool, error)
+
+// CheckOptions 控制冲突校验与自动恢复选项。
+type CheckOptions struct {
+	GameDir           string
+	OnLauncherConfirm LauncherConfirmFunc
+	OnLaunchersKilled func(killed []string)
+}
+
+// CheckGameNotRunningWithOpts 综合校验进程与文件句柄锁，并支持在启动器运行时交互确认并强制终止。
+func CheckGameNotRunningWithOpts(opts CheckOptions) error {
+	gameConflicts, launcherConflicts, err := InspectConflicts(opts.GameDir)
+	if err != nil {
+		return err
 	}
-	return checkFileLocks(gameDir)
+
+	// 1. 如果游戏本体正在运行，必须先由用户退出游戏本体
+	if len(gameConflicts) > 0 {
+		return formatConflictError(gameConflicts)
+	}
+
+	// 2. 如果仅启动器正在运行
+	if len(launcherConflicts) > 0 {
+		if opts.OnLauncherConfirm != nil {
+			names := uniqueNames(launcherConflicts)
+			confirmed, err := opts.OnLauncherConfirm(names)
+			if err != nil {
+				return err
+			}
+			if !confirmed {
+				return ErrCancelled
+			}
+
+			killed, err := KillProcesses(launcherConflicts)
+			if err != nil {
+				return fmt.Errorf("强制结束启动器失败: %w", err)
+			}
+			if opts.OnLaunchersKilled != nil {
+				opts.OnLaunchersKilled(killed)
+			}
+
+			// 进程结束后校验文件句柄锁释放情况
+			if err := checkFileLocks(opts.GameDir); err != nil {
+				return errors.New("已尝试结束启动器，但游戏客户端数据文件仍被占用，请稍候重试")
+			}
+			return nil
+		}
+		return formatConflictError(launcherConflicts)
+	}
+
+	// 3. 校验数据文件句柄锁
+	return checkFileLocks(opts.GameDir)
+}
+
+// CheckGameNotRunning 默认执行进程与句柄占用校验（不提供自动终止回调）。
+func CheckGameNotRunning(gameDir string) error {
+	return CheckGameNotRunningWithOpts(CheckOptions{GameDir: gameDir})
 }

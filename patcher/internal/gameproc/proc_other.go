@@ -4,6 +4,7 @@ package gameproc
 
 import (
 	"context"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
@@ -49,4 +50,19 @@ func findRunningProcesses() ([]ProcessInfo, error) {
 		}
 	}
 	return results, nil
+}
+
+func killProcess(pid uint32) error {
+	p, err := os.FindProcess(int(pid))
+	if err != nil {
+		return err
+	}
+	if err := p.Kill(); err != nil {
+		if strings.Contains(err.Error(), "already finished") || strings.Contains(err.Error(), "process already finished") {
+			return nil
+		}
+		return err
+	}
+	_, _ = p.Wait()
+	return nil
 }

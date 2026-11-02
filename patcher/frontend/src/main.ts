@@ -113,6 +113,7 @@ interface PatchResponse {
 
 interface RestoreResponse {
   restored: string[] | null;
+  cancelled?: boolean;
 }
 
 interface PatchProgressEvent {
@@ -138,6 +139,8 @@ interface GoApp {
   CheckClientStatus(gameDir: string, language: string): Promise<ClientStatusResult>;
   StartPatch(req: PatchRequest): Promise<PatchResponse>;
   AnswerFontConfirm(ok: boolean): Promise<void>;
+  AnswerLauncherConfirm(ok: boolean): Promise<void>;
+  KillLauncherProcesses(gameDir: string): Promise<string[]>;
   RestoreOriginal(gameDir: string, language: string): Promise<RestoreResponse>;
   EnsureHighResolutionUiAsset(): Promise<{
     configPath: string;
@@ -1547,6 +1550,10 @@ function wireEvents(): void {
       toggleConsole(true);
       setBusy(true, "正在还原官方原版文件…");
       const resp = await call("RestoreOriginal", config.gameDir, config.language);
+      if (resp.cancelled) {
+        log("[提示] 还原已取消", "info");
+        return;
+      }
       const restoredCount = (resp.restored ?? []).length;
       if (restoredCount === 0) {
         log("客户端全部核心文件均已是官方原版，无需重复还原", "ok");
@@ -1742,6 +1749,16 @@ function wireRuntimeEvents(): void {
     const ok = await showConfirm("字体替换提示", text, "继续汉化（不替换字体）");
     try {
       await call("AnswerFontConfirm", ok);
+    } catch (error) {
+      log(`确认反馈失败: ${describeError(error)}`, "error");
+    }
+  });
+
+  on("launcher-confirm", async (prompt: unknown) => {
+    const text = typeof prompt === "string" ? prompt : "检测到游戏启动器正在运行，是否强制结束启动器并继续？";
+    const ok = await showConfirm("启动器运行提示", text, "强制结束启动器并继续");
+    try {
+      await call("AnswerLauncherConfirm", ok);
     } catch (error) {
       log(`确认反馈失败: ${describeError(error)}`, "error");
     }
