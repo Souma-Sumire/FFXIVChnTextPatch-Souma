@@ -15,6 +15,7 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamecfg"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/replace"
@@ -117,12 +118,13 @@ type TableEntry struct {
 
 // AppConfig 是持久化配置。
 type AppConfig struct {
-	GameDir     string          `json:"gameDir"`
-	Language    string          `json:"language"`
-	ReplaceText bool            `json:"replaceText"`
-	ReplaceFont bool            `json:"replaceFont"`
-	Rules       map[string]bool `json:"rules"`
-	Preset      string          `json:"preset"`
+	GameDir     string            `json:"gameDir"`
+	GameDirs    map[string]string `json:"gameDirs,omitempty"`
+	Language    string            `json:"language"`
+	ReplaceText bool              `json:"replaceText"`
+	ReplaceFont bool              `json:"replaceFont"`
+	Rules       map[string]bool   `json:"rules"`
+	Preset      string            `json:"preset"`
 }
 
 // BootstrapInfo 是前端启动所需的全部静态信息。
@@ -149,15 +151,18 @@ type FileStatus struct {
 
 // GameInfo 描述游戏目录与版本状态。
 type GameInfo struct {
-	GameDir       string       `json:"gameDir"`
-	Version       string       `json:"version"`
-	Valid         bool         `json:"valid"`
-	Files         []FileStatus `json:"files"`
-	BackupVersion string       `json:"backupVersion"`
-	BackupExists  bool         `json:"backupExists"`
-	Region        string       `json:"region"`
-	ResourceTime  string       `json:"resourceTime,omitempty"`
-	ResourceHash  string       `json:"resourceHash,omitempty"`
+	GameDir        string       `json:"gameDir"`
+	Version        string       `json:"version"`
+	Valid          bool         `json:"valid"`
+	Files          []FileStatus `json:"files"`
+	BackupVersion  string       `json:"backupVersion"`
+	BackupExists   bool         `json:"backupExists"`
+	Region         string       `json:"region"`
+	DetectedRegion string       `json:"detectedRegion,omitempty"`
+	RegionMismatch bool         `json:"regionMismatch"`
+	ResourceTime   string       `json:"resourceTime,omitempty"`
+	ResourceHash   string       `json:"resourceHash,omitempty"`
+	UiAssetType    int          `json:"uiAssetType"`
 }
 
 // PatchRequest 是汉化请求。
@@ -280,12 +285,30 @@ func configPathFor(resourceDir string) string {
 	return filepath.Join(dataRootFor(resourceDir), "config.json")
 }
 
+func normalizeRegionCode(lang string) string {
+	parsed, err := region.ParseLanguage(lang)
+	if err != nil {
+		return string(region.GLOBAL)
+	}
+	switch region.Of(parsed) {
+	case region.China:
+		return string(region.CHS)
+	case region.Taiwan:
+		return string(region.TC)
+	case region.Korea:
+		return string(region.KO)
+	default:
+		return string(region.GLOBAL)
+	}
+}
+
 func defaultConfig() AppConfig {
 	rules := map[string]bool{}
 	for _, rule := range pipeline.BuiltinRules() {
 		rules[rule.ID()] = rule.Meta().DefaultOn
 	}
 	return AppConfig{
+		GameDirs:    map[string]string{},
 		Language:    string(region.GLOBAL),
 		ReplaceText: true,
 		ReplaceFont: true,
@@ -320,7 +343,20 @@ func (a *App) loadConfig(resourceDir string) AppConfig {
 			cfg.Language = string(parsed)
 		}
 	}
-	cfg.GameDir = saved.GameDir
+	if saved.GameDirs != nil {
+		cfg.GameDirs = saved.GameDirs
+	} else {
+		cfg.GameDirs = make(map[string]string)
+	}
+	if saved.GameDir != "" {
+		oldKey := normalizeRegionCode(saved.Language)
+		if cfg.GameDirs[oldKey] == "" {
+			cfg.GameDirs[oldKey] = saved.GameDir
+		}
+	}
+	curKey := normalizeRegionCode(cfg.Language)
+	cfg.GameDir = cfg.GameDirs[curKey]
+
 	cfg.ReplaceText = saved.ReplaceText
 	cfg.ReplaceFont = saved.ReplaceFont
 	cfg.Preset = saved.Preset
@@ -569,6 +605,13 @@ func buildTableList(tables TablesDoc) []TableEntry {
 // SaveConfig 保存前端配置到 config.json。
 func (a *App) SaveConfig(cfg AppConfig) error {
 	resourceDir := a.resourceDir()
+	if cfg.GameDirs == nil {
+		cfg.GameDirs = make(map[string]string)
+	}
+	norm := normalizeRegionCode(cfg.Language)
+	if cfg.GameDir != "" {
+		cfg.GameDirs[norm] = cfg.GameDir
+	}
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return err
@@ -576,10 +619,17 @@ func (a *App) SaveConfig(cfg AppConfig) error {
 	return os.WriteFile(configPathFor(resourceDir), append(data, '\n'), 0o644)
 }
 
-// DetectGamePaths 扫描常见安装位置。
-func (a *App) DetectGamePaths() []string {
+// DetectGamePaths 扫描指定区服的常见安装位置。
+func (a *App) DetectGamePaths(language string) []string {
+	var targetReg region.Region
+	if language != "" {
+		if parsed, err := region.ParseLanguage(language); err == nil {
+			targetReg = region.Of(parsed)
+		}
+	}
+
 	seen := map[string]bool{}
-	out := make([]string, 0, 4)
+	candidates := make([]string, 0, 8)
 	add := func(p string) {
 		p = filepath.Clean(p)
 		if seen[p] {
@@ -587,50 +637,92 @@ func (a *App) DetectGamePaths() []string {
 		}
 		if st, err := os.Stat(filepath.Join(p, "game", "ffxiv_dx11.exe")); err == nil && !st.IsDir() {
 			seen[p] = true
-			out = append(out, p)
+			candidates = append(candidates, p)
 		}
 	}
-	if home, err := os.UserHomeDir(); err == nil && home != "" {
-		macCandidates := []string{
-			filepath.Join(home, "Library", "Application Support", "FINAL FANTASY XIV ONLINE", "Bottles", "published_Final_Fantasy", "drive_c", "Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-			filepath.Join(home, "Library", "Application Support", "XIV on Mac", "ffxiv"),
-			filepath.Join(home, "Library", "Application Support", "XIV on Mac", "wineprefix", "drive_c", "Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-		}
-		for _, p := range macCandidates {
-			add(p)
+
+	if targetReg == "" || targetReg == region.Global {
+		if home, err := os.UserHomeDir(); err == nil && home != "" {
+			macCandidates := []string{
+				filepath.Join(home, "Library", "Application Support", "FINAL FANTASY XIV ONLINE", "Bottles", "published_Final_Fantasy", "drive_c", "Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+				filepath.Join(home, "Library", "Application Support", "XIV on Mac", "ffxiv"),
+				filepath.Join(home, "Library", "Application Support", "XIV on Mac", "wineprefix", "drive_c", "Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+			}
+			for _, p := range macCandidates {
+				add(p)
+			}
 		}
 	}
-	suffixes := []string{
-		filepath.Join("Games", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-		filepath.Join("Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-		filepath.Join("Program Files", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-		filepath.Join("Games", "FFXIV"),
-		filepath.Join("Games", "FFXIV_KO"),
-		filepath.Join("Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
-		filepath.Join("Program Files (x86)", "Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+
+	var suffixes []string
+	switch targetReg {
+	case region.China:
+		suffixes = []string{
+			filepath.Join("Program Files (x86)", "盛趣游戏", "最终幻想XIV"),
+			filepath.Join("Program Files", "盛趣游戏", "最终幻想XIV"),
+			filepath.Join("Program Files (x86)", "盛大游戏", "最终幻想XIV"),
+			filepath.Join("WeGameApps", "rail_apps", "最终幻想14(2000340)"),
+			filepath.Join("WeGame", "rail_apps", "最终幻想14(2000340)"),
+		}
+	case region.Global:
+		suffixes = []string{
+			filepath.Join("Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+			filepath.Join("Program Files", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+			filepath.Join("Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+			filepath.Join("Program Files (x86)", "Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+		}
+	case region.Korea, region.Taiwan:
+		suffixes = nil
+	default:
+		suffixes = []string{
+			filepath.Join("Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+			filepath.Join("Program Files", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+			filepath.Join("Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+			filepath.Join("Program Files (x86)", "Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+			filepath.Join("Program Files (x86)", "盛趣游戏", "最终幻想XIV"),
+			filepath.Join("Program Files", "盛趣游戏", "最终幻想XIV"),
+			filepath.Join("Program Files (x86)", "盛大游戏", "最终幻想XIV"),
+			filepath.Join("WeGameApps", "rail_apps", "最终幻想14(2000340)"),
+			filepath.Join("WeGame", "rail_apps", "最终幻想14(2000340)"),
+		}
 	}
+
 	for _, drive := range []string{"C:", "D:", "E:", "F:", "G:"} {
 		for _, suffix := range suffixes {
 			add(drive + string(os.PathSeparator) + suffix)
 		}
-		gamesDir := filepath.Join(drive+string(os.PathSeparator), "Games")
-		if entries, err := os.ReadDir(gamesDir); err == nil {
-			for _, e := range entries {
-				if e.IsDir() {
-					add(filepath.Join(gamesDir, e.Name()))
-				}
+	}
+
+	if targetReg == "" {
+		return candidates
+	}
+
+	matched := make([]string, 0, len(candidates))
+	for _, p := range candidates {
+		if actualReg, err := verifier.DetectClientRegion(p); err == nil {
+			if actualReg == targetReg {
+				matched = append(matched, p)
 			}
+		} else {
+			matched = append(matched, p)
 		}
 	}
-	return out
+	return matched
 }
 
 // SelectGameDirectory 打开目录选择对话框。
-func (a *App) SelectGameDirectory() (string, error) {
+func (a *App) SelectGameDirectory(language string) (string, error) {
 	cfg := a.loadConfig(a.resourceDir())
+	defaultDir := cfg.GameDir
+	if language != "" {
+		norm := normalizeRegionCode(language)
+		if d, ok := cfg.GameDirs[norm]; ok && d != "" {
+			defaultDir = d
+		}
+	}
 	return runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
 		Title:                "选择 FFXIV 客户端目录（包含 boot 与 game 文件夹）",
-		DefaultDirectory:     cfg.GameDir,
+		DefaultDirectory:     defaultDir,
 		CanCreateDirectories: false,
 	})
 }
@@ -646,6 +738,13 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 		lang = region.JA
 	}
 	info.Region = string(region.Of(lang))
+
+	if actualReg, err := verifier.DetectClientRegion(gameDir); err == nil && actualReg != "" {
+		info.DetectedRegion = string(actualReg)
+		if actualReg != region.Of(lang) {
+			info.RegionMismatch = true
+		}
+	}
 
 	versionData, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver"))
 	if err == nil {
@@ -681,6 +780,12 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 	if mf, err := updater.ReadLocalManifest(a.resourceDir()); err == nil && mf != nil {
 		info.ResourceTime = formatResourceTime(mf.GeneratedAt)
 		info.ResourceHash = shortHash(mf.RawEXD.SHA256)
+	}
+	info.UiAssetType = -1
+	if cfgPath, err := gamecfg.FindConfigFile(); err == nil {
+		if val, exists, err := gamecfg.ReadUiAssetType(cfgPath); err == nil && exists {
+			info.UiAssetType = val
+		}
 	}
 	return info, nil
 }
@@ -803,11 +908,21 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	}
 	reg := region.Of(lang)
 
+	// 0. 检查客户端真实区服与当前选择区服是否匹配
+	if actualReg, err := verifier.DetectClientRegion(gameDir); err == nil && actualReg != "" && actualReg != reg {
+		return ClientStatusResult{
+			Status:      "mismatch",
+			Label:       "区服不匹配",
+			Description: fmt.Sprintf("当前目录检测为【%s】客户端，与所选目标区服【%s】不一致，请切换区服或重新选择目录", region.DisplayName(actualReg), region.DisplayName(reg)),
+		}, nil
+	}
+
 	// 1. 优先检查本汉化器的已汉化记录（全区服通用，核对游戏目录、版本号及文件哈希）
 	if rec, ok := a.loadPatchedRecord(gameDir); ok {
 		cleanGameDir := filepath.Clean(gameDir)
 		cleanRecDir := filepath.Clean(rec.GameDir)
-		if strings.EqualFold(cleanGameDir, cleanRecDir) && len(rec.Files) > 0 {
+		recLang, _ := region.ParseLanguage(rec.Language)
+		if strings.EqualFold(cleanGameDir, cleanRecDir) && region.Of(recLang) == reg && len(rec.Files) > 0 {
 			sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
 			allMatch := true
 			for fName, wantHash := range rec.Files {
@@ -1074,6 +1189,27 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		return resp, err
 	}
 
+	targetReg := region.Of(lang)
+	if actualReg, err := verifier.DetectClientRegion(req.GameDir); err == nil && actualReg != "" && actualReg != targetReg {
+		return resp, fmt.Errorf("客户端区服不匹配：当前目录检测为【%s】客户端，与目标区服【%s】不一致；已中止汉化以防止损坏客户端数据，请切换区服或重新选择目录",
+			region.DisplayName(actualReg), region.DisplayName(targetReg))
+	}
+
+	if req.ReplaceFont {
+		cfgRes, cfgErr := gamecfg.EnsureHighResolutionUiAsset("")
+		if cfgErr != nil {
+			if errors.Is(cfgErr, gamecfg.ErrConfigNotFound) {
+				a.emitPatchLog("[提示] 未在“我的文档”中找到游戏配置文件，请在游戏系统设置中确认开启高分辨率界面")
+			} else {
+				a.emitPatchLog(fmt.Sprintf("[警告] 检查/修改游戏配置文件失败: %v", cfgErr))
+			}
+		} else if cfgRes.Modified {
+			a.emitPatchLog("[配置] 已自动备份游戏配置文件并开启高分辨率模式")
+		} else {
+			a.emitPatchLog("[配置] 游戏界面已是高分辨率模式")
+		}
+	}
+
 	// 确保执行汉化时后台检查与同步已完成，必定使用最新资源
 	if err := a.waitResourceReady(a.ctx); err != nil {
 		return resp, fmt.Errorf("确保最新资源失败: %w", err)
@@ -1213,7 +1349,12 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 
 	// 保存游戏目录与语言，便于下次启动。
 	cfgSaved := a.loadConfig(resourceDir)
+	if cfgSaved.GameDirs == nil {
+		cfgSaved.GameDirs = make(map[string]string)
+	}
+	normLang := normalizeRegionCode(string(lang))
 	cfgSaved.GameDir = req.GameDir
+	cfgSaved.GameDirs[normLang] = req.GameDir
 	cfgSaved.Language = string(lang)
 	cfgSaved.ReplaceText = req.ReplaceText
 	cfgSaved.ReplaceFont = req.ReplaceFont
@@ -1248,6 +1389,12 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 		return resp, err
 	}
 
+	targetReg := region.Of(lang)
+	if actualReg, err := verifier.DetectClientRegion(gameDir); err == nil && actualReg != "" && actualReg != targetReg {
+		return resp, fmt.Errorf("客户端区服不匹配：当前目录检测为【%s】客户端，但尝试以【%s】进行还原；已中止操作以防止覆盖错误的原文件",
+			region.DisplayName(actualReg), region.DisplayName(targetReg))
+	}
+
 	a.emitPatchLog("[还原] 开始执行官方原版恢复流程...")
 	resourceDir := a.resourceDir()
 	restored, err := verifier.Restore(a.ctx, verifier.RestoreConfig{
@@ -1259,6 +1406,9 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 		OnProgress: func(stage, detail string, done, total int64) {
 			a.emitProgress(stage, detail, done, total)
 		},
+		Log: func(format string, args ...any) {
+			a.emitPatchLog(fmt.Sprintf(format, args...))
+		},
 	})
 	if err != nil {
 		a.emitPatchLog(fmt.Sprintf("[错误] 还原失败：%v", err))
@@ -1266,7 +1416,11 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 	}
 	a.clearPatchedRecord(gameDir)
 	resp.Restored = restored
-	a.emitPatchLog(fmt.Sprintf("[完成] 官方原版文件已全部恢复（共 %d 个文件）", len(restored)))
+	if len(restored) == 0 {
+		a.emitPatchLog("[完成] 经哈希校验，客户端全部 6 个核心文件均与官方原版一致，无需重复还原")
+	} else {
+		a.emitPatchLog(fmt.Sprintf("[完成] 官方原版文件已全部恢复（共还原 %d 个被修改的文件，其余 %d 个文件已是原版未变动）", len(restored), len(verifier.AllFiles)-len(restored)))
+	}
 	return resp, nil
 }
 
@@ -1302,4 +1456,9 @@ func (a *App) OpenLink(url string) error {
 	}
 	runtime.BrowserOpenURL(a.ctx, url)
 	return nil
+}
+
+// EnsureHighResolutionUiAsset 检查并确保 FFXIV.cfg 开启高分辨率贴图模式 (UiAssetType 1)。
+func (a *App) EnsureHighResolutionUiAsset() (gamecfg.ModifyResult, error) {
+	return gamecfg.EnsureHighResolutionUiAsset("")
 }

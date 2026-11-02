@@ -543,6 +543,24 @@ svg {
   user-select: text;
 }
 
+.meta-tag.ok {
+  color: var(--ok);
+  border-color: rgba(74, 222, 128, 0.3);
+  background-color: rgba(74, 222, 128, 0.08);
+}
+
+.meta-tag.warn {
+  color: var(--warn);
+  border-color: rgba(251, 191, 36, 0.3);
+  background-color: rgba(251, 191, 36, 0.08);
+}
+
+.meta-tag.muted {
+  color: var(--text-3);
+  border-color: var(--line);
+  background-color: transparent;
+}
+
 .section-title {
   margin-bottom: 2px;
   font-size: 13px;
@@ -738,6 +756,11 @@ svg {
   align-items: center;
   gap: 16px;
   border-bottom: none;
+}
+
+.font-ui-asset-meta.disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .row-desc-text {

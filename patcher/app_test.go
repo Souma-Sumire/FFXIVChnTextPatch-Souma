@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
 
@@ -72,11 +73,7 @@ func TestBuildTableListFromResource(t *testing.T) {
 }
 
 func createMinimalIndexFile(path string) error {
-	data := make([]byte, 2048)
-	copy(data[0:6], "SqPack")
-	data[0x0C] = 0x00
-	data[0x0D] = 0x04 // headerLength = 0x400 (1024)
-	data[0x14] = 0x02 // type = 2 (Index)
+	data := sqpack.CreateMockIndex("exd", "addon_0_ja.exd")
 	return os.WriteFile(path, data, 0o644)
 }
 
@@ -369,3 +366,142 @@ func TestCheckClientStatusNonGlobalPatched(t *testing.T) {
 		t.Fatalf("繁中服在已汉化时应判定为 patched，实际为 %s (%s)", status.Status, status.Label)
 	}
 }
+
+func TestEnsureHighResolutionUiAssetAndGetGameInfo(t *testing.T) {
+	app := NewApp()
+	info, err := app.GetGameInfo("", "GLOBAL")
+	if err != nil {
+		t.Fatalf("GetGameInfo 失败: %v", err)
+	}
+	if info.UiAssetType != 0 && info.UiAssetType != 1 && info.UiAssetType != -1 {
+		t.Fatalf("UiAssetType 状态异常: %d", info.UiAssetType)
+	}
+
+	res, err := app.EnsureHighResolutionUiAsset()
+	if err != nil && !strings.Contains(err.Error(), "未找到") {
+		t.Fatalf("EnsureHighResolutionUiAsset 失败: %v", err)
+	}
+	if err == nil {
+		if res.Current != 1 {
+			t.Fatalf("修改后当前值应为 1，实际为 %d", res.Current)
+		}
+	}
+}
+
+func TestMultiRegionConfigIsolation(t *testing.T) {
+	tmpDir := t.TempDir()
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
+
+	// 1. 兼容迁移旧版单个 gameDir
+	legacyCfg := `{"gameDir":"D:\\Games\\SquareEnix\\FFXIV","language":"GLOBAL"}`
+	cfgPath := filepath.Join(tmpDir, "config.json")
+	if err := os.WriteFile(cfgPath, []byte(legacyCfg), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	loaded := app.loadConfig(app.resourceDirOverride)
+	if loaded.GameDir != "D:\\Games\\SquareEnix\\FFXIV" {
+		t.Fatalf("旧配置迁移后当前 GameDir 应为国际服路径，实际为: %s", loaded.GameDir)
+	}
+	if loaded.GameDirs["GLOBAL"] != "D:\\Games\\SquareEnix\\FFXIV" {
+		t.Fatalf("旧配置应自动迁移入 GameDirs[GLOBAL]，实际为: %v", loaded.GameDirs)
+	}
+
+	// 2. 多区服独立保存与读取
+	loaded.Language = "CHS"
+	loaded.GameDir = "D:\\Games\\最终幻想XIV"
+	if err := app.SaveConfig(loaded); err != nil {
+		t.Fatal(err)
+	}
+
+	reloaded := app.loadConfig(app.resourceDirOverride)
+	if reloaded.GameDirs["GLOBAL"] != "D:\\Games\\SquareEnix\\FFXIV" {
+		t.Fatalf("GameDirs[GLOBAL] 应保留国际服路径，实际为: %s", reloaded.GameDirs["GLOBAL"])
+	}
+	if reloaded.GameDirs["CHS"] != "D:\\Games\\最终幻想XIV" {
+		t.Fatalf("GameDirs[CHS] 应记录国服路径，实际为: %s", reloaded.GameDirs["CHS"])
+	}
+	if reloaded.GameDir != "D:\\Games\\最终幻想XIV" {
+		t.Fatalf("当前选中区服应激活国服路径，实际为: %s", reloaded.GameDir)
+	}
+}
+
+func TestCheckClientStatusRegionMismatch(t *testing.T) {
+	tmpDir := t.TempDir()
+	cnDir := filepath.Join(tmpDir, "client_cn")
+	sqpackDir := filepath.Join(cnDir, "game", "sqpack", "ffxiv")
+	_ = os.MkdirAll(sqpackDir, 0o755)
+	_ = os.WriteFile(filepath.Join(cnDir, "game", "ffxiv_dx11.exe"), []byte("mock"), 0o755)
+	_ = os.WriteFile(filepath.Join(cnDir, "game", "ffxivgame.ver"), []byte("2026.10.16.0000.0000"), 0o644)
+	_ = os.WriteFile(filepath.Join(sqpackDir, "0a0000.win32.index"), sqpack.CreateMockIndex("exd", "addon_0_chs.exd"), 0o644)
+
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+
+	// 在国际服模式下检查国服客户端目录
+	status, err := app.CheckClientStatus(cnDir, "GLOBAL")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
+	if status.Status != "mismatch" {
+		t.Fatalf("区服不匹配应返回 mismatch 状态，实际为 %s (%s)", status.Status, status.Label)
+	}
+	if !strings.Contains(status.Label, "不匹配") {
+		t.Fatalf("区服不匹配标签应包含'不匹配'，实际为: %s", status.Label)
+	}
+
+	// 校验 StartPatch 拦截
+	_, err = app.StartPatch(PatchRequest{
+		GameDir:     cnDir,
+		Language:    "GLOBAL",
+		ReplaceText: true,
+	})
+	if err == nil || !strings.Contains(err.Error(), "区服不匹配") {
+		t.Fatalf("StartPatch 在区服不匹配时应拦截并报错，实际为: %v", err)
+	}
+
+	// 校验 RestoreOriginal 拦截
+	_, err = app.RestoreOriginal(cnDir, "GLOBAL")
+	if err == nil || !strings.Contains(err.Error(), "区服不匹配") {
+		t.Fatalf("RestoreOriginal 在区服不匹配时应拦截并报错，实际为: %v", err)
+	}
+}
+
+func TestCheckClientStatusPatchedRecordRegionMismatchIgnored(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	_ = os.MkdirAll(sqpackDir, 0o755)
+	_ = os.WriteFile(filepath.Join(gameDir, "game", "ffxivgame.ver"), []byte("2026.10.16.0000.0000"), 0o644)
+	_ = createMinimalIndexFile(filepath.Join(sqpackDir, "0a0000.win32.index"))
+
+	textHash, _ := verifier.HashFile(filepath.Join(sqpackDir, "0a0000.win32.index"))
+
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
+
+	// 记录为 GLOBAL 汉化
+	rec := PatchedRecord{
+		GameDir:     gameDir,
+		Version:     "2026.10.16.0000.0000",
+		Language:    "GLOBAL",
+		ReplaceText: true,
+		Files: map[string]verifier.FileHash{
+			"0a0000.win32.index": textHash,
+		},
+	}
+	_ = app.savePatchedRecord(rec)
+
+	// 切换到 CHS 查看，不应被识别为已汉化
+	status, err := app.CheckClientStatus(gameDir, "CHS")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
+	if status.Status == "patched" {
+		t.Fatalf("跨区服时不应套用其他区服的汉化记录，但返回了 patched: %+v", status)
+	}
+}
+

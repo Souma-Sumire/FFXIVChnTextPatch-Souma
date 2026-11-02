@@ -17,6 +17,7 @@ interface LanguageOption {
 
 interface AppConfig {
   gameDir: string;
+  gameDirs?: Record<string, string>;
   language: string;
   replaceText: boolean;
   replaceFont: boolean;
@@ -59,8 +60,11 @@ interface GameInfo {
   backupVersion: string;
   backupExists: boolean;
   region: string;
+  detectedRegion?: string;
+  regionMismatch?: boolean;
   resourceTime?: string;
   resourceHash?: string;
+  uiAssetType?: number;
 }
 
 interface PatchRequest {
@@ -119,7 +123,7 @@ interface PatchProgressEvent {
 }
 
 interface ClientStatusResult {
-  status: "original" | "patched" | "modified" | "unknown";
+  status: "original" | "patched" | "modified" | "mismatch" | "unsupported" | "unknown";
   label: string;
   description: string;
 }
@@ -128,13 +132,20 @@ interface GoApp {
   GetAppVersion(): Promise<string>;
   GetBootstrap(): Promise<BootstrapInfo>;
   SaveConfig(config: AppConfig): Promise<void>;
-  DetectGamePaths(): Promise<string[]>;
-  SelectGameDirectory(): Promise<string>;
+  DetectGamePaths(language: string): Promise<string[]>;
+  SelectGameDirectory(language: string): Promise<string>;
   GetGameInfo(gameDir: string, language: string): Promise<GameInfo>;
   CheckClientStatus(gameDir: string, language: string): Promise<ClientStatusResult>;
   StartPatch(req: PatchRequest): Promise<PatchResponse>;
   AnswerFontConfirm(ok: boolean): Promise<void>;
   RestoreOriginal(gameDir: string, language: string): Promise<RestoreResponse>;
+  EnsureHighResolutionUiAsset(): Promise<{
+    configPath: string;
+    backupPath: string;
+    modified: boolean;
+    previous: number;
+    current: number;
+  }>;
   OpenLink(url: string): Promise<void>;
 }
 
@@ -210,6 +221,7 @@ let filterOnlyUnselected = false;
 
 let config: AppConfig = {
   gameDir: "",
+  gameDirs: {},
   language: "GLOBAL",
   replaceText: true,
   replaceFont: true,
@@ -235,6 +247,8 @@ const el = {
   btnDetect: byId<HTMLButtonElement>("btn-detect"),
   replaceText: byId<HTMLInputElement>("replace-text"),
   replaceFont: byId<HTMLInputElement>("replace-font"),
+  fontUiAssetMeta: byId("font-ui-asset-meta"),
+  fontUiAssetStatus: byId("font-ui-asset-status"),
   resourceBuildMeta: byId("resource-build-meta"),
   resourceBuildTime: byId("resource-build-time"),
   rules: byId("rules"),
@@ -575,6 +589,11 @@ function updateTextScopeState(): void {
 }
 
 function updateRestoreButtonState(): void {
+  if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
+    el.btnRestore.disabled = true;
+    el.btnRestore.title = "客户端区服与当前选择的目标区服不匹配，无法执行还原";
+    return;
+  }
   const isGlobal = isGlobalLanguage(config.language);
   const versionMismatch = Boolean(
     gameInfo?.version &&
@@ -616,6 +635,7 @@ function setBusy(value: boolean, label = ""): void {
   el.replaceText.disabled = value;
   el.replaceFont.disabled = value;
   updateTextScopeState();
+  updateFontUiAssetState();
   updateRestoreButtonState();
 }
 
@@ -700,7 +720,7 @@ async function bootstrapApp(): Promise<void> {
       void checkClientEnvironment();
     } else {
       renderGameInfo();
-      void call("DetectGamePaths").then(async (detected) => {
+      void call("DetectGamePaths", config.language).then(async (detected) => {
         if (!config.gameDir && detected.length > 0 && detected[0]) {
           setGameDir(detected[0]);
           log(`[配置] 自动探测并定位到游戏目录：${detected[0]}`);
@@ -729,9 +749,6 @@ function updateResourceBuildMeta(time?: string, hash?: string): void {
   }
   if (time) {
     el.resourceBuildTime.textContent = time;
-    if (el.resourceBuildMeta) {
-      el.resourceBuildMeta.title = `内置词条资源构建时间: ${time}${hash ? ` (校验哈希: ${hash})` : ""}`;
-    }
   } else {
     el.resourceBuildTime.textContent = "--";
   }
@@ -744,6 +761,12 @@ async function loadBootstrap(): Promise<void> {
   if (!config.rules) {
     config.rules = {};
   }
+  if (!config.gameDirs) {
+    config.gameDirs = {};
+  }
+  if (config.gameDir) {
+    config.gameDirs[config.language] = config.gameDir;
+  }
   setWindowTitle();
   if (el.versionBadge) {
     el.versionBadge.textContent = `v${info.version}`;
@@ -753,6 +776,7 @@ async function loadBootstrap(): Promise<void> {
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
   updateTextScopeState();
+  updateFontUiAssetState();
 
   renderRules();
   renderLanguages();
@@ -823,6 +847,10 @@ function renderLanguages(): void {
 
 function setGameDir(dir: string): void {
   config.gameDir = dir;
+  if (!config.gameDirs) {
+    config.gameDirs = {};
+  }
+  config.gameDirs[config.language] = dir;
   el.gamePath.value = dir;
   clientStatus = null;
   void persistConfig();
@@ -837,7 +865,6 @@ function createDiagItem(label: string, value: string, cls = ""): HTMLDivElement 
   const v = document.createElement("span");
   v.className = `diag-v ${cls}`.trim();
   v.textContent = value;
-  v.title = value;
   item.append(k, v);
   return item;
 }
@@ -868,12 +895,7 @@ function createClientStatusItem(): HTMLDivElement {
   btn.type = "button";
   btn.className = "btn btn-quiet btn-xs diag-check-btn";
 
-  if (!isGlobal) {
-    v.className = "diag-v muted";
-    v.textContent = "不支持检测";
-    v.title = "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测";
-    btn.style.display = "none";
-  } else if (checkingClient) {
+  if (checkingClient) {
     v.className = "diag-v";
     v.textContent = "校验哈希中…";
     btn.disabled = true;
@@ -884,23 +906,28 @@ function createClientStatusItem(): HTMLDivElement {
       cls = "ok";
     } else if (clientStatus.status === "patched") {
       cls = "patched";
-    } else if (clientStatus.status === "modified") {
+    } else if (clientStatus.status === "modified" || clientStatus.status === "mismatch") {
       cls = "warn";
     } else if (clientStatus.label === "文件损坏" || clientStatus.label === "文件缺失") {
       cls = "err";
     } else if (clientStatus.label === "未收录版本") {
       cls = "warn";
+    } else if (clientStatus.status === "unsupported") {
+      cls = "muted";
     }
     v.className = `diag-v ${cls}`.trim();
     v.textContent = clientStatus.label;
     v.title = clientStatus.description;
     btn.textContent = "重测";
-    btn.title = "重新计算哈希并比对原版";
+    btn.style.display = clientStatus.status === "unsupported" ? "none" : "";
+  } else if (!isGlobal) {
+    v.className = "diag-v muted";
+    v.textContent = "不支持检测";
+    btn.style.display = "none";
   } else {
     v.className = "diag-v";
     v.textContent = "未检测";
     btn.textContent = "检测";
-    btn.title = "点击手动计算客户端关键数据包哈希并比对官方原版";
   }
 
   btn.addEventListener("click", (e) => {
@@ -926,7 +953,7 @@ async function checkClientEnvironment(): Promise<void> {
       logKind = "ok";
     } else if (clientStatus.status === "patched") {
       logKind = "patched";
-    } else if (clientStatus.status === "modified" || clientStatus.label === "未收录版本") {
+    } else if (clientStatus.status === "modified" || clientStatus.status === "mismatch" || clientStatus.label === "未收录版本") {
       logKind = "warn";
     } else if (clientStatus.label === "文件损坏" || clientStatus.label === "文件缺失") {
       logKind = "error";
@@ -940,8 +967,33 @@ async function checkClientEnvironment(): Promise<void> {
   }
 }
 
+function updateFontUiAssetState(): void {
+  const isEnabled = el.replaceFont.checked && !busy;
+  el.fontUiAssetMeta?.classList.toggle("disabled", !isEnabled);
+
+  if (!el.fontUiAssetStatus) return;
+
+  if (!el.replaceFont.checked) {
+    el.fontUiAssetStatus.className = "meta-tag muted";
+    el.fontUiAssetStatus.textContent = "未启用";
+    return;
+  }
+
+  if (gameInfo?.uiAssetType === 1) {
+    el.fontUiAssetStatus.className = "meta-tag ok";
+    el.fontUiAssetStatus.textContent = "已开启高分辨率";
+  } else if (gameInfo?.uiAssetType === 0) {
+    el.fontUiAssetStatus.className = "meta-tag warn";
+    el.fontUiAssetStatus.textContent = "未开启高分辨率（汉化将自动开启）";
+  } else {
+    el.fontUiAssetStatus.className = "meta-tag muted";
+    el.fontUiAssetStatus.textContent = "未检测到配置";
+  }
+}
+
 function renderGameInfo(): void {
   updateRestoreButtonState();
+  updateFontUiAssetState();
   el.gameInfo.replaceChildren();
   if (!config.gameDir) {
     el.gameInfo.append(createDiagItem("状态", "未选择游戏目录", "warn"));
@@ -972,17 +1024,6 @@ function renderGameInfo(): void {
   }
 
   const backupItem = createDiagItem("本地备份", backupText, backupCls);
-  if (gameInfo.backupExists) {
-    if (!isGlobal && versionMismatch) {
-      backupItem.title = `游戏已更新 (当前 v${gameInfo.version}，备份 v${gameInfo.backupVersion})，旧版备份无法还原`;
-    } else {
-      backupItem.title = `本地原版备份版本: v${gameInfo.backupVersion}`;
-    }
-  } else if (isGlobal) {
-    backupItem.title = "本地暂无备份，还原时将自动从云端下载官方原版";
-  } else {
-    backupItem.title = "本地暂无备份（该区服未收录云端原版下载，首次汉化将自动生成本地备份）";
-  }
 
   const items = [
     createDiagItem("客户端版本", gameInfo.version || "未知", ""),
@@ -1081,16 +1122,12 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
   const tdKey = document.createElement("td");
   tdKey.className = `col-filename ${isChild ? "sub-filename" : ""}`.trim();
   tdKey.textContent = entry.key;
-  tdKey.title = entry.key;
 
   const tdName = document.createElement("td");
   tdName.className = "col-chs";
   const hideRepeatName = isChild && (entry.name === folderChs || !entry.name || entry.name === "-");
   const displayName = hideRepeatName ? "" : (entry.name || "-");
   tdName.textContent = displayName;
-  if (displayName && displayName !== "-") {
-    tdName.title = displayName;
-  }
 
   const tdStatus = document.createElement("td");
   tdStatus.className = "col-status";
@@ -1098,7 +1135,6 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
     const tag = document.createElement("span");
     tag.className = "status-tag-warn";
     tag.textContent = entry.warning;
-    tag.title = entry.warning;
     tdStatus.append(tag);
   }
 
@@ -1193,7 +1229,6 @@ function renderTables(): void {
     folderCheckbox.className = "folder-checkbox";
     folderCheckbox.checked = isAllSel;
     folderCheckbox.indeterminate = isPartSel;
-    folderCheckbox.title = "全选/反选此类目下的所有表";
     folderCheckbox.addEventListener("click", (e) => {
       e.stopPropagation();
       const targetState = !isAllSel;
@@ -1210,15 +1245,11 @@ function renderTables(): void {
     const tdKey = document.createElement("td");
     tdKey.className = "col-filename folder-name-cell";
     tdKey.textContent = fKey;
-    tdKey.title = fKey;
 
     const folderChs = bootstrap?.folders ? bootstrap.folders[fKey] || "" : "";
     const tdName = document.createElement("td");
     tdName.className = "col-chs folder-chs-cell";
     tdName.textContent = folderChs || "-";
-    if (folderChs) {
-      tdName.title = folderChs;
-    }
 
     const tdStatus = document.createElement("td");
     tdStatus.className = "col-status folder-status-cell";
@@ -1282,7 +1313,7 @@ function wireEvents(): void {
       return;
     }
     try {
-      const dir = await call("SelectGameDirectory");
+      const dir = await call("SelectGameDirectory", config.language);
       if (dir) {
         const prevDir = config.gameDir;
         setGameDir(dir);
@@ -1303,9 +1334,9 @@ function wireEvents(): void {
     }
     try {
       setBusy(true, "正在搜索本地客户端…");
-      const list = await call("DetectGamePaths");
+      const list = await call("DetectGamePaths", config.language);
       if (list.length === 0) {
-        log("[探测] 未在常用路径中找到 FFXIV 客户端，请点击“浏览”手动指定。", "info");
+        log("[探测] 未在常用路径中找到匹配该区服的客户端，请点击“浏览”手动指定。", "info");
         return;
       }
       const prevDir = config.gameDir;
@@ -1327,7 +1358,39 @@ function wireEvents(): void {
     if (busy) {
       return;
     }
-    config.language = el.language.value;
+    const oldLang = config.language;
+    const newLang = el.language.value;
+    if (oldLang === newLang) {
+      return;
+    }
+
+    if (!config.gameDirs) {
+      config.gameDirs = {};
+    }
+    if (config.gameDir) {
+      config.gameDirs[oldLang] = config.gameDir;
+    }
+
+    config.language = newLang;
+    const rememberedDir = config.gameDirs[newLang] || "";
+    config.gameDir = rememberedDir;
+    el.gamePath.value = rememberedDir;
+    clientStatus = null;
+
+    if (!rememberedDir) {
+      try {
+        const detected = await call("DetectGamePaths", newLang);
+        if (detected.length > 0 && detected[0] && !config.gameDir) {
+          config.gameDir = detected[0];
+          config.gameDirs[newLang] = detected[0];
+          el.gamePath.value = detected[0];
+          log(`[探测] 自动定位到该区服客户端目录：${detected[0]}`);
+        }
+      } catch {
+        // 忽略自动探测异常
+      }
+    }
+
     void persistConfig();
     await refreshGameInfo();
     void checkClientEnvironment();
@@ -1341,6 +1404,7 @@ function wireEvents(): void {
 
   el.replaceFont.addEventListener("change", () => {
     config.replaceFont = el.replaceFont.checked;
+    updateFontUiAssetState();
     void persistConfig();
   });
 
@@ -1446,6 +1510,10 @@ function wireEvents(): void {
     if (busy) {
       return;
     }
+    if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
+      log("[错误] 客户端区服与当前选择的目标区服不匹配，无法执行还原。", "error");
+      return;
+    }
     const isGlobal = isGlobalLanguage(config.language);
     const versionMismatch = Boolean(
       gameInfo?.version &&
@@ -1479,7 +1547,12 @@ function wireEvents(): void {
       toggleConsole(true);
       setBusy(true, "正在还原官方原版文件…");
       const resp = await call("RestoreOriginal", config.gameDir, config.language);
-      log(`已还原官方原版 (${(resp.restored ?? []).length} 个文件)`, "ok");
+      const restoredCount = (resp.restored ?? []).length;
+      if (restoredCount === 0) {
+        log("客户端全部核心文件均已是官方原版，无需重复还原", "ok");
+      } else {
+        log(`已还原官方原版 (${restoredCount} 个变动文件)`, "ok");
+      }
       try {
         clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
       } catch {
@@ -1495,6 +1568,10 @@ function wireEvents(): void {
 
   el.btnPatch.addEventListener("click", async () => {
     if (busy) {
+      return;
+    }
+    if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
+      log("[错误] 客户端区服与当前选择的目标区服不匹配，请核对后重试。", "error");
       return;
     }
     if (!config.gameDir) {
