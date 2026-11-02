@@ -82,3 +82,23 @@ func TargetLanguagesFor(l Language) []string {
 	}
 	return []string{string(l)}
 }
+
+// DisplayName 返回区服的中文名称。
+func DisplayName(r Region) string {
+	switch r {
+	case China:
+		return "国服"
+	case Taiwan:
+		return "繁中服"
+	case Korea:
+		return "韩服"
+	default:
+		return "国际服"
+	}
+}
+
+// DisplayNameFor 返回语言所属区服的中文名称。
+func DisplayNameFor(l Language) string {
+	return DisplayName(Of(l))
+}
+

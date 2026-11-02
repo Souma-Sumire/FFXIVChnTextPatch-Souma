@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 )
 
 const testRepo = "owner/repo"
@@ -1057,3 +1058,173 @@ func TestNoRedundantBackupWhenAlreadyBackedUp(t *testing.T) {
 		}
 	})
 }
+
+// TestRunBacksUpAllSixFilesEvenWhenOnlyTextPatched 验证仅勾选文本汉化时，仍会备份全部 6 个核心原版文件。
+func TestRunBacksUpAllSixFilesEvenWhenOnlyTextPatched(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	origFiles := allContents("original-data", AllFiles)
+
+	env := newTestEnv(t, version, origFiles)
+	cloud := newMockServer(t, map[string]map[string]string{version: origFiles})
+
+	cfg := baseConfig(env, region.GLOBAL)
+	cfg.ReplaceText = true
+	cfg.ReplaceFont = false
+	cfg.Cloud = cloud.client()
+	cfg.ConfirmFont = func(ctx context.Context) (bool, error) { return true, nil }
+	cfg.ApplyText = func(ctx context.Context) error { return nil }
+
+	_, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run 失败: %v", err)
+	}
+
+	backupDir := filepath.Join(env.backupRoot, "global")
+	meta, err := readBackupMeta(backupDir)
+	if err != nil || meta == nil {
+		t.Fatalf("读取备份 meta 失败: %v", err)
+	}
+
+	if len(meta.Files) != len(AllFiles) {
+		t.Fatalf("备份中应包含全部 %d 个核心文件，实际包含 %d 个", len(AllFiles), len(meta.Files))
+	}
+
+	for _, name := range AllFiles {
+		if _, ok := meta.Files[name]; !ok {
+			t.Fatalf("备份缺少核心文件记录: %s", name)
+		}
+		if _, err := os.Stat(filepath.Join(backupDir, name)); err != nil {
+			t.Fatalf("备份物理文件缺失: %s", name)
+		}
+	}
+}
+
+// TestRestoreSkipsUnchangedFilesAndRestoresOnlyModified 验证还原时优先哈希对比，仅对被修改的文件写盘。
+func TestRestoreSkipsUnchangedFilesAndRestoresOnlyModified(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	origFiles := allContents("original-data", AllFiles)
+
+	// 构造游戏目录：文本 3 个文件被汉化修改，字体 3 个文件保持官方原版未修改
+	gameFiles := map[string]string{}
+	for _, name := range FontFiles {
+		gameFiles[name] = origFiles[name]
+	}
+	for _, name := range TextFiles {
+		gameFiles[name] = "patched-text-data"
+	}
+
+	env := newTestEnv(t, version, gameFiles)
+	env.seedBackup(t, region.GLOBAL, version, origFiles)
+
+	fontModTimesBefore := map[string]time.Time{}
+	for _, name := range FontFiles {
+		fi, err := os.Stat(filepath.Join(env.gameDir, "game", "sqpack", "ffxiv", name))
+		if err != nil {
+			t.Fatalf("获取字体文件状态失败: %v", err)
+		}
+		fontModTimesBefore[name] = fi.ModTime()
+	}
+
+	time.Sleep(15 * time.Millisecond)
+
+	// 第一次还原：应仅还原 3 个被修改的文本文件，3 个字体文件跳过写入
+	restored, err := Restore(context.Background(), RestoreConfig{
+		GameDir:    env.gameDir,
+		BackupRoot: env.backupRoot,
+		Language:   region.EN,
+	})
+	if err != nil {
+		t.Fatalf("Restore 失败: %v", err)
+	}
+
+	if len(restored) != len(TextFiles) {
+		t.Fatalf("首次还原应仅写盘 %d 个文本文件，实际 %d 个: %v", len(TextFiles), len(restored), restored)
+	}
+
+	for _, name := range FontFiles {
+		fi, err := os.Stat(filepath.Join(env.gameDir, "game", "sqpack", "ffxiv", name))
+		if err != nil {
+			t.Fatalf("获取字体文件状态失败: %v", err)
+		}
+		if !fi.ModTime().Equal(fontModTimesBefore[name]) {
+			t.Errorf("原版字体文件 %s 不应被重复写入", name)
+		}
+	}
+
+	for _, name := range TextFiles {
+		if got := env.read(t, name); got != origFiles[name] {
+			t.Fatalf("文本文件 %s 还原内容不匹配", name)
+		}
+	}
+
+	// 第二次还原：所有 6 个文件均已是官方原版，应全部跳过写入（返回 0 个写盘文件）
+	restoredSecond, err := Restore(context.Background(), RestoreConfig{
+		GameDir:    env.gameDir,
+		BackupRoot: env.backupRoot,
+		Language:   region.EN,
+	})
+	if err != nil {
+		t.Fatalf("二次 Restore 失败: %v", err)
+	}
+
+	if len(restoredSecond) != 0 {
+		t.Fatalf("二次还原时所有文件已是原版，应跳过全部写入，实际还原了 %d 个文件: %v", len(restoredSecond), restoredSecond)
+	}
+}
+
+func TestDetectClientRegion(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	if _, err := DetectClientRegion(""); err == nil {
+		t.Fatal("空路径应报错")
+	}
+	invalidDir := filepath.Join(tmpDir, "invalid")
+	_ = os.MkdirAll(invalidDir, 0o755)
+	if _, err := DetectClientRegion(invalidDir); err == nil {
+		t.Fatal("缺少可执行文件应报错")
+	}
+
+	noIndexDir := filepath.Join(tmpDir, "no_index")
+	_ = os.MkdirAll(filepath.Join(noIndexDir, "game"), 0o755)
+	_ = os.WriteFile(filepath.Join(noIndexDir, "game", "ffxiv_dx11.exe"), []byte("mock"), 0o755)
+	if _, err := DetectClientRegion(noIndexDir); err == nil {
+		t.Fatal("缺少 0a0000.win32.index 应报错")
+	}
+
+	cases := []struct {
+		name     string
+		exdFiles []string
+		want     region.Region
+	}{
+		{"china_client", []string{"addon_0_chs.exd"}, region.China},
+		{"korea_client", []string{"addon_0_ko.exd"}, region.Korea},
+		{"taiwan_tc_client", []string{"addon_0_tc.exd"}, region.Taiwan},
+		{"global_cht_client", []string{"addon_0_cht.exd"}, region.Global},
+		{"global_ja_client", []string{"addon_0_ja.exd"}, region.Global},
+		{"global_en_client", []string{"addon_0_en.exd"}, region.Global},
+	}
+
+	for _, tc := range cases {
+		dir := filepath.Join(tmpDir, tc.name)
+		sqpackDir := filepath.Join(dir, "game", "sqpack", "ffxiv")
+		if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "game", "ffxiv_dx11.exe"), []byte("mock"), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		indexBytes := sqpack.CreateMockIndex("exd", tc.exdFiles...)
+		if err := os.WriteFile(filepath.Join(sqpackDir, "0a0000.win32.index"), indexBytes, 0o644); err != nil {
+			t.Fatal(err)
+		}
+
+		got, err := DetectClientRegion(dir)
+		if err != nil {
+			t.Fatalf("DetectClientRegion(%s) 失败: %v", tc.name, err)
+		}
+		if got != tc.want {
+			t.Fatalf("DetectClientRegion(%s) = %s, want %s", tc.name, got, tc.want)
+		}
+	}
+}
+

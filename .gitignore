@@ -14,3 +14,4 @@ patcher/frontend/node_modules/
 *.exe~
 FFXIVChnTextPatch-SM-v2*
 resource/*.zip
+resource/manifest.json
