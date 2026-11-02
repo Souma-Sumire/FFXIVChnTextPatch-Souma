@@ -3,6 +3,7 @@
 package gameproc
 
 import (
+	"errors"
 	"path/filepath"
 	"unsafe"
 
@@ -51,4 +52,28 @@ func findRunningProcesses() ([]ProcessInfo, error) {
 	}
 
 	return results, nil
+}
+
+func killProcess(pid uint32) error {
+	hProc, err := windows.OpenProcess(windows.PROCESS_TERMINATE|windows.SYNCHRONIZE, false, pid)
+	if err != nil {
+		if errors.Is(err, windows.ERROR_INVALID_PARAMETER) {
+			return nil
+		}
+		return err
+	}
+	defer windows.CloseHandle(hProc)
+
+	if err := windows.TerminateProcess(hProc, 1); err != nil {
+		if errors.Is(err, windows.ERROR_ACCESS_DENIED) {
+			// 进程可能已经结束
+			var exitCode uint32
+			if getErr := windows.GetExitCodeProcess(hProc, &exitCode); getErr == nil && exitCode != 259 {
+				return nil
+			}
+		}
+		return err
+	}
+	_, _ = windows.WaitForSingleObject(hProc, 3000)
+	return nil
 }

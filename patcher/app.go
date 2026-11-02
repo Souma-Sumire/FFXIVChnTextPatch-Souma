@@ -39,6 +39,9 @@ type App struct {
 	confirmMu sync.Mutex
 	confirmCh chan bool
 
+	launcherConfirmMu sync.Mutex
+	launcherConfirmCh chan bool
+
 	updater          *updater.Updater
 	resourceSyncOnce sync.Once
 	resourceReady    chan struct{}
@@ -53,6 +56,7 @@ type App struct {
 
 	resourceDirOverride string
 	cloudOverride       verifier.Cloud
+	skipProcessCheck    bool
 }
 
 func (a *App) getCloud() verifier.Cloud {
@@ -198,7 +202,8 @@ type PatchResponse struct {
 
 // RestoreResponse 是还原结果。
 type RestoreResponse struct {
-	Restored []string `json:"restored"`
+	Restored  []string `json:"restored"`
+	Cancelled bool     `json:"cancelled"`
 }
 
 // SyncSummary 是云端同步结果。
@@ -1090,6 +1095,9 @@ func (a *App) AnswerFontConfirm(ok bool) {
 }
 
 func (a *App) waitFontConfirm(ctx context.Context) (bool, error) {
+	if a == nil || a.ctx == nil {
+		return false, nil
+	}
 	ch := make(chan bool, 1)
 	a.confirmMu.Lock()
 	a.confirmCh = ch
@@ -1104,6 +1112,61 @@ func (a *App) waitFontConfirm(ctx context.Context) (bool, error) {
 	case <-ctx.Done():
 		return false, ctx.Err()
 	}
+}
+
+// AnswerLauncherConfirm 接收前端对“是否强制结束启动器”的确认。
+func (a *App) AnswerLauncherConfirm(ok bool) {
+	a.launcherConfirmMu.Lock()
+	ch := a.launcherConfirmCh
+	a.launcherConfirmCh = nil
+	a.launcherConfirmMu.Unlock()
+	if ch != nil {
+		select {
+		case ch <- ok:
+		default:
+		}
+	}
+}
+
+func (a *App) waitLauncherConfirm(launcherNames []string) (bool, error) {
+	if a == nil || a.ctx == nil {
+		return false, nil
+	}
+	ch := make(chan bool, 1)
+	a.launcherConfirmMu.Lock()
+	a.launcherConfirmCh = ch
+	a.launcherConfirmMu.Unlock()
+
+	namesStr := strings.Join(launcherNames, "、")
+	prompt := fmt.Sprintf("检测到游戏启动器正在运行（%s），为防止文件冲突或更新损坏，需要先关闭启动器。\n\n是否强制结束启动器进程并继续？", namesStr)
+	runtime.EventsEmit(a.ctx, "launcher-confirm", prompt)
+
+	select {
+	case ok := <-ch:
+		return ok, nil
+	case <-time.After(5 * time.Minute):
+		return false, errors.New("等待启动器确认超时")
+	case <-a.ctx.Done():
+		return false, a.ctx.Err()
+	}
+}
+
+func (a *App) checkGameNotRunning(gameDir string) error {
+	if a != nil && a.skipProcessCheck {
+		return nil
+	}
+	return gameproc.CheckGameNotRunningWithOpts(gameproc.CheckOptions{
+		GameDir:           gameDir,
+		OnLauncherConfirm: a.waitLauncherConfirm,
+		OnLaunchersKilled: func(killed []string) {
+			a.emitPatchLog(fmt.Sprintf("[提示] 已强制结束游戏启动器进程（%s）", strings.Join(killed, "、")))
+		},
+	})
+}
+
+// KillLauncherProcesses 扫描并强制结束当前运行中的冲突启动器进程。
+func (a *App) KillLauncherProcesses(gameDir string) ([]string, error) {
+	return gameproc.KillLauncherProcesses(gameDir)
 }
 
 func (a *App) beginBusy() error {
@@ -1169,7 +1232,12 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 	defer a.endBusy()
 
-	if err := checkGameNotRunning(req.GameDir); err != nil {
+	if err := a.checkGameNotRunning(req.GameDir); err != nil {
+		if errors.Is(err, gameproc.ErrCancelled) {
+			a.emitPatchLog("[提示] 汉化已取消：游戏启动器正在运行")
+			resp.Cancelled = true
+			return resp, nil
+		}
 		return resp, err
 	}
 
@@ -1369,7 +1437,12 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 	}
 	defer a.endBusy()
 
-	if err := checkGameNotRunning(gameDir); err != nil {
+	if err := a.checkGameNotRunning(gameDir); err != nil {
+		if errors.Is(err, gameproc.ErrCancelled) {
+			a.emitPatchLog("[提示] 还原已取消：游戏启动器正在运行")
+			resp.Cancelled = true
+			return resp, nil
+		}
 		return resp, err
 	}
 

@@ -1629,6 +1629,7 @@ body.is-resizing-log * {
   color: var(--text-2);
   line-height: 1.6;
   user-select: text;
+  white-space: pre-wrap;
 }
 
 .modal-foot {

@@ -96,8 +96,10 @@ func TestCheckClientStatusOriginalNoBackup(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.skipProcessCheck = true
 	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
 	if err != nil {
 		t.Fatalf("CheckClientStatus 失败: %v", err)
@@ -129,8 +131,10 @@ func TestCheckClientStatusPatched(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.skipProcessCheck = true
 	if err := os.MkdirAll(app.resourceDirOverride, 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -182,8 +186,10 @@ func TestCheckClientStatusModifiedWithBackup(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.skipProcessCheck = true
 	backupDir := filepath.Join(tmpDir, "backup", "global")
 	if err := os.MkdirAll(backupDir, 0o755); err != nil {
 		t.Fatal(err)
@@ -233,8 +239,10 @@ func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.skipProcessCheck = true
 
 	for _, lang := range []string{"CHS", "TC", "KO"} {
 		_, err := app.RestoreOriginal(gameDir, lang)
@@ -255,8 +263,10 @@ func TestGetGameInfoNonGlobalBackup(t *testing.T) {
 		t.Fatal(err)
 	}
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.cloudOverride = &mockCloud{}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.skipProcessCheck = true
 	backupDir := filepath.Join(tmpDir, "backup", "tc")
 	if err := os.MkdirAll(backupDir, 0o755); err != nil {
 		t.Fatal(err)
@@ -301,6 +311,7 @@ func TestCheckClientStatusCloudMismatchIsModified(t *testing.T) {
 	}
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	app.cloudOverride = &mockCloud{
 		releases: map[string]*verifier.Release{
@@ -341,6 +352,7 @@ func TestCheckClientStatusNonGlobalPatched(t *testing.T) {
 	textHash, _ := verifier.HashFile(textIndexPath)
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	if err := os.MkdirAll(app.resourceDirOverride, 0o755); err != nil {
 		t.Fatal(err)
@@ -391,6 +403,7 @@ func TestEnsureHighResolutionUiAssetAndGetGameInfo(t *testing.T) {
 func TestMultiRegionConfigIsolation(t *testing.T) {
 	tmpDir := t.TempDir()
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
 
@@ -438,6 +451,7 @@ func TestCheckClientStatusRegionMismatch(t *testing.T) {
 	_ = os.WriteFile(filepath.Join(sqpackDir, "0a0000.win32.index"), sqpack.CreateMockIndex("exd", "addon_0_chs.exd"), 0o644)
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 
 	// 在国际服模式下检查国服客户端目录
@@ -480,6 +494,7 @@ func TestCheckClientStatusPatchedRecordRegionMismatchIgnored(t *testing.T) {
 	textHash, _ := verifier.HashFile(filepath.Join(sqpackDir, "0a0000.win32.index"))
 
 	app := NewApp()
+	app.skipProcessCheck = true
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
 
@@ -507,8 +522,26 @@ func TestCheckClientStatusPatchedRecordRegionMismatchIgnored(t *testing.T) {
 
 func TestCheckGameNotRunning(t *testing.T) {
 	tmpDir := t.TempDir()
-	if err := checkGameNotRunning(tmpDir); err != nil {
-		t.Fatalf("空目录未运行游戏时不应报错: %v", err)
+	app := NewApp()
+	app.skipProcessCheck = true
+	if err := app.checkGameNotRunning(tmpDir); err != nil {
+		t.Fatalf("App.checkGameNotRunning 在跳过进程检查时不应报错: %v", err)
+	}
+}
+
+func TestAnswerLauncherConfirm(t *testing.T) {
+	app := NewApp()
+	ch := make(chan bool, 1)
+	app.launcherConfirmCh = ch
+
+	app.AnswerLauncherConfirm(true)
+	select {
+	case ok := <-ch:
+		if !ok {
+			t.Fatalf("期望得到 true，实际得到 false")
+		}
+	default:
+		t.Fatalf("期望收到确认结果")
 	}
 }
 
