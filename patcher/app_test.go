@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"context"
 	"encoding/json"
 	"os"
@@ -14,6 +15,7 @@ import (
 
 type mockCloud struct {
 	releases map[string]*verifier.Release
+	recent   []*verifier.Release
 }
 
 func (m *mockCloud) ReleaseByTag(ctx context.Context, repo, tag string) (*verifier.Release, error) {
@@ -26,6 +28,9 @@ func (m *mockCloud) ReleaseByTag(ctx context.Context, repo, tag string) (*verifi
 }
 
 func (m *mockCloud) RecentReleases(ctx context.Context, repo string, limit int) ([]*verifier.Release, error) {
+	if m.recent != nil {
+		return m.recent, nil
+	}
 	return nil, nil
 }
 
@@ -544,4 +549,78 @@ func TestAnswerLauncherConfirm(t *testing.T) {
 		t.Fatalf("期望收到确认结果")
 	}
 }
+
+func TestCancelPatch(t *testing.T) {
+	app := NewApp()
+	called := false
+	app.cancelPatch = func() {
+		called = true
+	}
+	app.CancelPatch()
+	if !called {
+		t.Fatalf("CancelPatch 未触发底层 cancel 回调")
+	}
+}
+
+func TestAppCheckAppUpdate(t *testing.T) {
+	app := NewApp()
+	app.cloudOverride = &mockCloud{
+		recent: []*verifier.Release{
+			{
+				Tag:   "patcher-v3.0.0",
+				Title: "汉化器 v3.0.0",
+				URL:   "https://example.com/v3.0.0",
+			},
+		},
+	}
+
+	info, err := app.CheckAppUpdate()
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if info.LatestVersion != "3.0.0" {
+		t.Fatalf("期望最新版本 3.0.0，实际得到 %s", info.LatestVersion)
+	}
+}
+
+func TestAppImportOfflineResource(t *testing.T) {
+	tmpDir := t.TempDir()
+	zipPath := filepath.Join(tmpDir, "pack.zip")
+	resDir := filepath.Join(tmpDir, "app_res")
+
+	f, err := os.Create(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := zip.NewWriter(f)
+	files := map[string]string{
+		"resource/manifest.json": `{"generatedAt":"2026-11-02T10:00:00Z","rawexd":{"sha256":"1234","size":50}}`,
+		"resource/tables.json":   `{"files":["Item"],"tables":{"Item":"道具"}}`,
+		"resource/rawexd/Item.csv": "key,0,1\n1,测试,1",
+	}
+	for name, content := range files {
+		fw, err := w.Create(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, _ = fw.Write([]byte(content))
+	}
+	_ = w.Close()
+	f.Close()
+
+	app := NewApp()
+	app.resourceDirOverride = resDir
+
+	res, err := app.ImportOfflineResource(zipPath)
+	if err != nil {
+		t.Fatalf("ImportOfflineResource 失败: %v", err)
+	}
+	if !res.Success {
+		t.Fatalf("期望导入成功")
+	}
+	if res.TableCount != 1 {
+		t.Fatalf("期望数据表数量为 1，实际为 %d", res.TableCount)
+	}
+}
+
 

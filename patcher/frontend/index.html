@@ -26,6 +26,12 @@
           <div id="provision-progress-bar" class="progress-bar"></div>
         </div>
         <p id="provision-meta" class="provision-meta">首次启动需下载游戏文本与字体资源，完成后自动进入工作台</p>
+        <div id="provision-offline-wrap" class="provision-actions hidden">
+          <button id="btn-provision-import-offline" class="btn btn-secondary btn-sm" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>导入离线资源包 (*.zip)</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -95,6 +101,7 @@
               <div id="resource-build-meta" class="row-meta">
                 <span class="row-meta-label">词条构建时间</span>
                 <span id="resource-build-time" class="meta-tag">--</span>
+                <button id="btn-import-offline" class="btn btn-quiet btn-xs hidden" type="button" title="从本地 ZIP 压缩包或目录导入离线汉化资源包">导入离线包</button>
               </div>
             </div>
 
@@ -129,14 +136,11 @@
           <div class="log-head">
             <div class="log-head-left">
               <span class="log-title">执行日志</span>
-              <span id="version-badge" class="app-version">v--</span>
-              <div class="log-filters">
-                <button id="filter-log-all" class="log-filter-btn active" type="button" data-filter="all">全部</button>
-                <button id="filter-log-normal" class="log-filter-btn" type="button" data-filter="normal">常规</button>
-                <button id="filter-log-error" class="log-filter-btn" type="button" data-filter="error">
-                  异常 <span id="log-error-count" class="filter-count-badge hidden">0</span>
-                </button>
-              </div>
+              <button id="version-badge" class="app-version app-version-btn" type="button" title="点击检查主程序更新">v--</button>
+              <button id="btn-app-update" class="btn-app-update hidden" type="button" title="发现新版本，点击查看">
+                <span class="update-dot" aria-hidden="true"></span>
+                <span id="app-update-tag">新版本</span>
+              </button>
             </div>
             <div class="log-head-right">
               <button id="btn-copy-log" class="btn btn-quiet btn-xs" type="button">

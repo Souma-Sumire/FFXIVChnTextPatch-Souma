@@ -57,6 +57,9 @@ type App struct {
 	resourceDirOverride string
 	cloudOverride       verifier.Cloud
 	skipProcessCheck    bool
+
+	cancelPatchMu sync.Mutex
+	cancelPatch   context.CancelFunc
 }
 
 func (a *App) getCloud() verifier.Cloud {
@@ -413,14 +416,21 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 	if err != nil {
 		a.resourceMu.Lock()
 		a.resourceErr = err
+		a.offline = true
 		a.resourceMu.Unlock()
 		a.emitPatchLog(fmt.Sprintf("[提示] 检查云端资源更新失败: %v，将继续使用本地已有资源。", err))
+		if a.ctx != nil {
+			runtime.EventsEmit(a.ctx, "resource-offline", true)
+		}
 		return
 	}
 
 	a.resourceMu.Lock()
 	a.offline = status.Offline
 	a.resourceMu.Unlock()
+	if status.Offline && a.ctx != nil {
+		runtime.EventsEmit(a.ctx, "resource-offline", true)
+	}
 
 	if status.Updated && status.DownloadedFiles > 0 {
 		var updates []string
@@ -433,8 +443,7 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 		if len(updates) == 0 {
 			updates = append(updates, "规则配置")
 		}
-		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新（%s），已同步 %d 个文件（%.2f MB）。",
-			strings.Join(updates, ", "), status.DownloadedFiles, float64(status.DownloadedBytes)/1024/1024))
+		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新（%s）。", strings.Join(updates, ", ")))
 	} else if !status.Offline && status.CSVHash != "" {
 		resTime := formatResourceTime(status.GeneratedAt)
 		if resTime != "" {
@@ -496,7 +505,7 @@ func (a *App) waitResourceReady(ctx context.Context) error {
 
 // GetAppVersion 返回补丁器自身版本号。
 func (a *App) GetAppVersion() string {
-	return appVersion
+	return updater.CleanAppVersion(appVersion)
 }
 
 // GetBootstrap 返回前端启动数据。
@@ -515,16 +524,23 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		if err != nil {
 			a.resourceMu.Lock()
 			a.resourceErr = err
+			a.offline = true
 			a.resourceMu.Unlock()
 			close(a.resourceReady)
 			isOffline = true
 			a.emitPatchLog(fmt.Sprintf("[提示] 获取云端资源失败: %v，已进入离线模式。", err))
+			if a.ctx != nil {
+				runtime.EventsEmit(a.ctx, "resource-offline", true)
+			}
 		} else {
 			a.resourceMu.Lock()
 			a.offline = status.Offline
 			a.resourceMu.Unlock()
 			close(a.resourceReady)
 			isOffline = status.Offline
+			if status.Offline && a.ctx != nil {
+				runtime.EventsEmit(a.ctx, "resource-offline", true)
+			}
 		}
 	}
 
@@ -559,7 +575,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	}
 
 	return BootstrapInfo{
-		Version:     appVersion,
+		Version:     updater.CleanAppVersion(appVersion),
 		ResourceDir: resourceDir,
 		Offline:     isOffline,
 		Rules:       ruleMetas,
@@ -1164,6 +1180,16 @@ func (a *App) checkGameNotRunning(gameDir string) error {
 	})
 }
 
+// CancelPatch 中止当前正在执行的汉化任务。
+func (a *App) CancelPatch() {
+	a.cancelPatchMu.Lock()
+	cancel := a.cancelPatch
+	a.cancelPatchMu.Unlock()
+	if cancel != nil {
+		cancel()
+	}
+}
+
 // KillLauncherProcesses 扫描并强制结束当前运行中的冲突启动器进程。
 func (a *App) KillLauncherProcesses(gameDir string) ([]string, error) {
 	return gameproc.KillLauncherProcesses(gameDir)
@@ -1231,6 +1257,21 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		return resp, err
 	}
 	defer a.endBusy()
+
+	parentCtx := a.ctx
+	if parentCtx == nil {
+		parentCtx = context.Background()
+	}
+	patchCtx, cancel := context.WithCancel(parentCtx)
+	a.cancelPatchMu.Lock()
+	a.cancelPatch = cancel
+	a.cancelPatchMu.Unlock()
+	defer func() {
+		a.cancelPatchMu.Lock()
+		a.cancelPatch = nil
+		a.cancelPatchMu.Unlock()
+		cancel()
+	}()
 
 	if err := a.checkGameNotRunning(req.GameDir); err != nil {
 		if errors.Is(err, gameproc.ErrCancelled) {
@@ -1322,6 +1363,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			}
 		}
 		stats, err := replace.ReplaceEXDF(replace.Options{
+			Context:         ctx,
 			TextIndexPath:   filepath.Join(sqpackDir, "0a0000.win32.index"),
 			CSVResourceDir:  filepath.Join(resourceDir, "rawexd"),
 			SourceLanguage:  string(lang),
@@ -1339,7 +1381,8 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 	cfg.ApplyFont = func(ctx context.Context) error {
 		a.emitPatchLog("[字体] 开始写入高清中文字体...")
-		stats, err := replace.ReplaceFont(
+		stats, err := replace.ReplaceFontWithContext(
+			ctx,
 			filepath.Join(sqpackDir, "000000.win32.index"),
 			filepath.Join(resourceDir, "font"),
 			func(done, total int, file string) {
@@ -1353,8 +1396,18 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		return err
 	}
 
-	result, err := verifier.Run(a.ctx, cfg)
+	result, err := verifier.Run(patchCtx, cfg)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			a.emitPatchLog("[提示] 汉化已被用户中止，正在自动恢复官方原版...")
+			if _, restoreErr := verifier.RestoreToGame(req.GameDir, backupRoot, lang); restoreErr != nil {
+				a.emitPatchLog(fmt.Sprintf("[警告] 恢复官方原版失败: %v", restoreErr))
+			} else {
+				a.emitPatchLog("[提示] 官方原版已恢复完成")
+			}
+			resp.Cancelled = true
+			return resp, nil
+		}
 		a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v", err))
 		return resp, err
 	}
@@ -1474,9 +1527,9 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 	a.clearPatchedRecord(gameDir)
 	resp.Restored = restored
 	if len(restored) == 0 {
-		a.emitPatchLog("[完成] 经哈希校验，客户端全部 6 个核心文件均与官方原版一致，无需重复还原")
+		a.emitPatchLog("[完成] 客户端已是官方原版，无需重复还原")
 	} else {
-		a.emitPatchLog(fmt.Sprintf("[完成] 官方原版文件已全部恢复（共还原 %d 个被修改的文件，其余 %d 个文件已是原版未变动）", len(restored), len(verifier.AllFiles)-len(restored)))
+		a.emitPatchLog("[完成] 官方原版文件已全部恢复完成")
 	}
 	return resp, nil
 }
@@ -1519,3 +1572,83 @@ func (a *App) OpenLink(url string) error {
 func (a *App) EnsureHighResolutionUiAsset() (gamecfg.ModifyResult, error) {
 	return gamecfg.EnsureHighResolutionUiAsset("")
 }
+
+// CheckAppUpdate 查询云端获取汉化器主程序的最新版本并比对当前版本。
+func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	defer cancel()
+
+	info, err := updater.CheckAppUpdate(ctx, a.getCloud(), "Souma-Sumire/FFXIVChnTextPatch-Souma", appVersion)
+	if err != nil {
+		return updater.AppUpdateInfo{
+			CurrentVersion: updater.CleanAppVersion(appVersion),
+			LatestVersion:  updater.CleanAppVersion(appVersion),
+		}, err
+	}
+	return *info, nil
+}
+
+// ImportResourceResult 是离线包导入的结果。
+type ImportResourceResult struct {
+	Success      bool   `json:"success"`
+	Cancelled    bool   `json:"cancelled"`
+	Message      string `json:"message"`
+	ResourceTime string `json:"resourceTime,omitempty"`
+	ResourceHash string `json:"resourceHash,omitempty"`
+	TableCount   int    `json:"tableCount,omitempty"`
+}
+
+// ImportOfflineResource 从本地 zip 压缩包或解压目录导入汉化资源。
+func (a *App) ImportOfflineResource(filePath string) (ImportResourceResult, error) {
+	var resp ImportResourceResult
+	if filePath == "" {
+		selected, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+			Title: "选择离线汉化资源包 (*.zip)",
+			Filters: []runtime.FileFilter{
+				{DisplayName: "ZIP 压缩包 (*.zip)", Pattern: "*.zip"},
+			},
+		})
+		if err != nil {
+			return resp, err
+		}
+		if selected == "" {
+			resp.Cancelled = true
+			return resp, nil
+		}
+		filePath = selected
+	}
+
+	summary, err := updater.ImportOffline(filePath, a.resourceDir())
+	if err != nil {
+		return resp, fmt.Errorf("导入离线包失败: %w", err)
+	}
+
+	a.resourceMu.Lock()
+	a.offline = false
+	a.resourceErr = nil
+	a.resourceMu.Unlock()
+	if a.ctx != nil {
+		runtime.EventsEmit(a.ctx, "resource-offline", false)
+	}
+
+	select {
+	case <-a.resourceReady:
+	default:
+		close(a.resourceReady)
+	}
+
+	var resTime string
+	if summary.ResourceTime != "" {
+		resTime = formatResourceTime(summary.ResourceTime)
+	}
+
+	resp.Success = true
+	resp.Message = fmt.Sprintf("成功导入离线资源包（包含 %d 个数据表文件）", summary.TableCount)
+	resp.TableCount = summary.TableCount
+	resp.ResourceTime = resTime
+	resp.ResourceHash = shortHash(summary.ResourceHash)
+
+	a.emitPatchLog(fmt.Sprintf("[离线包] %s，资源已就绪。", resp.Message))
+	return resp, nil
+}
+

@@ -1228,3 +1228,25 @@ func TestDetectClientRegion(t *testing.T) {
 	}
 }
 
+func TestCompareVersion(t *testing.T) {
+	cases := []struct {
+		a    string
+		b    string
+		want int
+	}{
+		{"2.1.2", "2.1.1", 1},
+		{"2.1.1", "2.1.2", -1},
+		{"2.1.1", "2.1.1", 0},
+		{"2.1.1", "2.1.1-8-g28272842", 0},
+		{"2.1.2", "2.1.1-8-g28272842", 1},
+		{"2.1.0", "2.1.1-8-g28272842", -1},
+		{"2026.10.16.0000.0000", "2026.10.15.0000.0000", 1},
+	}
+	for _, tc := range cases {
+		got := CompareVersion(tc.a, tc.b)
+		if got != tc.want {
+			t.Errorf("CompareVersion(%q, %q) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+

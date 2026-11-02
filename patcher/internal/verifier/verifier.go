@@ -1054,7 +1054,7 @@ func restoreLocalBackup(cfg *RestoreConfig, backupDir, sqpackDir string, meta *B
 	}
 
 	if cfg != nil {
-		cfg.log("[还原] 正在比对客户端全部 %d 个核心文件的哈希完整性...", len(AllFiles))
+		cfg.log("[还原] 正在校验客户端文件完整性...")
 	}
 
 	restored := make([]string, 0, len(AllFiles))
@@ -1083,9 +1083,9 @@ func restoreLocalBackup(cfg *RestoreConfig, backupDir, sqpackDir string, meta *B
 
 	if cfg != nil {
 		if len(restored) == 0 {
-			cfg.log("[还原] 全部 %d 个核心文件均与官方原版哈希一致，无需写盘", len(AllFiles))
+			cfg.log("[还原] 客户端文件已是官方原版，无需重复还原")
 		} else {
-			cfg.log("[还原] 恢复完成：已还原 %d 个被修改的文件，%d 个未变动文件已跳过写入", len(restored), len(unchanged))
+			cfg.log("[还原] 官方原版文件已全部恢复完成")
 		}
 	}
 

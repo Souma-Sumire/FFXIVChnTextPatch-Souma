@@ -63,7 +63,9 @@ function resolveAppVersion(): string {
         encoding: "utf-8",
         stdio: ["ignore", "pipe", "ignore"],
       }).trim();
-      return desc.replace(/^patcher-v?/, "");
+      const clean = desc.replace(/^patcher-v?/, "");
+      const match = clean.match(/^(\d+(?:\.\d+)+)/);
+      return match ? match[1] : clean;
     } catch {
       return "dev";
     }
