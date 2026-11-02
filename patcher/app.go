@@ -16,6 +16,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamecfg"
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gameproc"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/replace"
@@ -877,24 +878,7 @@ func (a *App) clearPatchedRecord(gameDir string) {
 }
 
 func checkGameNotRunning(gameDir string) error {
-	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
-	testFiles := []string{
-		filepath.Join(sqpackDir, "0a0000.win32.index"),
-		filepath.Join(sqpackDir, "000000.win32.index"),
-	}
-	for _, p := range testFiles {
-		if _, err := os.Stat(p); err == nil {
-			f, err := os.OpenFile(p, os.O_RDWR, 0)
-			if err != nil {
-				if os.IsPermission(err) || strings.Contains(strings.ToLower(err.Error()), "used by another process") {
-					return errors.New("检测到游戏客户端文件正在被占用，请先退出游戏和启动器后再试")
-				}
-			} else {
-				_ = f.Close()
-			}
-		}
-	}
-	return nil
+	return gameproc.CheckGameNotRunning(gameDir)
 }
 
 // CheckClientStatus 手动计算并比对客户端文件哈希，返回当前客户端状态。

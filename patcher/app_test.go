@@ -505,3 +505,10 @@ func TestCheckClientStatusPatchedRecordRegionMismatchIgnored(t *testing.T) {
 	}
 }
 
+func TestCheckGameNotRunning(t *testing.T) {
+	tmpDir := t.TempDir()
+	if err := checkGameNotRunning(tmpDir); err != nil {
+		t.Fatalf("空目录未运行游戏时不应报错: %v", err)
+	}
+}
+
