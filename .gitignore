@@ -16,3 +16,4 @@ FFXIVChnTextPatch-SM-v2*
 resource/*.zip
 resource/manifest.json
 /.workbuddy/
+patcher/internal/golden/testdata/golden_source/
