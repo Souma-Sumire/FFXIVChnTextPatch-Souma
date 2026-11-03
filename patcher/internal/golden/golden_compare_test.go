@@ -2,6 +2,7 @@ package golden
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
@@ -17,6 +18,7 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/replace"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
 
 type goldenFile struct {
@@ -80,18 +82,9 @@ func TestGoldenMasterByteEquality(t *testing.T) {
 		t.Skip("Golden Master 测试需要处理约 400MB 数据，-short 模式跳过")
 	}
 
-	srcDir := os.Getenv("GOLDEN_SOURCE_DIR")
-	if srcDir == "" {
-		srcDir = repoPath("backup", "global")
-	}
-	for _, name := range requiredFiles {
-		if _, err := os.Stat(filepath.Join(srcDir, name)); err != nil {
-			t.Skipf("缺少国际服原版文件 %s（可设置 GOLDEN_SOURCE_DIR），跳过 Golden Master 测试", filepath.Join(srcDir, name))
-		}
-	}
-
 	golden := loadGolden(t)
 	fonts := loadFonts(t)
+	srcDir := locateOrDownloadGoldenSource(t, golden.GameVersion)
 
 	workDir := t.TempDir()
 	gameDir := filepath.Join(workDir, "game", "sqpack", "ffxiv")
@@ -166,6 +159,81 @@ func loadFonts(t *testing.T) *fontDoc {
 		t.Fatalf("解析字体基准失败: %v", err)
 	}
 	return &doc
+}
+
+func locateOrDownloadGoldenSource(t *testing.T, version string) string {
+	t.Helper()
+
+	// 1. 显式环境变量优先
+	if env := os.Getenv("GOLDEN_SOURCE_DIR"); env != "" {
+		if hasAllRequiredFiles(env) {
+			return env
+		}
+		t.Logf("GOLDEN_SOURCE_DIR=%s 缺少必要文件，尝试其他候选路径", env)
+	}
+
+	// 2. 本地候选路径（项目内 testdata 独立备份优先，其次本地备份目录）
+	localCandidate := filepath.Join("testdata", "golden_source")
+	backupCandidate := repoPath("backup", "global")
+	candidates := []string{localCandidate, backupCandidate}
+	for _, c := range candidates {
+		if hasAllRequiredFiles(c) {
+			return c
+		}
+	}
+
+	// 3. 本地皆无时，自动从 GitHub Release 下载原版文件至 localCandidate
+	t.Logf("本地未检测到完整的原版测试数据包，开始从 GitHub Release (v%s) 自动下载...", version)
+	if err := os.MkdirAll(localCandidate, 0o755); err != nil {
+		t.Fatalf("创建测试数据目录失败: %v", err)
+	}
+
+	client := verifier.NewGitHubClient()
+	ctx := context.Background()
+	const repo = "Souma-Sumire/FFXIVChnTextPatch-Souma"
+	rel, err := client.ReleaseByTag(ctx, repo, version)
+	if err != nil {
+		t.Fatalf("获取 GitHub Release 失败 (repo=%s, tag=%s): %v", repo, version, err)
+	}
+
+	for _, name := range requiredFiles {
+		dst := filepath.Join(localCandidate, name)
+		if st, err := os.Stat(dst); err == nil && st.Size() > 0 {
+			continue
+		}
+		asset, ok := rel.Assets[name]
+		if !ok || asset.DownloadURL == "" {
+			t.Fatalf("Release %s 中缺少附件 %s", version, name)
+		}
+		t.Logf("正在从云端拉取原版测试文件: %s...", name)
+		if err := client.Download(ctx, asset.DownloadURL, dst, nil); err != nil {
+			t.Fatalf("下载测试文件 %s 失败: %v", name, err)
+		}
+	}
+
+	if !hasAllRequiredFiles(localCandidate) {
+		t.Fatalf("从 GitHub 下载后仍缺少必要原版文件，目标目录: %s", localCandidate)
+	}
+	return localCandidate
+}
+
+func TestLocateOrDownloadGoldenSource_LocalExists(t *testing.T) {
+	golden := loadGolden(t)
+	src := locateOrDownloadGoldenSource(t, golden.GameVersion)
+	if !hasAllRequiredFiles(src) {
+		t.Fatalf("locateOrDownloadGoldenSource 返回的路径缺少必要文件: %s", src)
+	}
+	t.Logf("Golden 测试数据源路径定位成功: %s", src)
+}
+
+func hasAllRequiredFiles(dir string) bool {
+	for _, name := range requiredFiles {
+		st, err := os.Stat(filepath.Join(dir, name))
+		if err != nil || st.Size() == 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func verifyExd(t *testing.T, golden *goldenDoc, textIndex, gameDir string) {
