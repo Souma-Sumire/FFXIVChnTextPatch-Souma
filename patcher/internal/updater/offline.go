@@ -159,6 +159,22 @@ func validateStagedResource(dir string) error {
 			return fmt.Errorf("离线包内 %s 与清单声明的哈希不一致，包可能已损坏", c.name)
 		}
 	}
+
+	// rules.json 承载规则数据且不经过解压流程，缺失会让相关规则永久不可用，
+	// 因此清单声明了哈希就要求包内必须携带。
+	if mf.Rules.SHA256 != "" {
+		path := filepath.Join(dir, "rules.json")
+		if !fileExists(path) {
+			return errors.New("离线资源包缺少 rules.json（规则数据），请重新生成离线包")
+		}
+		got, err := HashFile(path)
+		if err != nil {
+			return fmt.Errorf("校验 rules.json 失败: %w", err)
+		}
+		if got.SHA256 != mf.Rules.SHA256 || (mf.Rules.Size > 0 && got.Size != mf.Rules.Size) {
+			return errors.New("离线包内 rules.json 与清单声明的哈希不一致，包可能已损坏")
+		}
+	}
 	return nil
 }
 
@@ -466,6 +482,13 @@ func generateFallbackManifest(resourceDir string) error {
 		fingerprint = resourceFingerprint(resourceDir)
 	}
 
+	var rulesInfo BundleInfo
+	if rulesPath := filepath.Join(resourceDir, "rules.json"); fileExists(rulesPath) {
+		if fh, err := HashFile(rulesPath); err == nil {
+			rulesInfo = BundleInfo{SHA256: fh.SHA256, Size: fh.Size}
+		}
+	}
+
 	mf := Manifest{
 		GeneratedAt: "",
 		RootHash:    rawHash,
@@ -473,6 +496,7 @@ func generateFallbackManifest(resourceDir string) error {
 			SHA256: rawHash,
 			Size:   rawSize,
 		},
+		Rules: rulesInfo,
 		Font: BundleInfo{
 			SHA256: fontHash,
 			Size:   fontSize,

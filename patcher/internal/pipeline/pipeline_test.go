@@ -16,8 +16,24 @@ func newTestRegistry(rules ...Rule) *Registry {
 	return reg
 }
 
-func TestBuiltinRuleDefaults(t *testing.T) {
-	reg := NewRegistry(BuiltinRules())
+// testRuleData 是测试专用数据，避免测试依赖随资源下发的 rules.json。
+var testRuleData = RuleData{
+	SpecialWord: map[string]string{
+		"古ぼけた地図G1":  "陈旧的鞣革地图（G1）",
+		"古ぼけた地図G14": "陈旧的金毗罗鳄革地图（G14）",
+		"古ぼけた地図G18": "陈旧的卡冈图亚革地图（G18）",
+	},
+	MateriaMap: map[string]string{
+		"信力": "信仰",
+		"武略": "暴击",
+		"咏唱": "咏唱速度",
+	},
+}
+
+func testRules() []Rule { return RulesFromData(testRuleData) }
+
+func TestRuleDefaultsWithData(t *testing.T) {
+	reg := NewRegistry(testRules())
 	if !reg.Enabled("treasure_map_alias") {
 		t.Fatal("藏宝图别名规则应默认开启")
 	}
@@ -31,12 +47,58 @@ func TestBuiltinRuleDefaults(t *testing.T) {
 		t.Fatal("魔光键影作弊规则应默认关闭")
 	}
 	if len(reg.List()) != 4 {
-		t.Fatalf("内置规则数量应为 4，实际 %d", len(reg.List()))
+		t.Fatalf("规则数量应为 4，实际 %d", len(reg.List()))
+	}
+}
+
+// TestMissingRuleDataIsUnavailable 验证规则数据缺失时规则仍列出但不可用、且无法被开启。
+func TestMissingRuleDataIsUnavailable(t *testing.T) {
+	reg := NewRegistry(DataLessRules())
+	metas := reg.List()
+	if len(metas) != 4 {
+		t.Fatalf("规则应始终列出 4 条，实际 %d", len(metas))
+	}
+	for _, meta := range metas {
+		switch meta.ID {
+		case "treasure_map_alias", "materia_stat_suffix":
+			if meta.Status != RuleStatusUnavailable {
+				t.Fatalf("%s 缺少数据时应标记不可用，实际 %q", meta.ID, meta.Status)
+			}
+			if meta.StatusDetail == "" {
+				t.Fatalf("%s 标记不可用时应给出原因", meta.ID)
+			}
+			if reg.Enabled(meta.ID) {
+				t.Fatalf("%s 不可用时不应默认开启", meta.ID)
+			}
+			reg.SetEnabled(meta.ID, true)
+			if reg.Enabled(meta.ID) {
+				t.Fatalf("%s 不可用时不应允许开启", meta.ID)
+			}
+		default:
+			if meta.Status != RuleStatusOK {
+				t.Fatalf("%s 不依赖规则数据，状态应为 ok，实际 %q", meta.ID, meta.Status)
+			}
+		}
+	}
+}
+
+// TestPartialRuleData 验证只有一段数据缺失时，仅该规则不可用。
+func TestPartialRuleData(t *testing.T) {
+	rules := RulesFromData(RuleData{SpecialWord: map[string]string{"古ぼけた地図G1": "陈旧的鞣革地图（G1）"}})
+	got := map[string]string{}
+	for _, rule := range rules {
+		got[rule.ID()] = rule.Meta().Status
+	}
+	if got["treasure_map_alias"] != RuleStatusOK {
+		t.Fatalf("藏宝图规则有数据时状态应为 ok，实际 %q", got["treasure_map_alias"])
+	}
+	if got["materia_stat_suffix"] != RuleStatusUnavailable {
+		t.Fatalf("魔晶石规则缺数据时应不可用，实际 %q", got["materia_stat_suffix"])
 	}
 }
 
 func TestTreasureMapAlias(t *testing.T) {
-	reg := newTestRegistry(NewTreasureMapAliasRule())
+	reg := newTestRegistry(NewTreasureMapAliasRuleFrom(testRuleData.SpecialWord))
 	cases := []struct{ target, source, want string }{
 		{"陈旧的鞣革地图", "", "陈旧的鞣革地图（G1）"},
 		{"陈旧的金毗罗鳄革地图", "", "陈旧的金毗罗鳄革地图（G14）"},
@@ -52,7 +114,7 @@ func TestTreasureMapAlias(t *testing.T) {
 }
 
 func TestMateriaStatSuffix(t *testing.T) {
-	reg := newTestRegistry(NewMateriaStatSuffixRule())
+	reg := newTestRegistry(NewMateriaStatSuffixRuleFrom(testRuleData.MateriaMap))
 	cases := []struct {
 		table  string
 		target string
@@ -74,7 +136,7 @@ func TestMateriaStatSuffix(t *testing.T) {
 }
 
 func TestRuleToggleIsolation(t *testing.T) {
-	reg := NewRegistry(BuiltinRules())
+	reg := NewRegistry(testRules())
 	ctx := &CellContext{TableName: "Item", TargetStr: "陈旧的鞣革地图"}
 	if got := reg.Apply(ctx); got != "陈旧的鞣革地图（G1）" {
 		t.Fatalf("默认开启时结果错误: %q", got)
@@ -115,7 +177,7 @@ func TestNoDiskPollution(t *testing.T) {
 	}
 	beforeSum := sha256.Sum256(before)
 
-	reg := NewRegistry(BuiltinRules())
+	reg := NewRegistry(testRules())
 	for i := 0; i < 100; i++ {
 		reg.Apply(&CellContext{TableName: "Item", RowKey: i, ColOffset: 0, TargetStr: "信力魔晶石壹型"})
 	}

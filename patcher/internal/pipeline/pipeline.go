@@ -14,13 +14,21 @@ type CellContext struct {
 	TargetStr string // CSV 中的初始中文
 }
 
+// 规则可用状态。数据由 rules.json 下发，缺失时规则本身仍会列出，但不参与转换。
+const (
+	RuleStatusOK          = "ok"
+	RuleStatusUnavailable = "unavailable"
+)
+
 // RuleMeta 是规则的可序列化元数据，供前端动态渲染 Checkbox。
 type RuleMeta struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Category    string `json:"category"`
-	DefaultOn   bool   `json:"defaultOn"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Category     string `json:"category"`
+	DefaultOn    bool   `json:"defaultOn"`
+	Status       string `json:"status"`
+	StatusDetail string `json:"statusDetail"`
 }
 
 // Rule 是单元格转换规则。
@@ -36,24 +44,38 @@ type Registry struct {
 	enabled map[string]bool
 }
 
-// NewRegistry 以规则默认开关状态创建注册表。
+// NewRegistry 以规则默认开关状态创建注册表。不可用的规则一律保持关闭。
 func NewRegistry(rules []Rule) *Registry {
 	r := &Registry{
 		rules:   make([]Rule, 0, len(rules)),
 		enabled: make(map[string]bool, len(rules)),
 	}
 	for _, rule := range rules {
+		meta := rule.Meta()
 		r.rules = append(r.rules, rule)
-		r.enabled[rule.ID()] = rule.Meta().DefaultOn
+		r.enabled[rule.ID()] = meta.DefaultOn && meta.Status == RuleStatusOK
 	}
 	return r
 }
 
-// SetEnabled 开启或关闭某个规则。
+// SetEnabled 开启或关闭某个规则。不可用的规则无法开启。
 func (r *Registry) SetEnabled(id string, on bool) {
-	if _, ok := r.enabled[id]; ok {
-		r.enabled[id] = on
+	if _, ok := r.enabled[id]; !ok {
+		return
 	}
+	if on && !r.available(id) {
+		return
+	}
+	r.enabled[id] = on
+}
+
+func (r *Registry) available(id string) bool {
+	for _, rule := range r.rules {
+		if rule.ID() == id {
+			return rule.Meta().Status == RuleStatusOK
+		}
+	}
+	return false
 }
 
 // Enabled 查询规则是否开启。

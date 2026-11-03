@@ -102,7 +102,7 @@ func TestGoldenMasterByteEquality(t *testing.T) {
 
 	ruleSet, ruleErr := pipeline.LoadRulesFromFile(repoPath("resource", "rules.json"))
 	if ruleErr != nil {
-		ruleSet = pipeline.BuiltinRules()
+		t.Fatalf("加载 resource/rules.json 失败: %v", ruleErr)
 	}
 	rules := pipeline.NewRegistry(ruleSet)
 	for _, meta := range rules.List() {

@@ -376,26 +376,36 @@ func normalizeRegionCode(lang string) string {
 }
 
 func defaultConfig() AppConfig {
-	rules := map[string]bool{}
-	for _, rule := range pipeline.BuiltinRules() {
-		rules[rule.ID()] = rule.Meta().DefaultOn
-	}
 	return AppConfig{
 		GameDirs:    map[string]string{},
 		Language:    string(region.GLOBAL),
 		ReplaceText: true,
 		ReplaceFont: true,
-		Rules:       rules,
+		Rules:       pipeline.DefaultRuleStates(),
 		Preset:      "recommended",
 	}
 }
 
-func loadRules(resourceDir string) []pipeline.Rule {
+// loadRules 读取 resource/rules.json 构造规则集合。
+// 规则数据只随资源下发，缺失或损坏时返回不含数据的规则集，
+// 对应规则在 Meta 中标注为不可用，由前端禁用开关，不再回退到编译期数据。
+func loadRules(resourceDir string) ([]pipeline.Rule, error) {
 	rules, err := pipeline.LoadRulesFromFile(filepath.Join(resourceDir, "rules.json"))
-	if err != nil || len(rules) == 0 {
-		return pipeline.BuiltinRules()
+	if err == nil {
+		return rules, nil
 	}
-	return rules
+	if rules != nil {
+		return rules, fmt.Errorf("规则数据 rules.json 无效（%v）", err)
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		// 资源尚未同步时由 provisioning 流程处理，此处不重复提示；
+		// 已存在词条目录却缺规则文件，说明离线包或同步不完整。
+		if _, statErr := os.Stat(filepath.Join(resourceDir, "rawexd")); statErr == nil {
+			return pipeline.DataLessRules(), errors.New("规则数据 rules.json 缺失，相关选项不可用")
+		}
+		return pipeline.DataLessRules(), nil
+	}
+	return pipeline.DataLessRules(), fmt.Errorf("规则数据 rules.json 无法读取（%v）", err)
 }
 
 func (a *App) loadConfig(resourceDir string) AppConfig {
@@ -697,8 +707,12 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	}
 
 	tableList := buildTableList(tables)
-	ruleMetas := make([]pipeline.RuleMeta, 0, 3)
-	for _, rule := range loadRules(resourceDir) {
+	ruleList, ruleErr := loadRules(resourceDir)
+	if ruleErr != nil {
+		a.emitPatchLog(fmt.Sprintf("[警告] %v", ruleErr))
+	}
+	ruleMetas := make([]pipeline.RuleMeta, 0, 4)
+	for _, rule := range ruleList {
 		ruleMetas = append(ruleMetas, rule.Meta())
 	}
 
@@ -1608,7 +1622,11 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	backupRoot := backupRootFor(resourceDir)
 	sqpackDir := filepath.Join(req.GameDir, "game", "sqpack", "ffxiv")
 
-	registry := pipeline.NewRegistry(loadRules(resourceDir))
+	ruleList, ruleErr := loadRules(resourceDir)
+	if ruleErr != nil {
+		a.emitPatchLog(fmt.Sprintf("[警告] %v", ruleErr))
+	}
+	registry := pipeline.NewRegistry(ruleList)
 	for id, on := range req.Rules {
 		registry.SetEnabled(id, on)
 	}
