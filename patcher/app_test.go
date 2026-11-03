@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
@@ -765,6 +766,76 @@ func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
 	}
 	if status.Status != "unsupported" {
 		t.Fatalf("非国际服应始终不支持原版检测，实际为 %s (%s)", status.Status, status.Description)
+	}
+}
+
+// 规则文件损坏时必须回退内置规则并返回错误，否则用户改坏 rules.json 后只会看到"没反应"。
+// 规则数据只随资源下发：文件缺失或损坏时必须显式报错并让相关规则不可用，
+// 不能回退到可执行文件内的副本。
+func TestLoadRulesRequiresDataFile(t *testing.T) {
+	dir := t.TempDir()
+
+	rules, err := loadRules(dir)
+	if err != nil {
+		t.Fatalf("资源尚未就绪时不应提示错误: %v", err)
+	}
+	if len(rules) != 4 {
+		t.Fatalf("规则应始终列出 4 条，实际 %d", len(rules))
+	}
+
+	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	rules, err = loadRules(dir)
+	if err == nil {
+		t.Fatal("资源已就绪却缺 rules.json 时应返回错误")
+	}
+	if len(rules) != 4 {
+		t.Fatalf("缺 rules.json 时仍应返回 4 条规则，实际 %d", len(rules))
+	}
+	for _, rule := range rules {
+		if rule.ID() != "treasure_map_alias" {
+			continue
+		}
+		if got := rule.Meta().Status; got != pipeline.RuleStatusUnavailable {
+			t.Fatalf("缺 rules.json 时藏宝图规则应不可用，实际 %q", got)
+		}
+	}
+
+	valid := `{"specialWord":{"甲":"乙"},"materiaMap":{"武略":"暴击"}}`
+	if err := os.WriteFile(filepath.Join(dir, "rules.json"), []byte(valid), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rules, err = loadRules(dir)
+	if err != nil {
+		t.Fatalf("合法 rules.json 不应报错: %v", err)
+	}
+	got := ""
+	for _, rule := range rules {
+		if rule.ID() != "materia_stat_suffix" {
+			continue
+		}
+		if rule.Meta().Status != pipeline.RuleStatusOK {
+			t.Fatalf("有数据时魔晶石规则状态应为 ok，实际 %q", rule.Meta().Status)
+		}
+		got = rule.Apply(&pipeline.CellContext{TableName: "Item", TargetStr: "武略魔晶石壹型"})
+	}
+	if got != "武略魔晶石壹型（暴击）" {
+		t.Fatalf("规则数据未生效，实际 %q", got)
+	}
+
+	if err := os.WriteFile(filepath.Join(dir, "rules.json"), []byte("{"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if rules, err := loadRules(dir); err == nil || len(rules) != 4 {
+		t.Fatalf("损坏的 rules.json 应返回错误且保留规则清单，实际 err=%v len=%d", err, len(rules))
+	}
+
+	if err := os.WriteFile(filepath.Join(dir, "rules.json"), []byte(`{"specialWord":{},"materiaMap":{}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if rules, err := loadRules(dir); err == nil || len(rules) != 4 {
+		t.Fatalf("内容为空的 rules.json 应返回错误且保留规则清单，实际 err=%v len=%d", err, len(rules))
 	}
 }
 

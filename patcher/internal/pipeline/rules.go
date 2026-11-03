@@ -15,62 +15,24 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/text"
 )
 
-// defaultSpecialWord 是内置的藏宝图别名（日文原名 -> 国服名称）。
-// 国服原名由带（Gx）后缀的值反推得到。
-var defaultSpecialWord = map[string]string{
-	"古ぼけた地図G1":  "陈旧的鞣革地图（G1）",
-	"古ぼけた地図G2":  "陈旧的山羊革地图（G2）",
-	"古ぼけた地図G3":  "陈旧的巨蟾蜍革地图（G3）",
-	"古ぼけた地図G4":  "陈旧的野猪革地图（G4）",
-	"古ぼけた地図G5":  "陈旧的毒蜥蜴革地图（G5）",
-	"古ぼけた地図G6":  "陈旧的古鸟革地图（G6）",
-	"古ぼけた地図G7":  "陈旧的飞龙革地图（G7）",
-	"古ぼけた地図G8":  "陈旧的巨龙革地图（G8）",
-	"古ぼけた地図G9":  "陈旧的迦迦纳怪鸟革地图（G9）",
-	"古ぼけた地図G10": "陈旧的瞪羚革地图（G10）",
-	"古ぼけた地図G11": "陈旧的绿飘龙革地图（G11）",
-	"古ぼけた地図G12": "陈旧的缠尾蛟革地图（G12）",
-	"古ぼけた地図G13": "陈旧的赛加羚羊革地图（G13）",
-	"古ぼけた地図G14": "陈旧的金毗罗鳄革地图（G14）",
-	"古ぼけた地図G15": "陈旧的蛇牛革地图（G15）",
-	"古ぼけた地図G16": "陈旧的银狼革地图（G16）",
-	"古ぼけた地図G17": "陈旧的狞豹革地图（G17）",
-	"古ぼけた地図G18": "陈旧的卡冈图亚革地图（G18）",
-}
-
-// defaultMateriaMap 与旧版 scripts/special.ts 中的 materiaMap 完全一致。
-var defaultMateriaMap = map[string]string{
-	"信力": "信仰",
-	"神眼": "直击",
-	"武略": "暴击",
-	"雄略": "信念",
-	"刚柔": "坚韧",
-	"达识": "获得力",
-	"博识": "鉴别力",
-	"器识": "采集力",
-	"名匠": "作业精度",
-	"魔匠": "制作力",
-	"巨匠": "加工精度",
-	"战技": "技能速度",
-	"咏唱": "咏唱速度",
-}
-
-// RuleData 对应 resource/rules.json。
+// RuleData 对应 resource/rules.json，规则数据只随资源下发，不编入可执行文件。
 type RuleData struct {
 	SpecialWord map[string]string `json:"specialWord"`
 	MateriaMap  map[string]string `json:"materiaMap"`
 }
 
 // ParseRules 从 rules.json 字节流创建规则集合。
+// 缺少某一段数据时该规则被标注为不可用；两段都缺失说明文件无意义，额外返回错误。
 func ParseRules(data []byte) ([]Rule, error) {
 	var doc RuleData
 	if err := json.Unmarshal(data, &doc); err != nil {
 		return nil, fmt.Errorf("解析 rules.json 失败: %w", err)
 	}
+	rules := RulesFromData(doc)
 	if len(doc.SpecialWord) == 0 && len(doc.MateriaMap) == 0 {
-		return nil, errors.New("rules.json 内容为空")
+		return rules, errors.New("rules.json 未包含任何规则数据")
 	}
-	return RulesFromData(doc), nil
+	return rules, nil
 }
 
 // LoadRulesFromFile 读取并创建规则集合。
@@ -83,26 +45,26 @@ func LoadRulesFromFile(path string) ([]Rule, error) {
 }
 
 // RulesFromData 用给定的映射表创建规则集合。
+// 缺少数据的规则仍保留在集合中，由 Meta 标注为不可用，前端据此禁用开关。
 func RulesFromData(data RuleData) []Rule {
-	specialWord := data.SpecialWord
-	if len(specialWord) == 0 {
-		specialWord = defaultSpecialWord
-	}
-	materia := data.MateriaMap
-	if len(materia) == 0 {
-		materia = defaultMateriaMap
-	}
 	return []Rule{
-		NewTreasureMapAliasRuleFrom(specialWord),
-		NewMateriaStatSuffixRuleFrom(materia),
+		NewTreasureMapAliasRuleFrom(data.SpecialWord),
+		NewMateriaStatSuffixRuleFrom(data.MateriaMap),
 		NewKTGCheatRule(),
 		NewOpenCCS2TWRule(),
 	}
 }
 
-// BuiltinRules 返回内置默认规则集合，用于 rules.json 缺失时的回退。
-func BuiltinRules() []Rule {
-	return RulesFromData(RuleData{SpecialWord: defaultSpecialWord, MateriaMap: defaultMateriaMap})
+// DataLessRules 返回不含规则数据的集合，用于 rules.json 缺失时显式标注不可用。
+func DataLessRules() []Rule { return RulesFromData(RuleData{}) }
+
+// DefaultRuleStates 返回各规则的默认开关状态，与规则数据是否存在无关。
+func DefaultRuleStates() map[string]bool {
+	states := make(map[string]bool, 4)
+	for _, rule := range RulesFromData(RuleData{}) {
+		states[rule.ID()] = rule.Meta().DefaultOn
+	}
+	return states
 }
 
 func buildTreasureAliases(src map[string]string) map[string]string {
@@ -121,31 +83,29 @@ type TreasureMapAliasRule struct {
 	aliases map[string]string
 }
 
-// NewTreasureMapAliasRule 创建使用内置数据的藏宝图别名规则。
-func NewTreasureMapAliasRule() *TreasureMapAliasRule {
-	return NewTreasureMapAliasRuleFrom(defaultSpecialWord)
-}
-
 // NewTreasureMapAliasRuleFrom 使用给定映射表创建藏宝图别名规则。
 func NewTreasureMapAliasRuleFrom(src map[string]string) *TreasureMapAliasRule {
-	if len(src) == 0 {
-		src = defaultSpecialWord
-	}
 	return &TreasureMapAliasRule{aliases: buildTreasureAliases(src)}
 }
 
 // ID 返回规则 ID。
 func (r *TreasureMapAliasRule) ID() string { return "treasure_map_alias" }
 
-// Meta 返回规则元数据。
+// Meta 返回规则元数据。缺少 rules.json 数据时标记为不可用。
 func (r *TreasureMapAliasRule) Meta() RuleMeta {
-	return RuleMeta{
+	meta := RuleMeta{
 		ID:          r.ID(),
 		Name:        "藏宝图等级标注",
 		Description: "在藏宝图名称后追加（G1）~（G18）等级后缀",
 		Category:    "文本优化",
 		DefaultOn:   true,
+		Status:      RuleStatusOK,
 	}
+	if len(r.aliases) == 0 {
+		meta.Status = RuleStatusUnavailable
+		meta.StatusDetail = "缺少规则数据 rules.json"
+	}
+	return meta
 }
 
 // Apply 执行转换。
@@ -166,16 +126,8 @@ type MateriaStatSuffixRule struct {
 	stats map[string]string
 }
 
-// NewMateriaStatSuffixRule 创建使用内置数据的魔晶石属性后缀规则。
-func NewMateriaStatSuffixRule() *MateriaStatSuffixRule {
-	return NewMateriaStatSuffixRuleFrom(defaultMateriaMap)
-}
-
 // NewMateriaStatSuffixRuleFrom 使用给定映射表创建魔晶石属性后缀规则。
 func NewMateriaStatSuffixRuleFrom(src map[string]string) *MateriaStatSuffixRule {
-	if len(src) == 0 {
-		src = defaultMateriaMap
-	}
 	stats := make(map[string]string, len(src))
 	for k, v := range src {
 		stats[k] = v
@@ -186,15 +138,21 @@ func NewMateriaStatSuffixRuleFrom(src map[string]string) *MateriaStatSuffixRule 
 // ID 返回规则 ID。
 func (r *MateriaStatSuffixRule) ID() string { return "materia_stat_suffix" }
 
-// Meta 返回规则元数据。
+// Meta 返回规则元数据。缺少 rules.json 数据时标记为不可用。
 func (r *MateriaStatSuffixRule) Meta() RuleMeta {
-	return RuleMeta{
+	meta := RuleMeta{
 		ID:          r.ID(),
 		Name:        "魔晶石属性后缀",
 		Description: "在魔晶石名称后追加属性名，如（暴击）",
 		Category:    "文本优化",
 		DefaultOn:   true,
+		Status:      RuleStatusOK,
 	}
+	if len(r.stats) == 0 {
+		meta.Status = RuleStatusUnavailable
+		meta.StatusDetail = "缺少规则数据 rules.json"
+	}
+	return meta
 }
 
 // Apply 执行转换。
@@ -241,6 +199,7 @@ func (r *OpenCCS2TWRule) Meta() RuleMeta {
 		Description: "將簡體中文文本轉換為臺灣繁體字",
 		Category:    "文本优化",
 		DefaultOn:   false,
+		Status:      RuleStatusOK,
 	}
 }
 
@@ -294,6 +253,7 @@ func (r *KTGCheatRule) Meta() RuleMeta {
 		Description: "将魔光键影的拼音替换为 1~9 数字循环，便于快速击打",
 		Category:    "文本优化",
 		DefaultOn:   false,
+		Status:      RuleStatusOK,
 	}
 }
 

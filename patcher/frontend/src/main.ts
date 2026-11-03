@@ -6,6 +6,8 @@ interface RuleMeta {
   description: string;
   category: string;
   defaultOn: boolean;
+  status: string;
+  statusDetail: string;
 }
 
 interface LanguageOption {
@@ -949,9 +951,23 @@ function renderRules(): void {
     return;
   }
   el.rules.replaceChildren();
+
+  const unavailable = bootstrap.rules.filter((rule) => rule.status === "unavailable");
+  if (unavailable.length > 0) {
+    const notice = document.createElement("div");
+    notice.className = "rule-notice";
+    notice.textContent = `规则数据不可用，已停用：${unavailable.map((rule) => rule.name).join("、")}。请同步资源，或改用完整的离线资源包。`;
+    el.rules.append(notice);
+  }
+
   for (const rule of bootstrap.rules) {
+    const blocked = rule.status === "unavailable";
+
     const label = document.createElement("label");
     label.className = "form-row rule-row";
+    if (blocked) {
+      label.classList.add("disabled");
+    }
 
     const wrap = document.createElement("span");
     wrap.className = "rule-text";
@@ -959,17 +975,27 @@ function renderRules(): void {
     const title = document.createElement("span");
     title.className = "rule-name";
     title.textContent = rule.name;
+    if (blocked) {
+      const badge = document.createElement("span");
+      badge.className = "rule-badge";
+      badge.textContent = "不可用";
+      title.append(badge);
+    }
 
     const desc = document.createElement("span");
     desc.className = "rule-desc";
-    desc.textContent = rule.description;
+    desc.textContent = blocked && rule.statusDetail ? rule.statusDetail : rule.description;
+    if (blocked) {
+      desc.classList.add("rule-desc-blocked");
+    }
 
     const sw = document.createElement("span");
     sw.className = "switch";
 
     const input = document.createElement("input");
     input.type = "checkbox";
-    input.checked = config.rules[rule.id] ?? rule.defaultOn;
+    input.disabled = blocked;
+    input.checked = blocked ? false : (config.rules[rule.id] ?? rule.defaultOn);
     input.addEventListener("change", () => {
       config.rules[rule.id] = input.checked;
       void persistConfig();
