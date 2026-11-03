@@ -13,6 +13,7 @@ type IndexFile struct {
 	ID         int32 // 文件名 CRC（或 index2 中的 folder CRC）
 	ID2        int32 // 文件夹 CRC（index2 中为 -1）
 	DataOffset int32 // dat 文件中的偏移量（以 8 字节为单位，低 4 位编码 dat 序号）
+	IsIndex2   bool  // 是否来自 index2
 }
 
 // Folder 对应旧版 SqPackIndexFolder。
@@ -135,7 +136,7 @@ func (f *Folder) readFiles(data []byte, isIndex2 bool) error {
 			}
 			id := int32(binary.LittleEndian.Uint32(data[pos:]))
 			offset := int32(binary.LittleEndian.Uint32(data[pos+4:]))
-			f.Files[id] = &IndexFile{Pt: int64(pos), ID: id, ID2: -1, DataOffset: offset}
+			f.Files[id] = &IndexFile{Pt: int64(pos), ID: id, ID2: -1, DataOffset: offset, IsIndex2: true}
 			pos += 8
 			continue
 		}
@@ -145,7 +146,7 @@ func (f *Folder) readFiles(data []byte, isIndex2 bool) error {
 		id := int32(binary.LittleEndian.Uint32(data[pos:]))
 		id2 := int32(binary.LittleEndian.Uint32(data[pos+4:]))
 		offset := int32(binary.LittleEndian.Uint32(data[pos+8:]))
-		f.Files[id] = &IndexFile{Pt: int64(pos), ID: id, ID2: id2, DataOffset: offset}
+		f.Files[id] = &IndexFile{Pt: int64(pos), ID: id, ID2: id2, DataOffset: offset, IsIndex2: false}
 		pos += 16
 	}
 	return nil
@@ -160,13 +161,21 @@ func (i *Index) Lookup(folderPath, fileName string) *IndexFile {
 	return folder.Files[ComputeCRCString(fileName)]
 }
 
-// WriteDataOffset 把新的 dat 偏移量写回 index 的 pt+8 位置（Little-Endian）。
+// WriteDataOffset 把新的 dat 偏移量写回 index 的偏移字段位置（Little-Endian）。
+// 对 16 字节条目的 .index 写入 pt+8；对 8 字节条目的 .index2 写入 pt+4。
 func WriteDataOffset(w interface {
 	WriteAt(p []byte, off int64) (int, error)
 }, entry *IndexFile, datOffsetBytes int64) error {
+	if entry == nil {
+		return fmt.Errorf("索引条目为空")
+	}
+	offsetPos := entry.Pt + 8
+	if entry.IsIndex2 {
+		offsetPos = entry.Pt + 4
+	}
 	var buf [4]byte
 	binary.LittleEndian.PutUint32(buf[:], uint32(datOffsetBytes))
-	if _, err := w.WriteAt(buf[:], entry.Pt+8); err != nil {
+	if _, err := w.WriteAt(buf[:], offsetPos); err != nil {
 		return fmt.Errorf("写入索引偏移失败: %w", err)
 	}
 	return nil

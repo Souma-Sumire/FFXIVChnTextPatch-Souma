@@ -113,8 +113,11 @@ func BuildTexBlock(data []byte) ([]byte, error) {
 	width := int(binary.LittleEndian.Uint16(texHeader[8:]))
 	height := int(binary.LittleEndian.Uint16(texHeader[10:]))
 	mipCount := int(binary.LittleEndian.Uint16(texHeader[14:]))
-	if mipCount < 0 {
+	if mipCount <= 0 {
 		return nil, fmt.Errorf("纹理 mipCount 非法: %d", mipCount)
+	}
+	if mipCount != 1 {
+		return nil, fmt.Errorf("当前仅支持单 mipCount 纹理构建: %d", mipCount)
 	}
 
 	uncompressedSize := len(data)

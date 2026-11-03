@@ -26,6 +26,7 @@ type ImportSummary struct {
 }
 
 // ImportOffline 将本地离线资源包（.zip 文件或已解压目录）导入到目标资源目录中。
+// 包先展开到目标同卷的临时目录并校验，全部通过后才整体切换，损坏的包不会污染现有资源。
 func ImportOffline(srcPath, destResourceDir string) (*ImportSummary, error) {
 	if srcPath == "" {
 		return nil, errors.New("离线包路径不能为空")
@@ -35,55 +36,58 @@ func ImportOffline(srcPath, destResourceDir string) (*ImportSummary, error) {
 		return nil, fmt.Errorf("无法访问离线包: %w", err)
 	}
 
-	if err := os.MkdirAll(destResourceDir, 0o755); err != nil {
+	destResourceDir = filepath.Clean(destResourceDir)
+	parent := filepath.Dir(destResourceDir)
+	if err := os.MkdirAll(parent, 0o755); err != nil {
 		return nil, fmt.Errorf("创建目标资源目录失败: %w", err)
 	}
 
+	staging, err := os.MkdirTemp(parent, ".resource-import-")
+	if err != nil {
+		return nil, fmt.Errorf("创建临时目录失败: %w", err)
+	}
+	defer func() {
+		if staging != "" {
+			_ = os.RemoveAll(staging)
+		}
+	}()
+
 	if st.IsDir() {
-		if err := copyOfflineDir(srcPath, destResourceDir); err != nil {
-			return nil, err
-		}
+		err = copyOfflineDir(srcPath, staging)
 	} else {
-		if err := extractOfflineZip(srcPath, destResourceDir); err != nil {
-			return nil, err
-		}
+		err = extractOfflineZip(srcPath, staging)
+	}
+	if err != nil {
+		return nil, err
 	}
 
-	// 保证嵌套 zip（rawexd.zip / font.zip）解压完成
-	rawexdZip := filepath.Join(destResourceDir, "rawexd.zip")
-	rawexdDir := filepath.Join(destResourceDir, "rawexd")
-	if fileExists(rawexdZip) && (!dirExists(rawexdDir) || countFilesWithExt(rawexdDir, ".csv") == 0) {
-		if err := ExtractZip(rawexdZip, destResourceDir); err != nil {
-			return nil, fmt.Errorf("解压 rawexd.zip 失败: %w", err)
-		}
+	if err := extractNestedZips(staging); err != nil {
+		return nil, err
+	}
+	if err := validateStagedResource(staging); err != nil {
+		return nil, err
 	}
 
-	fontZip := filepath.Join(destResourceDir, "font.zip")
-	fontDir := filepath.Join(destResourceDir, "font")
-	if fileExists(fontZip) && (!dirExists(fontDir) || countFiles(fontDir) == 0) {
-		if err := ExtractZip(fontZip, destResourceDir); err != nil {
-			return nil, fmt.Errorf("解压 font.zip 失败: %w", err)
-		}
-	}
-
+	rawexdDir := filepath.Join(staging, "rawexd")
 	csvCount := countFilesWithExt(rawexdDir, ".csv")
-	if csvCount == 0 {
-		return nil, errors.New("离线资源包未包含有效的游戏词条数据（rawexd 目录下缺少 .csv 文件）")
-	}
 
-	tablesPath := filepath.Join(destResourceDir, "tables.json")
+	tablesPath := filepath.Join(staging, "tables.json")
 	if !fileExists(tablesPath) {
 		if err := generateFallbackTablesJSON(rawexdDir, tablesPath); err != nil {
 			return nil, fmt.Errorf("生成默认 tables.json 失败: %w", err)
 		}
 	}
 
-	manifestPath := filepath.Join(destResourceDir, "manifest.json")
-	if !fileExists(manifestPath) {
-		if err := generateFallbackManifest(destResourceDir); err != nil {
+	if !fileExists(filepath.Join(staging, "manifest.json")) {
+		if err := generateFallbackManifest(staging); err != nil {
 			return nil, fmt.Errorf("生成本地 manifest.json 失败: %w", err)
 		}
 	}
+
+	if err := replaceResourceDir(staging, destResourceDir); err != nil {
+		return nil, err
+	}
+	staging = ""
 
 	tableCount := countTables(tablesPath)
 	if tableCount == 0 {
@@ -100,10 +104,113 @@ func ImportOffline(srcPath, destResourceDir string) (*ImportSummary, error) {
 		Success:      true,
 		TableCount:   tableCount,
 		CSVCount:     csvCount,
-		FontCount:    countFiles(fontDir),
+		FontCount:    countFiles(filepath.Join(destResourceDir, "font")),
 		ResourceTime: resTime,
 		ResourceHash: resHash,
 	}, nil
+}
+
+// extractNestedZips 展开离线包自带的 rawexd.zip / font.zip。
+func extractNestedZips(dir string) error {
+	for _, name := range []string{"rawexd.zip", "font.zip"} {
+		zipPath := filepath.Join(dir, name)
+		if !fileExists(zipPath) {
+			continue
+		}
+		if err := ExtractZip(zipPath, dir); err != nil {
+			return fmt.Errorf("解压 %s 失败: %w", name, err)
+		}
+	}
+	return nil
+}
+
+// validateStagedResource 在切换前确认暂存目录是一套可用资源：
+// 至少有一个词条 CSV，且包内自带的 zip 与清单声明的哈希一致。
+func validateStagedResource(dir string) error {
+	if countFilesWithExt(filepath.Join(dir, "rawexd"), ".csv") == 0 {
+		return errors.New("离线资源包未包含有效的游戏词条数据（rawexd 目录下缺少 .csv 文件）")
+	}
+
+	mf, err := ReadLocalManifest(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("离线包内的 manifest.json 无效: %w", err)
+	}
+
+	checks := []struct {
+		name string
+		want BundleInfo
+	}{
+		{"rawexd.zip", mf.RawEXD},
+		{"font.zip", mf.Font},
+	}
+	for _, c := range checks {
+		path := filepath.Join(dir, c.name)
+		if c.want.SHA256 == "" || !fileExists(path) {
+			continue
+		}
+		got, err := HashFile(path)
+		if err != nil {
+			return fmt.Errorf("校验 %s 失败: %w", c.name, err)
+		}
+		if got.SHA256 != c.want.SHA256 || (c.want.Size > 0 && got.Size != c.want.Size) {
+			return fmt.Errorf("离线包内 %s 与清单声明的哈希不一致，包可能已损坏", c.name)
+		}
+	}
+	return nil
+}
+
+// replaceResourceDir 用暂存目录整体替换资源目录。
+// 旧目录里存在、新目录里没有的文件（如离线包未携带的 rules.json）会被保留。
+func replaceResourceDir(staging, dest string) error {
+	if _, err := os.Stat(dest); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+		return os.Rename(staging, dest)
+	}
+
+	backup := fmt.Sprintf("%s.old-%d", dest, time.Now().UnixNano())
+	if err := os.Rename(dest, backup); err != nil {
+		return fmt.Errorf("切换资源目录失败: %w", err)
+	}
+	if err := os.Rename(staging, dest); err != nil {
+		_ = os.Rename(backup, dest)
+		return fmt.Errorf("切换资源目录失败: %w", err)
+	}
+	if err := copyMissingFiles(backup, dest); err != nil {
+		_ = os.RemoveAll(dest)
+		_ = os.Rename(backup, dest)
+		return fmt.Errorf("合并旧资源失败: %w", err)
+	}
+	_ = os.RemoveAll(backup)
+	return nil
+}
+
+// copyMissingFiles 把 src 中 dst 缺失的文件补到 dst，dst 已有的文件不覆盖。
+func copyMissingFiles(src, dst string) error {
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, relErr := filepath.Rel(src, path)
+		if relErr != nil || rel == "." {
+			return nil
+		}
+		target := filepath.Join(dst, rel)
+		if info.IsDir() {
+			if !dirExists(target) {
+				return os.MkdirAll(target, 0o755)
+			}
+			return nil
+		}
+		if fileExists(target) {
+			return nil
+		}
+		return copyFile(path, target)
+	})
 }
 
 func extractOfflineZip(zipPath, destDir string) error {
@@ -158,12 +265,6 @@ func extractOfflineZip(zipPath, destDir string) error {
 		rc.Close()
 		if copyErr != nil {
 			return copyErr
-		}
-
-		if relPath == "rawexd.zip" {
-			_ = ExtractZip(target, cleanDest)
-		} else if relPath == "font.zip" {
-			_ = ExtractZip(target, cleanDest)
 		}
 	}
 
@@ -231,14 +332,25 @@ func copyFile(src, dst string) error {
 	}
 	defer in.Close()
 
-	out, err := os.Create(dst)
+	tmp := dst + ".part"
+	out, err := os.Create(tmp)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
-
-	_, err = io.Copy(out, in)
-	return err
+	if _, err := io.Copy(out, in); err != nil {
+		_ = out.Close()
+		_ = os.Remove(tmp)
+		return err
+	}
+	if err := out.Close(); err != nil {
+		_ = os.Remove(tmp)
+		return err
+	}
+	if err := os.Rename(tmp, dst); err != nil {
+		_ = os.Remove(tmp)
+		return err
+	}
+	return nil
 }
 
 func fileExists(p string) bool {
@@ -325,40 +437,83 @@ func generateFallbackTablesJSON(rawexdDir, targetPath string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(targetPath, append(data, '\n'), 0o644)
+	return writeFileAtomic(targetPath, append(data, '\n'))
 }
 
 func generateFallbackManifest(resourceDir string) error {
-	now := time.Now().UTC().Format(time.RFC3339)
 	rawexdZip := filepath.Join(resourceDir, "rawexd.zip")
+	fontZip := filepath.Join(resourceDir, "font.zip")
 
-	var rawHash string
-	var rawSize int64
+	var rawHash, fontHash string
+	var rawSize, fontSize int64
 	if fileExists(rawexdZip) {
 		if fh, err := HashFile(rawexdZip); err == nil {
 			rawHash = fh.SHA256
 			rawSize = fh.Size
 		}
 	}
-	if rawHash == "" {
-		h := sha256.New()
-		h.Write([]byte(now))
-		rawHash = hex.EncodeToString(h.Sum(nil))
+	if fileExists(fontZip) {
+		if fh, err := HashFile(fontZip); err == nil {
+			fontHash = fh.SHA256
+			fontSize = fh.Size
+		}
+	}
+
+	// 缺少 .zip 包文件（只放了已解压目录）时无法还原发布清单里的 bundle 哈希，
+	// 退化为按文件内容计算的本地指纹，仅用于展示与区分，不参与云端比对。
+	var fingerprint string
+	if rawHash == "" || fontHash == "" {
+		fingerprint = resourceFingerprint(resourceDir)
 	}
 
 	mf := Manifest{
-		GeneratedAt: now,
+		GeneratedAt: "",
 		RootHash:    rawHash,
 		RawEXD: BundleInfo{
 			SHA256: rawHash,
 			Size:   rawSize,
 		},
-		Fonts: map[string]FileInfo{},
+		Font: BundleInfo{
+			SHA256: fontHash,
+			Size:   fontSize,
+		},
+		LocalFingerprint: fingerprint,
+		Fonts:            map[string]FileInfo{},
 	}
 
 	data, err := json.MarshalIndent(mf, "", "  ")
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(resourceDir, "manifest.json"), append(data, '\n'), 0o644)
+	return writeFileAtomic(filepath.Join(resourceDir, "manifest.json"), append(data, '\n'))
+}
+
+// resourceFingerprint 按“相对路径:文件哈希”逐行排序后计算 rawexd 与 font 的内容指纹。
+func resourceFingerprint(resourceDir string) string {
+	h := sha256.New()
+	for _, sub := range []string{"rawexd", "font"} {
+		root := filepath.Join(resourceDir, sub)
+		if !dirExists(root) {
+			continue
+		}
+		var files []string
+		_ = filepath.WalkDir(root, func(p string, d os.DirEntry, err error) error {
+			if err != nil || d.IsDir() {
+				return nil
+			}
+			if rel, relErr := filepath.Rel(resourceDir, p); relErr == nil {
+				files = append(files, filepath.ToSlash(rel))
+			}
+			return nil
+		})
+		sort.Strings(files)
+		for _, rel := range files {
+			fh, err := HashFile(filepath.Join(resourceDir, filepath.FromSlash(rel)))
+			if err != nil {
+				continue
+			}
+			fmt.Fprintf(h, "%s:%s\n", rel, fh.SHA256)
+		}
+	}
+	return hex.EncodeToString(h.Sum(nil))
 }

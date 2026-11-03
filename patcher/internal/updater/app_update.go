@@ -3,7 +3,9 @@ package updater
 import (
 	"context"
 	"fmt"
+	"net/url"
 	goruntime "runtime"
+	"sort"
 	"strings"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
@@ -14,10 +16,11 @@ type AppUpdateInfo struct {
 	HasUpdate      bool   `json:"hasUpdate"`
 	CurrentVersion string `json:"currentVersion"`
 	LatestVersion  string `json:"latestVersion"`
-	Title          string `json:"title"`
 	ReleaseNotes   string `json:"releaseNotes"`
 	ReleaseURL     string `json:"releaseUrl"`
 	DownloadURL    string `json:"downloadUrl"`
+	// MirrorURL 是同一附件经加速镜像包装后的地址，供无法直连 GitHub 的用户使用。
+	MirrorURL string `json:"mirrorUrl,omitempty"`
 }
 
 // CleanAppVersion 清理版本字符串前缀与后缀元数据（如 patcher-v2.1.1 -> 2.1.1，2.1.1-8-g28272842 -> 2.1.1）。
@@ -33,17 +36,72 @@ func CleanAppVersion(v string) string {
 }
 
 // IsPatcherReleaseTag 判断该 tag 是否属于汉化器主程序 Release。
+// 只有 build_patcher.yml 的 patcher-v* 才是主程序发布。仓库里同时存在
+// v2.20.0、v2.18.x 这类旧版 Java 汉化器的 tag，只要「形如 x.y.z」就采信，
+// 2.20.0 会被当成比当前 2.1.x 更新的版本，指向旧版的 Release 页面。
 func IsPatcherReleaseTag(tag string) bool {
-	lower := strings.ToLower(strings.TrimSpace(tag))
-	if strings.HasPrefix(lower, "patcher-") {
-		return true
+	return strings.HasPrefix(strings.ToLower(strings.TrimSpace(tag)), "patcher-")
+}
+
+// pickReleaseAsset 在 Release 附件中挑选主程序包。
+// 附件存放在 map 里，直接遍历会因 Go 的随机顺序在不同版本间选出不同文件，
+// 因此优先匹配产品名，其次按文件名排序取第一个，保证结果稳定。
+func pickReleaseAsset(goos string, assets map[string]verifier.ReleaseAsset) string {
+	names := make([]string, 0, len(assets))
+	for name := range assets {
+		names = append(names, name)
 	}
-	if strings.HasPrefix(lower, "202") || strings.HasPrefix(lower, "7.") || strings.HasPrefix(lower, "6.") {
-		return false
+	sort.Strings(names)
+
+	var fallback string
+	for _, name := range names {
+		lower := strings.ToLower(name)
+		asset := assets[name]
+		if asset.DownloadURL == "" {
+			continue
+		}
+		switch goos {
+		case "windows":
+			if !strings.HasSuffix(lower, ".exe") {
+				continue
+			}
+		case "darwin":
+			if !strings.HasSuffix(lower, ".zip") {
+				continue
+			}
+		default:
+			return ""
+		}
+		if strings.Contains(lower, "ffxivchntextpatch") {
+			return asset.DownloadURL
+		}
+		if fallback == "" {
+			fallback = asset.DownloadURL
+		}
 	}
-	clean := CleanAppVersion(tag)
-	parts := strings.Split(clean, ".")
-	return len(parts) >= 2 && len(parts) <= 4
+	return fallback
+}
+
+// releaseAssetName 返回 CI 为「汉化器主程序」固定发布的附件名，
+// 与 .github/workflows/build_patcher.yml 的 files 列表保持一致。
+func releaseAssetName(goos string) string {
+	switch goos {
+	case "windows":
+		return "FFXIVChnTextPatch-SM-v2.exe"
+	case "darwin":
+		return "FFXIVChnTextPatch-SM-v2-macOS.zip"
+	}
+	return ""
+}
+
+// assetURLFromTag 按发布约定直接拼出附件下载地址。
+// patcher-v* 的 Release 由 CI 用固定文件名发布，拼地址比再抓一次网页附件列表更省事。
+func assetURLFromTag(repo, tag, goos string) string {
+	name := releaseAssetName(goos)
+	if name == "" || tag == "" {
+		return ""
+	}
+	return fmt.Sprintf("https://github.com/%s/releases/download/%s/%s", repo, url.PathEscape(tag), name)
 }
 
 // CheckAppUpdate 查询云端获取汉化器主程序的最新版本并比对当前版本。
@@ -62,7 +120,7 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 		ReleaseURL:     fmt.Sprintf("https://github.com/%s/releases/latest", repo),
 	}
 
-	releases, err := cloud.RecentReleases(ctx, repo, 15)
+	releases, err := cloud.RecentReleases(ctx, repo, 100)
 	if err != nil {
 		return info, fmt.Errorf("检查更新失败: %w", err)
 	}
@@ -89,11 +147,6 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 	}
 
 	info.LatestVersion = highestVersion
-	if latestPatcherRelease.Title != "" {
-		info.Title = latestPatcherRelease.Title
-	} else {
-		info.Title = fmt.Sprintf("汉化器 v%s", highestVersion)
-	}
 	info.ReleaseNotes = latestPatcherRelease.Body
 	if latestPatcherRelease.URL != "" {
 		info.ReleaseURL = latestPatcherRelease.URL
@@ -101,24 +154,17 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 		info.ReleaseURL = fmt.Sprintf("https://github.com/%s/releases/tag/%s", repo, latestPatcherRelease.Tag)
 	}
 
-	if goruntime.GOOS == "windows" {
-		for name, asset := range latestPatcherRelease.Assets {
-			if strings.HasSuffix(strings.ToLower(name), ".exe") && asset.DownloadURL != "" {
-				info.DownloadURL = asset.DownloadURL
-				break
-			}
-		}
-	} else if goruntime.GOOS == "darwin" {
-		for name, asset := range latestPatcherRelease.Assets {
-			if strings.HasSuffix(strings.ToLower(name), ".zip") && asset.DownloadURL != "" {
-				info.DownloadURL = asset.DownloadURL
-				break
-			}
-		}
+	info.DownloadURL = pickReleaseAsset(goruntime.GOOS, latestPatcherRelease.Assets)
+	if info.DownloadURL == "" {
+		// 降级解析网页端列表时拿不到附件信息。patcher-v* 由 CI 按固定命名发布，
+		// 直接拼地址即可，不必为附件列表多请求一次。
+		info.DownloadURL = assetURLFromTag(repo, latestPatcherRelease.Tag, goruntime.GOOS)
 	}
 
 	if info.DownloadURL == "" {
 		info.DownloadURL = info.ReleaseURL
+	} else {
+		info.MirrorURL = cloud.MirrorDownloadURL(info.DownloadURL)
 	}
 
 	if cleanCurrent != "dev" && cleanCurrent != "" {

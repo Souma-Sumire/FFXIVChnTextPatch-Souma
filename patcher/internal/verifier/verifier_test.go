@@ -6,6 +6,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -706,12 +708,15 @@ func TestParseRecentReleasesHTML(t *testing.T) {
 		<div><a href="/owner/repo/releases/tag/2026.10.15.0000.0000">v2</a></div>
 		<div><a href="/owner/repo/releases/tag/2026.10.16.0000.0000">dup</a></div>
 	`
-	rels := parseRecentReleasesHTML(html, 5)
+	rels := parseRecentReleasesHTML(html, "owner/repo", 5)
 	if len(rels) != 2 {
 		t.Fatalf("解析 Release 数量期望 2，实际 %d", len(rels))
 	}
 	if rels[0].Tag != "2026.10.16.0000.0000" || rels[1].Tag != "2026.10.15.0000.0000" {
 		t.Errorf("解析结果异常: %+v", rels)
+	}
+	if rels[0].URL != "https://github.com/owner/repo/releases/tag/2026.10.16.0000.0000" {
+		t.Errorf("Release 链接应由传入仓库拼出，实际 %q", rels[0].URL)
 	}
 }
 
@@ -1250,3 +1255,476 @@ func TestCompareVersion(t *testing.T) {
 	}
 }
 
+// TestRestoreGlobalRejectsStaleBackupWithoutCloud 验证国际服在游戏更新后，
+// 若拿不到当前版本的云端原文件，不能用旧版本备份覆盖客户端，
+// 且失败时不得把备份清单的版本号改写成当前版本。
+func TestRestoreGlobalRejectsStaleBackupWithoutCloud(t *testing.T) {
+	oldVersion := "2026.10.16.0000.0000"
+	newVersion := "2026.10.23.0000.0000"
+	original := allContents("global-orig", AllFiles)
+	patched := allContents("global-patched", AllFiles)
+
+	env := newTestEnv(t, newVersion, patched)
+	env.seedBackup(t, region.EN, oldVersion, original)
+
+	_, err := Restore(context.Background(), RestoreConfig{
+		GameDir:    env.gameDir,
+		BackupRoot: env.backupRoot,
+		Language:   region.EN,
+	})
+	if err == nil {
+		t.Fatal("国际服旧版本备份且无云端来源时 Restore 应报错")
+	}
+	if !strings.Contains(err.Error(), "不一致") {
+		t.Fatalf("错误信息应说明版本不一致: %v", err)
+	}
+
+	meta, readErr := readBackupMeta(filepath.Join(env.backupRoot, region.BackupFolder(region.EN)))
+	if readErr != nil {
+		t.Fatalf("读取备份清单失败: %v", readErr)
+	}
+	if meta == nil || meta.Version != oldVersion {
+		t.Fatalf("失败时不应改写备份清单版本号，got=%v want=%s", meta, oldVersion)
+	}
+	if got := env.read(t, AllFiles[0]); got != patched[AllFiles[0]] {
+		t.Fatal("还原被拒绝时不应改动游戏文件")
+	}
+}
+
+// TestRestoreSequenceIndexBeforeData 保证还原时先写索引再写 dat0：
+// 中途失败时索引仍指向未被截断的原数据，客户端不会读到坏表。
+func TestRestoreSequenceIndexBeforeData(t *testing.T) {
+	ordered := restoreSequence(AllFiles)
+	if len(ordered) != len(AllFiles) {
+		t.Fatalf("还原顺序应覆盖全部文件: got=%d want=%d", len(ordered), len(AllFiles))
+	}
+	seenData := false
+	for _, name := range ordered {
+		if strings.HasSuffix(name, ".dat0") {
+			seenData = true
+			continue
+		}
+		if seenData {
+			t.Fatalf("索引 %s 不应排在 dat0 之后: %v", name, ordered)
+		}
+	}
+}
+
+// TestDetermineOriginalNonGlobal 锁定非国际服的判定规则：
+// 没有可用备份时把当前客户端当原版，只用 patched_records 识别已汉化，
+// 不再依赖来自国际服的 dat0 体积启发式。
+func TestDetermineOriginalNonGlobal(t *testing.T) {
+	hashes := map[string]FileHash{
+		"0a0000.win32.index": {SHA256: "text-index-sha"},
+		"000000.win32.index": {SHA256: "font-index-sha"},
+	}
+	empty := map[string]FileHash{}
+
+	textOrig, fontOrig := determineOriginal(region.China, CloudLocalOnly, "v1", nil, empty, nil, "", nil)
+	if !textOrig || !fontOrig {
+		t.Fatalf("无备份且无记录时应视为原版，got text=%v font=%v", textOrig, fontOrig)
+	}
+
+	patched := map[string]string{"0a0000.win32.index": "text-index-sha"}
+	textOrig, fontOrig = determineOriginal(region.China, CloudLocalOnly, "v1", nil, hashes, nil, "", patched)
+	if textOrig {
+		t.Fatal("记录命中文本索引时应判定为已汉化")
+	}
+	if !fontOrig {
+		t.Fatal("字体索引未被记录命中，应仍视为原版")
+	}
+}
+
+// TestNonGlobalPatchWithLargeFontDat 验证自带大字体包的客户端不会被启发式挡住：
+// 非国际服没有云端原文件，只要没有汉化记录就应照常建立备份并汉化。
+func TestNonGlobalPatchWithLargeFontDat(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	files := allContents("initial-game-files", AllFiles)
+	env := newTestEnv(t, version, files)
+	// 国际服的“已修改”阈值是 90MB，自带中文字库的客户端本来就会超过它
+	if err := os.Truncate(filepath.Join(env.sqpackDir, "000000.win32.dat0"), 91*1024*1024); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := baseConfig(env, region.CHS)
+	cfg.ReplaceText = true
+	cfg.ReplaceFont = true
+	cfg.ApplyText = func(ctx context.Context) error { return nil }
+	cfg.ApplyFont = func(ctx context.Context) error { return nil }
+
+	result, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("非国际服不应因字体包体积被拒绝汉化: %v", err)
+	}
+	if result.Plan.Text.Action != ActionPatch || result.Plan.Font.Action != ActionPatch {
+		t.Fatalf("动作应为 ActionPatch，实际 text=%s font=%s", result.Plan.Text.Action, result.Plan.Font.Action)
+	}
+}
+
+// TestCopyFileVerifiesHash 验证复制在哈希不符时不会覆盖目标文件。
+func TestCopyFileVerifiesHash(t *testing.T) {
+	dir := t.TempDir()
+	src := filepath.Join(dir, "src.bin")
+	dst := filepath.Join(dir, "dst.bin")
+	if err := os.WriteFile(src, []byte("content"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(dst, []byte("original"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := copyFile(src, dst, strings.Repeat("0", 64)); err == nil {
+		t.Fatal("哈希不符时应报错")
+	}
+	data, err := os.ReadFile(dst)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(data) != "original" {
+		t.Fatalf("校验失败时不应覆盖目标文件，got=%q", data)
+	}
+	if _, err := os.Stat(dst + ".tmp"); err == nil {
+		t.Fatal("校验失败时应清理临时文件")
+	}
+
+	got, err := copyFile(src, dst, "")
+	if err != nil {
+		t.Fatalf("不比对哈希时应成功: %v", err)
+	}
+	if got.SHA256 == "" || got.Size != int64(len("content")) {
+		t.Fatalf("应返回复制结果的哈希与大小，got=%+v", got)
+	}
+}
+
+// TestBackupOverwriteGuardRejectsConflict 验证备份与游戏文件内容不一致时不会静默覆盖备份。
+func TestBackupOverwriteGuardRejectsConflict(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+
+	env := newTestEnv(t, version, allContents("game-content", TextFiles))
+	env.seedBackup(t, region.CHS, version, allContents("backup-content", TextFiles))
+	srcDir := filepath.Join(env.backupRoot, region.BackupFolder(region.CHS))
+
+	meta, err := readBackupMeta(srcDir)
+	if err != nil || meta == nil {
+		t.Fatalf("读取备份清单失败: %v", err)
+	}
+	gameHashes, err := hashAll(env.sqpackDir, TextFiles)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// 用备份目录作为目标，制造“已有当前版本备份但内容不同”的冲突
+	if err := backupFromGameOverwrite(Config{}, srcDir, env.sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err == nil {
+		t.Fatal("备份与游戏目录内容冲突时应拒绝覆盖")
+	}
+}
+
+// TestBackupLogReflectsActualWork 验证日志与实际动作一致：备份已就绪时不再声称“正在建立备份”。
+func TestBackupLogReflectsActualWork(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	contents := allContents("game-content", TextFiles)
+	env := newTestEnv(t, version, contents)
+	env.seedBackup(t, region.CHS, version, contents)
+	backupDir := filepath.Join(env.backupRoot, region.BackupFolder(region.CHS))
+
+	meta, err := readBackupMeta(backupDir)
+	if err != nil || meta == nil {
+		t.Fatalf("读取备份清单失败: %v", err)
+	}
+	gameHashes, err := hashAll(env.sqpackDir, TextFiles)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var logs []string
+	cfg := Config{Log: func(format string, args ...any) {
+		logs = append(logs, fmt.Sprintf(format, args...))
+	}}
+
+	if err := ensureBackupFromGame(cfg, backupDir, env.sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err != nil {
+		t.Fatalf("备份已就绪时不应失败: %v", err)
+	}
+	if len(logs) != 1 || !strings.Contains(logs[0], "无需重复备份") {
+		t.Fatalf("备份已就绪时不应提示建立备份，got=%v", logs)
+	}
+
+	logs = nil
+	if err := os.RemoveAll(backupDir); err != nil {
+		t.Fatal(err)
+	}
+	if err := ensureBackupFromGame(cfg, backupDir, env.sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err != nil {
+		t.Fatalf("备份缺失时应重建: %v", err)
+	}
+	if len(logs) != 1 || !strings.Contains(logs[0], "正在建立文本官方原版备份") {
+		t.Fatalf("备份缺失时应提示建立备份，got=%v", logs)
+	}
+}
+
+// TestBackupBeforeApply 验证文本与字体的原文件备份全部完成后才写入汉化数据，
+// 不会出现“备份文本 → 改文本 → 备份字体 → 改字体”的交叉顺序。
+func TestBackupBeforeApply(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	env := newTestEnv(t, version, allContents("original", AllFiles))
+
+	var order []string
+	cfg := baseConfig(env, region.CHS)
+	cfg.ReplaceFont = true
+	cfg.Log = func(format string, args ...any) {
+		order = append(order, fmt.Sprintf(format, args...))
+	}
+	cfg.ApplyText = func(ctx context.Context) error {
+		order = append(order, "apply-text")
+		return nil
+	}
+	cfg.ApplyFont = func(ctx context.Context) error {
+		order = append(order, "apply-font")
+		return nil
+	}
+
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run 失败: %v", err)
+	}
+
+	textIdx, fontIdx, lastBackup := -1, -1, -1
+	for i, entry := range order {
+		switch {
+		case entry == "apply-text":
+			textIdx = i
+		case entry == "apply-font":
+			fontIdx = i
+		}
+		if strings.Contains(entry, "备份") {
+			lastBackup = i
+		}
+	}
+	if textIdx < 0 || fontIdx < 0 {
+		t.Fatalf("应分别写入文本与字体，order=%v", order)
+	}
+	if lastBackup < 0 {
+		t.Fatalf("应输出备份日志，order=%v", order)
+	}
+	if lastBackup > textIdx {
+		t.Fatalf("全部备份必须早于文本写入，order=%v", order)
+	}
+	if textIdx > fontIdx {
+		t.Fatalf("文本应先于字体写入，order=%v", order)
+	}
+}
+
+// 非国际服没有官方哈希，手动还原前必须确认当前文件仍是本工具汉化的产物，
+// 否则旧备份可能对应游戏更新前的内容，覆盖会破坏客户端。
+func TestRestoreNonGlobalRequiresPatchedProof(t *testing.T) {
+	version := "2026.10.16.0000.0000"
+	original := allContents("original", AllFiles)
+	patched := allContents("patched", AllFiles)
+	env := newTestEnv(t, version, patched)
+	env.seedBackup(t, region.CHS, version, original)
+
+	cfg := RestoreConfig{
+		GameDir:             env.gameDir,
+		BackupRoot:          env.backupRoot,
+		Language:            region.CHS,
+		RequirePatchedState: true,
+		PatchedIndexHashes: map[string]string{
+			"0a0000.win32.index": strings.Repeat("0", 64),
+		},
+	}
+	if _, err := Restore(context.Background(), cfg); err == nil {
+		t.Fatal("索引哈希与汉化记录不符时应拒绝还原")
+	}
+	if got := env.read(t, "0a0000.win32.index"); got != "patched/0a0000.win32.index" {
+		t.Fatalf("拒绝还原时不应改写游戏文件，got=%q", got)
+	}
+
+	// 缺少汉化记录时同样无法证明备份仍对应当前内容
+	cfg.PatchedIndexHashes = nil
+	if _, err := Restore(context.Background(), cfg); err == nil {
+		t.Fatal("缺少汉化记录时应拒绝还原")
+	}
+
+	// 记录命中当前索引时允许还原
+	textHash, err := HashFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg.PatchedIndexHashes = map[string]string{"0a0000.win32.index": textHash.SHA256}
+	if _, err := Restore(context.Background(), cfg); err != nil {
+		t.Fatalf("汉化产物状态确认后应允许还原: %v", err)
+	}
+	if got := env.read(t, "0a0000.win32.index"); got != "original/0a0000.win32.index" {
+		t.Fatalf("还原后应回到备份内容，got=%q", got)
+	}
+}
+
+// 直连被阻断时，只要任一镜像可用就应返回镜像结果，而不是整体失败。
+func TestRaceGetUsesMirrorWhenDirectFails(t *testing.T) {
+	direct := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "blocked", http.StatusServiceUnavailable)
+	}))
+	defer direct.Close()
+	mirror := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer mirror.Close()
+
+	body, source, err := raceGet(context.Background(), mirror.Client(), direct.URL, []string{mirror.URL}, nil, 1<<20, json.Valid)
+	if err != nil {
+		t.Fatalf("直连不可用时应回退到镜像: %v", err)
+	}
+	if source != mirror.URL {
+		t.Errorf("结果应来自镜像，实际 %s", source)
+	}
+	if string(body) != `{"ok":true}` {
+		t.Errorf("响应体异常: %s", body)
+	}
+}
+
+// 直连 404 表示资源确实不存在；镜像 404 只代表该镜像不支持这个路径，不能据此下结论。
+func TestRaceGetNotFoundOnlyFromDirect(t *testing.T) {
+	direct404 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	}))
+	defer direct404.Close()
+	mirrorOK := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{}`))
+	}))
+	defer mirrorOK.Close()
+	// 镜像返回合法 JSON 时以镜像为准，即便直连已经 404。
+	if _, _, err := raceGet(context.Background(), mirrorOK.Client(), direct404.URL, []string{mirrorOK.URL}, nil, 1<<20, json.Valid); err != nil {
+		t.Fatalf("镜像可用时不应返回错误: %v", err)
+	}
+
+	mirror404 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	}))
+	defer mirror404.Close()
+	if _, _, err := raceGet(context.Background(), mirror404.Client(), direct404.URL, []string{mirror404.URL}, nil, 1<<20, json.Valid); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("直连 404 应判定资源不存在，实际 %v", err)
+	}
+
+	direct500 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "blocked", http.StatusServiceUnavailable)
+	}))
+	defer direct500.Close()
+	if _, _, err := raceGet(context.Background(), mirror404.Client(), direct500.URL, []string{mirror404.URL}, nil, 1<<20, json.Valid); errors.Is(err, ErrNotFound) {
+		t.Fatalf("只有镜像 404 时不应判定资源不存在")
+	}
+}
+
+// 慢节点不能拖住整体流程：镜像先返回时应立即结束，不等待直连超时。
+func TestRaceGetDoesNotWaitForSlowDirect(t *testing.T) {
+	slow := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(1500 * time.Millisecond)
+		_, _ = w.Write([]byte(`{"slow":true}`))
+	}))
+	defer slow.Close()
+	fast := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"fast":true}`))
+	}))
+	defer fast.Close()
+
+	start := time.Now()
+	body, _, err := raceGet(context.Background(), fast.Client(), slow.URL, []string{fast.URL}, nil, 1<<20, json.Valid)
+	if err != nil {
+		t.Fatalf("应返回快速节点的结果: %v", err)
+	}
+	if !strings.Contains(string(body), "fast") {
+		t.Errorf("应使用快速节点的响应，实际 %s", body)
+	}
+	if elapsed := time.Since(start); elapsed > time.Second {
+		t.Errorf("不应等待慢节点，实际耗时 %v", elapsed)
+	}
+}
+
+func TestMirrorDownloadURL(t *testing.T) {
+	client := NewGitHubClient()
+	const raw = "https://github.com/foo/bar/releases/download/v1.0/app.exe"
+
+	got := client.MirrorDownloadURL(raw)
+	want := mirrorURL(DefaultAssetMirrors()[0], raw)
+	if got != want {
+		t.Errorf("未确定节点时应使用首个镜像，期望 %q 实际 %q", want, got)
+	}
+
+	client.SetPreferredNode("https://wget.la/")
+	if got := client.MirrorDownloadURL(raw); got != mirrorURL("https://wget.la/", raw) {
+		t.Errorf("应优先使用已确认的节点，实际 %q", got)
+	}
+
+	client.SetPreferredNode("direct")
+	if got := client.MirrorDownloadURL(raw); got != "" {
+		t.Errorf("确认可直连时不应再提供镜像地址，实际 %q", got)
+	}
+
+	if got := client.MirrorDownloadURL("https://example.com/app.exe"); got != "" {
+		t.Errorf("非 GitHub 地址不应套镜像，实际 %q", got)
+	}
+}
+
+// 国内常见的组合是：api.github.com 能连、Release 附件直连很慢。
+// 因此只有实测过大文件直连速度才允许隐藏镜像入口；小文件下载成功不算数。
+func TestDirectSpeedGateKeepsMirrorForSlowDirect(t *testing.T) {
+	c := NewGitHubClient()
+	raw := "https://github.com/o/r/releases/download/v1/app.exe"
+	if c.MirrorDownloadURL(raw) == "" {
+		t.Fatal("默认应提供镜像下载地址")
+	}
+
+	// 几十 KB 的文件在慢速链路上也会瞬间完成，不能据此认定直连可用。
+	c.rememberDirectSpeed(300<<10, 10*time.Millisecond)
+	if c.MirrorDownloadURL(raw) == "" {
+		t.Error("小样本不应判定直连可用")
+	}
+
+	// 大文件但速度慢（约 200 KB/s）
+	c.rememberDirectSpeed(4<<20, 20*time.Second)
+	if c.MirrorDownloadURL(raw) == "" {
+		t.Error("慢速直连应保留镜像入口")
+	}
+
+	// 大文件且实测达标
+	c.rememberDirectSpeed(8<<20, 500*time.Millisecond)
+	if c.MirrorDownloadURL(raw) != "" {
+		t.Error("实测直连够快时不应再提供镜像入口")
+	}
+}
+
+func TestCandidateOrderPutsDirectLastUntilMeasuredFast(t *testing.T) {
+	c := NewGitHubClient()
+	raw := "https://github.com/o/r/releases/download/v1/app.exe"
+
+	got := c.candidateURLs(raw)
+	if len(got) == 0 || got[len(got)-1].mirror != "direct" {
+		t.Fatalf("未确认直连速度时应把直连排在最后，实际 %+v", got)
+	}
+	if got[0].mirror == "direct" {
+		t.Error("未确认直连速度时不应首选直连")
+	}
+
+	c.rememberDirectSpeed(8<<20, 500*time.Millisecond)
+	got = c.candidateURLs(raw)
+	if got[0].mirror != "direct" {
+		t.Errorf("实测直连够快时应首选直连，实际 %+v", got)
+	}
+}
+
+// 端到端：小文件走直连成功后，仍然要给出镜像地址。
+func TestSmallDownloadDoesNotMarkDirectFast(t *testing.T) {
+	payload := strings.Repeat("x", 1024)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(payload))
+	}))
+	defer srv.Close()
+
+	c := NewGitHubClient()
+	c.HTTP = srv.Client()
+	dst := filepath.Join(t.TempDir(), "small.bin")
+	if err := c.Download(context.Background(), srv.URL+"/small.bin", dst, nil); err != nil {
+		t.Fatalf("下载失败: %v", err)
+	}
+	if c.isDirectFast() {
+		t.Error("小文件下载成功不应标记直连可用")
+	}
+	if c.MirrorDownloadURL("https://github.com/o/r/releases/download/v1/app.exe") == "" {
+		t.Error("应继续提供镜像下载地址")
+	}
+}

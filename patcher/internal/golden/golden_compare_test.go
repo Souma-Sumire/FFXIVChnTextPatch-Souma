@@ -253,9 +253,13 @@ func verifyExd(t *testing.T, golden *goldenDoc, textIndex, gameDir string) {
 	replaced := 0
 	unchanged := 0
 	matched := 0
+	sampleChecked := 0
 	var mismatches []string
 	sampleSet := map[string]bool{}
 	for _, s := range golden.Samples {
+		if _, ok := golden.Exd[s]; !ok {
+			t.Fatalf("Golden 样本 %s 不在基准清单中，该样本永远不会被比对", s)
+		}
 		sampleSet[s] = true
 	}
 
@@ -327,6 +331,7 @@ func verifyExd(t *testing.T, golden *goldenDoc, textIndex, gameDir string) {
 		}
 
 		if sampleSet[key] {
+			sampleChecked++
 			safe := strings.ReplaceAll(key, "/", "_")
 			wantBytes, err := os.ReadFile(filepath.Join("..", "sqpack", "testdata", "golden_samples", safe))
 			if err != nil {
@@ -344,13 +349,16 @@ func verifyExd(t *testing.T, golden *goldenDoc, textIndex, gameDir string) {
 	if matched != golden.ExdCount {
 		t.Fatalf("EXDF 覆盖数量不一致: matched=%d want=%d", matched, golden.ExdCount)
 	}
+	if sampleChecked != len(sampleSet) {
+		t.Fatalf("Golden 字节样本命中数量不一致: checked=%d want=%d", sampleChecked, len(sampleSet))
+	}
 	if golden.ReplacedExdCount > 0 && replaced != golden.ReplacedExdCount {
 		t.Fatalf("被替换 EXD 数量不一致: got=%d want=%d", replaced, golden.ReplacedExdCount)
 	}
 	if golden.UnchangedExdCount > 0 && unchanged != golden.UnchangedExdCount {
 		t.Fatalf("未替换 EXD 数量不一致: got=%d want=%d", unchanged, golden.UnchangedExdCount)
 	}
-	t.Logf("EXDF 比对通过: %d 个文件全部字节一致（替换 %d / 未替换 %d）", matched, replaced, unchanged)
+	t.Logf("EXDF 比对通过: %d 个文件全部字节一致（替换 %d / 未替换 %d，深度样本 %d 个）", matched, replaced, unchanged, sampleChecked)
 
 	// 断言 3：dat0 总长度必须为 128 字节整数倍。
 	dat0, err := os.Stat(filepath.Join(gameDir, "0a0000.win32.dat0"))

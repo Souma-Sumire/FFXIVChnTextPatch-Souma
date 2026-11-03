@@ -14,6 +14,8 @@
 
 ## Developer
 
+架构与实现说明见 [patcher/ARCHITECTURE.md](patcher/ARCHITECTURE.md)。
+
 Build：
 
 ```bash

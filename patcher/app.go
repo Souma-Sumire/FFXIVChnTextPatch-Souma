@@ -17,6 +17,7 @@ import (
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamecfg"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gameproc"
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamescan"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/replace"
@@ -49,6 +50,10 @@ type App struct {
 	resourceMu       sync.RWMutex
 	offline          bool
 
+	// resourceLock 互斥“写资源目录”（同步、离线包导入）与“读资源目录”（汉化）。
+	// 解压是逐文件覆盖，若与汉化并发，CSV 可能被读到一半，产出部分表未汉化的补丁。
+	resourceLock sync.Mutex
+
 	progressMu   sync.Mutex
 	lastProgress time.Time
 	lastDetail   string
@@ -58,6 +63,19 @@ type App struct {
 	cloudOverride       verifier.Cloud
 	skipProcessCheck    bool
 
+	// cloud 复用同一个 GitHub 客户端：镜像节点的连通性记忆（是否可直连、哪个节点最快）
+	// 需要在更新检查、汉化与还原之间共享，否则每条链路都要重新探测一遍。
+	cloudOnce sync.Once
+	cloud     *verifier.GitHubClient
+
+	scanMu      sync.Mutex
+	scanDirs    []string
+	scanCached  bool
+	scanRunning chan struct{}
+
+	detectMu     sync.Mutex
+	detectCancel context.CancelFunc
+
 	cancelPatchMu sync.Mutex
 	cancelPatch   context.CancelFunc
 }
@@ -66,7 +84,11 @@ func (a *App) getCloud() verifier.Cloud {
 	if a != nil && a.cloudOverride != nil {
 		return a.cloudOverride
 	}
-	return verifier.NewGitHubClient()
+	if a == nil {
+		return verifier.NewGitHubClient()
+	}
+	a.cloudOnce.Do(func() { a.cloud = verifier.NewGitHubClient() })
+	return a.cloud
 }
 
 func (a *App) resourceDir() string {
@@ -106,10 +128,10 @@ type RegionLanguage struct {
 
 // globalTargetLanguages 是国际服允许勾选的全部客户端语言（固定顺序）。
 var globalTargetLanguages = []RegionLanguage{
-	{Code: "JA", Name: "日语"},
-	{Code: "EN", Name: "英语"},
-	{Code: "DE", Name: "德语"},
-	{Code: "FR", Name: "法语"},
+	{Code: string(region.JA), Name: region.LanguageName(region.JA)},
+	{Code: string(region.EN), Name: region.LanguageName(region.EN)},
+	{Code: string(region.DE), Name: region.LanguageName(region.DE)},
+	{Code: string(region.FR), Name: region.LanguageName(region.FR)},
 }
 
 // sanitizeTargetLanguages 校验并规范化用户勾选的目标语言列表。
@@ -177,18 +199,18 @@ type AppConfig struct {
 
 // BootstrapInfo 是前端启动所需的全部静态信息。
 type BootstrapInfo struct {
-	Version     string              `json:"version"`
-	ResourceDir string              `json:"resourceDir"`
-	Offline     bool                `json:"offline"`
-	Rules       []pipeline.RuleMeta `json:"rules"`
-	Languages       []LanguageOption    `json:"languages"`
+	Version         string                      `json:"version"`
+	ResourceDir     string                      `json:"resourceDir"`
+	Offline         bool                        `json:"offline"`
+	Rules           []pipeline.RuleMeta         `json:"rules"`
+	Languages       []LanguageOption            `json:"languages"`
 	RegionLanguages map[string][]RegionLanguage `json:"regionLanguages"`
-	Config          AppConfig           `json:"config"`
-	Folders      map[string]string   `json:"folders"`
-	TableList    []TableEntry        `json:"tableList"`
-	Excluded     []string            `json:"excluded"`
-	ResourceTime string              `json:"resourceTime,omitempty"`
-	ResourceHash string              `json:"resourceHash,omitempty"`
+	Config          AppConfig                   `json:"config"`
+	Folders         map[string]string           `json:"folders"`
+	TableList       []TableEntry                `json:"tableList"`
+	Excluded        []string                    `json:"excluded"`
+	ResourceTime    string                      `json:"resourceTime,omitempty"`
+	ResourceHash    string                      `json:"resourceHash,omitempty"`
 }
 
 // FileStatus 描述单个客户端文件状态。
@@ -440,6 +462,28 @@ func shortHash(h string) string {
 	return h
 }
 
+// formatResourceHashDetail 生成“CSV: xxxxxxxx、字体: yyyyyyyy”描述，跳过缺失的哈希。
+// 离线包没有 .zip 包文件时只有本地内容指纹，单独标注以免与发布清单的 bundle 哈希混淆。
+func formatResourceHashDetail(m *updater.Manifest) string {
+	if m == nil {
+		return "哈希未知"
+	}
+	parts := make([]string, 0, 3)
+	if h := shortHash(m.RawEXD.SHA256); h != "" {
+		parts = append(parts, "CSV: "+h)
+	}
+	if h := shortHash(m.Font.SHA256); h != "" {
+		parts = append(parts, "字体: "+h)
+	}
+	if fp := shortHash(m.LocalFingerprint); fp != "" {
+		parts = append(parts, "本地指纹: "+fp)
+	}
+	if len(parts) == 0 {
+		return "哈希未知"
+	}
+	return strings.Join(parts, "、")
+}
+
 func formatResourceTime(isoStr string) string {
 	if isoStr == "" {
 		return ""
@@ -451,14 +495,53 @@ func formatResourceTime(isoStr string) string {
 	return t.Local().Format("2006-01-02 15:04")
 }
 
-func (a *App) syncLatestResourcesInBackground(resourceDir string) {
-	defer func() {
-		select {
-		case <-a.resourceReady:
-		default:
-			close(a.resourceReady)
-		}
+func (a *App) markResourceReady() {
+	if a == nil {
+		return
+	}
+	a.resourceMu.Lock()
+	defer a.resourceMu.Unlock()
+	select {
+	case <-a.resourceReady:
+	default:
+		close(a.resourceReady)
+	}
+}
+
+// lockResource 取得资源目录的独占访问权，等待期间可被 ctx 取消。
+func (a *App) lockResource(ctx context.Context) (func(), error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if a.resourceLock.TryLock() {
+		return a.resourceLock.Unlock, nil
+	}
+	done := make(chan struct{})
+	go func() {
+		a.resourceLock.Lock()
+		close(done)
 	}()
+	select {
+	case <-done:
+		return a.resourceLock.Unlock, nil
+	case <-ctx.Done():
+		// 放弃等待，但等锁真正到手后必须立即释放，否则这把锁会永远被占住。
+		go func() {
+			<-done
+			a.resourceLock.Unlock()
+		}()
+		return nil, ctx.Err()
+	}
+}
+
+func (a *App) syncLatestResourcesInBackground(resourceDir string) {
+	defer a.markResourceReady()
+
+	unlock, err := a.lockResource(a.ctx)
+	if err != nil {
+		return
+	}
+	defer unlock()
 
 	status, err := a.updater.Provision(context.Background(), resourceDir, nil)
 	if err != nil {
@@ -483,28 +566,25 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 	if status.Updated && status.DownloadedFiles > 0 {
 		var updates []string
 		if status.CSVUpdated {
-			updates = append(updates, fmt.Sprintf("CSV: %s", shortHash(status.CSVHash)))
+			updates = append(updates, "CSV")
 		}
 		if status.FontUpdated {
-			updates = append(updates, fmt.Sprintf("字体: %s", shortHash(status.FontHash)))
+			updates = append(updates, "字体")
 		}
 		if len(updates) == 0 {
 			updates = append(updates, "规则配置")
 		}
-		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新（%s）。", strings.Join(updates, ", ")))
+		a.emitPatchLog(fmt.Sprintf("[更新] 汉化资源已更新（%s）。", strings.Join(updates, "、")))
 	} else if !status.Offline && status.CSVHash != "" {
-		resTime := formatResourceTime(status.GeneratedAt)
-		if resTime != "" {
-			a.emitPatchLog(fmt.Sprintf("[资源] 汉化资源已是最新（构建时间：%s，CSV: %s, 字体: %s）。",
-				resTime, shortHash(status.CSVHash), shortHash(status.FontHash)))
-		} else {
-			a.emitPatchLog(fmt.Sprintf("[资源] 汉化资源已是最新（CSV: %s, 字体: %s）。",
-				shortHash(status.CSVHash), shortHash(status.FontHash)))
-		}
+		// 版本明细统一由汉化流程开头的“[资源] 本次使用版本…”输出，这里只说同步状态。
+		a.emitPatchLog("[资源] 汉化资源已是最新，无需更新。")
 	}
 }
 
 func (a *App) waitResourceReady(ctx context.Context) error {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	a.resourceMu.RLock()
 	readyCh := a.resourceReady
 	a.resourceMu.RUnlock()
@@ -542,11 +622,18 @@ func (a *App) waitResourceReady(ctx context.Context) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-time.After(30 * time.Second):
-			if updater.HasLocalResource(a.resourceDir()) {
-				a.emitPatchLog("[提示] 等待最新资源检查超时，已回退使用本地已有资源继续汉化。")
-				return nil
+			// 资源同步是逐文件解压覆盖，此时开始汉化可能读到写了一半的 CSV，
+			// 所以超时后继续等同步结束，等待过程仍可用“停止”取消。
+			a.emitPatchLog("[提示] 云端资源仍在更新，等待更新完成后继续汉化（可点击停止取消）。")
+			select {
+			case <-readyCh:
+				a.resourceMu.RLock()
+				err := a.resourceErr
+				a.resourceMu.RUnlock()
+				return handleResourceErr(err)
+			case <-ctx.Done():
+				return ctx.Err()
 			}
-			return errors.New("等待最新资源超时，请检查网络连接")
 		}
 	}
 }
@@ -568,13 +655,18 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		})
 	} else {
 		// 本地无基础资源（首次运行或文件缺失）：同步执行准备并展示全屏进度条
+		unlock, lockErr := a.lockResource(a.ctx)
+		if lockErr != nil {
+			return BootstrapInfo{}, lockErr
+		}
 		status, err := a.updater.Provision(a.ctx, resourceDir, a.emitResourceProgress)
+		unlock()
 		if err != nil {
 			a.resourceMu.Lock()
 			a.resourceErr = err
 			a.offline = true
 			a.resourceMu.Unlock()
-			close(a.resourceReady)
+			a.markResourceReady()
 			isOffline = true
 			a.emitPatchLog(fmt.Sprintf("[提示] 获取云端资源失败: %v，已进入离线模式。", err))
 			if a.ctx != nil {
@@ -584,7 +676,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 			a.resourceMu.Lock()
 			a.offline = status.Offline
 			a.resourceMu.Unlock()
-			close(a.resourceReady)
+			a.markResourceReady()
 			isOffline = status.Offline
 			if status.Offline && a.ctx != nil {
 				runtime.EventsEmit(a.ctx, "resource-offline", true)
@@ -635,6 +727,9 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		},
 		RegionLanguages: map[string][]RegionLanguage{
 			string(region.Global): globalTargetLanguages,
+			string(region.China):  {{Code: string(region.CHS), Name: region.LanguageName(region.CHS)}},
+			string(region.Taiwan): {{Code: string(region.TC), Name: region.LanguageName(region.TC)}},
+			string(region.Korea):  {{Code: string(region.KO), Name: region.LanguageName(region.KO)}},
 		},
 		Config:       cfg,
 		Folders:      tables.Folders,
@@ -689,11 +784,27 @@ func (a *App) SaveConfig(cfg AppConfig) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(configPathFor(resourceDir), append(data, '\n'), 0o644)
+	cfgPath := configPathFor(resourceDir)
+	if err := os.MkdirAll(filepath.Dir(cfgPath), 0o755); err != nil {
+		return err
+	}
+	return writeFileAtomic(cfgPath, append(data, '\n'))
 }
 
-// DetectGamePaths 扫描指定区服的常见安装位置。
+// DetectGamePaths 扫描指定区服的常见安装位置，必要时在磁盘 3 层目录内搜索；
+// 扫描可被 CancelDetect 中止。
 func (a *App) DetectGamePaths(language string) []string {
+	ctx, cancel := context.WithCancel(context.Background())
+	a.detectMu.Lock()
+	a.detectCancel = cancel
+	a.detectMu.Unlock()
+	defer func() {
+		cancel()
+		a.detectMu.Lock()
+		a.detectCancel = nil
+		a.detectMu.Unlock()
+	}()
+
 	var targetReg region.Region
 	if language != "" {
 		if parsed, err := region.ParseLanguage(language); err == nil {
@@ -760,9 +871,16 @@ func (a *App) DetectGamePaths(language string) []string {
 		}
 	}
 
-	for _, drive := range []string{"C:", "D:", "E:", "F:", "G:"} {
+	for _, root := range getScanDriveRoots() {
 		for _, suffix := range suffixes {
-			add(drive + string(os.PathSeparator) + suffix)
+			add(filepath.Join(root, suffix))
+		}
+	}
+
+	// 常见位置未命中时，用磁盘 3 层扫描的结果兜底。
+	if len(candidates) == 0 && (targetReg == "" || targetReg == region.Global) {
+		for _, p := range a.scanGlobalDirs(ctx) {
+			add(p)
 		}
 	}
 
@@ -781,6 +899,67 @@ func (a *App) DetectGamePaths(language string) []string {
 		}
 	}
 	return matched
+}
+
+// scanGlobalDirs 在各磁盘根目录 3 层以内查找国际服客户端目录。
+// 命中结果在进程内复用；已有扫描在进行时复用同一轮结果，ctx 取消则立即返回 nil。
+func (a *App) scanGlobalDirs(ctx context.Context) []string {
+	a.scanMu.Lock()
+	if a.scanCached {
+		dirs := a.scanDirs
+		a.scanMu.Unlock()
+		return dirs
+	}
+	if running := a.scanRunning; running != nil {
+		a.scanMu.Unlock()
+		select {
+		case <-running:
+		case <-ctx.Done():
+			return nil
+		}
+		a.scanMu.Lock()
+		dirs := a.scanDirs
+		a.scanMu.Unlock()
+		return dirs
+	}
+	done := make(chan struct{})
+	a.scanRunning = done
+	a.scanMu.Unlock()
+
+	roots := getScanDriveRoots()
+	dirs := gamescan.Find(ctx, roots, gamecfg.SubFolder, gamescan.DefaultMaxDepth, isGlobalClientDir)
+
+	a.scanMu.Lock()
+	// 只有完整跑完的扫描才缓存，避免把被中止的部分结果当成最终结论。
+	if len(dirs) > 0 && ctx.Err() == nil {
+		a.scanDirs = dirs
+		a.scanCached = true
+	}
+	a.scanRunning = nil
+	a.scanMu.Unlock()
+	close(done)
+	return dirs
+}
+
+// CancelDetect 中止正在进行的目录探测。
+func (a *App) CancelDetect() {
+	a.detectMu.Lock()
+	cancel := a.detectCancel
+	a.detectMu.Unlock()
+	if cancel != nil {
+		cancel()
+	}
+}
+
+// isGlobalClientDir 校验目录是完整客户端：同时存在 boot、game 目录与 game/ffxiv_dx11.exe。
+func isGlobalClientDir(dir string) bool {
+	for _, sub := range []string{"boot", "game"} {
+		if st, err := os.Stat(filepath.Join(dir, sub)); err != nil || !st.IsDir() {
+			return false
+		}
+	}
+	st, err := os.Stat(filepath.Join(dir, "game", "ffxiv_dx11.exe"))
+	return err == nil && !st.IsDir()
 }
 
 // SelectGameDirectory 打开目录选择对话框。
@@ -865,8 +1044,8 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 
 // ClientStatusResult 表示客户端哈希校验结果。
 type ClientStatusResult struct {
-	Status      string `json:"status"`      // "original" | "patched" | "modified" | "unknown"
-	Label       string `json:"label"`       // "官方原版" | "已汉化" | "非原版" | "未收录版本"
+	Status      string `json:"status"` // "original" | "patched" | "modified" | "unknown"
+	Label       string `json:"label"`  // "官方原版" | "已汉化" | "非原版" | "未收录版本"
 	Description string `json:"description"`
 }
 
@@ -885,6 +1064,19 @@ func patchedRecordPath(resourceDir string) string {
 	return filepath.Join(resourceDir, "patched_records.json")
 }
 
+// writeFileAtomic 先写临时文件再改名，避免进程中断留下截断的清单文件。
+func writeFileAtomic(path string, data []byte) error {
+	tmp := path + ".tmp"
+	if err := os.WriteFile(tmp, data, 0o644); err != nil {
+		return err
+	}
+	if err := os.Rename(tmp, path); err != nil {
+		_ = os.Remove(tmp)
+		return err
+	}
+	return nil
+}
+
 func (a *App) savePatchedRecord(rec PatchedRecord) error {
 	p := patchedRecordPath(a.resourceDir())
 	records := a.loadAllPatchedRecords()
@@ -894,7 +1086,7 @@ func (a *App) savePatchedRecord(rec PatchedRecord) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(p, data, 0o644)
+	return writeFileAtomic(p, append(data, '\n'))
 }
 
 func (a *App) loadAllPatchedRecords() map[string]PatchedRecord {
@@ -929,6 +1121,28 @@ func (a *App) loadPatchedRecord(gameDir string) (PatchedRecord, bool) {
 	return PatchedRecord{}, false
 }
 
+// patchedIndexHashes 返回本工具上次汉化后的索引哈希，供非国际服识别“已汉化”。
+// 记录版本与当前客户端不一致时整体失效：游戏更新后旧索引必然对不上。
+func (a *App) patchedIndexHashes(gameDir, version string) map[string]string {
+	rec, ok := a.loadPatchedRecord(gameDir)
+	if !ok || len(rec.Files) == 0 {
+		return nil
+	}
+	if version != "" && rec.Version != "" && rec.Version != version {
+		return nil
+	}
+	out := make(map[string]string, len(rec.Files))
+	for name, h := range rec.Files {
+		if h.SHA256 != "" {
+			out[name] = h.SHA256
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
+}
+
 func (a *App) clearPatchedRecord(gameDir string) {
 	records := a.loadAllPatchedRecords()
 	cleanDir := filepath.Clean(gameDir)
@@ -943,14 +1157,10 @@ func (a *App) clearPatchedRecord(gameDir string) {
 		delete(records, deleteKey)
 		data, err := json.MarshalIndent(records, "", "  ")
 		if err == nil {
-			_ = os.WriteFile(patchedRecordPath(a.resourceDir()), data, 0o644)
+			_ = writeFileAtomic(patchedRecordPath(a.resourceDir()), append(data, '\n'))
 		}
 	}
 	_ = os.Remove(filepath.Join(a.resourceDir(), "patched_record.json"))
-}
-
-func checkGameNotRunning(gameDir string) error {
-	return gameproc.CheckGameNotRunning(gameDir)
 }
 
 // CheckClientStatus 手动计算并比对客户端文件哈希，返回当前客户端状态。
@@ -998,7 +1208,17 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}
 	}
 
-	// 2. 检查本地官方原版备份（权威基准，支持所有已建立本地备份的区服）
+	// 2. 非国际服没有官方原版哈希，无法判断原版状态。
+	// 版本号相同不代表内容一致（区服热修、发行渠道差异），本地备份也不能作为官方基准。
+	if reg != region.Global {
+		return ClientStatusResult{
+			Status:      "unsupported",
+			Label:       "不支持检测",
+			Description: "非国际服没有官方原版哈希，无法判断当前文件是否原版",
+		}, nil
+	}
+
+	// 3. 检查本地官方原版备份
 	metaPath := filepath.Join(backupRootFor(a.resourceDir()), string(reg), "meta.json")
 	var meta verifier.BackupMeta
 	hasBackupMeta := false
@@ -1006,15 +1226,6 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		if json.Unmarshal(data, &meta) == nil && meta.Files != nil && len(meta.Files) > 0 {
 			hasBackupMeta = true
 		}
-	}
-
-	// 3. 非国际服无本地有效备份时，直接返回不支持原版检测
-	if reg != region.Global && !hasBackupMeta {
-		return ClientStatusResult{
-			Status:      "unsupported",
-			Label:       "不支持检测",
-			Description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
-		}, nil
 	}
 
 	versionData, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver"))
@@ -1061,15 +1272,6 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 			Status:      "modified",
 			Label:       "非原版",
 			Description: fmt.Sprintf("与本地原版备份 (%s) 哈希不符，当前文件已被外部修改", version),
-		}, nil
-	}
-
-	// 非国际服在本地备份版本与当前游戏版本不一致时，也返回不支持检测（无法验证新版本的原版哈希）
-	if reg != region.Global {
-		return ClientStatusResult{
-			Status:      "unsupported",
-			Label:       "不支持检测",
-			Description: "非国际服未收录官方原版哈希，仅国际服支持原版哈希检测",
 		}, nil
 	}
 
@@ -1138,14 +1340,13 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}, nil
 	}
 
-	// 7. 本地尚无备份且数据包结构完好的纯净客户端（首次使用或刚更新游戏）
+	// 7. 本地尚无备份且数据包结构完好，未检测到已知修改
 	return ClientStatusResult{
 		Status:      "original",
 		Label:       "官方原版",
-		Description: fmt.Sprintf("客户端关键数据包完整，为纯净原版状态 (%s)", version),
+		Description: fmt.Sprintf("客户端关键数据包完整，未检测到已知修改（%s，首次汉化将自动建立原版备份）", version),
 	}, nil
 }
-
 
 // AnswerFontConfirm 接收前端对“是否继续”的确认。
 func (a *App) AnswerFontConfirm(ok bool) {
@@ -1291,6 +1492,24 @@ func (a *App) emitProgress(stage, detail string, done, total int64) {
 	runtime.EventsEmit(a.ctx, "patch-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
+// patchWroteData 判断本次汉化是否已向 dat 追加过数据块，即客户端文件是否已被改动。
+func patchWroteData(resp PatchResponse) bool {
+	return resp.Text.AppendedBytes > 0 || resp.Font.AppendedBytes > 0
+}
+
+// autoRestore 在汉化中断或失败后把官方原文件写回客户端，并把进度回报到界面。
+func (a *App) autoRestore(ctx context.Context, gameDir, backupRoot string, lang region.Language) ([]string, error) {
+	restored, err := verifier.RestoreToGameWithContext(ctx, gameDir, backupRoot, lang, a.emitProgress,
+		func(format string, args ...any) {
+			a.emitPatchLog(fmt.Sprintf(format, args...))
+		})
+	if err != nil {
+		return restored, err
+	}
+	a.emitPatchLog("[提示] 已自动恢复至官方原版状态")
+	return restored, nil
+}
+
 // StartPatch 执行完整的校验与汉化流程。
 func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	var resp PatchResponse
@@ -1355,19 +1574,35 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 
 	// 确保执行汉化时后台检查与同步已完成，必定使用最新资源
-	if err := a.waitResourceReady(a.ctx); err != nil {
+	if err := a.waitResourceReady(patchCtx); err != nil {
+		if errors.Is(err, context.Canceled) {
+			a.emitPatchLog("[提示] 汉化已取消：等待最新资源时被中止")
+			resp.Cancelled = true
+			return resp, nil
+		}
 		return resp, fmt.Errorf("确保最新资源失败: %w", err)
 	}
+
+	// 与资源同步/离线导入互斥，避免读到正在被解压覆盖的 CSV。
+	unlockResource, lockErr := a.lockResource(patchCtx)
+	if lockErr != nil {
+		if errors.Is(lockErr, context.Canceled) {
+			a.emitPatchLog("[提示] 汉化已取消：等待资源更新完成时被中止")
+			resp.Cancelled = true
+			return resp, nil
+		}
+		return resp, lockErr
+	}
+	defer unlockResource()
 
 	resourceDir := a.resourceDir()
 	if manifest, err := updater.ReadLocalManifest(resourceDir); err == nil && manifest != nil {
 		resTime := formatResourceTime(manifest.GeneratedAt)
+		resDetail := formatResourceHashDetail(manifest)
 		if resTime != "" {
-			a.emitPatchLog(fmt.Sprintf("[补丁] 当前使用资源构建时间：%s（CSV: %s, 字体: %s）",
-				resTime, shortHash(manifest.RawEXD.SHA256), shortHash(manifest.Font.SHA256)))
+			a.emitPatchLog(fmt.Sprintf("[资源] 本次使用版本：构建于 %s（%s）", resTime, resDetail))
 		} else {
-			a.emitPatchLog(fmt.Sprintf("[补丁] 当前使用资源版本（CSV: %s, 字体: %s）",
-				shortHash(manifest.RawEXD.SHA256), shortHash(manifest.Font.SHA256)))
+			a.emitPatchLog(fmt.Sprintf("[资源] 本次使用版本（%s）", resDetail))
 		}
 	}
 	backupRoot := backupRootFor(resourceDir)
@@ -1388,13 +1623,32 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			targetLangs = []string{"JA", "EN"}
 		}
 	}
-	a.emitPatchLog(fmt.Sprintf("[范围] 本次汉化目标语言：%s", strings.Join(targetLangs, "、")))
+	labels := make([]string, 0, len(targetLangs))
+	for _, l := range targetLangs {
+		code := strings.ToUpper(l)
+		name := region.LanguageName(region.Language(code))
+		if name == code {
+			labels = append(labels, code)
+			continue
+		}
+		labels = append(labels, fmt.Sprintf("%s（%s）", name, code))
+	}
+	a.emitPatchLog(fmt.Sprintf("[范围] 本次汉化目标语言：%s", strings.Join(labels, "、")))
+
+	if req.ReplaceText && len(req.SelectedTables) == 0 {
+		return resp, errors.New("未选择任何需要汉化的文本数据表")
+	}
 
 	include := map[string]bool{}
 	if len(req.SelectedTables) > 0 {
 		for _, key := range req.SelectedTables {
 			include["exd/"+strings.ToLower(key)] = true
 		}
+	}
+
+	gameVersion := ""
+	if data, err := os.ReadFile(filepath.Join(req.GameDir, "game", "ffxivgame.ver")); err == nil {
+		gameVersion = strings.TrimSpace(string(data))
 	}
 
 	cfg := verifier.Config{
@@ -1405,6 +1659,8 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		ReplaceFont: req.ReplaceFont,
 		Cloud:       a.getCloud(),
 		ConfirmFont: a.waitFontConfirm,
+
+		PatchedIndexHashes: a.patchedIndexHashes(req.GameDir, gameVersion),
 		OnEvent: func(ev verifier.Event) {
 			a.emitProgress(ev.Stage, ev.Detail, ev.Done, ev.Total)
 		},
@@ -1453,7 +1709,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			},
 		)
 		if err == nil {
-			a.emitPatchLog(fmt.Sprintf("[字体] 字体写入完成：已替换 %d 个字体文件", stats.Files))
+			a.emitPatchLog(fmt.Sprintf("[字体] 字体汉化完成：替换 %d 个字体文件", stats.Files))
 		}
 		resp.Font = stats
 		return err
@@ -1461,17 +1717,31 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 
 	result, err := verifier.Run(patchCtx, cfg)
 	if err != nil {
-		if errors.Is(err, context.Canceled) {
+		cancelled := errors.Is(err, context.Canceled)
+		// 只有真正写入过数据块才需要还原：资源缺失、备份校验失败等早期错误没有改动
+		// 客户端文件，此时还原只会白拷数 GB，还会把上一次已成功的汉化回滚成原版。
+		if !patchWroteData(resp) {
+			if cancelled {
+				a.emitPatchLog("[提示] 汉化已取消，客户端文件未被修改")
+				resp.Cancelled = true
+				return resp, nil
+			}
+			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（客户端文件未被修改，无需还原）", err))
+			return resp, err
+		}
+		if cancelled {
 			a.emitPatchLog("[提示] 汉化已被用户中止，正在自动恢复官方原版...")
-			if _, restoreErr := verifier.RestoreToGame(req.GameDir, backupRoot, lang); restoreErr != nil {
-				a.emitPatchLog(fmt.Sprintf("[警告] 恢复官方原版失败: %v", restoreErr))
-			} else {
-				a.emitPatchLog("[提示] 官方原版已恢复完成")
+			// 已取消的 ctx 无法用于还原，恢复流程必须完整跑完。
+			if _, restoreErr := a.autoRestore(context.Background(), req.GameDir, backupRoot, lang); restoreErr != nil {
+				a.emitPatchLog(fmt.Sprintf("[警告] 恢复官方原版失败: %v，请手动点击还原", restoreErr))
 			}
 			resp.Cancelled = true
 			return resp, nil
 		}
-		a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v", err))
+		a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v，正在自动恢复官方原版以保护游戏文件...", err))
+		if _, restoreErr := a.autoRestore(patchCtx, req.GameDir, backupRoot, lang); restoreErr != nil {
+			a.emitPatchLog(fmt.Sprintf("[警告] 自动恢复官方原版失败: %v，请手动点击还原", restoreErr))
+		}
 		return resp, err
 	}
 	if !result.Cancelled {
@@ -1501,7 +1771,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 					}
 				}
 				if len(recordFiles) > 0 {
-					_ = a.savePatchedRecord(PatchedRecord{
+					if err := a.savePatchedRecord(PatchedRecord{
 						GameDir:     req.GameDir,
 						Version:     curVer,
 						Language:    string(lang),
@@ -1509,7 +1779,9 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 						ReplaceText: req.ReplaceText,
 						ReplaceFont: req.ReplaceFont,
 						Files:       recordFiles,
-					})
+					}); err != nil {
+						a.emitPatchLog(fmt.Sprintf("[警告] 保存汉化记录失败: %v，下次可能无法识别当前汉化状态", err))
+					}
 				}
 			}
 		}
@@ -1575,6 +1847,10 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 
 	a.emitPatchLog("[还原] 开始执行官方原版恢复流程...")
 	resourceDir := a.resourceDir()
+	var curVersion string
+	if data, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver")); err == nil {
+		curVersion = strings.TrimSpace(string(data))
+	}
 	restored, err := verifier.Restore(a.ctx, verifier.RestoreConfig{
 		GameDir:    gameDir,
 		BackupRoot: backupRootFor(resourceDir),
@@ -1587,6 +1863,8 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 		Log: func(format string, args ...any) {
 			a.emitPatchLog(fmt.Sprintf(format, args...))
 		},
+		RequirePatchedState: true,
+		PatchedIndexHashes:  a.patchedIndexHashes(gameDir, curVersion),
 	})
 	if err != nil {
 		a.emitPatchLog(fmt.Sprintf("[错误] 还原失败：%v", err))
@@ -1611,6 +1889,11 @@ func (a *App) SyncResources() (SyncSummary, error) {
 	defer a.endBusy()
 
 	resourceDir := a.resourceDir()
+	unlock, lockErr := a.lockResource(a.ctx)
+	if lockErr != nil {
+		return summary, lockErr
+	}
+	defer unlock()
 	u := updater.New()
 	status, err := u.Provision(a.ctx, resourceDir, func(stage, detail string, done, total int64) {
 		runtime.EventsEmit(a.ctx, "sync-progress", ProgressEvent{
@@ -1643,7 +1926,8 @@ func (a *App) EnsureHighResolutionUiAsset() (gamecfg.ModifyResult, error) {
 
 // CheckAppUpdate 查询云端获取汉化器主程序的最新版本并比对当前版本。
 func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	// API 阶段与网页端回退各有一次超时，整体预算需要覆盖「直连 API 不通 → 镜像 API → 网页端」的完整链路。
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	info, err := updater.CheckAppUpdate(ctx, a.getCloud(), "Souma-Sumire/FFXIVChnTextPatch-Souma", appVersion)
@@ -1686,7 +1970,12 @@ func (a *App) ImportOfflineResource(filePath string) (ImportResourceResult, erro
 		filePath = selected
 	}
 
+	unlock, lockErr := a.lockResource(a.ctx)
+	if lockErr != nil {
+		return resp, lockErr
+	}
 	summary, err := updater.ImportOffline(filePath, a.resourceDir())
+	unlock()
 	if err != nil {
 		return resp, fmt.Errorf("导入离线包失败: %w", err)
 	}
@@ -1699,11 +1988,7 @@ func (a *App) ImportOfflineResource(filePath string) (ImportResourceResult, erro
 		runtime.EventsEmit(a.ctx, "resource-offline", false)
 	}
 
-	select {
-	case <-a.resourceReady:
-	default:
-		close(a.resourceReady)
-	}
+	a.markResourceReady()
 
 	var resTime string
 	if summary.ResourceTime != "" {
@@ -1719,4 +2004,3 @@ func (a *App) ImportOfflineResource(filePath string) (ImportResourceResult, erro
 	a.emitPatchLog(fmt.Sprintf("[离线包] %s，资源已就绪。", resp.Message))
 	return resp, nil
 }
-

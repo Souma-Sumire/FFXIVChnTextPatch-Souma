@@ -49,12 +49,12 @@
                 <label class="header-action-label" for="language">区服</label>
                 <select id="language" class="select header-select"></select>
               </div>
-              <div class="section-header-action hidden" id="target-lang-wrap">
+              <div class="section-header-action" id="target-lang-wrap">
                 <label class="header-action-label" id="target-lang-label">语言</label>
                 <div class="multiselect" id="target-lang-box">
                   <button type="button" id="target-lang-trigger" class="select header-select multiselect-trigger"
                     aria-haspopup="true" aria-labelledby="target-lang-label">
-                    <span id="target-lang-summary">日语、英语</span>
+                    <span id="target-lang-summary">—</span>
                   </button>
                   <div id="target-lang-menu" class="multiselect-menu hidden"></div>
                 </div>
@@ -149,7 +149,7 @@
               <button id="version-badge" class="app-version app-version-btn" type="button" title="点击检查主程序更新">v--</button>
               <button id="btn-app-update" class="btn-app-update hidden" type="button" title="发现新版本，点击查看">
                 <span class="update-dot" aria-hidden="true"></span>
-                <span id="app-update-tag">新版本</span>
+                <span>新版本</span>
               </button>
             </div>
             <div class="log-head-right">
@@ -283,6 +283,7 @@
       </div>
       <div class="modal-body" id="modal-text"></div>
       <div class="modal-foot">
+        <button id="modal-alt" class="btn hidden" type="button">镜像下载</button>
         <button id="modal-cancel" class="btn" type="button">取消</button>
         <button id="modal-ok" class="btn btn-primary" type="button">确定</button>
       </div>

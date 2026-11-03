@@ -4,8 +4,6 @@
 // 从而保证磁盘上的汉化数据零污染，并允许前端按 Checkbox 动态启停。
 package pipeline
 
-import "sort"
-
 // CellContext 描述一个待转换的 CSV 单元格。
 type CellContext struct {
 	TableName string // 如 "Item" 或 "quest/000/ClsHrv001_00003"
@@ -82,14 +80,4 @@ func (r *Registry) Apply(ctx *CellContext) string {
 	}
 	ctx.TargetStr = cur
 	return cur
-}
-
-// IDs 返回全部规则 ID（排序后），用于稳定输出。
-func (r *Registry) IDs() []string {
-	ids := make([]string, 0, len(r.enabled))
-	for id := range r.enabled {
-		ids = append(ids, id)
-	}
-	sort.Strings(ids)
-	return ids
 }

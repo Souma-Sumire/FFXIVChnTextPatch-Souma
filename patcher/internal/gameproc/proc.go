@@ -301,8 +301,3 @@ func CheckGameNotRunningWithOpts(opts CheckOptions) error {
 	// 3. 校验数据文件句柄锁
 	return checkFileLocks(opts.GameDir)
 }
-
-// CheckGameNotRunning 默认执行进程与句柄占用校验（不提供自动终止回调）。
-func CheckGameNotRunning(gameDir string) error {
-	return CheckGameNotRunningWithOpts(CheckOptions{GameDir: gameDir})
-}
