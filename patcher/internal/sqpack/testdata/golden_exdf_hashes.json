@@ -39,14 +39,13 @@
   },
   "exdCount": 29036,
   "samples": [
-    "exd/action_0_ja.exd",
     "exd/achievement_0_ja.exd",
     "exd/achievement_0_en.exd",
     "exd/item_0_ja.exd",
     "exd/item_0_en.exd",
-    "exd/quest/000/ClsArc000_00021_0_ja.exd",
-    "exd/quest/000/GaiUsD501_00043_0_ja.exd",
-    "exd/quest/000/SubPst018_00033_0_ja.exd"
+    "exd/quest/000/clsarc000_00021_0_ja.exd",
+    "exd/quest/000/gaiusd501_00043_0_ja.exd",
+    "exd/quest/000/subpst018_00033_0_ja.exd"
   ],
   "exd": {
     "exd/achievement_0_de.exd": {

@@ -13,6 +13,14 @@ import (
 // ErrEmptyDatBlock 表示该偏移处的 dat 块未填充数据（全 0 占位符）。
 var ErrEmptyDatBlock = errors.New("dat 块为空占位符")
 
+// maxDecompressedFileSize 是单个文件解包结果的上限。损坏的头部会把 fileSize
+// 报成接近 int32 上限，直接按它分配内存会瞬间吃掉 2GB。
+const maxDecompressedFileSize = 512 << 20
+
+// maxBlockEntrySize 是单个块表项的最大字节数（type4 为 20，type2 为 8），
+// 用于在读取块表前拦掉远超文件实际尺寸的块数。
+const maxBlockEntrySize = 20
+
 // DatFile 对应旧版 SqPackDatFile，只实现本项目需要的类型 2 / 类型 4 解包。
 type DatFile struct {
 	f    *os.File
@@ -42,9 +50,6 @@ func (d *DatFile) Close() error {
 func (d *DatFile) ReadAt(off int64, n int) ([]byte, error) {
 	return d.readAt(off, n)
 }
-
-// Size 返回 dat 文件字节长度。
-func (d *DatFile) Size() int64 { return d.size }
 
 func (d *DatFile) readAt(off int64, n int) ([]byte, error) {
 	if n < 0 {
@@ -76,6 +81,12 @@ func (d *DatFile) ExtractFile(fileOffset int64) ([]byte, error) {
 
 	if fileSize < 0 || blockCount < 0 {
 		return nil, fmt.Errorf("dat 文件头非法: fileSize=%d blocks=%d", fileSize, blockCount)
+	}
+	if int64(fileSize) > maxDecompressedFileSize {
+		return nil, fmt.Errorf("dat 文件头非法: 解包尺寸 %d 超过上限 %d", fileSize, maxDecompressedFileSize)
+	}
+	if blockCount > 0 && int64(blockCount)*maxBlockEntrySize > d.size {
+		return nil, fmt.Errorf("dat 文件头非法: 块数 %d 超出文件尺寸 %d", blockCount, d.size)
 	}
 
 	switch contentType {
@@ -146,6 +157,12 @@ func (d *DatFile) extractType4(fileOffset, headerLength int64, fileSize, blockCo
 	cursor := fileOffset + 24 + int64(blockCount)*20
 	for i := 0; i < int(blockCount); i++ {
 		n := int(blocks[i].NumSubBlocks)
+		if n < 0 {
+			return nil, fmt.Errorf("纹理子块数量非法: %d", n)
+		}
+		if int64(n)*2 > d.size {
+			return nil, fmt.Errorf("纹理子块数量 %d 超出文件尺寸 %d", n, d.size)
+		}
 		dataBlocks[i] = make([]int32, n)
 		if n == 0 {
 			continue

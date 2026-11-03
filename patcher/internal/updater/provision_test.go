@@ -211,3 +211,47 @@ func TestProvisionOfflineWithoutLocalResource(t *testing.T) {
 		t.Fatal("无本地资源且网络不可用时应返回错误")
 	}
 }
+
+// 字体文件大小一致但内容损坏时，不能判定资源完整。
+func TestModulesCompleteDetectsCorruptedFont(t *testing.T) {
+	dir := t.TempDir()
+	for _, name := range []string{"manifest.json", "rules.json", "tables.json"} {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte("{}"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	fontPath := filepath.Join(dir, "font", "A.fdt")
+	if err := os.MkdirAll(filepath.Dir(fontPath), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(fontPath, []byte("good"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	goodHash := sha256.Sum256([]byte("good"))
+	mf := &Manifest{
+		GeneratedAt: "2026-11-01T00:00:00Z",
+		RawEXD:      BundleInfo{SHA256: "raw"},
+		Font:        BundleInfo{SHA256: "font"},
+		Rules:       BundleInfo{SHA256: "rules"},
+		Tables:      BundleInfo{SHA256: "tables"},
+		Fonts: map[string]FileInfo{
+			"font/A.fdt": {SHA256: hex.EncodeToString(goodHash[:]), Size: 4},
+		},
+	}
+
+	if !modulesComplete(dir, mf, mf) {
+		t.Fatal("字体内容完好时应判定资源完整")
+	}
+
+	// 同尺寸替换为损坏内容
+	if err := os.WriteFile(fontPath, []byte("evil"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if modulesComplete(dir, mf, mf) {
+		t.Error("字体内容与哈希不符时不应判定资源完整")
+	}
+}

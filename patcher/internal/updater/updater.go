@@ -17,6 +17,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/netproxy"
 )
 
 // FileInfo 是单个文件的哈希与大小。
@@ -41,6 +43,9 @@ type Manifest struct {
 	Rules       BundleInfo          `json:"rules"`
 	Tables      BundleInfo          `json:"tables"`
 	Fonts       map[string]FileInfo `json:"fonts"`
+	// LocalFingerprint 仅在离线包缺少 .zip 包文件时按已解压内容计算，
+	// 只是本地标识，与发布清单里的 bundle 哈希不可比，也不参与云端比对。
+	LocalFingerprint string `json:"localFingerprint,omitempty"`
 }
 
 // DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像，已实测可用）。
@@ -68,7 +73,7 @@ type Updater struct {
 // New 创建默认同步器。
 func New() *Updater {
 	transport := &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
+		Proxy: netproxy.Func(),
 		DialContext: (&net.Dialer{
 			Timeout:   8 * time.Second,
 			KeepAlive: 30 * time.Second,
@@ -243,7 +248,8 @@ func ExtractZip(zipPath, destDir string) error {
 		if err != nil {
 			return err
 		}
-		dst, err := os.Create(target)
+		tmp := target + ".part"
+		dst, err := os.Create(tmp)
 		if err != nil {
 			_ = src.Close()
 			return err
@@ -251,10 +257,16 @@ func ExtractZip(zipPath, destDir string) error {
 		if _, err := io.Copy(dst, src); err != nil {
 			_ = src.Close()
 			_ = dst.Close()
+			_ = os.Remove(tmp)
 			return err
 		}
 		_ = src.Close()
 		if err := dst.Close(); err != nil {
+			_ = os.Remove(tmp)
+			return err
+		}
+		if err := os.Rename(tmp, target); err != nil {
+			_ = os.Remove(tmp)
 			return err
 		}
 	}
@@ -266,7 +278,20 @@ func writeManifest(resourceDir string, manifest *Manifest) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(resourceDir, "manifest.json"), append(data, '\n'), 0o644)
+	return writeFileAtomic(filepath.Join(resourceDir, "manifest.json"), append(data, '\n'))
+}
+
+// writeFileAtomic 先写同目录临时文件再改名，避免中途失败留下截断的文件。
+func writeFileAtomic(path string, data []byte) error {
+	tmp := path + ".tmp"
+	if err := os.WriteFile(tmp, data, 0o644); err != nil {
+		return err
+	}
+	if err := os.Rename(tmp, path); err != nil {
+		_ = os.Remove(tmp)
+		return err
+	}
+	return nil
 }
 
 // HashFile 计算文件 SHA256 与大小。

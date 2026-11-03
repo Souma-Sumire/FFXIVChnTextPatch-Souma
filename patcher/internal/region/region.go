@@ -102,3 +102,24 @@ func DisplayNameFor(l Language) string {
 	return DisplayName(Of(l))
 }
 
+// LanguageName 返回客户端语言的中文名称，未知语言回退为原始代码。
+func LanguageName(l Language) string {
+	switch l {
+	case JA:
+		return "日语"
+	case EN:
+		return "英语"
+	case DE:
+		return "德语"
+	case FR:
+		return "法语"
+	case CHS:
+		return "简体中文"
+	case TC:
+		return "繁体中文"
+	case KO:
+		return "韩语"
+	default:
+		return string(l)
+	}
+}

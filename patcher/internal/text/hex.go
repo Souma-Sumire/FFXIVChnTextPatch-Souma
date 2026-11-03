@@ -91,8 +91,3 @@ func TransformPlain(s string, fn func(string) string) string {
 	b.WriteString(fn(s[last:]))
 	return b.String()
 }
-
-// ContainsHexTag 判断字符串中是否包含 <hex:...> 标签。
-func ContainsHexTag(s string) bool {
-	return strings.Contains(s, "<hex:")
-}

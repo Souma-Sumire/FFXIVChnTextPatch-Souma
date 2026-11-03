@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	goruntime "runtime"
 	"strings"
 	"testing"
 
@@ -36,6 +37,10 @@ func (m *mockCloud) RecentReleases(ctx context.Context, repo string, limit int) 
 
 func (m *mockCloud) Download(ctx context.Context, url, dst string, onProgress func(done, total int64)) error {
 	return nil
+}
+
+func (m *mockCloud) MirrorDownloadURL(raw string) string {
+	return ""
 }
 
 func TestBuildTableListFromResource(t *testing.T) {
@@ -594,8 +599,8 @@ func TestAppImportOfflineResource(t *testing.T) {
 	}
 	w := zip.NewWriter(f)
 	files := map[string]string{
-		"resource/manifest.json": `{"generatedAt":"2026-11-02T10:00:00Z","rawexd":{"sha256":"1234","size":50}}`,
-		"resource/tables.json":   `{"files":["Item"],"tables":{"Item":"道具"}}`,
+		"resource/manifest.json":   `{"generatedAt":"2026-11-02T10:00:00Z","rawexd":{"sha256":"1234","size":50}}`,
+		"resource/tables.json":     `{"files":["Item"],"tables":{"Item":"道具"}}`,
 		"resource/rawexd/Item.csv": "key,0,1\n1,测试,1",
 	}
 	for name, content := range files {
@@ -623,4 +628,163 @@ func TestAppImportOfflineResource(t *testing.T) {
 	}
 }
 
+func TestIsGlobalClientDir(t *testing.T) {
+	root := t.TempDir()
 
+	mk := func(rel string) string {
+		p := filepath.Join(root, filepath.FromSlash(rel))
+		if err := os.MkdirAll(p, 0o755); err != nil {
+			t.Fatalf("创建目录 %s 失败: %v", rel, err)
+		}
+		return p
+	}
+
+	full := mk("full")
+	mk("full/boot")
+	mk("full/game")
+	if err := os.WriteFile(filepath.Join(full, "game", "ffxiv_dx11.exe"), []byte("stub"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	noBoot := mk("no-boot")
+	mk("no-boot/game")
+	if err := os.WriteFile(filepath.Join(noBoot, "game", "ffxiv_dx11.exe"), []byte("stub"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	noGame := mk("no-game")
+	mk("no-game/boot")
+
+	noExe := mk("no-exe")
+	mk("no-exe/boot")
+	mk("no-exe/game")
+
+	bootIsFile := mk("boot-is-file")
+	if err := os.WriteFile(filepath.Join(bootIsFile, "boot"), []byte("stub"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	mk("boot-is-file/game")
+	if err := os.WriteFile(filepath.Join(bootIsFile, "game", "ffxiv_dx11.exe"), []byte("stub"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cases := []struct {
+		desc string
+		dir  string
+		want bool
+	}{
+		{"boot 与 game 齐全且含 ffxiv_dx11.exe", full, true},
+		{"缺少 boot 目录", noBoot, false},
+		{"缺少 game 目录", noGame, false},
+		{"缺少 ffxiv_dx11.exe", noExe, false},
+		{"boot 不是目录", bootIsFile, false},
+		{"目录不存在", filepath.Join(root, "missing"), false},
+	}
+	for _, tc := range cases {
+		if got := isGlobalClientDir(tc.dir); got != tc.want {
+			t.Errorf("%s: 期望 %v，实际 %v", tc.desc, tc.want, got)
+		}
+	}
+}
+
+func TestGetScanDriveRoots(t *testing.T) {
+	roots := getScanDriveRoots()
+	// 非 Windows 平台没有盘符概念，未设置 WINEPREFIX 时返回空是预期行为。
+	if len(roots) == 0 {
+		if goruntime.GOOS == "windows" {
+			t.Fatalf("getScanDriveRoots 在 Windows 下不应返回空")
+		}
+		return
+	}
+	for _, root := range roots {
+		if root == "" {
+			t.Errorf("驱动器根目录不应为空")
+		}
+		if !filepath.IsAbs(root) {
+			t.Errorf("驱动器根目录应为绝对路径: %s", root)
+		}
+	}
+}
+
+// 非国际服即使本地备份与当前文件完全一致，也不能据此声称「官方原版」：
+// 没有官方哈希，版本号相同不代表内容相同。
+func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	version := "2026.10.16.0000.0000"
+	if err := os.WriteFile(filepath.Join(gameDir, "game", "ffxivgame.ver"), []byte(version), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	textIndex := filepath.Join(sqpackDir, "0a0000.win32.index")
+	fontIndex := filepath.Join(sqpackDir, "000000.win32.index")
+	if err := createMinimalIndexFile(textIndex); err != nil {
+		t.Fatal(err)
+	}
+	if err := createMinimalIndexFile(fontIndex); err != nil {
+		t.Fatal(err)
+	}
+
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+
+	backupDir := filepath.Join(tmpDir, "backup", "chs")
+	if err := os.MkdirAll(backupDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	textHash, err := verifier.HashFile(textIndex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fontHash, err := verifier.HashFile(fontIndex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	meta := verifier.BackupMeta{
+		Region:  "chs",
+		Version: version,
+		Files: map[string]verifier.FileHash{
+			"0a0000.win32.index": textHash,
+			"000000.win32.index": fontHash,
+		},
+	}
+	data, err := json.Marshal(meta)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(backupDir, "meta.json"), data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	status, err := app.CheckClientStatus(gameDir, "CHS")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
+	if status.Status != "unsupported" {
+		t.Fatalf("非国际服应始终不支持原版检测，实际为 %s (%s)", status.Status, status.Description)
+	}
+}
+
+// 云端客户端必须复用同一实例，否则更新检查学到的可用节点无法用于汉化和还原。
+func TestGetCloudReusesClient(t *testing.T) {
+	app := NewApp()
+	first := app.getCloud()
+	second := app.getCloud()
+	if first != second {
+		t.Fatal("getCloud 应复用同一个客户端实例")
+	}
+
+	client, ok := first.(*verifier.GitHubClient)
+	if !ok {
+		t.Fatalf("默认云端实现应为 GitHubClient，实际 %T", first)
+	}
+	client.SetPreferredNode("https://wget.la/")
+	got := app.getCloud().(*verifier.GitHubClient).
+		MirrorDownloadURL("https://github.com/foo/bar/releases/download/v1/app.exe")
+	if !strings.Contains(got, "wget.la") {
+		t.Errorf("节点记忆应跨调用保留，实际 %q", got)
+	}
+}

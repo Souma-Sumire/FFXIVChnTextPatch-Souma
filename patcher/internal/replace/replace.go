@@ -89,6 +89,7 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 	skipFiles := strings.Split(strings.ToLower(opts.SkipFiles), "|")
 	cache := newDatCache()
 	defer cache.Close()
+	pending := make([]pendingOffset, 0, 256)
 
 	targetLangs := opts.TargetLanguages
 	if len(targetLangs) == 0 {
@@ -184,12 +185,10 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 					return stats, err
 				}
 
-				if err := sqpack.WriteDataOffset(indexFile, exdEntry, datLength/8); err != nil {
-					return stats, err
-				}
 				if _, err := datFile.WriteAt(block, datLength); err != nil {
 					return stats, fmt.Errorf("写入 dat0 失败: %w", err)
 				}
+				pending = append(pending, pendingOffset{entry: exdEntry, offset: datLength / 8})
 				datLength += int64(len(block))
 				stats.AppendedBytes += int64(len(block))
 				stats.Files++
@@ -197,6 +196,9 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 			}
 		}
 		stats.Tables++
+	}
+	if err := commitIndexOffsets(datFile, indexFile, pending); err != nil {
+		return stats, err
 	}
 	return stats, nil
 }
@@ -402,6 +404,7 @@ func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, prog
 		return stats, fmt.Errorf("字体 dat0 长度未按 8 字节对齐: %d", datLength)
 	}
 
+	pending := make([]pendingOffset, 0, len(fonts))
 	for i, name := range fonts {
 		if ctx != nil && ctx.Err() != nil {
 			return stats, ctx.Err()
@@ -424,18 +427,46 @@ func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, prog
 		if err != nil {
 			return stats, fmt.Errorf("构建字体块失败 %s: %w", name, err)
 		}
-		if err := sqpack.WriteDataOffset(indexFile, entry, datLength/8); err != nil {
-			return stats, err
-		}
 		if _, err := datFile.WriteAt(block, datLength); err != nil {
 			return stats, fmt.Errorf("写入字体 dat0 失败: %w", err)
 		}
+		pending = append(pending, pendingOffset{entry: entry, offset: datLength / 8})
 		datLength += int64(len(block))
 		stats.AppendedBytes += int64(len(block))
 		stats.Files++
 	}
+	if err := commitIndexOffsets(datFile, indexFile, pending); err != nil {
+		return stats, err
+	}
 	stats.Tables = 1
 	return stats, nil
+}
+
+// pendingOffset 记录一条待提交的索引偏移。
+type pendingOffset struct {
+	entry  *sqpack.IndexFile
+	offset int64
+}
+
+// commitIndexOffsets 先确保 dat 数据块全部落盘，再批量回写索引并刷盘。
+// 顺序不可颠倒：任何时刻索引都只能指向已持久化的数据，否则崩溃或掉电后
+// 会留下指向空洞的坏索引，游戏读取该表时会得到损坏数据。
+func commitIndexOffsets(datFile, indexFile *os.File, pending []pendingOffset) error {
+	if len(pending) == 0 {
+		return nil
+	}
+	if err := datFile.Sync(); err != nil {
+		return fmt.Errorf("同步 dat0 失败: %w", err)
+	}
+	for _, p := range pending {
+		if err := sqpack.WriteDataOffset(indexFile, p.entry, p.offset); err != nil {
+			return err
+		}
+	}
+	if err := indexFile.Sync(); err != nil {
+		return fmt.Errorf("同步 index 失败: %w", err)
+	}
+	return nil
 }
 
 func datPathFor(indexPath string, datNum int) string {

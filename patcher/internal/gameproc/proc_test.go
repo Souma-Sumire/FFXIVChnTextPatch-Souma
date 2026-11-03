@@ -153,7 +153,7 @@ func TestCheckGameNotRunningWithMock(t *testing.T) {
 	procLister = func() ([]ProcessInfo, error) {
 		return nil, nil
 	}
-	if err := CheckGameNotRunning(tmpDir); err != nil {
+	if err := CheckGameNotRunningWithOpts(CheckOptions{GameDir: tmpDir}); err != nil {
 		t.Errorf("expected no error, got %v", err)
 	}
 
@@ -163,7 +163,7 @@ func TestCheckGameNotRunningWithMock(t *testing.T) {
 			{PID: 101, Name: "XIVLauncher.exe", Type: TypeThirdPartyLauncher},
 		}, nil
 	}
-	if err := CheckGameNotRunning(tmpDir); err == nil || !strings.Contains(err.Error(), "XIVLauncher.exe") {
+	if err := CheckGameNotRunningWithOpts(CheckOptions{GameDir: tmpDir}); err == nil || !strings.Contains(err.Error(), "XIVLauncher.exe") {
 		t.Errorf("expected launcher conflict error, got %v", err)
 	}
 

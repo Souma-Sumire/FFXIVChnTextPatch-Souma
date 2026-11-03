@@ -112,7 +112,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 			needFont = true
 		} else {
 			for key, want := range remote.Fonts {
-				if !fontMatches(resourceDir, key, want, local) {
+				if !fontMatches(resourceDir, key, want) {
 					needFont = true
 					break
 				}
@@ -133,7 +133,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		fontKeys := sortedFontKeys(remote)
 		var fontTotal int64
 		for _, key := range fontKeys {
-			if fontMatches(resourceDir, key, remote.Fonts[key], local) {
+			if fontMatches(resourceDir, key, remote.Fonts[key]) {
 				continue
 			}
 			fontTotal += remote.Fonts[key].Size
@@ -141,7 +141,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		var fontDone int64
 		for _, key := range fontKeys {
 			want := remote.Fonts[key]
-			if fontMatches(resourceDir, key, want, local) {
+			if fontMatches(resourceDir, key, want) {
 				continue
 			}
 			dst := filepath.Join(resourceDir, filepath.FromSlash(key))
@@ -328,16 +328,18 @@ func sortedFontKeys(manifest *Manifest) []string {
 	return keys
 }
 
-func fontMatches(resourceDir, key string, want FileInfo, local *Manifest) bool {
-	if !fileSizeMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want.Size) {
-		return false
+func fontMatches(resourceDir, key string, want FileInfo) bool {
+	return fontFileMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want)
+}
+
+// fontFileMatches 直接对本地字体文件重算哈希，不采信 manifest 里的历史记录：
+// 清单记录的是下载时的期望值，文件被外部改动或写坏后仍会与记录一致。
+func fontFileMatches(path string, want FileInfo) bool {
+	if want.SHA256 == "" {
+		return want.Size > 0 && fileSizeMatches(path, want.Size)
 	}
-	if local != nil {
-		if got, ok := local.Fonts[key]; ok {
-			return got.SHA256 == want.SHA256 && got.Size == want.Size
-		}
-	}
-	return false
+	got, err := HashFile(path)
+	return err == nil && got.SHA256 == want.SHA256 && (want.Size <= 0 || got.Size == want.Size)
 }
 
 func fileSizeMatches(path string, size int64) bool {
@@ -366,7 +368,7 @@ func modulesComplete(resourceDir string, local, remote *Manifest) bool {
 		return false
 	}
 	for key, want := range remote.Fonts {
-		if !fileSizeMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want.Size) {
+		if !fontFileMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want) {
 			return false
 		}
 	}

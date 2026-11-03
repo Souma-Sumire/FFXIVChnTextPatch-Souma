@@ -141,10 +141,10 @@ interface AppUpdateInfo {
   hasUpdate: boolean;
   currentVersion: string;
   latestVersion: string;
-  title: string;
   releaseNotes: string;
   releaseUrl: string;
   downloadUrl: string;
+  mirrorUrl?: string;
 }
 
 interface ImportResourceResult {
@@ -163,6 +163,7 @@ interface GoApp {
   GetBootstrap(): Promise<BootstrapInfo>;
   SaveConfig(config: AppConfig): Promise<void>;
   DetectGamePaths(language: string): Promise<string[]>;
+  CancelDetect(): Promise<void>;
   SelectGameDirectory(language: string): Promise<string>;
   GetGameInfo(gameDir: string, language: string): Promise<GameInfo>;
   CheckClientStatus(gameDir: string, language: string): Promise<ClientStatusResult>;
@@ -240,10 +241,13 @@ let bootstrap: BootstrapInfo | null = null;
 let gameInfo: GameInfo | null = null;
 let clientStatus: ClientStatusResult | null = null;
 let checkingClient = false;
-let modalResolver: ((ok: boolean) => void) | null = null;
+type ModalResult = "ok" | "alt" | "cancel";
+let modalResolver: ((result: ModalResult) => void) | null = null;
 let busy = false;
 let isPatching = false;
 let isStopping = false;
+let isDetecting = false;
+let detectCanceled = false;
 let latestUpdateInfo: AppUpdateInfo | null = null;
 let checkingAppUpdate = false;
 
@@ -279,12 +283,10 @@ const el = {
 
   versionBadge: byId<HTMLButtonElement>("version-badge"),
   btnAppUpdate: byId<HTMLButtonElement>("btn-app-update"),
-  appUpdateTag: byId("app-update-tag"),
 
   gamePath: byId<HTMLInputElement>("game-path"),
   gameInfo: byId("game-info"),
   language: byId<HTMLSelectElement>("language"),
-  targetLangWrap: byId("target-lang-wrap"),
   targetLangTrigger: byId<HTMLButtonElement>("target-lang-trigger"),
   targetLangSummary: byId("target-lang-summary"),
   targetLangMenu: byId("target-lang-menu"),
@@ -336,6 +338,7 @@ const el = {
   modalText: byId("modal-text"),
   modalOk: byId<HTMLButtonElement>("modal-ok"),
   modalCancel: byId<HTMLButtonElement>("modal-cancel"),
+  modalAlt: byId<HTMLButtonElement>("modal-alt"),
 };
 
 function switchView(view: "provisioning" | "workbench" | "tables"): void {
@@ -605,6 +608,58 @@ function updateRestoreButtonState(): void {
   }
 }
 
+// detectGameDir 请求后端探测客户端目录；silent 为 true 时用于界面就绪后的后台扫描，
+// 不占用全局忙碌态，扫描期间探测按钮同样可点“停止”。
+async function detectGameDir(silent: boolean): Promise<void> {
+  isDetecting = true;
+  detectCanceled = false;
+  if (!silent) {
+    setBusy(true, "正在搜索本地客户端…");
+  }
+  renderDetectButton(true);
+  try {
+    const list = await call("DetectGamePaths", config.language);
+    if (detectCanceled) {
+      log("[探测] 已停止搜索。", "info");
+      return;
+    }
+    const prevDir = config.gameDir;
+    if (list.length === 0) {
+      if (!silent) {
+        log("[探测] 未在常用路径及磁盘 3 层目录内找到匹配该区服的客户端，请点击“浏览”手动指定。", "info");
+      }
+      return;
+    }
+    if (silent && prevDir) {
+      return;
+    }
+    const detectedDir = list[0]!;
+    setGameDir(detectedDir);
+    log(silent ? `[配置] 自动探测并定位到游戏目录：${detectedDir}` : `[探测] 自动探测到客户端：${detectedDir}`);
+    await refreshGameInfo();
+    if (detectedDir !== prevDir) {
+      void checkClientEnvironment();
+    }
+  } catch (error) {
+    log(`探测游戏目录失败: ${describeError(error)}`, "error");
+  } finally {
+    isDetecting = false;
+    renderDetectButton(false);
+    if (!silent) {
+      setBusy(false);
+    }
+  }
+}
+
+// renderDetectButton 在扫描期间把探测按钮切换为可点击的“停止”。
+function renderDetectButton(scanning: boolean): void {
+  el.btnDetect.textContent = scanning ? "停止" : "自动探测";
+  el.btnDetect.classList.toggle("is-detecting", scanning);
+  if (scanning) {
+    el.btnDetect.disabled = false;
+  }
+}
+
 function setBusy(value: boolean, label = ""): void {
   busy = value;
   el.busyIndicator.textContent = value ? label || "执行中…" : "准备就绪";
@@ -646,24 +701,37 @@ function setWindowTitle(): void {
 }
 
 function showConfirm(title: string, text: string, okText = "确定继续"): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
+  return openModal(title, text, okText, "").then((result) => result === "ok");
+}
+
+// openModal 支持一个可选的次要操作按钮（如「镜像下载」），确认/次要/取消三态返回。
+function openModal(title: string, text: string, okText: string, altText: string): Promise<ModalResult> {
+  return new Promise<ModalResult>((resolve) => {
     modalResolver = resolve;
     el.modalTitle.textContent = title;
     el.modalText.textContent = text;
     el.modalOk.textContent = okText;
+    if (altText) {
+      el.modalAlt.textContent = altText;
+      el.modalAlt.classList.remove("hidden");
+    } else {
+      el.modalAlt.classList.add("hidden");
+    }
     el.modal.classList.remove("hidden");
   });
 }
 
-function closeModal(ok: boolean): void {
+function closeModal(result: ModalResult): void {
   el.modal.classList.add("hidden");
+  el.modalAlt.classList.add("hidden");
   const resolver = modalResolver;
   modalResolver = null;
-  resolver?.(ok);
+  resolver?.(result);
 }
 
-el.modalOk.addEventListener("click", () => closeModal(true));
-el.modalCancel.addEventListener("click", () => closeModal(false));
+el.modalOk.addEventListener("click", () => closeModal("ok"));
+el.modalCancel.addEventListener("click", () => closeModal("cancel"));
+el.modalAlt.addEventListener("click", () => closeModal("alt"));
 
 async function waitForBackend(timeoutMs: number): Promise<void> {
   const start = Date.now();
@@ -728,10 +796,13 @@ async function checkAppUpdate(interactive = false): Promise<void> {
 
 function showUpdateDialog(info: AppUpdateInfo): void {
   const notes = info.releaseNotes ? `\n\n更新说明：\n${info.releaseNotes}` : "";
-  const text = `发现新版本 v${info.latestVersion}（当前为 v${info.currentVersion}）${notes}`;
-  void showConfirm("发现新版本", text, "前往下载").then((ok) => {
-    if (ok) {
+  const mirrorHint = info.mirrorUrl ? "\n\n若 GitHub 无法访问，可点击「镜像下载」。" : "";
+  const text = `发现新版本 v${info.latestVersion}（当前为 v${info.currentVersion}）${notes}${mirrorHint}`;
+  void openModal("发现新版本", text, "前往下载", info.mirrorUrl ? "镜像下载" : "").then((result) => {
+    if (result === "ok") {
       void call("OpenLink", info.downloadUrl || info.releaseUrl);
+    } else if (result === "alt" && info.mirrorUrl) {
+      void call("OpenLink", info.mirrorUrl);
     }
   });
 }
@@ -772,6 +843,18 @@ async function handleImportOfflineResource(): Promise<void> {
   }
 }
 
+type IdleScheduler = { requestIdleCallback?: (cb: () => void, opts: { timeout: number }) => number };
+
+// runWhenIdle 把磁盘扫描等非紧急任务推迟到界面渲染完成后的空闲时段执行。
+function runWhenIdle(task: () => void, fallbackDelay = 300): void {
+  const schedule = (window as unknown as IdleScheduler).requestIdleCallback;
+  if (typeof schedule === "function") {
+    schedule(task, { timeout: 1500 });
+    return;
+  }
+  window.setTimeout(task, fallbackDelay);
+}
+
 async function bootstrapApp(): Promise<void> {
   try {
     await waitForBackend(8000);
@@ -796,13 +879,8 @@ async function bootstrapApp(): Promise<void> {
       void checkClientEnvironment();
     } else {
       renderGameInfo();
-      void call("DetectGamePaths", config.language).then(async (detected) => {
-        if (!config.gameDir && detected.length > 0 && detected[0]) {
-          setGameDir(detected[0]);
-          log(`[配置] 自动探测并定位到游戏目录：${detected[0]}`);
-          await refreshGameInfo();
-          void checkClientEnvironment();
-        }
+      runWhenIdle(() => {
+        void detectGameDir(true);
       });
     }
   } catch (error) {
@@ -957,7 +1035,7 @@ function isGlobalLanguage(langCode: string): boolean {
   return upper === "GLOBAL" || upper === "GL" || upper === "JA" || upper === "EN" || upper === "DE" || upper === "FR";
 }
 
-// ---------- 汉化语言多选框（仅国际服显示） ----------
+// ---------- 汉化语言多选框（始终显示；仅国际服可多选） ----------
 
 function currentRegionCode(): string {
   const opt = bootstrap?.languages?.find((l) => l.code.toUpperCase() === config.language.toUpperCase());
@@ -979,10 +1057,6 @@ function syncTargetLangConfig(): void {
 
 function resolveTargetLanguages(): void {
   const opts = regionLanguageOptions();
-  if (opts.length <= 1) {
-    targetLangs = [];
-    return;
-  }
   const saved = (config.targetLanguages ?? []).filter((c) => opts.some((o) => o.code === c));
   const active = targetLangs.filter((c) => opts.some((o) => o.code === c));
   const source = active.length > 0 ? active : (saved.length > 0 ? saved : ["JA", "EN"]);
@@ -991,59 +1065,71 @@ function resolveTargetLanguages(): void {
 
 function updateTargetLangView(): void {
   const opts = regionLanguageOptions();
-  const summary = targetLangs.length === opts.length
-    ? "全部语言"
-    : targetLangs.map((c) => opts.find((o) => o.code === c)?.name || c).join("、");
-  el.targetLangSummary.textContent = summary;
+  // 单语言区服的选项固定为唯一语言，不受 targetLangs（仅国际服有效）影响
+  const selected = opts.length === 1 ? opts.map((o) => o.code) : targetLangs;
+  const nameOf = (code: string) => opts.find((o) => o.code === code)?.name || code;
+  el.targetLangSummary.textContent = selected.length === 0
+    ? "—"
+    : opts.length > 1 && selected.length === opts.length
+      ? "全部语言"
+      : selected.map(nameOf).join("、");
 
   el.targetLangMenu.querySelectorAll<HTMLInputElement>("input[type='checkbox']").forEach((cb) => {
     const code = cb.dataset.langCode;
     if (code) {
-      cb.checked = targetLangs.includes(code);
+      cb.checked = selected.includes(code);
     }
   });
 }
 
+// 汉化语言选择器始终显示，避免切换区服时布局跳动；
+// 单语言区服只展示唯一语言，勾选项禁止取消。
 function renderTargetLangs(): void {
   const opts = regionLanguageOptions();
-  const show = opts.length > 1;
-  el.targetLangWrap.classList.toggle("hidden", !show);
-  if (!show) {
+  const locked = opts.length <= 1;
+
+  if (locked) {
     targetLangs = [];
-    el.targetLangMenu.replaceChildren();
-    el.targetLangMenu.classList.add("hidden");
-    el.targetLangTrigger.setAttribute("aria-expanded", "false");
-    return;
+  } else {
+    resolveTargetLanguages();
   }
 
-  resolveTargetLanguages();
-
   el.targetLangMenu.replaceChildren();
+  el.targetLangMenu.classList.add("hidden");
+  el.targetLangTrigger.setAttribute("aria-expanded", "false");
+  if (locked && opts.length === 1) {
+    el.targetLangTrigger.title = "当前区服仅支持一种语言，无法更改";
+  } else {
+    el.targetLangTrigger.removeAttribute("title");
+  }
+
   for (const opt of opts) {
     const item = document.createElement("label");
-    item.className = "multiselect-item";
+    item.className = locked ? "multiselect-item is-locked" : "multiselect-item";
 
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.dataset.langCode = opt.code;
-    cb.checked = targetLangs.includes(opt.code);
-    cb.addEventListener("change", () => {
-      if (cb.checked) {
-        if (!targetLangs.includes(opt.code)) {
-          targetLangs.push(opt.code);
+    cb.disabled = locked;
+    if (!locked) {
+      cb.addEventListener("change", () => {
+        if (cb.checked) {
+          if (!targetLangs.includes(opt.code)) {
+            targetLangs.push(opt.code);
+          }
+        } else {
+          targetLangs = targetLangs.filter((c) => c !== opt.code);
         }
-      } else {
-        targetLangs = targetLangs.filter((c) => c !== opt.code);
-      }
-      if (targetLangs.length === 0) {
-        targetLangs = [opt.code];
-        cb.checked = true;
-        log("[提示] 至少需要勾选一种汉化语言。", "warn");
-      }
-      targetLangs = opts.map((o) => o.code).filter((c) => targetLangs.includes(c));
-      updateTargetLangView();
-      syncTargetLangConfig();
-    });
+        if (targetLangs.length === 0) {
+          targetLangs = [opt.code];
+          cb.checked = true;
+          log("[提示] 至少需要勾选一种汉化语言。", "warn");
+        }
+        targetLangs = opts.map((o) => o.code).filter((c) => targetLangs.includes(c));
+        updateTargetLangView();
+        syncTargetLangConfig();
+      });
+    }
 
     const text = document.createElement("span");
     text.textContent = opt.name;
@@ -1140,7 +1226,7 @@ async function checkClientEnvironment(): Promise<void> {
     } else if (clientStatus.label === "文件损坏" || clientStatus.label === "文件缺失") {
       logKind = "error";
     }
-    log(`[状态] 客户端状态：${clientStatus.label}`, logKind);
+    log(`[状态] 客户端：${clientStatus.label}`, logKind);
   } catch (err) {
     log(`[错误] 客户端校验失败: ${describeError(err)}`, "error");
   } finally {
@@ -1521,30 +1607,19 @@ function wireEvents(): void {
     }
   });
 
-  el.btnDetect.addEventListener("click", async () => {
+  el.btnDetect.addEventListener("click", () => {
+    if (isDetecting) {
+      detectCanceled = true;
+      void call("CancelDetect").catch(() => {
+        // 忽略停止失败：后端会在扫描结束后自然返回
+      });
+      log("[探测] 正在停止搜索…", "info");
+      return;
+    }
     if (busy) {
       return;
     }
-    try {
-      setBusy(true, "正在搜索本地客户端…");
-      const list = await call("DetectGamePaths", config.language);
-      if (list.length === 0) {
-        log("[探测] 未在常用路径中找到匹配该区服的客户端，请点击“浏览”手动指定。", "info");
-        return;
-      }
-      const prevDir = config.gameDir;
-      const detectedDir = list[0]!;
-      setGameDir(detectedDir);
-      log(`[探测] 自动探测到客户端：${detectedDir}`);
-      await refreshGameInfo();
-      if (detectedDir !== prevDir) {
-        void checkClientEnvironment();
-      }
-    } catch (error) {
-      log(`探测游戏目录失败: ${describeError(error)}`, "error");
-    } finally {
-      setBusy(false);
-    }
+    void detectGameDir(false);
   });
 
   el.language.addEventListener("change", async () => {
@@ -1570,7 +1645,7 @@ function wireEvents(): void {
     el.gamePath.value = rememberedDir;
     clientStatus = null;
 
-    // 切换区服后刷新汉化语言多选框（非国际服隐藏，国际服恢复已保存勾选或默认日英）
+    // 切换区服后刷新汉化语言多选框（国际服恢复已保存勾选或默认日英，单语言区服锁定唯一语言）
     targetLangs = [];
     renderTargetLangs();
 
@@ -1757,12 +1832,7 @@ function wireEvents(): void {
         log("[提示] 还原已取消", "info");
         return;
       }
-      const restoredCount = (resp.restored ?? []).length;
-      if (restoredCount === 0) {
-        log("客户端文件已是官方原版，无需重复还原", "ok");
-      } else {
-        log("官方原版文件已全部恢复完成", "ok");
-      }
+      // 完成结果由后端日志给出（[完成] …），此处不再重复输出。
       try {
         clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
       } catch {
