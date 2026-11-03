@@ -134,12 +134,15 @@ var globalTargetLanguages = []RegionLanguage{
 	{Code: string(region.FR), Name: region.LanguageName(region.FR)},
 }
 
-// sanitizeTargetLanguages 校验并规范化用户勾选的目标语言列表。
-// 仅国际服支持多语言选择；非国际服返回 nil（使用该区服唯一语言）。
+// defaultGlobalTargetLanguages 是国际服未保存过勾选时的默认汉化语言。
+var defaultGlobalTargetLanguages = []string{"JA", "EN"}
+
+// sanitizeTargetLanguages 校验并规范化目标语言列表。
+// 仅国际服支持多语言选择；非国际服固定为该区服唯一语言，仍返回单值以便配置可读。
 // 返回值按 globalTargetLanguages 的固定顺序排列。
 func sanitizeTargetLanguages(lang region.Language, langs []string) []string {
 	if region.Of(lang) != region.Global {
-		return nil
+		return region.TargetLanguagesFor(lang)
 	}
 	seen := map[string]bool{}
 	for _, l := range langs {
@@ -185,12 +188,37 @@ type TableEntry struct {
 	Warning string `json:"warning"`
 }
 
+// LanguagesByRegion 按区服保存汉化语言勾选，键为区服代码。
+// 旧版把它存成数组，反序列化时迁移到空键，由 loadConfig 归入当前区服。
+type LanguagesByRegion map[string][]string
+
+// UnmarshalJSON 兼容旧版的数组形式，避免整份配置因字段类型变化而丢弃。
+func (m *LanguagesByRegion) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 || string(data) == "null" {
+		return nil
+	}
+	if data[0] == '[' {
+		var legacy []string
+		if err := json.Unmarshal(data, &legacy); err != nil {
+			return err
+		}
+		*m = LanguagesByRegion{"": legacy}
+		return nil
+	}
+	var byRegion map[string][]string
+	if err := json.Unmarshal(data, &byRegion); err != nil {
+		return err
+	}
+	*m = byRegion
+	return nil
+}
+
 // AppConfig 是持久化配置。
+// 客户端目录与汉化语言都按区服保存，当前值由 Language 对应的条目决定。
 type AppConfig struct {
-	GameDir         string            `json:"gameDir"`
-	GameDirs        map[string]string `json:"gameDirs,omitempty"`
+	GameDirs        map[string]string `json:"gameDirs"`
 	Language        string            `json:"language"`
-	TargetLanguages []string          `json:"targetLanguages,omitempty"`
+	TargetLanguages LanguagesByRegion `json:"targetLanguages"`
 	ReplaceText     bool              `json:"replaceText"`
 	ReplaceFont     bool              `json:"replaceFont"`
 	Rules           map[string]bool   `json:"rules"`
@@ -377,12 +405,13 @@ func normalizeRegionCode(lang string) string {
 
 func defaultConfig() AppConfig {
 	return AppConfig{
-		GameDirs:    map[string]string{},
-		Language:    string(region.GLOBAL),
-		ReplaceText: true,
-		ReplaceFont: true,
-		Rules:       pipeline.DefaultRuleStates(),
-		Preset:      "recommended",
+		GameDirs:        map[string]string{},
+		Language:        string(region.GLOBAL),
+		TargetLanguages: LanguagesByRegion{},
+		ReplaceText:     true,
+		ReplaceFont:     true,
+		Rules:           pipeline.DefaultRuleStates(),
+		Preset:          "recommended",
 	}
 }
 
@@ -428,22 +457,33 @@ func (a *App) loadConfig(resourceDir string) AppConfig {
 	}
 	if saved.GameDirs != nil {
 		cfg.GameDirs = saved.GameDirs
-	} else {
-		cfg.GameDirs = make(map[string]string)
 	}
-	if saved.GameDir != "" {
-		oldKey := normalizeRegionCode(saved.Language)
-		if cfg.GameDirs[oldKey] == "" {
-			cfg.GameDirs[oldKey] = saved.GameDir
+	// 旧配置把客户端目录写在顶层 gameDir，仅在完全没有分区记录时迁移一次。
+	if len(cfg.GameDirs) == 0 {
+		var legacy struct {
+			GameDir string `json:"gameDir"`
+		}
+		if json.Unmarshal(data, &legacy) == nil && legacy.GameDir != "" {
+			cfg.GameDirs[normalizeRegionCode(cfg.Language)] = legacy.GameDir
 		}
 	}
-	curKey := normalizeRegionCode(cfg.Language)
-	cfg.GameDir = cfg.GameDirs[curKey]
 
-	// 恢复国际服的目标语言勾选（仅保留合法项；非法/为空时由前端按默认值处理）
-	parsedCfg, langErr := region.ParseLanguage(cfg.Language)
-	if langErr == nil {
-		cfg.TargetLanguages = sanitizeTargetLanguages(parsedCfg, saved.TargetLanguages)
+	// 汉化语言按区服分别保存；旧版的单个数组只可能来自国际服，固定迁入 GLOBAL。
+	if legacy, ok := saved.TargetLanguages[""]; ok {
+		globalKey := string(region.GLOBAL)
+		if len(saved.TargetLanguages[globalKey]) == 0 {
+			saved.TargetLanguages[globalKey] = legacy
+		}
+		delete(saved.TargetLanguages, "")
+	}
+	for code, langs := range saved.TargetLanguages {
+		parsed, err := region.ParseLanguage(normalizeRegionCode(code))
+		if err != nil {
+			continue
+		}
+		if cleaned := sanitizeTargetLanguages(parsed, langs); len(cleaned) > 0 {
+			cfg.TargetLanguages[normalizeRegionCode(code)] = cleaned
+		}
 	}
 
 	cfg.ReplaceText = saved.ReplaceText
@@ -784,16 +824,50 @@ func buildTableList(tables TablesDoc) []TableEntry {
 	return out
 }
 
+// regionLanguageOrder 是配置中目标语言的固定区服顺序。
+var regionLanguageOrder = []region.Language{region.GLOBAL, region.CHS, region.TC, region.KO}
+
+// completeTargetLanguages 为每个区服补上目标语言，缺失时取该区服的默认值。
+// 配置里始终保留全部区服，便于直接阅读各服设定。
+func completeTargetLanguages(saved LanguagesByRegion) LanguagesByRegion {
+	out := make(LanguagesByRegion, len(regionLanguageOrder))
+	for _, lang := range regionLanguageOrder {
+		key := string(lang)
+		if list := saved[key]; len(list) > 0 {
+			out[key] = list
+			continue
+		}
+		if region.Of(lang) == region.Global {
+			out[key] = append([]string{}, defaultGlobalTargetLanguages...)
+			continue
+		}
+		out[key] = sanitizeTargetLanguages(lang, nil)
+	}
+	return out
+}
+
 // SaveConfig 保存前端配置到 config.json。
 func (a *App) SaveConfig(cfg AppConfig) error {
 	resourceDir := a.resourceDir()
-	if cfg.GameDirs == nil {
-		cfg.GameDirs = make(map[string]string)
+	dirs := make(map[string]string, len(cfg.GameDirs))
+	for lang, dir := range cfg.GameDirs {
+		if dir == "" {
+			continue
+		}
+		dirs[normalizeRegionCode(lang)] = dir
 	}
-	norm := normalizeRegionCode(cfg.Language)
-	if cfg.GameDir != "" {
-		cfg.GameDirs[norm] = cfg.GameDir
+	cfg.GameDirs = dirs
+	langs := make(LanguagesByRegion, len(cfg.TargetLanguages))
+	for code, list := range cfg.TargetLanguages {
+		parsed, err := region.ParseLanguage(normalizeRegionCode(code))
+		if err != nil {
+			continue
+		}
+		if cleaned := sanitizeTargetLanguages(parsed, list); len(cleaned) > 0 {
+			langs[normalizeRegionCode(code)] = cleaned
+		}
 	}
+	cfg.TargetLanguages = completeTargetLanguages(langs)
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return err
@@ -979,13 +1053,7 @@ func isGlobalClientDir(dir string) bool {
 // SelectGameDirectory 打开目录选择对话框。
 func (a *App) SelectGameDirectory(language string) (string, error) {
 	cfg := a.loadConfig(a.resourceDir())
-	defaultDir := cfg.GameDir
-	if language != "" {
-		norm := normalizeRegionCode(language)
-		if d, ok := cfg.GameDirs[norm]; ok && d != "" {
-			defaultDir = d
-		}
-	}
+	defaultDir := cfg.GameDirs[normalizeRegionCode(language)]
 	return runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
 		Title:                "选择 FFXIV 客户端目录（包含 boot 与 game 文件夹）",
 		DefaultDirectory:     defaultDir,
@@ -1811,14 +1879,12 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		cfgSaved.GameDirs = make(map[string]string)
 	}
 	normLang := normalizeRegionCode(string(lang))
-	cfgSaved.GameDir = req.GameDir
 	cfgSaved.GameDirs[normLang] = req.GameDir
 	cfgSaved.Language = string(lang)
-	if region.Of(lang) == region.Global {
-		cfgSaved.TargetLanguages = targetLangs
-	} else {
-		cfgSaved.TargetLanguages = nil
+	if cfgSaved.TargetLanguages == nil {
+		cfgSaved.TargetLanguages = LanguagesByRegion{}
 	}
+	cfgSaved.TargetLanguages[normLang] = targetLangs
 	cfgSaved.ReplaceText = req.ReplaceText
 	cfgSaved.ReplaceFont = req.ReplaceFont
 	cfgSaved.Preset = req.Preset
