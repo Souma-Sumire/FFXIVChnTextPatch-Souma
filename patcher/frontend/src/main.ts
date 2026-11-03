@@ -15,10 +15,16 @@ interface LanguageOption {
   backupUrl?: string;
 }
 
+interface RegionLanguage {
+  code: string;
+  name: string;
+}
+
 interface AppConfig {
   gameDir: string;
   gameDirs?: Record<string, string>;
   language: string;
+  targetLanguages?: string[];
   replaceText: boolean;
   replaceFont: boolean;
   rules: Record<string, boolean>;
@@ -38,6 +44,7 @@ interface BootstrapInfo {
   offline: boolean;
   rules: RuleMeta[];
   languages: LanguageOption[];
+  regionLanguages?: Record<string, RegionLanguage[]>;
   config: AppConfig;
   folders: Record<string, string>;
   tableList: TableEntry[];
@@ -70,6 +77,7 @@ interface GameInfo {
 interface PatchRequest {
   gameDir: string;
   language: string;
+  targetLanguages: string[];
   replaceText: boolean;
   replaceFont: boolean;
   rules: Record<string, boolean>;
@@ -245,11 +253,13 @@ let nextLogId = 1;
 const selected = new Set<string>();
 const expandedFolders = new Set<string>();
 let filterOnlyUnselected = false;
+let targetLangs: string[] = [];
 
 let config: AppConfig = {
   gameDir: "",
   gameDirs: {},
   language: "GLOBAL",
+  targetLanguages: [],
   replaceText: true,
   replaceFont: true,
   rules: {},
@@ -274,6 +284,10 @@ const el = {
   gamePath: byId<HTMLInputElement>("game-path"),
   gameInfo: byId("game-info"),
   language: byId<HTMLSelectElement>("language"),
+  targetLangWrap: byId("target-lang-wrap"),
+  targetLangTrigger: byId<HTMLButtonElement>("target-lang-trigger"),
+  targetLangSummary: byId("target-lang-summary"),
+  targetLangMenu: byId("target-lang-menu"),
   btnBrowse: byId<HTMLButtonElement>("btn-browse"),
   btnDetect: byId<HTMLButtonElement>("btn-detect"),
   replaceText: byId<HTMLInputElement>("replace-text"),
@@ -347,17 +361,6 @@ function parseLogKind(message: string, explicitKind?: "info" | "ok" | "warn" | "
   return "info";
 }
 
-function parseLogTag(message: string, fallbackKind: string): { tag: string; cleanMessage: string } {
-  const match = /^\[([^\]]+)\]\s*(.*)$/.exec(message);
-  if (match) {
-    return { tag: match[1], cleanMessage: match[2] };
-  }
-  let defaultTag = "信息";
-  if (fallbackKind === "error") defaultTag = "错误";
-  else if (fallbackKind === "warn") defaultTag = "警告";
-  else if (fallbackKind === "ok") defaultTag = "提示";
-  return { tag: defaultTag, cleanMessage: message };
-}
 
 function log(message: string, kind?: "info" | "ok" | "warn" | "error" | "patched"): void {
   const actualKind = parseLogKind(message, kind);
@@ -618,6 +621,7 @@ function setBusy(value: boolean, label = ""): void {
   el.btnDetect.disabled = value;
   el.preset.disabled = value;
   el.language.disabled = value;
+  el.targetLangTrigger.disabled = value;
   el.replaceText.disabled = value;
   el.replaceFont.disabled = value;
   el.rules.querySelectorAll<HTMLInputElement>("input[type='checkbox']").forEach((cb) => {
@@ -701,7 +705,7 @@ async function checkAppUpdate(interactive = false): Promise<void> {
     if (info.hasUpdate) {
       el.btnAppUpdate.classList.remove("hidden");
       el.btnAppUpdate.title = `发现新版本 v${info.latestVersion}，点击查看更新`;
-      log(`[更新] 发现新版本 v${info.latestVersion}，可点击右上角标签查看。`, "ok");
+      log(`[更新] 发现新版本 v${info.latestVersion}。`, "ok");
       if (interactive) {
         showUpdateDialog(info);
       }
@@ -816,7 +820,7 @@ async function bootstrapApp(): Promise<void> {
   }
 }
 
-function updateResourceBuildMeta(time?: string, hash?: string): void {
+function updateResourceBuildMeta(time?: string, _hash?: string): void {
   if (!el.resourceBuildTime) {
     return;
   }
@@ -854,6 +858,7 @@ async function loadBootstrap(): Promise<void> {
 
   renderRules();
   renderLanguages();
+  renderTargetLangs();
 
   const activePreset = config.preset && config.preset !== "custom" ? config.preset : "recommended";
   applyPreset(activePreset, false);
@@ -950,6 +955,109 @@ function isGlobalLanguage(langCode: string): boolean {
   }
   const upper = (langCode || "").trim().toUpperCase();
   return upper === "GLOBAL" || upper === "GL" || upper === "JA" || upper === "EN" || upper === "DE" || upper === "FR";
+}
+
+// ---------- 汉化语言多选框（仅国际服显示） ----------
+
+function currentRegionCode(): string {
+  const opt = bootstrap?.languages?.find((l) => l.code.toUpperCase() === config.language.toUpperCase());
+  if (opt) {
+    return opt.region;
+  }
+  return isGlobalLanguage(config.language) ? "global" : "";
+}
+
+function regionLanguageOptions(): RegionLanguage[] {
+  const region = currentRegionCode();
+  return bootstrap?.regionLanguages?.[region] ?? [];
+}
+
+function syncTargetLangConfig(): void {
+  config.targetLanguages = [...targetLangs];
+  void persistConfig();
+}
+
+function resolveTargetLanguages(): void {
+  const opts = regionLanguageOptions();
+  if (opts.length <= 1) {
+    targetLangs = [];
+    return;
+  }
+  const saved = (config.targetLanguages ?? []).filter((c) => opts.some((o) => o.code === c));
+  const active = targetLangs.filter((c) => opts.some((o) => o.code === c));
+  const source = active.length > 0 ? active : (saved.length > 0 ? saved : ["JA", "EN"]);
+  targetLangs = opts.map((o) => o.code).filter((c) => source.includes(c));
+}
+
+function updateTargetLangView(): void {
+  const opts = regionLanguageOptions();
+  const summary = targetLangs.length === opts.length
+    ? "全部语言"
+    : targetLangs.map((c) => opts.find((o) => o.code === c)?.name || c).join("、");
+  el.targetLangSummary.textContent = summary;
+
+  el.targetLangMenu.querySelectorAll<HTMLInputElement>("input[type='checkbox']").forEach((cb) => {
+    const code = cb.dataset.langCode;
+    if (code) {
+      cb.checked = targetLangs.includes(code);
+    }
+  });
+}
+
+function renderTargetLangs(): void {
+  const opts = regionLanguageOptions();
+  const show = opts.length > 1;
+  el.targetLangWrap.classList.toggle("hidden", !show);
+  if (!show) {
+    targetLangs = [];
+    el.targetLangMenu.replaceChildren();
+    el.targetLangMenu.classList.add("hidden");
+    el.targetLangTrigger.setAttribute("aria-expanded", "false");
+    return;
+  }
+
+  resolveTargetLanguages();
+
+  el.targetLangMenu.replaceChildren();
+  for (const opt of opts) {
+    const item = document.createElement("label");
+    item.className = "multiselect-item";
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.dataset.langCode = opt.code;
+    cb.checked = targetLangs.includes(opt.code);
+    cb.addEventListener("change", () => {
+      if (cb.checked) {
+        if (!targetLangs.includes(opt.code)) {
+          targetLangs.push(opt.code);
+        }
+      } else {
+        targetLangs = targetLangs.filter((c) => c !== opt.code);
+      }
+      if (targetLangs.length === 0) {
+        targetLangs = [opt.code];
+        cb.checked = true;
+        log("[提示] 至少需要勾选一种汉化语言。", "warn");
+      }
+      targetLangs = opts.map((o) => o.code).filter((c) => targetLangs.includes(c));
+      updateTargetLangView();
+      syncTargetLangConfig();
+    });
+
+    const text = document.createElement("span");
+    text.textContent = opt.name;
+    item.append(cb, text);
+    el.targetLangMenu.append(item);
+  }
+
+  updateTargetLangView();
+}
+
+function toggleTargetLangMenu(open?: boolean): void {
+  const shouldOpen = open !== undefined ? open : el.targetLangMenu.classList.contains("hidden");
+  el.targetLangMenu.classList.toggle("hidden", !shouldOpen);
+  el.targetLangTrigger.setAttribute("aria-expanded", String(shouldOpen));
 }
 
 function createClientStatusItem(): HTMLDivElement {
@@ -1462,6 +1570,10 @@ function wireEvents(): void {
     el.gamePath.value = rememberedDir;
     clientStatus = null;
 
+    // 切换区服后刷新汉化语言多选框（非国际服隐藏，国际服恢复已保存勾选或默认日英）
+    targetLangs = [];
+    renderTargetLangs();
+
     if (!rememberedDir) {
       try {
         const detected = await call("DetectGamePaths", newLang);
@@ -1511,6 +1623,22 @@ function wireEvents(): void {
 
   el.btnOpenTables.addEventListener("click", () => {
     switchView("tables");
+  });
+
+  el.targetLangTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (busy) {
+      return;
+    }
+    toggleTargetLangMenu();
+  });
+
+  el.targetLangMenu.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener("click", () => {
+    toggleTargetLangMenu(false);
   });
 
   el.btnBackWorkbench.addEventListener("click", () => {
@@ -1694,6 +1822,10 @@ function wireEvents(): void {
       log("[错误] 已勾选“替换文本”，但汉化范围中未选择任何数据表。", "error");
       return;
     }
+    if (config.replaceText && regionLanguageOptions().length > 1 && targetLangs.length === 0) {
+      log("[错误] 请至少勾选一种汉化语言。", "error");
+      return;
+    }
 
     isPatching = true;
     isStopping = false;
@@ -1710,6 +1842,7 @@ function wireEvents(): void {
       const req: PatchRequest = {
         gameDir: config.gameDir,
         language: config.language,
+        targetLanguages: [...targetLangs],
         replaceText: config.replaceText,
         replaceFont: config.replaceFont,
         rules: { ...config.rules },

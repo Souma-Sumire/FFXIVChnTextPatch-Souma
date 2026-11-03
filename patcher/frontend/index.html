@@ -46,8 +46,18 @@
                 <span>游戏客户端</span>
               </h2>
               <div class="section-header-action">
-                <label class="header-action-label" for="language">目标区服</label>
+                <label class="header-action-label" for="language">区服</label>
                 <select id="language" class="select header-select"></select>
+              </div>
+              <div class="section-header-action hidden" id="target-lang-wrap">
+                <label class="header-action-label" id="target-lang-label">语言</label>
+                <div class="multiselect" id="target-lang-box">
+                  <button type="button" id="target-lang-trigger" class="select header-select multiselect-trigger"
+                    aria-haspopup="true" aria-labelledby="target-lang-label">
+                    <span id="target-lang-summary">日语、英语</span>
+                  </button>
+                  <div id="target-lang-menu" class="multiselect-menu hidden"></div>
+                </div>
               </div>
             </div>
 

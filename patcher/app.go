@@ -98,6 +98,45 @@ type LanguageOption struct {
 	BackupURL string `json:"backupUrl"`
 }
 
+// RegionLanguage 是区服内可勾选参与汉化的语言选项。
+type RegionLanguage struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+// globalTargetLanguages 是国际服允许勾选的全部客户端语言（固定顺序）。
+var globalTargetLanguages = []RegionLanguage{
+	{Code: "JA", Name: "日语"},
+	{Code: "EN", Name: "英语"},
+	{Code: "DE", Name: "德语"},
+	{Code: "FR", Name: "法语"},
+}
+
+// sanitizeTargetLanguages 校验并规范化用户勾选的目标语言列表。
+// 仅国际服支持多语言选择；非国际服返回 nil（使用该区服唯一语言）。
+// 返回值按 globalTargetLanguages 的固定顺序排列。
+func sanitizeTargetLanguages(lang region.Language, langs []string) []string {
+	if region.Of(lang) != region.Global {
+		return nil
+	}
+	seen := map[string]bool{}
+	for _, l := range langs {
+		u := strings.ToUpper(strings.TrimSpace(l))
+		for _, opt := range globalTargetLanguages {
+			if u == opt.Code {
+				seen[u] = true
+			}
+		}
+	}
+	out := make([]string, 0, len(seen))
+	for _, opt := range globalTargetLanguages {
+		if seen[opt.Code] {
+			out = append(out, opt.Code)
+		}
+	}
+	return out
+}
+
 // TableMeta 是 tables.json 中的表信息。
 // TablesDoc 对应 resource/tables.json。
 type TablesDoc struct {
@@ -126,13 +165,14 @@ type TableEntry struct {
 
 // AppConfig 是持久化配置。
 type AppConfig struct {
-	GameDir     string            `json:"gameDir"`
-	GameDirs    map[string]string `json:"gameDirs,omitempty"`
-	Language    string            `json:"language"`
-	ReplaceText bool              `json:"replaceText"`
-	ReplaceFont bool              `json:"replaceFont"`
-	Rules       map[string]bool   `json:"rules"`
-	Preset      string            `json:"preset"`
+	GameDir         string            `json:"gameDir"`
+	GameDirs        map[string]string `json:"gameDirs,omitempty"`
+	Language        string            `json:"language"`
+	TargetLanguages []string          `json:"targetLanguages,omitempty"`
+	ReplaceText     bool              `json:"replaceText"`
+	ReplaceFont     bool              `json:"replaceFont"`
+	Rules           map[string]bool   `json:"rules"`
+	Preset          string            `json:"preset"`
 }
 
 // BootstrapInfo 是前端启动所需的全部静态信息。
@@ -141,8 +181,9 @@ type BootstrapInfo struct {
 	ResourceDir string              `json:"resourceDir"`
 	Offline     bool                `json:"offline"`
 	Rules       []pipeline.RuleMeta `json:"rules"`
-	Languages   []LanguageOption    `json:"languages"`
-	Config      AppConfig           `json:"config"`
+	Languages       []LanguageOption    `json:"languages"`
+	RegionLanguages map[string][]RegionLanguage `json:"regionLanguages"`
+	Config          AppConfig           `json:"config"`
 	Folders      map[string]string   `json:"folders"`
 	TableList    []TableEntry        `json:"tableList"`
 	Excluded     []string            `json:"excluded"`
@@ -175,13 +216,14 @@ type GameInfo struct {
 
 // PatchRequest 是汉化请求。
 type PatchRequest struct {
-	GameDir        string          `json:"gameDir"`
-	Language       string          `json:"language"`
-	ReplaceText    bool            `json:"replaceText"`
-	ReplaceFont    bool            `json:"replaceFont"`
-	Rules          map[string]bool `json:"rules"`
-	SelectedTables []string        `json:"selectedTables"`
-	Preset         string          `json:"preset"`
+	GameDir         string          `json:"gameDir"`
+	Language        string          `json:"language"`
+	TargetLanguages []string        `json:"targetLanguages"`
+	ReplaceText     bool            `json:"replaceText"`
+	ReplaceFont     bool            `json:"replaceFont"`
+	Rules           map[string]bool `json:"rules"`
+	SelectedTables  []string        `json:"selectedTables"`
+	Preset          string          `json:"preset"`
 }
 
 // ProgressEvent 是进度事件。
@@ -365,6 +407,12 @@ func (a *App) loadConfig(resourceDir string) AppConfig {
 	}
 	curKey := normalizeRegionCode(cfg.Language)
 	cfg.GameDir = cfg.GameDirs[curKey]
+
+	// 恢复国际服的目标语言勾选（仅保留合法项；非法/为空时由前端按默认值处理）
+	parsedCfg, langErr := region.ParseLanguage(cfg.Language)
+	if langErr == nil {
+		cfg.TargetLanguages = sanitizeTargetLanguages(parsedCfg, saved.TargetLanguages)
+	}
 
 	cfg.ReplaceText = saved.ReplaceText
 	cfg.ReplaceFont = saved.ReplaceFont
@@ -584,6 +632,9 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 			{Code: string(region.CHS), Name: "国服", Region: string(region.China)},
 			{Code: string(region.TC), Name: "繁中服", Region: string(region.Taiwan), BackupURL: tcBackupURL},
 			{Code: string(region.KO), Name: "韩服", Region: string(region.Korea)},
+		},
+		RegionLanguages: map[string][]RegionLanguage{
+			string(region.Global): globalTargetLanguages,
 		},
 		Config:       cfg,
 		Folders:      tables.Folders,
@@ -1327,6 +1378,18 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		registry.SetEnabled(id, on)
 	}
 
+	// 目标语言：非国际服固定为该区服唯一语言；国际服使用用户勾选列表，
+	// 未指定时默认处理日语与英语。
+	targetLangs := region.TargetLanguagesFor(lang)
+	if region.Of(lang) == region.Global {
+		if filtered := sanitizeTargetLanguages(lang, req.TargetLanguages); len(filtered) > 0 {
+			targetLangs = filtered
+		} else {
+			targetLangs = []string{"JA", "EN"}
+		}
+	}
+	a.emitPatchLog(fmt.Sprintf("[范围] 本次汉化目标语言：%s", strings.Join(targetLangs, "、")))
+
 	include := map[string]bool{}
 	if len(req.SelectedTables) > 0 {
 		for _, key := range req.SelectedTables {
@@ -1367,7 +1430,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			TextIndexPath:   filepath.Join(sqpackDir, "0a0000.win32.index"),
 			CSVResourceDir:  filepath.Join(resourceDir, "rawexd"),
 			SourceLanguage:  string(lang),
-			TargetLanguages: region.TargetLanguagesFor(lang),
+			TargetLanguages: targetLangs,
 			IncludeFiles:    include,
 			Rules:           registry,
 			Progress:        formatter,
@@ -1461,6 +1524,11 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	cfgSaved.GameDir = req.GameDir
 	cfgSaved.GameDirs[normLang] = req.GameDir
 	cfgSaved.Language = string(lang)
+	if region.Of(lang) == region.Global {
+		cfgSaved.TargetLanguages = targetLangs
+	} else {
+		cfgSaved.TargetLanguages = nil
+	}
 	cfgSaved.ReplaceText = req.ReplaceText
 	cfgSaved.ReplaceFont = req.ReplaceFont
 	cfgSaved.Preset = req.Preset
