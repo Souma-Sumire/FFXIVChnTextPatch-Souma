@@ -23,10 +23,9 @@ interface RegionLanguage {
 }
 
 interface AppConfig {
-  gameDir: string;
-  gameDirs?: Record<string, string>;
+  gameDirs: Record<string, string>;
   language: string;
-  targetLanguages?: string[];
+  targetLanguages: Record<string, string[]>;
   replaceText: boolean;
   replaceFont: boolean;
   rules: Record<string, boolean>;
@@ -262,10 +261,9 @@ let filterOnlyUnselected = false;
 let targetLangs: string[] = [];
 
 let config: AppConfig = {
-  gameDir: "",
   gameDirs: {},
   language: "GLOBAL",
-  targetLanguages: [],
+  targetLanguages: {},
   replaceText: true,
   replaceFont: true,
   rules: {},
@@ -625,7 +623,7 @@ async function detectGameDir(silent: boolean): Promise<void> {
       log("[探测] 已停止搜索。", "info");
       return;
     }
-    const prevDir = config.gameDir;
+    const prevDir = currentGameDir();
     if (list.length === 0) {
       if (!silent) {
         log("[探测] 未在常用路径及磁盘 3 层目录内找到匹配该区服的客户端，请点击“浏览”手动指定。", "info");
@@ -830,7 +828,7 @@ async function handleImportOfflineResource(): Promise<void> {
       log(`[离线包] ${res.message}，汉化资源已就绪。`, "ok");
       setOfflineState(false);
       await loadBootstrap();
-      if (config.gameDir) {
+      if (currentGameDir()) {
         await refreshGameInfo();
         void checkClientEnvironment();
       }
@@ -876,7 +874,7 @@ async function bootstrapApp(): Promise<void> {
     switchView("workbench");
     void checkAppUpdate(false);
 
-    if (config.gameDir) {
+    if (currentGameDir()) {
       await refreshGameInfo();
       void checkClientEnvironment();
     } else {
@@ -921,8 +919,8 @@ async function loadBootstrap(): Promise<void> {
   if (!config.gameDirs) {
     config.gameDirs = {};
   }
-  if (config.gameDir) {
-    config.gameDirs[config.language] = config.gameDir;
+  if (!config.targetLanguages) {
+    config.targetLanguages = {};
   }
   setWindowTitle();
   if (el.versionBadge) {
@@ -930,7 +928,7 @@ async function loadBootstrap(): Promise<void> {
   }
   updateResourceBuildMeta(info.resourceTime, info.resourceHash);
   setOfflineState(info.offline);
-  el.gamePath.value = config.gameDir;
+  el.gamePath.value = currentGameDir();
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
   updateTextScopeState();
@@ -1028,8 +1026,12 @@ function renderLanguages(): void {
   }
 }
 
+// currentGameDir 返回当前选中区服的客户端目录；配置只按区服保存，切换语言即切换目录。
+function currentGameDir(): string {
+  return config.gameDirs?.[config.language] ?? "";
+}
+
 function setGameDir(dir: string): void {
-  config.gameDir = dir;
   if (!config.gameDirs) {
     config.gameDirs = {};
   }
@@ -1076,14 +1078,18 @@ function regionLanguageOptions(): RegionLanguage[] {
   return bootstrap?.regionLanguages?.[region] ?? [];
 }
 
+// syncTargetLangConfig 只更新当前区服的勾选，其它区服的记录保持原样。
 function syncTargetLangConfig(): void {
-  config.targetLanguages = [...targetLangs];
+  if (!config.targetLanguages) {
+    config.targetLanguages = {};
+  }
+  config.targetLanguages[config.language] = [...targetLangs];
   void persistConfig();
 }
 
 function resolveTargetLanguages(): void {
   const opts = regionLanguageOptions();
-  const saved = (config.targetLanguages ?? []).filter((c) => opts.some((o) => o.code === c));
+  const saved = (config.targetLanguages?.[config.language] ?? []).filter((c) => opts.some((o) => o.code === c));
   const active = targetLangs.filter((c) => opts.some((o) => o.code === c));
   const source = active.length > 0 ? active : (saved.length > 0 ? saved : ["JA", "EN"]);
   targetLangs = opts.map((o) => o.code).filter((c) => source.includes(c));
@@ -1116,6 +1122,13 @@ function renderTargetLangs(): void {
 
   if (locked) {
     targetLangs = [];
+    // 单语言区服的目标语言由区服决定，仍写入配置以便直接阅读
+    if (opts.length === 1) {
+      if (!config.targetLanguages) {
+        config.targetLanguages = {};
+      }
+      config.targetLanguages[config.language] = [opts[0].code];
+    }
   } else {
     resolveTargetLanguages();
   }
@@ -1235,13 +1248,13 @@ function createClientStatusItem(): HTMLDivElement {
 }
 
 async function checkClientEnvironment(): Promise<void> {
-  if (checkingClient || !config.gameDir) {
+  if (checkingClient || !currentGameDir()) {
     return;
   }
   checkingClient = true;
   renderGameInfo();
   try {
-    clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+    clientStatus = await call("CheckClientStatus", currentGameDir(), config.language);
     let logKind: "ok" | "warn" | "error" | "patched" | "info" = "info";
     if (clientStatus.status === "original") {
       logKind = "ok";
@@ -1289,7 +1302,7 @@ function renderGameInfo(): void {
   updateRestoreButtonState();
   updateFontUiAssetState();
   el.gameInfo.replaceChildren();
-  if (!config.gameDir) {
+  if (!currentGameDir()) {
     el.gameInfo.append(createDiagItem("状态", "未选择游戏目录", "warn"));
     return;
   }
@@ -1333,13 +1346,13 @@ function renderGameInfo(): void {
 }
 
 async function refreshGameInfo(): Promise<void> {
-  if (!config.gameDir) {
+  if (!currentGameDir()) {
     gameInfo = null;
     renderGameInfo();
     return;
   }
   try {
-    gameInfo = await call("GetGameInfo", config.gameDir, config.language);
+    gameInfo = await call("GetGameInfo", currentGameDir(), config.language);
   } catch (error) {
     gameInfo = null;
     log(`读取游戏目录信息失败: ${describeError(error)}`, "error");
@@ -1620,7 +1633,7 @@ function wireEvents(): void {
     try {
       const dir = await call("SelectGameDirectory", config.language);
       if (dir) {
-        const prevDir = config.gameDir;
+        const prevDir = currentGameDir();
         setGameDir(dir);
         log(`[配置] 已选择游戏目录：${dir}`);
         await refreshGameInfo();
@@ -1658,16 +1671,8 @@ function wireEvents(): void {
       return;
     }
 
-    if (!config.gameDirs) {
-      config.gameDirs = {};
-    }
-    if (config.gameDir) {
-      config.gameDirs[oldLang] = config.gameDir;
-    }
-
     config.language = newLang;
-    const rememberedDir = config.gameDirs[newLang] || "";
-    config.gameDir = rememberedDir;
+    const rememberedDir = config.gameDirs?.[newLang] ?? "";
     el.gamePath.value = rememberedDir;
     clientStatus = null;
 
@@ -1678,8 +1683,7 @@ function wireEvents(): void {
     if (!rememberedDir) {
       try {
         const detected = await call("DetectGamePaths", newLang);
-        if (detected.length > 0 && detected[0] && !config.gameDir) {
-          config.gameDir = detected[0];
+        if (detected.length > 0 && detected[0] && !currentGameDir()) {
           config.gameDirs[newLang] = detected[0];
           el.gamePath.value = detected[0];
           log(`[探测] 自动定位到该区服客户端目录：${detected[0]}`);
@@ -1835,7 +1839,7 @@ function wireEvents(): void {
       log(`[警告] 当前游戏版本 (${gameInfo?.version}) 与本地备份版本 (${gameInfo?.backupVersion}) 不一致，游戏已更新，无法使用旧版备份还原；请使用官方启动器修复客户端。`, "warn");
       return;
     }
-    if (!config.gameDir) {
+    if (!currentGameDir()) {
       log("[错误] 请先指定游戏目录。", "error");
       return;
     }
@@ -1853,14 +1857,14 @@ function wireEvents(): void {
     try {
       toggleConsole(true);
       setBusy(true, "正在还原官方原版文件…");
-      const resp = await call("RestoreOriginal", config.gameDir, config.language);
+      const resp = await call("RestoreOriginal", currentGameDir(), config.language);
       if (resp.cancelled) {
         log("[提示] 还原已取消", "info");
         return;
       }
       // 完成结果由后端日志给出（[完成] …），此处不再重复输出。
       try {
-        clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+        clientStatus = await call("CheckClientStatus", currentGameDir(), config.language);
       } catch {
         // 忽略静默更新失败
       }
@@ -1906,7 +1910,7 @@ function wireEvents(): void {
       log("[错误] 客户端区服与当前选择的目标区服不匹配，请核对后重试。", "error");
       return;
     }
-    if (!config.gameDir) {
+    if (!currentGameDir()) {
       log("[错误] 请先指定游戏目录。", "error");
       return;
     }
@@ -1936,7 +1940,7 @@ function wireEvents(): void {
       log("[补丁] 开始汉化…");
 
       const req: PatchRequest = {
-        gameDir: config.gameDir,
+        gameDir: currentGameDir(),
         language: config.language,
         targetLanguages: [...targetLangs],
         replaceText: config.replaceText,
@@ -1956,7 +1960,7 @@ function wireEvents(): void {
       }
       el.progressBar.style.width = "100%";
       try {
-        clientStatus = await call("CheckClientStatus", config.gameDir, config.language);
+        clientStatus = await call("CheckClientStatus", currentGameDir(), config.language);
       } catch {
         // 忽略静默更新失败
       }

@@ -426,16 +426,13 @@ func TestMultiRegionConfigIsolation(t *testing.T) {
 	}
 
 	loaded := app.loadConfig(app.resourceDirOverride)
-	if loaded.GameDir != "D:\\Games\\SquareEnix\\FFXIV" {
-		t.Fatalf("旧配置迁移后当前 GameDir 应为国际服路径，实际为: %s", loaded.GameDir)
-	}
 	if loaded.GameDirs["GLOBAL"] != "D:\\Games\\SquareEnix\\FFXIV" {
 		t.Fatalf("旧配置应自动迁移入 GameDirs[GLOBAL]，实际为: %v", loaded.GameDirs)
 	}
 
 	// 2. 多区服独立保存与读取
 	loaded.Language = "CHS"
-	loaded.GameDir = "D:\\Games\\最终幻想XIV"
+	loaded.GameDirs["CHS"] = "D:\\Games\\最终幻想XIV"
 	if err := app.SaveConfig(loaded); err != nil {
 		t.Fatal(err)
 	}
@@ -447,8 +444,116 @@ func TestMultiRegionConfigIsolation(t *testing.T) {
 	if reloaded.GameDirs["CHS"] != "D:\\Games\\最终幻想XIV" {
 		t.Fatalf("GameDirs[CHS] 应记录国服路径，实际为: %s", reloaded.GameDirs["CHS"])
 	}
-	if reloaded.GameDir != "D:\\Games\\最终幻想XIV" {
-		t.Fatalf("当前选中区服应激活国服路径，实际为: %s", reloaded.GameDir)
+
+	// 3. 落盘只有分区表，不再写出冗余的顶层 gameDir
+	raw, err := os.ReadFile(cfgPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var persisted map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &persisted); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := persisted["gameDir"]; ok {
+		t.Fatalf("config.json 不应再包含顶层 gameDir 字段，实际内容: %s", raw)
+	}
+}
+
+func TestTargetLanguagesPerRegion(t *testing.T) {
+	tmpDir := t.TempDir()
+	app := NewApp()
+	app.skipProcessCheck = true
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
+	cfgPath := filepath.Join(tmpDir, "config.json")
+
+	// 1. 旧版数组形式迁移到当前区服，且不会让整份配置解析失败
+	legacy := `{"language":"GLOBAL","targetLanguages":["JA","EN","DE"],"replaceFont":false}`
+	if err := os.WriteFile(cfgPath, []byte(legacy), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg := app.loadConfig(app.resourceDirOverride)
+	if got := strings.Join(cfg.TargetLanguages["GLOBAL"], ","); got != "JA,EN,DE" {
+		t.Fatalf("旧配置应迁移为 TargetLanguages[GLOBAL]，实际为: %q", got)
+	}
+	if cfg.ReplaceFont {
+		t.Fatal("旧配置的其它字段不应因 targetLanguages 类型变化而丢失")
+	}
+
+	// 2. 切到国服并保存，国际服的勾选必须保留，国服记录自身唯一语言
+	cfg.Language = "CHS"
+	if err := app.SaveConfig(cfg); err != nil {
+		t.Fatal(err)
+	}
+	reloaded := app.loadConfig(app.resourceDirOverride)
+	if got := strings.Join(reloaded.TargetLanguages["GLOBAL"], ","); got != "JA,EN,DE" {
+		t.Fatalf("切换区服后不应丢失国际服勾选，实际为: %q", got)
+	}
+	if got := strings.Join(reloaded.TargetLanguages["CHS"], ","); got != "CHS" {
+		t.Fatalf("国服应记录唯一语言 CHS，实际为: %q", got)
+	}
+	for _, code := range []string{"TC", "KO"} {
+		if got := strings.Join(reloaded.TargetLanguages[code], ","); got != code {
+			t.Fatalf("%s 应记录唯一语言 %s，实际为: %q", code, code, got)
+		}
+	}
+
+	// 3. 改回国际服并按新勾选保存，其它区服互不影响
+	reloaded.Language = "GLOBAL"
+	reloaded.TargetLanguages["GLOBAL"] = []string{"EN", "FR"}
+	if err := app.SaveConfig(reloaded); err != nil {
+		t.Fatal(err)
+	}
+	final := app.loadConfig(app.resourceDirOverride)
+	if got := strings.Join(final.TargetLanguages["GLOBAL"], ","); got != "EN,FR" {
+		t.Fatalf("国际服勾选应更新为 EN,FR，实际为: %q", got)
+	}
+	if got := strings.Join(final.TargetLanguages["CHS"], ","); got != "CHS" {
+		t.Fatalf("保存国际服不应影响国服记录，实际为: %q", got)
+	}
+
+	// 4. 落盘为按区服的对象，而非数组
+	raw, err := os.ReadFile(cfgPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var persisted map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &persisted); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(strings.TrimSpace(string(persisted["targetLanguages"])), "{") {
+		t.Fatalf("targetLanguages 应为按区服的对象，实际: %s", persisted["targetLanguages"])
+	}
+}
+
+func TestSaveConfigCompletesRegionLanguages(t *testing.T) {
+	tmpDir := t.TempDir()
+	app := NewApp()
+	app.skipProcessCheck = true
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
+
+	cfg := defaultConfig()
+	cfg.Language = "CHS"
+	if err := app.SaveConfig(cfg); err != nil {
+		t.Fatal(err)
+	}
+
+	raw, err := os.ReadFile(filepath.Join(tmpDir, "config.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var persisted struct {
+		TargetLanguages map[string][]string `json:"targetLanguages"`
+	}
+	if err := json.Unmarshal(raw, &persisted); err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{"GLOBAL": "JA,EN", "CHS": "CHS", "TC": "TC", "KO": "KO"}
+	for code, expected := range want {
+		if got := strings.Join(persisted.TargetLanguages[code], ","); got != expected {
+			t.Fatalf("%s 的汉化语言应为 %q，实际为 %q", code, expected, got)
+		}
 	}
 }
 
