@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	goruntime "runtime"
 	"strings"
 	"testing"
 
@@ -184,6 +185,8 @@ func TestCheckAppUpdateAgainstGitHubAPI(t *testing.T) {
 				"assets": []map[string]string{
 					{"name": "updater-helper.exe", "browser_download_url": "https://example.com/helper.exe"},
 					{"name": "FFXIVChnTextPatch-SM-v2.exe", "browser_download_url": "https://example.com/patcher.exe"},
+					{"name": "updater-helper.zip", "browser_download_url": "https://example.com/helper.zip"},
+					{"name": "FFXIVChnTextPatch-SM-v2-macOS.zip", "browser_download_url": "https://example.com/patcher-macos.zip"},
 				},
 			},
 			{"tag_name": "2026.11.04.0000.0000", "assets": []map[string]string{}},
@@ -208,7 +211,11 @@ func TestCheckAppUpdateAgainstGitHubAPI(t *testing.T) {
 	if !strings.Contains(gotQuery, "per_page=100") {
 		t.Errorf("应一次拉取足够多的 Release（per_page=100），实际查询为 %q", gotQuery)
 	}
-	if info.DownloadURL != "https://example.com/patcher.exe" {
+	wantDownloadURL := "https://example.com/patcher.exe"
+	if goruntime.GOOS == "darwin" {
+		wantDownloadURL = "https://example.com/patcher-macos.zip"
+	}
+	if info.DownloadURL != wantDownloadURL {
 		t.Errorf("应优先选中主程序附件，实际为 %q", info.DownloadURL)
 	}
 }
@@ -226,11 +233,16 @@ func TestPickReleaseAssetIsDeterministic(t *testing.T) {
 	}
 
 	withProduct := map[string]verifier.ReleaseAsset{
-		"aaa.exe":                     {DownloadURL: "https://example.com/aaa.exe"},
-		"FFXIVChnTextPatch-SM-v2.exe": {DownloadURL: "https://example.com/patcher.exe"},
+		"aaa.exe":                           {DownloadURL: "https://example.com/aaa.exe"},
+		"FFXIVChnTextPatch-SM-v2.exe":       {DownloadURL: "https://example.com/patcher.exe"},
+		"aaa.zip":                           {DownloadURL: "https://example.com/aaa.zip"},
+		"FFXIVChnTextPatch-SM-v2-macOS.zip": {DownloadURL: "https://example.com/patcher-macos.zip"},
 	}
 	if got := pickReleaseAsset("windows", withProduct); got != "https://example.com/patcher.exe" {
-		t.Errorf("应优先选中产品主程序，实际为 %q", got)
+		t.Errorf("应优先选中 Windows 产品主程序，实际为 %q", got)
+	}
+	if got := pickReleaseAsset("darwin", withProduct); got != "https://example.com/patcher-macos.zip" {
+		t.Errorf("应优先选中 macOS 产品主程序，实际为 %q", got)
 	}
 	if got := pickReleaseAsset("linux", withProduct); got != "" {
 		t.Errorf("非 Windows/macOS 平台不应返回下载地址，实际为 %q", got)
@@ -241,7 +253,7 @@ func TestPickReleaseAssetIsDeterministic(t *testing.T) {
 // 直接按约定拼地址即可，不应再为附件列表多请求一次。
 func TestCheckAppUpdateBuildsAssetURLWithoutExtraRequest(t *testing.T) {
 	const tag = "patcher-v2.2.0"
-	const want = "https://github.com/o/r/releases/download/" + tag + "/FFXIVChnTextPatch-SM-v2.exe"
+	want := "https://github.com/o/r/releases/download/" + tag + "/" + releaseAssetName(goruntime.GOOS)
 	cloud := &mockUpdateCloud{
 		// 网页端解析只会给出 tag 与 Release 链接。
 		releases: []*verifier.Release{
@@ -318,7 +330,8 @@ func TestCheckAppUpdatePicksHighestPatcherTag(t *testing.T) {
 	if !strings.HasSuffix(info.ReleaseURL, "/releases/tag/patcher-v2.1.3") {
 		t.Errorf("Release 链接应指向对应 patcher tag，实际 %q", info.ReleaseURL)
 	}
-	if !strings.HasSuffix(info.DownloadURL, "/releases/download/patcher-v2.1.3/FFXIVChnTextPatch-SM-v2.exe") {
+	wantSuffix := "/releases/download/patcher-v2.1.3/" + releaseAssetName(goruntime.GOOS)
+	if !strings.HasSuffix(info.DownloadURL, wantSuffix) {
 		t.Errorf("下载地址应基于 patcher tag 拼装，实际 %q", info.DownloadURL)
 	}
 }
