@@ -176,7 +176,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		if originalText && originalFont {
 			cfg.log("[提示] 非国际服不提供云端原文件，将以当前客户端文件作为官方原版基线建立备份。")
 		} else {
-			cfg.log("[提示] 检测到客户端仍处于上次汉化状态，但本地原版备份缺失或版本不符，无法安全还原。")
+			cfg.log("[提示] 客户端仍是上次汉化后的状态，本地原版备份缺失或版本不符，无法安全还原。")
 		}
 	}
 
@@ -193,7 +193,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		case meta != nil && meta.Version == version && hasFiles(meta.Files, TextFiles):
 			textPlan.Action = ActionRestore
 		default:
-			return nil, fmt.Errorf("当前游戏文本数据已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", version)
+			return nil, fmt.Errorf("文本数据已被修改或汉化，本地和云端都没有 %s 版本的官方原版备份，无法安全汉化；请先用官方启动器修复客户端，再试", version)
 		}
 	}
 
@@ -210,7 +210,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		case meta != nil && meta.Version == version && hasFiles(meta.Files, FontFiles):
 			fontPlan.Action = ActionRestore
 		default:
-			return nil, fmt.Errorf("当前游戏字体数据已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", version)
+			return nil, fmt.Errorf("字体数据已被修改或汉化，本地和云端都没有 %s 版本的官方原版备份，无法安全汉化；请先用官方启动器修复客户端，再试", version)
 		}
 	} else if reg != region.China && originalFont && cfg.ReplaceText {
 		fontPlan.Action = ActionSkip
@@ -558,7 +558,7 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 
 		// 4. 若无法获取该文件的原版备份，且当前操作勾选了修改该文件，则报错终止
 		if (strings.HasPrefix(name, "0a0000.") && cfg.ReplaceText) || (strings.HasPrefix(name, "000000.") && cfg.ReplaceFont) {
-			return nil, fmt.Errorf("当前游戏文件 %s 已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", name, version)
+			return nil, fmt.Errorf("文件 %s 已被修改或汉化，本地和云端都没有 %s 版本的官方原版备份，无法安全汉化；请先用官方启动器修复客户端，再试", name, version)
 		}
 	}
 
@@ -800,7 +800,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 
 	// 1. 本地无备份时，非国际服无法还原
 	if reg != region.Global && (meta == nil || len(meta.Files) == 0) {
-		return nil, fmt.Errorf("%s 的本地原文件备份不存在，且未收录云端原版下载；请先使用游戏启动器修复客户端", reg)
+		return nil, fmt.Errorf("%s 没有本地原文件备份，云端也没有该版本的原文件；请先用游戏启动器修复客户端", reg)
 	}
 
 	// 2. 准备当前版本的云端 Release（国际服可用时）
@@ -821,15 +821,15 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 	// 3. 本地备份版本与当前客户端不一致时，旧版本文件不可用于还原
 	if meta != nil && meta.Version != "" && meta.Version != version {
 		if reg != region.Global {
-			return nil, fmt.Errorf("当前游戏版本 (%s) 与本地备份版本 (%s) 不一致，游戏已更新；无法使用旧版本备份还原，请使用官方启动器修复客户端", version, meta.Version)
+			return nil, fmt.Errorf("游戏已更新到 %s，本地备份还是 %s，旧备份不能用于还原；请用官方启动器修复客户端", version, meta.Version)
 		}
 		// 国际服可借当前版本的云端 Release 逐文件核对，取不到就只能拒绝：
 		// 用旧版本文件覆盖新版客户端会缺新增条目，且这份错误基线会被后续汉化沿用。
 		if release == nil {
 			if cloudErr != nil {
-				return nil, fmt.Errorf("本地备份为游戏版本 %s，与当前版本 %s 不一致，且获取版本 %s 的云端原文件失败（%v）；请联网后重试，或使用官方启动器修复客户端", meta.Version, version, version, cloudErr)
+				return nil, fmt.Errorf("本地备份是 %s，当前游戏是 %s，获取 %s 的云端原文件失败（%v）；请联网后重试，或用官方启动器修复客户端", meta.Version, version, version, cloudErr)
 			}
-			return nil, fmt.Errorf("本地备份为游戏版本 %s，与当前版本 %s 不一致，且无法获取版本 %s 的云端原文件；请联网后重试，或使用官方启动器修复客户端", meta.Version, version, version)
+			return nil, fmt.Errorf("本地备份是 %s，当前游戏是 %s，取不到 %s 的云端原文件；请联网后重试，或用官方启动器修复客户端", meta.Version, version, version)
 		}
 	}
 
@@ -940,16 +940,16 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 				return nil, fmt.Errorf("读取本地备份文件 %s 失败: %w", name, bhErr)
 			}
 			if hasMeta {
-				return nil, fmt.Errorf("本地备份文件 %s 现存哈希 (%s) 与汉化前记录 (%s) 不一致（可能已被外部修改或损坏），无法还原",
+				return nil, fmt.Errorf("本地备份 %s 的哈希 (%s) 与汉化前记录 (%s) 不一致（可能被外部修改或已损坏），无法还原",
 					name, shortHash(bh.SHA256), shortHash(want.SHA256))
 			}
-			return nil, fmt.Errorf("本地备份中未收录文件 %s，无法还原", name)
+			return nil, fmt.Errorf("本地备份里没有文件 %s，无法还原", name)
 		}
 
 		if cloudErr != nil {
-			return nil, fmt.Errorf("本地原版备份不存在，且无法从云端获取版本 %s 的原文件 %s（%v）；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, name, cloudErr)
+			return nil, fmt.Errorf("本地没有原版备份，云端也取不到 %s 版本的 %s（%v）；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, name, cloudErr)
 		}
-		return nil, fmt.Errorf("本地原版备份不存在，且无法从云端获取版本 %s 的原文件 %s；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, name)
+		return nil, fmt.Errorf("本地没有原版备份，云端也取不到 %s 版本的 %s；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, name)
 	}
 
 	// 只有全部文件都通过验证，才把备份清单标记为当前版本。

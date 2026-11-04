@@ -260,7 +260,7 @@ func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
 		if err == nil {
 			t.Fatalf("%s 本地无备份时 RestoreOriginal 应该报错，但返回成功", lang)
 		}
-		if !strings.Contains(err.Error(), "未收录云端原版下载") && !strings.Contains(err.Error(), "不存在") {
+		if !strings.Contains(err.Error(), "没有本地原文件备份") {
 			t.Fatalf("%s 错误信息不符合预期: %v", lang, err)
 		}
 	}

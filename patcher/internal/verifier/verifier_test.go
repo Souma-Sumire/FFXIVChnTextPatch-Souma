@@ -902,7 +902,7 @@ func TestRestoreNonGlobalRules(t *testing.T) {
 			if err == nil {
 				t.Fatalf("%s 无本地备份且无云端下载时 Restore 应返回错误", lang)
 			}
-			if !strings.Contains(err.Error(), "未收录云端原版下载") && !strings.Contains(err.Error(), "不存在") {
+			if !strings.Contains(err.Error(), "没有本地原文件备份") {
 				t.Fatalf("%s 错误信息不符: %v", lang, err)
 			}
 		})
@@ -1322,8 +1322,8 @@ func TestRestoreGlobalRejectsStaleBackupWithoutCloud(t *testing.T) {
 	if err == nil {
 		t.Fatal("国际服旧版本备份且无云端来源时 Restore 应报错")
 	}
-	if !strings.Contains(err.Error(), "不一致") {
-		t.Fatalf("错误信息应说明版本不一致: %v", err)
+	if !strings.Contains(err.Error(), oldVersion) || !strings.Contains(err.Error(), newVersion) {
+		t.Fatalf("错误信息应同时给出备份版本与当前版本: %v", err)
 	}
 
 	meta, readErr := readBackupMeta(filepath.Join(env.backupRoot, region.BackupFolder(region.EN)))

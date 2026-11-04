@@ -599,7 +599,7 @@ function updateRestoreButtonState(): void {
   if (!isGlobal) {
     if (!gameInfo?.backupExists) {
       el.btnRestore.disabled = true;
-      el.btnRestore.title = "本地暂无原版备份，且当前区服未收录云端原版下载（首次汉化将自动生成备份）";
+      el.btnRestore.title = "本地还没有原版备份，当前区服也没有云端原版文件（首次汉化会自动备份）";
     } else if (versionMismatch) {
       el.btnRestore.disabled = true;
       el.btnRestore.title = `游戏已更新至 v${gameInfo.version}，本地备份为旧版 v${gameInfo.backupVersion}，无法还原`;
@@ -710,8 +710,15 @@ function showConfirm(title: string, text: string, okText = "确定继续"): Prom
   return openModal(title, text, okText, "").then((result) => result === "ok");
 }
 
-// openModal 支持一个可选的次要操作按钮（如「镜像下载」），确认/次要/取消三态返回。
-function openModal(title: string, text: string, okText: string, altText: string): Promise<ModalResult> {
+// openModal 支持一个可选的次要操作按钮（如「手动下载」），确认/次要/取消三态返回。
+// hideCancel 用于两个选项已覆盖全部去向的场合，避免出现语义重复的第三个按钮。
+function openModal(
+  title: string,
+  text: string,
+  okText: string,
+  altText: string,
+  hideCancel = false,
+): Promise<ModalResult> {
   return new Promise<ModalResult>((resolve) => {
     modalResolver = resolve;
     el.modalTitle.textContent = title;
@@ -723,6 +730,7 @@ function openModal(title: string, text: string, okText: string, altText: string)
     } else {
       el.modalAlt.classList.add("hidden");
     }
+    el.modalCancel.classList.toggle("hidden", hideCancel);
     el.modal.classList.remove("hidden");
   });
 }
@@ -825,12 +833,11 @@ async function checkAppUpdate(mode: UpdateCheckMode = {}): Promise<void> {
 function showUpdateDialog(info: AppUpdateInfo): void {
   const notes = info.releaseNotes ? `\n\n更新说明：\n${info.releaseNotes}` : "";
   const canSelfUpdate = info.selfUpdateSupported === true;
-  const tail = canSelfUpdate
-    ? "\n\n将自动下载并替换当前程序，完成后自动重启。更新期间无法汉化。"
-    : "\n\n当前平台不支持自动更新，请手动下载后覆盖原程序。";
+  const tail = canSelfUpdate ? "" : "\n\n当前平台不支持自动更新，请手动下载后覆盖原程序。";
   const text = `发现新版本 v${info.latestVersion}（当前为 v${info.currentVersion}）${notes}${tail}`;
+  // 次要入口只是「不走自动更新，去浏览器里下载」，镜像与否是实现细节，不出现在界面上。
   const downloadUrl = manualDownloadUrl(info);
-  const altText = downloadUrl !== (info.downloadUrl || info.releaseUrl) ? "镜像下载" : "";
+  const altText = "手动下载";
   const okText = canSelfUpdate ? "立即更新" : "手动下载";
   void openModal("发现新版本", text, okText, canSelfUpdate ? altText : "").then((result) => {
     if (result === "ok") {
@@ -859,6 +866,7 @@ async function installAppUpdate(info: AppUpdateInfo): Promise<void> {
   try {
     setBusy(true, `正在下载新版本 v${info.latestVersion}…`);
     refreshUpdateAffordance();
+    log(`[更新] 开始下载 v${info.latestVersion}…`);
     await call("InstallAppUpdate");
   } catch (err) {
     setBusy(false);
@@ -878,18 +886,19 @@ async function installAppUpdate(info: AppUpdateInfo): Promise<void> {
   setBusy(false);
   latestUpdateInfo = null;
   refreshUpdateAffordance();
-  log(`[更新] 新版本 v${info.latestVersion} 已安装，重启后生效。`, "ok");
 
   const restart = await openModal(
     "更新已安装",
     `新版本 v${info.latestVersion} 已安装完成，重启程序后生效。`,
     "立即重启",
     "稍后重启",
+    true,
   );
   if (restart !== "ok") {
-    log("[更新] 已选择稍后重启，新版本将在下次启动程序时生效。");
+    log("[更新] 已推迟重启，下次启动时生效。");
     return;
   }
+  log("[更新] 正在重启…");
   try {
     await call("RestartApp");
   } catch (err) {
@@ -1229,7 +1238,7 @@ function renderTargetLangs(): void {
   el.targetLangMenu.classList.add("hidden");
   el.targetLangTrigger.setAttribute("aria-expanded", "false");
   if (locked && opts.length === 1) {
-    el.targetLangTrigger.title = "当前区服仅支持一种语言，无法更改";
+    el.targetLangTrigger.title = "该区服只有一种语言，无需选择";
   } else {
     el.targetLangTrigger.removeAttribute("title");
   }
@@ -1321,7 +1330,7 @@ function createClientStatusItem(): HTMLDivElement {
     btn.style.display = clientStatus.status === "unsupported" ? "none" : "";
   } else if (!isGlobal) {
     v.className = "diag-v muted";
-    v.textContent = "不支持检测";
+    v.textContent = "无法校验";
     btn.style.display = "none";
   } else {
     v.className = "diag-v";
@@ -1387,7 +1396,7 @@ function updateFontUiAssetState(): void {
     el.fontUiAssetStatus.textContent = "未开启高分辨率（汉化将自动开启）";
   } else {
     el.fontUiAssetStatus.className = "meta-tag muted";
-    el.fontUiAssetStatus.textContent = "未检测到配置";
+    el.fontUiAssetStatus.textContent = "未找到配置";
   }
 }
 
@@ -1934,11 +1943,11 @@ function wireEvents(): void {
       gameInfo.version !== gameInfo.backupVersion
     );
     if (!isGlobal && !gameInfo?.backupExists) {
-      log("[警告] 本地原版备份不存在，且当前区服未收录云端原版下载；请使用对应官方启动器修复客户端。", "warn");
+      log("[警告] 本地还没有原版备份，当前区服也没有云端原版文件；请用官方启动器修复客户端。", "warn");
       return;
     }
     if (!isGlobal && versionMismatch) {
-      log(`[警告] 当前游戏版本 (${gameInfo?.version}) 与本地备份版本 (${gameInfo?.backupVersion}) 不一致，游戏已更新，无法使用旧版备份还原；请使用官方启动器修复客户端。`, "warn");
+      log(`[警告] 游戏已更新到 ${gameInfo?.version}，本地备份还是 ${gameInfo?.backupVersion}，旧备份不能用于还原；请用官方启动器修复客户端。`, "warn");
       return;
     }
     if (!currentGameDir()) {
@@ -2202,7 +2211,7 @@ function wireRuntimeEvents(): void {
   });
 
   on("font-confirm", async (prompt: unknown) => {
-    const text = typeof prompt === "string" ? prompt : "当前游戏为官方原版字体，未选择替换字体将无法显示中文。是否确认继续？";
+    const text = typeof prompt === "string" ? prompt : "当前字体是官方原版，需要替换字体才能显示中文。是否继续？";
     const ok = await showConfirm("字体替换提示", text, "继续汉化（不替换字体）");
     try {
       await call("AnswerFontConfirm", ok);
