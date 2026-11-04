@@ -432,6 +432,18 @@ svg {
   color: #bfdbfe;
 }
 
+/* 汉化/还原进行中禁用版本入口，避免与客户端写入任务并发 */
+.app-version-btn:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.app-version-btn:disabled:hover {
+  background-color: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.28);
+  color: #93c5fa;
+}
+
 .btn-app-update {
   display: inline-flex;
   align-items: center;
@@ -1298,44 +1310,26 @@ body.is-resizing-log * {
   font-size: 13.5px;
   font-weight: 600;
   min-width: 140px;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.15s var(--ease);
 }
 
-.btn-patch:hover:not(:disabled) {
-  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
-  transform: translateY(-0.5px);
+.btn-patch .patch-icon-stop,
+.btn-patch.is-patching .patch-icon-play {
+  display: none;
 }
 
-.btn-patch:active:not(:disabled) {
-  transform: translateY(0.5px);
-  background: #1d4ed8;
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.4);
+.btn-patch.is-patching .patch-icon-stop {
+  display: block;
 }
 
 .btn-patch.is-patching {
-  background: linear-gradient(180deg, #1e40af 0%, #1d4ed8 100%);
-  border-color: rgba(96, 165, 250, 0.4);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-  cursor: pointer;
-}
-
-.btn-patch.is-patching:hover {
-  background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
-  border-color: rgba(248, 113, 113, 0.6);
-  box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
-  color: #ffffff;
+  background-color: var(--accent-press);
 }
 
 .btn-patch.is-stopping {
-  background: #7f1d1d !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
-  color: #fca5a5 !important;
-  cursor: not-allowed !important;
-  opacity: 0.8 !important;
+  background-color: #7f1d1d;
+  border-color: transparent;
+  color: #fca5a5;
+  cursor: not-allowed;
 }
 
 .action-status-text {

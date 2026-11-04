@@ -27,6 +27,9 @@ import (
 
 var appVersion = "dev"
 
+// appUpdateRepo 是主程序发布所在的仓库，资源版本核对与自更新共用。
+const appUpdateRepo = "Souma-Sumire/FFXIVChnTextPatch-Souma"
+
 const tcBackupURL = "https://github.com/NaofumiRaphtalia/FFXIVChnTextPatch-Souma/releases"
 
 // App 是 Wails 绑定到前端的应用对象。
@@ -57,6 +60,9 @@ type App struct {
 	lastProgress time.Time
 	lastDetail   string
 	lastStage    string
+
+	updateEmitMu sync.Mutex
+	updateEmitAt time.Time
 
 	resourceDirOverride string
 	cloudOverride       verifier.Cloud
@@ -105,8 +111,13 @@ func NewApp() *App {
 	}
 }
 
-// OnStartup 保存 Wails 上下文。
-func (a *App) OnStartup(ctx context.Context) { a.ctx = ctx }
+// OnStartup 保存 Wails 上下文，并清理上一次自更新留下的旧程序文件。
+func (a *App) OnStartup(ctx context.Context) {
+	a.ctx = ctx
+	if exe, err := os.Executable(); err == nil {
+		updater.CleanupStaleAppFiles(exe)
+	}
+}
 
 // OnShutdown 在退出前释放资源。
 func (a *App) OnShutdown(ctx context.Context) {}
@@ -1568,6 +1579,16 @@ func (a *App) endBusy() {
 	a.mu.Unlock()
 }
 
+// isBusy 判断当前是否有汉化、还原等占用客户端的任务在跑。
+func (a *App) isBusy() bool {
+	if a == nil {
+		return false
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.busy
+}
+
 func (a *App) shouldThrottleProgress(stage, detail string, done, total int64) bool {
 	a.progressMu.Lock()
 	defer a.progressMu.Unlock()
@@ -2040,19 +2061,126 @@ func (a *App) EnsureHighResolutionUiAsset() (gamecfg.ModifyResult, error) {
 }
 
 // CheckAppUpdate 查询云端获取汉化器主程序的最新版本并比对当前版本。
+// 汉化、还原进行中直接拒绝：此时替换程序或拉取元数据都会干扰正在写入客户端的任务。
 func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
+	current := updater.CleanAppVersion(appVersion)
+	if a.isBusy() {
+		return updater.AppUpdateInfo{CurrentVersion: current, LatestVersion: current}, errors.New("汉化进行中，已跳过检查更新")
+	}
+
 	// API 阶段与网页端回退各有一次超时，整体预算需要覆盖「直连 API 不通 → 镜像 API → 网页端」的完整链路。
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	info, err := updater.CheckAppUpdate(ctx, a.getCloud(), "Souma-Sumire/FFXIVChnTextPatch-Souma", appVersion)
+	info, err := updater.CheckAppUpdate(ctx, a.getCloud(), appUpdateRepo, appVersion)
 	if err != nil {
-		return updater.AppUpdateInfo{
-			CurrentVersion: updater.CleanAppVersion(appVersion),
-			LatestVersion:  updater.CleanAppVersion(appVersion),
-		}, err
+		return updater.AppUpdateInfo{CurrentVersion: current, LatestVersion: current}, err
 	}
 	return *info, nil
+}
+
+// InstallAppUpdate 下载最新版本、替换当前程序并重启。
+// 成功后当前进程退出，由新版本接管；下载或替换失败时保持原程序可用并返回错误。
+func (a *App) InstallAppUpdate() error {
+	if !updater.SelfUpdateSupported() {
+		return updater.ErrSelfUpdateUnsupported
+	}
+	// 借用忙碌互斥：更新期间不允许开始汉化，汉化期间也不允许进入更新。
+	if err := a.beginBusy(); err != nil {
+		return err
+	}
+	defer a.endBusy()
+
+	exe, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("无法定位当前程序: %w", err)
+	}
+
+	checkCtx, cancelCheck := context.WithTimeout(context.Background(), 15*time.Second)
+	info, err := updater.CheckAppUpdate(checkCtx, a.getCloud(), appUpdateRepo, appVersion)
+	cancelCheck()
+	if err != nil {
+		return err
+	}
+	if info == nil || !info.HasUpdate {
+		return errors.New("当前已是最新版本")
+	}
+
+	a.emitPatchLog(fmt.Sprintf("[更新] 开始下载 v%s…", info.LatestVersion))
+	a.emitAppUpdateProgress("download", fmt.Sprintf("正在下载 v%s", info.LatestVersion), 0, 0)
+
+	downloadCtx, cancelDownload := context.WithTimeout(context.Background(), 30*time.Minute)
+	defer cancelDownload()
+	// 下载会在多个加速镜像之间自动切换。节点只写日志供排查，进度文案保持用户视角，
+	// 不把镜像域名这类实现细节暴露到界面上。
+	node := ""
+	detail := fmt.Sprintf("正在下载 v%s", info.LatestVersion)
+	tmpPath, err := updater.PrepareAppUpdate(downloadCtx, a.getCloud(), info, exe, func(done, total int64) {
+		a.emitAppUpdateProgress("download", detail, done, total)
+	}, func(label string) {
+		node = label
+		a.emitPatchLog(fmt.Sprintf("[更新] 下载节点: %s", label))
+	})
+	if err != nil {
+		return fmt.Errorf("下载新版本失败: %w", err)
+	}
+	a.emitPatchLog(fmt.Sprintf("[更新] 下载完成（节点: %s）", node))
+
+	a.emitAppUpdateProgress("install", "正在安装更新", 0, 0)
+	if _, err := updater.SwapExecutable(tmpPath, exe); err != nil {
+		_ = os.Remove(tmpPath)
+		return err
+	}
+
+	a.emitPatchLog(fmt.Sprintf("[更新] 新版本 v%s 已安装，重启后生效", info.LatestVersion))
+	a.emitAppUpdateProgress("done", "更新完成，重启后生效", 0, 0)
+	return nil
+}
+
+// RestartApp 启动已安装的新版本并退出当前进程。
+// 更新完成后由用户确认再调用，避免程序在用户没准备好的时候直接关闭。
+func (a *App) RestartApp() error {
+	if a.isBusy() {
+		return errors.New("有任务正在进行，无法重启")
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("无法定位当前程序: %w", err)
+	}
+	if err := updater.LaunchExecutable(exe); err != nil {
+		// 新版本起不来时把旧程序放回原位，避免下次启动直接失败。
+		if rbErr := updater.RollbackExecutable(exe, exe+".old"); rbErr == nil {
+			return fmt.Errorf("启动新版本失败: %v，已恢复原程序", err)
+		}
+		return fmt.Errorf("启动新版本失败: %v", err)
+	}
+
+	go func() {
+		time.Sleep(700 * time.Millisecond)
+		if a.ctx != nil {
+			runtime.Quit(a.ctx)
+			return
+		}
+		os.Exit(0)
+	}()
+	return nil
+}
+
+// emitAppUpdateProgress 汇报自更新进度。下载回调触发很密，只按时间间隔转发。
+func (a *App) emitAppUpdateProgress(stage, detail string, done, total int64) {
+	if a.ctx == nil {
+		return
+	}
+	if total > 0 && done < total {
+		a.updateEmitMu.Lock()
+		if time.Since(a.updateEmitAt) < 200*time.Millisecond {
+			a.updateEmitMu.Unlock()
+			return
+		}
+		a.updateEmitAt = time.Now()
+		a.updateEmitMu.Unlock()
+	}
+	runtime.EventsEmit(a.ctx, "app-update-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
 // ImportResourceResult 是离线包导入的结果。

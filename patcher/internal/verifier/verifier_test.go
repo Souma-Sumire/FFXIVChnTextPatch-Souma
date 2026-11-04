@@ -773,6 +773,53 @@ func TestDownloadWithCandidateFallback(t *testing.T) {
 	}
 }
 
+func TestDownloadReportsNodeSwitches(t *testing.T) {
+	dst := filepath.Join(t.TempDir(), "out.bin")
+
+	var nodes []string
+	client := &GitHubClient{
+		APIBase:      "https://api.github.com",
+		AssetMirrors: []string{"https://mirror1.local/", "https://mirror2.local/"},
+		HTTP: &http.Client{
+			Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				if strings.Contains(req.URL.String(), "mirror1.local") {
+					return &http.Response{
+						StatusCode: http.StatusBadGateway,
+						Body:       io.NopCloser(strings.NewReader("bad gateway")),
+						Header:     make(http.Header),
+					}, nil
+				}
+				content := "ok"
+				return &http.Response{
+					StatusCode:    http.StatusOK,
+					Body:          io.NopCloser(strings.NewReader(content)),
+					ContentLength: int64(len(content)),
+					Header:        make(http.Header),
+				}, nil
+			}),
+		},
+	}
+	client.SetNodeHook(func(node string) { nodes = append(nodes, node) })
+
+	if err := client.Download(context.Background(), "https://github.com/foo/bar/releases/download/v1/test.bin", dst, nil); err != nil {
+		t.Fatalf("Download 失败: %v", err)
+	}
+	want := []string{"mirror1.local", "mirror2.local"}
+	if len(nodes) != len(want) || nodes[0] != want[0] || nodes[1] != want[1] {
+		t.Fatalf("节点回调应只报告实际尝试过的节点，期望 %v，实际 %v", want, nodes)
+	}
+
+	// 回调清空后不应再有通知，避免界面在非更新流程里收到无关日志。
+	nodes = nil
+	client.SetNodeHook(nil)
+	if err := client.Download(context.Background(), "https://github.com/foo/bar/releases/download/v1/test.bin", dst, nil); err != nil {
+		t.Fatalf("Download 失败: %v", err)
+	}
+	if len(nodes) != 0 {
+		t.Fatalf("清空回调后仍收到通知: %v", nodes)
+	}
+}
+
 func TestZipArchiveAutoExtractionAndAlias(t *testing.T) {
 	dir := t.TempDir()
 	rawContent := "sqpack-raw-data-sample-content"

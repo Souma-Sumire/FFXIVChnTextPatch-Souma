@@ -19,8 +19,12 @@ type AppUpdateInfo struct {
 	ReleaseNotes   string `json:"releaseNotes"`
 	ReleaseURL     string `json:"releaseUrl"`
 	DownloadURL    string `json:"downloadUrl"`
+	// DownloadSHA256 是发布方给出的附件哈希，自更新下载后据此校验完整性。
+	DownloadSHA256 string `json:"downloadSha256,omitempty"`
 	// MirrorURL 是同一附件经加速镜像包装后的地址，供无法直连 GitHub 的用户使用。
 	MirrorURL string `json:"mirrorUrl,omitempty"`
+	// SelfUpdateSupported 表示当前平台能否下载后就地替换并重启自身。
+	SelfUpdateSupported bool `json:"selfUpdateSupported"`
 }
 
 // CleanAppVersion 清理版本字符串前缀与后缀元数据（如 patcher-v2.1.1 -> 2.1.1，2.1.1-8-g28272842 -> 2.1.1）。
@@ -47,6 +51,15 @@ func IsPatcherReleaseTag(tag string) bool {
 // 附件存放在 map 里，直接遍历会因 Go 的随机顺序在不同版本间选出不同文件，
 // 因此优先匹配产品名，其次按文件名排序取第一个，保证结果稳定。
 func pickReleaseAsset(goos string, assets map[string]verifier.ReleaseAsset) string {
+	name := pickReleaseAssetName(goos, assets)
+	if name == "" {
+		return ""
+	}
+	return assets[name].DownloadURL
+}
+
+// pickReleaseAssetName 返回被选中的主程序附件名，用于同时取出发布方记录的哈希。
+func pickReleaseAssetName(goos string, assets map[string]verifier.ReleaseAsset) string {
 	names := make([]string, 0, len(assets))
 	for name := range assets {
 		names = append(names, name)
@@ -73,10 +86,10 @@ func pickReleaseAsset(goos string, assets map[string]verifier.ReleaseAsset) stri
 			return ""
 		}
 		if strings.Contains(lower, "ffxivchntextpatch") {
-			return asset.DownloadURL
+			return name
 		}
 		if fallback == "" {
-			fallback = asset.DownloadURL
+			fallback = name
 		}
 	}
 	return fallback
@@ -115,9 +128,10 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 
 	cleanCurrent := CleanAppVersion(currentVersion)
 	info := &AppUpdateInfo{
-		CurrentVersion: cleanCurrent,
-		LatestVersion:  cleanCurrent,
-		ReleaseURL:     fmt.Sprintf("https://github.com/%s/releases/latest", repo),
+		CurrentVersion:      cleanCurrent,
+		LatestVersion:       cleanCurrent,
+		ReleaseURL:          fmt.Sprintf("https://github.com/%s/releases/latest", repo),
+		SelfUpdateSupported: SelfUpdateSupported(),
 	}
 
 	releases, err := cloud.RecentReleases(ctx, repo, 100)
@@ -154,7 +168,12 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 		info.ReleaseURL = fmt.Sprintf("https://github.com/%s/releases/tag/%s", repo, latestPatcherRelease.Tag)
 	}
 
-	info.DownloadURL = pickReleaseAsset(goruntime.GOOS, latestPatcherRelease.Assets)
+	if assetName := pickReleaseAssetName(goruntime.GOOS, latestPatcherRelease.Assets); assetName != "" {
+		info.DownloadURL = latestPatcherRelease.Assets[assetName].DownloadURL
+		if digest, ok := latestPatcherRelease.AssetSHA256(assetName); ok {
+			info.DownloadSHA256 = digest
+		}
+	}
 	if info.DownloadURL == "" {
 		// 降级解析网页端列表时拿不到附件信息。patcher-v* 由 CI 按固定命名发布，
 		// 直接拼地址即可，不必为附件列表多请求一次。
