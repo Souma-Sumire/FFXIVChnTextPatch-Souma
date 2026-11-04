@@ -62,7 +62,8 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	st.GeneratedAt = remote.GeneratedAt
 
 	local, _ := ReadLocalManifest(resourceDir)
-	if modulesComplete(resourceDir, local, remote) {
+	fontOK := fontsComplete(resourceDir, local, remote)
+	if nonFontModulesComplete(resourceDir, local, remote) && fontOK {
 		return st, nil
 	}
 	// 本地资源比云端更新时保留本地，避免开发中的改动被旧快照覆盖。
@@ -107,18 +108,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 
 	// 字体独立检查与下载：仅当字体哈希不一致或缺失时才下载
 	if remote.Font.SHA256 != "" {
-		needFont := false
-		if local == nil || local.Font.SHA256 != remote.Font.SHA256 || !dirExists(filepath.Join(resourceDir, "font")) {
-			needFont = true
-		} else {
-			for key, want := range remote.Fonts {
-				if !fontMatches(resourceDir, key, want) {
-					needFont = true
-					break
-				}
-			}
-		}
-		if needFont {
+		if !fontOK {
 			progress("font", "正在下载字体包", 0, 0)
 			if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, func(done, total int64) {
 				progress("font", "正在下载字体包", done, total)
@@ -352,7 +342,7 @@ func dirExists(path string) bool {
 	return err == nil && st.IsDir()
 }
 
-func modulesComplete(resourceDir string, local, remote *Manifest) bool {
+func nonFontModulesComplete(resourceDir string, local, remote *Manifest) bool {
 	if local == nil || remote == nil {
 		return false
 	}
@@ -364,6 +354,19 @@ func modulesComplete(resourceDir string, local, remote *Manifest) bool {
 	if local.RawEXD.SHA256 != remote.RawEXD.SHA256 || !dirExists(filepath.Join(resourceDir, "rawexd")) {
 		return false
 	}
+	if local.Rules.SHA256 != remote.Rules.SHA256 {
+		return false
+	}
+	if local.Tables.SHA256 != remote.Tables.SHA256 {
+		return false
+	}
+	return true
+}
+
+func fontsComplete(resourceDir string, local, remote *Manifest) bool {
+	if local == nil || remote == nil {
+		return false
+	}
 	if local.Font.SHA256 != remote.Font.SHA256 || !dirExists(filepath.Join(resourceDir, "font")) {
 		return false
 	}
@@ -372,13 +375,11 @@ func modulesComplete(resourceDir string, local, remote *Manifest) bool {
 			return false
 		}
 	}
-	if local.Rules.SHA256 != remote.Rules.SHA256 {
-		return false
-	}
-	if local.Tables.SHA256 != remote.Tables.SHA256 {
-		return false
-	}
 	return true
+}
+
+func modulesComplete(resourceDir string, local, remote *Manifest) bool {
+	return nonFontModulesComplete(resourceDir, local, remote) && fontsComplete(resourceDir, local, remote)
 }
 
 // ReadLocalManifest 读取本地资源目录中的 manifest.json。

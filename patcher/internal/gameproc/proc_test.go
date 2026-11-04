@@ -2,7 +2,6 @@ package gameproc
 
 import (
 	"errors"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -140,16 +139,8 @@ func TestCheckGameNotRunningWithMock(t *testing.T) {
 	}()
 
 	tmpDir := t.TempDir()
-	sqpackDir := filepath.Join(tmpDir, "game", "sqpack", "ffxiv")
-	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	indexFile := filepath.Join(sqpackDir, "0a0000.win32.index")
-	if err := os.WriteFile(indexFile, []byte("fake index data"), 0o644); err != nil {
-		t.Fatal(err)
-	}
 
-	// 1. 无进程冲突且文件未锁
+	// 1. 无进程冲突
 	procLister = func() ([]ProcessInfo, error) {
 		return nil, nil
 	}

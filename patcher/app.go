@@ -21,7 +21,6 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/replace"
-	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/updater"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
@@ -1357,19 +1356,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}, nil
 	}
 
-	// 4. 校验客户端关键索引数据包结构有效性
-	if textErr == nil {
-		if _, err := sqpack.OpenIndex(filepath.Join(sqpackDir, textIndex)); err != nil {
-			return ClientStatusResult{Status: "unknown", Label: "文件损坏", Description: fmt.Sprintf("文本索引文件解析异常: %v", err)}, nil
-		}
-	}
-	if fontErr == nil {
-		if _, err := sqpack.OpenIndex(filepath.Join(sqpackDir, fontIndex)); err != nil {
-			return ClientStatusResult{Status: "unknown", Label: "文件损坏", Description: fmt.Sprintf("字体索引文件解析异常: %v", err)}, nil
-		}
-	}
-
-	// 5. 若云端 Release 存在，进行严格的权威哈希核对（核对失败直接判定为非原版，严禁穿透）
+	// 4. 若云端 Release 存在，进行严格的权威哈希核对（核对失败直接判定为非原版，严禁穿透）
 	cloud := a.getCloud()
 	repo := "Souma-Sumire/FFXIVChnTextPatch-Souma"
 	parentCtx := a.ctx
@@ -1413,16 +1400,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		}
 	}
 
-	// 6. 检查是否检测到第三方修改/汉化痕迹
-	if verifier.DetectModifiedSqPack(sqpackDir, reg) {
-		return ClientStatusResult{
-			Status:      "modified",
-			Label:       "非原版",
-			Description: "检测到客户端关键数据已被第三方汉化或外部修改",
-		}, nil
-	}
-
-	// 7. 本地尚无备份且数据包结构完好，未检测到已知修改
+	// 5. 本地尚无备份且未检测到已知修改
 	return ClientStatusResult{
 		Status:      "original",
 		Label:       "官方原版",

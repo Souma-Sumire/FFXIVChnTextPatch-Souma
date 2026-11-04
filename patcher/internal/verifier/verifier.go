@@ -168,7 +168,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		result.Plan.CloudState = CloudLocalOnly
 	}
 
-	originalText, originalFont := determineOriginal(reg, cloudState, version, meta, gameHashes, release, sqpackDir, cfg.PatchedIndexHashes)
+	originalText, originalFont := determineOriginal(reg, cloudState, version, meta, gameHashes, release, cfg.PatchedIndexHashes)
 
 	// 非国际服没有云端原文件，也没有官方哈希可供核对，只能以当前客户端为基线。
 	// 把这条能力边界明确告知用户，避免“备份的其实是汉化后的文件”这种误解。
@@ -242,23 +242,17 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	}
 
 	// 汉化前保障：确保全部 6 个官方原版文件均已在本地安全备份且哈希经过验证
-	if err := ensureAllOriginalFilesBackedUp(ctx, cfg, result, reg, cloudState, version, meta, backupDir, sqpackDir, gameHashes, release, originalText, originalFont); err != nil {
+	meta, err = ensureAllOriginalFilesBackedUp(ctx, cfg, result, reg, cloudState, version, meta, backupDir, sqpackDir, gameHashes, release, originalText, originalFont)
+	if err != nil {
 		return nil, err
 	}
-	if refreshed, err := readBackupMeta(backupDir); err == nil && refreshed != nil {
-		meta = refreshed
-	}
 
-	// 先完成文本与字体的原文件准备（备份/还原/下载），再统一写入汉化数据，
+	// 先完成文本与字体的原文件准备（还原），再统一写入汉化数据，
 	// 避免出现“备份文本 → 改文本 → 备份字体 → 改字体”的交叉流程。
-	if err := prepareTextFiles(ctx, cfg, result, reg, cloudState, version, meta, backupDir, sqpackDir, gameHashes, release); err != nil {
+	if err := prepareTextFiles(cfg, result, backupDir, sqpackDir, meta); err != nil {
 		return nil, err
 	}
-
-	if refreshed, err := readBackupMeta(backupDir); err == nil && refreshed != nil {
-		meta = refreshed
-	}
-	if err := prepareFontFiles(ctx, cfg, result, reg, cloudState, version, meta, backupDir, sqpackDir, gameHashes, release); err != nil {
+	if err := prepareFontFiles(cfg, result, backupDir, sqpackDir, meta); err != nil {
 		return nil, err
 	}
 
@@ -289,23 +283,14 @@ func readGameVersion(gameDir string) (string, error) {
 func resolveCloud(ctx context.Context, cfg Config, version string, result *Result) (*Release, CloudState) {
 	release, err := cfg.Cloud.ReleaseByTag(ctx, cfg.Repo, version)
 	if err != nil {
-		if !errors.Is(err, ErrNotFound) {
-			cfg.log("按版本查询 Release 失败: %v", err)
-			result.Plan.Notes = append(result.Plan.Notes, "无法访问云端备份，已直接基于本地文件处理")
-			return nil, CloudLocalOnly
+		if errors.Is(err, ErrNotFound) {
+			result.Plan.Notes = append(result.Plan.Notes,
+				fmt.Sprintf("云端尚未收录当前游戏版本 (%s) 的原文件备份，已直接基于本地文件汉化", version))
+			return nil, CloudPending
 		}
-		recent, err := cfg.Cloud.RecentReleases(ctx, cfg.Repo, 5)
-		if err != nil || len(recent) == 0 {
-			result.Plan.Notes = append(result.Plan.Notes, "云端暂无可用原文件备份，已直接基于本地文件处理")
-			return nil, CloudLocalOnly
-		}
-		best := recent[0]
-		for _, r := range recent[1:] {
-			if CompareVersion(r.Tag, best.Tag) > 0 {
-				best = r
-			}
-		}
-		release = best
+		cfg.log("按版本查询 Release 失败: %v", err)
+		result.Plan.Notes = append(result.Plan.Notes, "无法访问云端备份，已直接基于本地文件处理")
+		return nil, CloudLocalOnly
 	}
 
 	if CompareVersion(version, release.Tag) == 0 {
@@ -316,54 +301,10 @@ func resolveCloud(ctx context.Context, cfg Config, version string, result *Resul
 	return release, CloudPending
 }
 
-// DetectModifiedSqPack 检查客户端数据包是否存在已被修改/汉化的特征。
-func DetectModifiedSqPack(sqpackDir string, reg region.Region) bool {
-	if st, err := os.Stat(filepath.Join(sqpackDir, "000000.win32.dat0")); err == nil {
-		if st.Size() > 90*1024*1024 {
-			return true
-		}
-	}
-	if reg == region.Global {
-		idxPath := filepath.Join(sqpackDir, "0a0000.win32.index")
-		idx, err := sqpack.OpenIndex(idxPath)
-		if err != nil {
-			return false
-		}
-		entry := idx.Lookup("exd", "addon_0_en.exd")
-		if entry == nil {
-			return false
-		}
-		datNum, off := sqpack.DatNumAndAlignedOffset(entry.DataOffset)
-		datPath := filepath.Join(sqpackDir, fmt.Sprintf("0a0000.win32.dat%d", datNum))
-		dat, err := sqpack.OpenDat(datPath)
-		if err != nil {
-			return false
-		}
-		defer dat.Close()
-		content, err := dat.ExtractFile(off)
-		if err != nil {
-			return false
-		}
-		for _, r := range string(content) {
-			if r >= 0x4e00 && r <= 0x9fa5 {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 // DetectClientRegion 根据客户端文件结构特征探测所属区服。
 func DetectClientRegion(gameDir string) (region.Region, error) {
 	if gameDir == "" {
 		return "", errors.New("游戏目录为空")
-	}
-	dx11 := filepath.Join(gameDir, "game", "ffxiv_dx11.exe")
-	dx9 := filepath.Join(gameDir, "game", "ffxiv.exe")
-	if _, err := os.Stat(dx11); err != nil {
-		if _, err := os.Stat(dx9); err != nil {
-			return "", errors.New("无效的游戏目录：未找到 game/ffxiv_dx11.exe")
-		}
 	}
 
 	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
@@ -392,7 +333,7 @@ func DetectClientRegion(gameDir string) (region.Region, error) {
 }
 
 func determineOriginal(reg region.Region, cloudState CloudState, version string, meta *BackupMeta,
-	gameHashes map[string]FileHash, release *Release, sqpackDir string, patched map[string]string) (bool, bool) {
+	gameHashes map[string]FileHash, release *Release, patched map[string]string) (bool, bool) {
 	if reg == region.Global {
 		if meta != nil && meta.Version == version && hasFiles(meta.Files, TextFiles) {
 			textOriginal := allMatchMeta(gameHashes, meta, TextFiles)
@@ -401,34 +342,23 @@ func determineOriginal(reg region.Region, cloudState CloudState, version string,
 				fontOriginal = allMatchMeta(gameHashes, meta, FontFiles)
 			} else if cloudState == CloudMatched && release != nil && hasReleaseFiles(release, FontFiles) {
 				fontOriginal = allMatchRelease(gameHashes, release, FontFiles)
+			} else {
+				fontOriginal = !indexMatchesPatched(patched, gameHashes, "000000.win32.index")
 			}
 			return textOriginal, fontOriginal
 		}
 		if cloudState == CloudMatched && release != nil {
-			textOrig := true
+			textOrig := !indexMatchesPatched(patched, gameHashes, "0a0000.win32.index")
 			if hasReleaseFiles(release, TextFiles) {
 				textOrig = allMatchRelease(gameHashes, release, TextFiles)
-			} else {
-				textOrig = !DetectModifiedSqPack(sqpackDir, reg)
 			}
-			fontOrig := true
+			fontOrig := !indexMatchesPatched(patched, gameHashes, "000000.win32.index")
 			if hasReleaseFiles(release, FontFiles) {
 				fontOrig = allMatchRelease(gameHashes, release, FontFiles)
-			} else {
-				fontOrig = !DetectModifiedSqPack(sqpackDir, reg)
 			}
 			return textOrig, fontOrig
 		}
-		if DetectModifiedSqPack(sqpackDir, reg) {
-			return false, false
-		}
-		return true, true
 	}
-	// 非国际服没有官方原版哈希，也没有云端原文件：无法判断“当前是否原版”。
-	// 版本号相同不代表内容相同（区服热修、发行渠道差异），所以不能拿同版本备份当权威基线。
-	// 这里只用 patched_records 识别“这份文件是不是本工具上次汉化的产物”，
-	// 其余情况一律把当前客户端当作汉化基线，由调用方在日志中说明。
-	// 不使用 dat0 体积等启发式：阈值来自国际服原版，对自带中文字库的客户端必然误判。
 	return !indexMatchesPatched(patched, gameHashes, "0a0000.win32.index"),
 		!indexMatchesPatched(patched, gameHashes, "000000.win32.index")
 }
@@ -445,30 +375,15 @@ func hasReleaseFiles(release *Release, files []string) bool {
 	return true
 }
 
-// prepareTextFiles 完成文本原文件的准备（备份/还原/下载），不写入汉化数据。
-// 文本与字体的准备阶段全部结束后才进入写入阶段，避免备份与修改交叉。
-func prepareTextFiles(ctx context.Context, cfg Config, result *Result, reg region.Region, cloudState CloudState,
-	version string, meta *BackupMeta, backupDir, sqpackDir string, gameHashes map[string]FileHash, release *Release) error {
+// prepareTextFiles 完成文本原文件的还原，不写入汉化数据。
+// 文本与字体的准备阶段全部结束后才进入写入阶段，避免还原与修改交叉。
+func prepareTextFiles(cfg Config, result *Result, backupDir, sqpackDir string, meta *BackupMeta) error {
 	plan := result.Plan.Text
-	if !plan.Enabled || plan.Action == ActionNone {
+	if !plan.Enabled || plan.Action == ActionNone || plan.Action == ActionPatch {
 		return nil
 	}
 	cfg.event("text", "正在准备文本原文件")
 	switch plan.Action {
-	case ActionPatch:
-		if reg == region.Global && cloudState == CloudMatched {
-			if err := ensureBackupFromGame(cfg, backupDir, sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err != nil {
-				return err
-			}
-		} else if reg == region.Global {
-			if err := backupFromGameOverwrite(cfg, backupDir, sqpackDir, version, meta, AllFiles, gameHashes, "文本与字体"); err != nil {
-				return err
-			}
-		} else {
-			if err := ensureBackupFromGame(cfg, backupDir, sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err != nil {
-				return err
-			}
-		}
 	case ActionRestore:
 		cfg.log("[文本] 正在从本地备份还原官方原版文本...")
 		if err := restoreFromBackup(backupDir, sqpackDir, TextFiles, meta); err != nil {
@@ -476,12 +391,7 @@ func prepareTextFiles(ctx context.Context, cfg Config, result *Result, reg regio
 		}
 		result.RestoredText = true
 	case ActionDownload:
-		cfg.log("[文本] 正在从云端拉取官方原版文本数据包...")
-		downloaded, err := ensureBackupForRelease(ctx, cfg, result, backupDir, sqpackDir, version, meta, TextFiles, gameHashes, release)
-		if err != nil {
-			return err
-		}
-		result.Downloaded = append(result.Downloaded, downloaded...)
+		cfg.log("[文本] 正在还原已下载的官方原版文本数据包...")
 		if err := restoreFromBackup(backupDir, sqpackDir, TextFiles, meta); err != nil {
 			return fmt.Errorf("还原下载的文本原文件失败: %w", err)
 		}
@@ -490,29 +400,14 @@ func prepareTextFiles(ctx context.Context, cfg Config, result *Result, reg regio
 	return nil
 }
 
-// prepareFontFiles 完成字体原文件的准备（备份/还原/下载），不写入汉化数据。
-func prepareFontFiles(ctx context.Context, cfg Config, result *Result, reg region.Region, cloudState CloudState,
-	version string, meta *BackupMeta, backupDir, sqpackDir string, gameHashes map[string]FileHash, release *Release) error {
+// prepareFontFiles 完成字体原文件的还原，不写入汉化数据。
+func prepareFontFiles(cfg Config, result *Result, backupDir, sqpackDir string, meta *BackupMeta) error {
 	plan := result.Plan.Font
-	if !plan.Enabled {
+	if !plan.Enabled || plan.Action == ActionNone || plan.Action == ActionPatch {
 		return nil
 	}
 	cfg.event("font", "正在准备字体原文件")
 	switch plan.Action {
-	case ActionPatch:
-		if reg == region.Global && cloudState == CloudMatched {
-			if err := ensureBackupFromGame(cfg, backupDir, sqpackDir, version, meta, FontFiles, gameHashes, "字体"); err != nil {
-				return err
-			}
-		} else if reg == region.Global {
-			if err := backupFromGameOverwrite(cfg, backupDir, sqpackDir, version, meta, FontFiles, gameHashes, "字体"); err != nil {
-				return err
-			}
-		} else {
-			if err := ensureBackupFromGame(cfg, backupDir, sqpackDir, version, meta, FontFiles, gameHashes, "字体"); err != nil {
-				return err
-			}
-		}
 	case ActionRestore:
 		cfg.log("[字体] 正在从本地备份还原官方原版字体...")
 		if err := restoreFromBackup(backupDir, sqpackDir, FontFiles, meta); err != nil {
@@ -520,12 +415,7 @@ func prepareFontFiles(ctx context.Context, cfg Config, result *Result, reg regio
 		}
 		result.RestoredFont = true
 	case ActionDownload:
-		cfg.log("[字体] 正在从云端拉取官方原版字体数据包...")
-		downloaded, err := ensureBackupForRelease(ctx, cfg, result, backupDir, sqpackDir, version, meta, FontFiles, gameHashes, release)
-		if err != nil {
-			return err
-		}
-		result.Downloaded = append(result.Downloaded, downloaded...)
+		cfg.log("[字体] 正在还原已下载的官方原版字体数据包...")
 		if err := restoreFromBackup(backupDir, sqpackDir, FontFiles, meta); err != nil {
 			return fmt.Errorf("还原下载的字体原文件失败: %w", err)
 		}
@@ -570,7 +460,7 @@ func applyFontData(ctx context.Context, cfg Config, result *Result) error {
 // ensureAllOriginalFilesBackedUp 在汉化前确保全部 6 个核心文件的官方原版均已被安全备份且哈希经过验证。
 func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Result, reg region.Region,
 	cloudState CloudState, version string, meta *BackupMeta, backupDir, sqpackDir string,
-	gameHashes map[string]FileHash, release *Release, originalText, originalFont bool) error {
+	gameHashes map[string]FileHash, release *Release, originalText, originalFont bool) (*BackupMeta, error) {
 	if meta == nil || meta.Version != version {
 		diskMeta, _ := readBackupMeta(backupDir)
 		if diskMeta != nil && diskMeta.Version == version {
@@ -585,6 +475,22 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 
 	for _, name := range AllFiles {
 		backupPath := filepath.Join(backupDir, name)
+		gh, hasGameFile := gameHashes[name]
+		isOrig := false
+		if reg == region.Global && cloudState == CloudMatched && release != nil {
+			if cloudSHA, ok := release.AssetSHA256(name); ok && hasGameFile {
+				isOrig = strings.EqualFold(gh.SHA256, cloudSHA)
+			} else if strings.HasPrefix(name, "0a0000.") {
+				isOrig = originalText
+			} else {
+				isOrig = originalFont
+			}
+		} else if strings.HasPrefix(name, "0a0000.") {
+			isOrig = originalText
+		} else {
+			isOrig = originalFont
+		}
+
 		// 1. 检查本地备份是否已有当前版本的有效文件
 		bh, hashErr := HashFile(backupPath)
 		if hashErr == nil {
@@ -597,6 +503,9 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 					} else {
 						continue
 					}
+				} else if isOrig && hasGameFile && !strings.EqualFold(bh.SHA256, gh.SHA256) {
+					return nil, fmt.Errorf("本地备份中的 %s 与游戏目录内容不一致（备份 %s，游戏 %s），无法确定哪一份是官方原版；请先使用官方启动器修复客户端，或删除该备份文件后重试",
+						name, shortHash(bh.SHA256), shortHash(gh.SHA256))
 				} else {
 					continue
 				}
@@ -604,31 +513,11 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 		}
 
 		// 2. 本地无有效备份，尝试从游戏目录提取官方原版
-		gh, hasGameFile := gameHashes[name]
-		isOrig := false
-		if reg == region.Global && cloudState == CloudMatched && release != nil {
-			if cloudSHA, ok := release.AssetSHA256(name); ok && hasGameFile {
-				isOrig = strings.EqualFold(gh.SHA256, cloudSHA)
-			} else {
-				if strings.HasPrefix(name, "0a0000.") {
-					isOrig = originalText
-				} else {
-					isOrig = originalFont
-				}
-			}
-		} else {
-			if strings.HasPrefix(name, "0a0000.") {
-				isOrig = originalText
-			} else {
-				isOrig = originalFont
-			}
-		}
-
 		if hasGameFile && isOrig {
 			cfg.log("[备份] 正在将官方原版 %s 备份至本地...", name)
 			got, err := copyFile(filepath.Join(sqpackDir, name), backupPath, gh.SHA256)
 			if err != nil {
-				return fmt.Errorf("备份 %s 失败: %w", name, err)
+				return nil, fmt.Errorf("备份 %s 失败: %w", name, err)
 			}
 			meta.Files[name] = got
 			continue
@@ -647,16 +536,16 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 						cfg.OnEvent(Event{Stage: "download", Detail: name, Done: done, Total: total})
 					}
 				}); err != nil {
-					return fmt.Errorf("下载原版 %s 失败: %w", name, err)
+					return nil, fmt.Errorf("下载原版 %s 失败: %w", name, err)
 				}
 				got, err := HashFile(backupPath)
 				if err != nil {
 					_ = os.Remove(backupPath)
-					return err
+					return nil, err
 				}
 				if !strings.EqualFold(got.SHA256, cloudSHA) {
 					_ = os.Remove(backupPath)
-					return fmt.Errorf("下载原版 %s 后 SHA256 校验失败", name)
+					return nil, fmt.Errorf("下载原版 %s 后 SHA256 校验失败", name)
 				}
 				meta.Files[name] = got
 				result.Downloaded = append(result.Downloaded, name)
@@ -666,169 +555,14 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 
 		// 4. 若无法获取该文件的原版备份，且当前操作勾选了修改该文件，则报错终止
 		if (strings.HasPrefix(name, "0a0000.") && cfg.ReplaceText) || (strings.HasPrefix(name, "000000.") && cfg.ReplaceFont) {
-			return fmt.Errorf("当前游戏文件 %s 已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", name, version)
+			return nil, fmt.Errorf("当前游戏文件 %s 已被修改或汉化，且本地/云端暂无当前版本 (%s) 的官方原版备份，无法安全汉化；请使用官方启动器修复客户端后再试", name, version)
 		}
 	}
 
-	return writeBackupMeta(backupDir, meta)
-}
-
-// logBackupAction 按实际是否会复制文件区分日志：备份已全部就绪时不再声称“正在建立备份”。
-func logBackupAction(cfg Config, label string, pending []string) {
-	if len(pending) == 0 {
-		cfg.log("[%s] %s已有官方原版备份，无需重复备份", label, label)
-		return
-	}
-	cfg.log("[%s] 正在建立%s官方原版备份...", label, label)
-}
-
-// ensureBackupFromGame 在原文件已确认可信时，把游戏目录文件复制到备份目录。
-func ensureBackupFromGame(cfg Config, backupDir, sqpackDir, version string, meta *BackupMeta,
-	files []string, gameHashes map[string]FileHash, label string) error {
-	if meta == nil || meta.Version != version {
-		diskMeta, _ := readBackupMeta(backupDir)
-		if diskMeta != nil && diskMeta.Version == version {
-			meta = diskMeta
-		} else {
-			meta = &BackupMeta{Region: filepath.Base(backupDir), Version: version, Files: map[string]FileHash{}}
-		}
-	}
-	if meta.Files == nil {
-		meta.Files = map[string]FileHash{}
-	}
-	pending := make([]string, 0, len(files))
-	for _, name := range files {
-		gh, ok := gameHashes[name]
-		if !ok || gh.SHA256 == "" {
-			return fmt.Errorf("游戏目录缺少文件: %s", name)
-		}
-		if bh, err := HashFile(filepath.Join(backupDir, name)); err == nil && bh.SHA256 == gh.SHA256 {
-			meta.Files[name] = bh
-			continue
-		}
-		pending = append(pending, name)
-	}
-	logBackupAction(cfg, label, pending)
-	for _, name := range pending {
-		gh := gameHashes[name]
-		got, err := copyFile(filepath.Join(sqpackDir, name), filepath.Join(backupDir, name), gh.SHA256)
-		if err != nil {
-			return fmt.Errorf("备份 %s 失败: %w", name, err)
-		}
-		meta.Files[name] = got
-	}
-	return writeBackupMeta(backupDir, meta)
-}
-
-// backupFromGameOverwrite 在云端未就绪时，用当前本地文件覆盖备份并更新版本。
-func backupFromGameOverwrite(cfg Config, backupDir, sqpackDir, version string, meta *BackupMeta,
-	files []string, gameHashes map[string]FileHash, label string) error {
-	if meta == nil || meta.Version != version {
-		diskMeta, _ := readBackupMeta(backupDir)
-		if diskMeta != nil && diskMeta.Version == version {
-			meta = diskMeta
-		} else {
-			meta = &BackupMeta{Region: filepath.Base(backupDir), Version: version, Files: map[string]FileHash{}}
-		}
-	}
-	if meta.Files == nil {
-		meta.Files = map[string]FileHash{}
-	}
-	pending := make([]string, 0, len(files))
-	for _, name := range files {
-		gh, ok := gameHashes[name]
-		if !ok || gh.SHA256 == "" {
-			continue
-		}
-		if bh, err := HashFile(filepath.Join(backupDir, name)); err == nil && bh.SHA256 == gh.SHA256 {
-			meta.Files[name] = bh
-			continue
-		}
-		// 备份里已有当前版本的有效文件，但与游戏目录内容不同：两者必有一份不是原版。
-		// 覆盖会毁掉唯一的还原依据，因此宁可停下让用户修复客户端。
-		if prev, ok := meta.Files[name]; ok && prev.SHA256 != "" && !strings.EqualFold(prev.SHA256, gh.SHA256) {
-			if _, statErr := os.Stat(filepath.Join(backupDir, name)); statErr == nil {
-				return fmt.Errorf("本地备份中的 %s 与游戏目录内容不一致（备份 %s，游戏 %s），无法确定哪一份是官方原版；请先使用官方启动器修复客户端，或删除该备份文件后重试",
-					name, shortHash(prev.SHA256), shortHash(gh.SHA256))
-			}
-		}
-		pending = append(pending, name)
-	}
-	logBackupAction(cfg, label, pending)
-	for _, name := range pending {
-		gh := gameHashes[name]
-		got, err := copyFile(filepath.Join(sqpackDir, name), filepath.Join(backupDir, name), gh.SHA256)
-		if err != nil {
-			return fmt.Errorf("备份 %s 失败: %w", name, err)
-		}
-		meta.Files[name] = got
-	}
-	return writeBackupMeta(backupDir, meta)
-}
-
-// ensureBackupForRelease 保证备份目录中的文件与云端 Release 一致，必要时下载。
-func ensureBackupForRelease(ctx context.Context, cfg Config, result *Result, backupDir, sqpackDir, version string,
-	meta *BackupMeta, files []string, gameHashes map[string]FileHash, release *Release) ([]string, error) {
-	if release == nil {
-		return nil, fmt.Errorf("缺少云端 Release 信息")
-	}
-	if meta == nil || meta.Version != version {
-		diskMeta, _ := readBackupMeta(backupDir)
-		if diskMeta != nil && diskMeta.Version == version {
-			meta = diskMeta
-		} else {
-			meta = &BackupMeta{Region: filepath.Base(backupDir), Version: version, Files: map[string]FileHash{}}
-		}
-	}
-	if meta.Files == nil {
-		meta.Files = map[string]FileHash{}
-	}
-	var downloaded []string
-	for _, name := range files {
-		want, ok := release.AssetSHA256(name)
-		if !ok {
-			return nil, fmt.Errorf("云端 Release %s 缺少文件 %s 的 SHA256", release.Tag, name)
-		}
-		backupPath := filepath.Join(backupDir, name)
-		if bh, err := HashFile(backupPath); err == nil && bh.SHA256 == want {
-			meta.Files[name] = bh
-			continue
-		}
-		if gh, ok := gameHashes[name]; ok && gh.SHA256 == want {
-			got, err := copyFile(filepath.Join(sqpackDir, name), backupPath, want)
-			if err != nil {
-				return nil, err
-			}
-			meta.Files[name] = got
-			continue
-		}
-		asset := release.Assets[name]
-		if asset.DownloadURL == "" {
-			return nil, fmt.Errorf("云端 Release %s 缺少文件 %s 的下载地址", release.Tag, name)
-		}
-		cfg.event("download", "正在下载 "+name)
-		if err := cfg.Cloud.Download(ctx, asset.DownloadURL, backupPath, func(done, total int64) {
-			if cfg.OnEvent != nil {
-				cfg.OnEvent(Event{Stage: "download", Detail: name, Done: done, Total: total})
-			}
-		}); err != nil {
-			return nil, fmt.Errorf("下载 %s 失败: %w", name, err)
-		}
-		got, err := HashFile(backupPath)
-		if err != nil {
-			return nil, err
-		}
-		if got.SHA256 != want {
-			_ = os.Remove(backupPath)
-			return nil, fmt.Errorf("下载 %s 后 SHA256 校验失败", name)
-		}
-		meta.Files[name] = got
-		downloaded = append(downloaded, name)
-	}
 	if err := writeBackupMeta(backupDir, meta); err != nil {
 		return nil, err
 	}
-	return downloaded, nil
+	return meta, nil
 }
 
 // restoreSequence 返回还原写入顺序：先索引、后数据。

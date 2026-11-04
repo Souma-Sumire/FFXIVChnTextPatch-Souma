@@ -3,7 +3,6 @@ package gameproc
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	goruntime "runtime"
 	"strings"
@@ -223,30 +222,6 @@ func InspectConflicts(gameDir string) ([]ProcessInfo, []ProcessInfo, error) {
 	return gameConflicts, launcherConflicts, nil
 }
 
-func checkFileLocks(gameDir string) error {
-	if gameDir == "" {
-		return nil
-	}
-	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
-	testFiles := []string{
-		filepath.Join(sqpackDir, "0a0000.win32.index"),
-		filepath.Join(sqpackDir, "000000.win32.index"),
-	}
-	for _, p := range testFiles {
-		if _, err := os.Stat(p); err == nil {
-			f, err := os.OpenFile(p, os.O_RDWR, 0)
-			if err != nil {
-				if os.IsPermission(err) || strings.Contains(strings.ToLower(err.Error()), "used by another process") {
-					return errors.New("检测到游戏客户端数据文件正在被占用，请先退出游戏和启动器后再试")
-				}
-			} else {
-				_ = f.Close()
-			}
-		}
-	}
-	return nil
-}
-
 // LauncherConfirmFunc 用于向用户请求是否强制结束启动器的确认回调。
 type LauncherConfirmFunc func(launcherNames []string) (bool, error)
 
@@ -257,7 +232,7 @@ type CheckOptions struct {
 	OnLaunchersKilled func(killed []string)
 }
 
-// CheckGameNotRunningWithOpts 综合校验进程与文件句柄锁，并支持在启动器运行时交互确认并强制终止。
+// CheckGameNotRunningWithOpts 校验游戏与启动器进程，并支持在启动器运行时交互确认并强制终止。
 func CheckGameNotRunningWithOpts(opts CheckOptions) error {
 	gameConflicts, launcherConflicts, err := InspectConflicts(opts.GameDir)
 	if err != nil {
@@ -288,16 +263,10 @@ func CheckGameNotRunningWithOpts(opts CheckOptions) error {
 			if opts.OnLaunchersKilled != nil {
 				opts.OnLaunchersKilled(killed)
 			}
-
-			// 进程结束后校验文件句柄锁释放情况
-			if err := checkFileLocks(opts.GameDir); err != nil {
-				return errors.New("已尝试结束启动器，但游戏客户端数据文件仍被占用，请稍候重试")
-			}
 			return nil
 		}
 		return formatConflictError(launcherConflicts)
 	}
 
-	// 3. 校验数据文件句柄锁
-	return checkFileLocks(opts.GameDir)
+	return nil
 }
