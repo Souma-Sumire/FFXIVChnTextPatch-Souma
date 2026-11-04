@@ -156,7 +156,8 @@ func validateStagedResource(dir string) error {
 			return fmt.Errorf("校验 %s 失败: %w", c.name, err)
 		}
 		if got.SHA256 != c.want.SHA256 || (c.want.Size > 0 && got.Size != c.want.Size) {
-			return fmt.Errorf("离线包内 %s 与清单声明的哈希不一致，包可能已损坏", c.name)
+			return fmt.Errorf("离线包内 %s 与清单声明的哈希不一致（期望 SHA256=%s 大小=%d，实际 SHA256=%s 大小=%d），包可能已损坏",
+				c.name, shortHash(c.want.SHA256), c.want.Size, shortHash(got.SHA256), got.Size)
 		}
 	}
 
@@ -172,7 +173,8 @@ func validateStagedResource(dir string) error {
 			return fmt.Errorf("校验 rules.json 失败: %w", err)
 		}
 		if got.SHA256 != mf.Rules.SHA256 || (mf.Rules.Size > 0 && got.Size != mf.Rules.Size) {
-			return errors.New("离线包内 rules.json 与清单声明的哈希不一致，包可能已损坏")
+			return fmt.Errorf("离线包内 rules.json 与清单声明的哈希不一致（期望 SHA256=%s 大小=%d，实际 SHA256=%s 大小=%d），包可能已损坏",
+				shortHash(mf.Rules.SHA256), mf.Rules.Size, shortHash(got.SHA256), got.Size)
 		}
 	}
 	return nil

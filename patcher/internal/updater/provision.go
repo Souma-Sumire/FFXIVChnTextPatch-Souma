@@ -19,6 +19,7 @@ import (
 type ResourceStatus struct {
 	Updated         bool   `json:"updated"`
 	Offline         bool   `json:"offline"`
+	OfflineReason   string `json:"offlineReason,omitempty"`
 	DownloadedFiles int    `json:"downloadedFiles"`
 	DownloadedBytes int64  `json:"downloadedBytes"`
 	CSVHash         string `json:"csvHash,omitempty"`
@@ -47,6 +48,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	if err != nil {
 		if hasLocalResource(resourceDir) {
 			st.Offline = true
+			st.OfflineReason = err.Error()
 			if local, _ := ReadLocalManifest(resourceDir); local != nil {
 				st.CSVHash = local.RawEXD.SHA256
 				st.FontHash = local.Font.SHA256
@@ -161,6 +163,13 @@ func bundleOf(local *Manifest, pick func(*Manifest) BundleInfo) BundleInfo {
 	return pick(local)
 }
 
+func shortHash(h string) string {
+	if len(h) > 8 {
+		return h[:8]
+	}
+	return h
+}
+
 func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, want BundleInfo, progress func(done, total int64)) error {
 	var lastErr error
 	for _, node := range u.nodes() {
@@ -172,17 +181,18 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 		}
 		got, err := HashFile(tmp)
 		if err != nil {
-			lastErr = err
+			lastErr = fmt.Errorf("计算 %s 哈希失败: %w", tmp, err)
 			_ = os.Remove(tmp)
 			continue
 		}
 		if got.SHA256 != want.SHA256 || (want.Size > 0 && got.Size != want.Size) {
-			lastErr = fmt.Errorf("%s 校验失败", zipName)
+			lastErr = fmt.Errorf("%s 校验失败（节点 %s，期望 SHA256=%s 大小=%d，实际 SHA256=%s 大小=%d）",
+				zipName, node, shortHash(want.SHA256), want.Size, shortHash(got.SHA256), got.Size)
 			_ = os.Remove(tmp)
 			continue
 		}
 		if err := ExtractZip(tmp, resourceDir); err != nil {
-			lastErr = err
+			lastErr = fmt.Errorf("解压 %s 失败: %w", zipName, err)
 			_ = os.Remove(tmp)
 			continue
 		}
@@ -206,12 +216,13 @@ func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want Fi
 		}
 		got, err := HashFile(tmp)
 		if err != nil {
-			lastErr = err
+			lastErr = fmt.Errorf("计算 %s 哈希失败: %w", tmp, err)
 			_ = os.Remove(tmp)
 			continue
 		}
 		if got.SHA256 != want.SHA256 || (want.Size > 0 && got.Size != want.Size) {
-			lastErr = fmt.Errorf("%s 校验失败", key)
+			lastErr = fmt.Errorf("%s 校验失败（节点 %s，期望 SHA256=%s 大小=%d，实际 SHA256=%s 大小=%d）",
+				key, node, shortHash(want.SHA256), want.Size, shortHash(got.SHA256), got.Size)
 			_ = os.Remove(tmp)
 			continue
 		}
@@ -288,7 +299,7 @@ func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress fun
 			stallTimer.Reset(15 * time.Second)
 			if _, err := out.Write(buf[:n]); err != nil {
 				_ = out.Close()
-				return err
+				return fmt.Errorf("写入文件 %s 失败: %w", dst, err)
 			}
 			done += int64(n)
 			if progress != nil {
@@ -303,7 +314,7 @@ func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress fun
 			if errors.Is(streamCtx.Err(), context.Canceled) && !errors.Is(ctx.Err(), context.Canceled) {
 				return fmt.Errorf("下载节点传输停滞超时（15秒无响应）: %s", url)
 			}
-			return readErr
+			return fmt.Errorf("读取下载流中断 (%s): %w", url, readErr)
 		}
 	}
 	return out.Close()

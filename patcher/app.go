@@ -229,6 +229,7 @@ type BootstrapInfo struct {
 	Version         string                      `json:"version"`
 	ResourceDir     string                      `json:"resourceDir"`
 	Offline         bool                        `json:"offline"`
+	OfflineReason   string                      `json:"offlineReason,omitempty"`
 	Rules           []pipeline.RuleMeta         `json:"rules"`
 	Languages       []LanguageOption            `json:"languages"`
 	RegionLanguages map[string][]RegionLanguage `json:"regionLanguages"`
@@ -438,12 +439,17 @@ func loadRules(resourceDir string) ([]pipeline.Rule, error) {
 
 func (a *App) loadConfig(resourceDir string) AppConfig {
 	cfg := defaultConfig()
-	data, err := os.ReadFile(configPathFor(resourceDir))
+	cfgPath := configPathFor(resourceDir)
+	data, err := os.ReadFile(cfgPath)
 	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			a.emitPatchLog(fmt.Sprintf("[警告] 读取配置文件 %s 失败: %v，已使用默认配置", cfgPath, err))
+		}
 		return cfg
 	}
 	var saved AppConfig
 	if err := json.Unmarshal(data, &saved); err != nil {
+		a.emitPatchLog(fmt.Sprintf("[警告] 解析配置文件 %s 失败: %v，已使用默认配置", cfgPath, err))
 		return cfg
 	}
 	if saved.Language != "" {
@@ -600,7 +606,7 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 		a.resourceMu.Unlock()
 		a.emitPatchLog(fmt.Sprintf("[提示] 检查云端资源更新失败: %v，将继续使用本地已有资源。", err))
 		if a.ctx != nil {
-			runtime.EventsEmit(a.ctx, "resource-offline", true)
+			runtime.EventsEmit(a.ctx, "resource-offline", true, err.Error())
 		}
 		return
 	}
@@ -608,8 +614,15 @@ func (a *App) syncLatestResourcesInBackground(resourceDir string) {
 	a.resourceMu.Lock()
 	a.offline = status.Offline
 	a.resourceMu.Unlock()
-	if status.Offline && a.ctx != nil {
-		runtime.EventsEmit(a.ctx, "resource-offline", true)
+	if status.Offline {
+		if status.OfflineReason != "" {
+			a.emitPatchLog(fmt.Sprintf("[提示] 检查云端资源更新失败: %s，将继续使用本地已有资源。", status.OfflineReason))
+		} else {
+			a.emitPatchLog("[提示] 无法连接云端资源节点，将继续使用本地已有资源。")
+		}
+		if a.ctx != nil {
+			runtime.EventsEmit(a.ctx, "resource-offline", true, status.OfflineReason)
+		}
 	}
 
 	if status.Updated && status.DownloadedFiles > 0 {
@@ -696,6 +709,7 @@ func (a *App) GetAppVersion() string {
 func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	resourceDir := a.resourceDir()
 	var isOffline bool
+	var offlineReason string
 
 	if updater.HasLocalResource(resourceDir) {
 		// 本地已有完整基础资源：立即秒开进入主工作台，后台并发比对与同步最新资源
@@ -717,9 +731,10 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 			a.resourceMu.Unlock()
 			a.markResourceReady()
 			isOffline = true
+			offlineReason = err.Error()
 			a.emitPatchLog(fmt.Sprintf("[提示] 获取云端资源失败: %v，已进入离线模式。", err))
 			if a.ctx != nil {
-				runtime.EventsEmit(a.ctx, "resource-offline", true)
+				runtime.EventsEmit(a.ctx, "resource-offline", true, offlineReason)
 			}
 		} else {
 			a.resourceMu.Lock()
@@ -727,8 +742,14 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 			a.resourceMu.Unlock()
 			a.markResourceReady()
 			isOffline = status.Offline
-			if status.Offline && a.ctx != nil {
-				runtime.EventsEmit(a.ctx, "resource-offline", true)
+			offlineReason = status.OfflineReason
+			if status.Offline {
+				if offlineReason != "" {
+					a.emitPatchLog(fmt.Sprintf("[提示] 获取云端资源失败: %s，已进入离线模式。", offlineReason))
+				}
+				if a.ctx != nil {
+					runtime.EventsEmit(a.ctx, "resource-offline", true, offlineReason)
+				}
 			}
 		}
 	}
@@ -736,10 +757,13 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	cfg := a.loadConfig(resourceDir)
 
 	var tables TablesDoc
-	if data, err := os.ReadFile(filepath.Join(resourceDir, "tables.json")); err == nil {
+	tablesPath := filepath.Join(resourceDir, "tables.json")
+	if data, err := os.ReadFile(tablesPath); err == nil {
 		if err := json.Unmarshal(data, &tables); err != nil {
 			a.emitPatchLog(fmt.Sprintf("[警告] 解析本地 tables.json 失败: %v", err))
 		}
+	} else if !errors.Is(err, os.ErrNotExist) {
+		a.emitPatchLog(fmt.Sprintf("[警告] 读取本地 tables.json (%s) 失败: %v", tablesPath, err))
 	}
 	if tables.Folders == nil {
 		tables.Folders = map[string]string{}
@@ -759,19 +783,25 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	if !isOffline {
 		isOffline = a.offline
 	}
+	if offlineReason == "" && a.resourceErr != nil {
+		offlineReason = a.resourceErr.Error()
+	}
 	a.resourceMu.RUnlock()
 
 	var resTime, resHash string
 	if mf, err := updater.ReadLocalManifest(resourceDir); err == nil && mf != nil {
 		resTime = formatResourceTime(mf.GeneratedAt)
 		resHash = shortHash(mf.RawEXD.SHA256)
+	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+		a.emitPatchLog(fmt.Sprintf("[警告] 读取本地 manifest.json 失败: %v", err))
 	}
 
 	return BootstrapInfo{
-		Version:     updater.CleanAppVersion(appVersion),
-		ResourceDir: resourceDir,
-		Offline:     isOffline,
-		Rules:       ruleMetas,
+		Version:       updater.CleanAppVersion(appVersion),
+		ResourceDir:   resourceDir,
+		Offline:       isOffline,
+		OfflineReason: offlineReason,
+		Rules:         ruleMetas,
 		Languages: []LanguageOption{
 			{Code: string(region.GLOBAL), Name: "国际服", Region: string(region.Global)},
 			{Code: string(region.CHS), Name: "国服", Region: string(region.China)},
@@ -1304,14 +1334,18 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	var meta verifier.BackupMeta
 	hasBackupMeta := false
 	if data, err := os.ReadFile(metaPath); err == nil {
-		if json.Unmarshal(data, &meta) == nil && meta.Files != nil && len(meta.Files) > 0 {
+		if unmarshalErr := json.Unmarshal(data, &meta); unmarshalErr != nil {
+			a.emitPatchLog(fmt.Sprintf("[警告] 解析本地备份清单 (%s) 失败: %v", metaPath, unmarshalErr))
+		} else if len(meta.Files) > 0 {
 			hasBackupMeta = true
 		}
+	} else if !errors.Is(err, os.ErrNotExist) {
+		a.emitPatchLog(fmt.Sprintf("[警告] 读取本地备份清单 (%s) 失败: %v", metaPath, err))
 	}
 
 	versionData, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver"))
 	if err != nil {
-		return ClientStatusResult{Status: "unknown", Label: "版本未知", Description: "无法读取 ffxivgame.ver"}, nil
+		return ClientStatusResult{Status: "unknown", Label: "版本未知", Description: fmt.Sprintf("无法读取 ffxivgame.ver：%v", err)}, nil
 	}
 	version := strings.TrimSpace(string(versionData))
 
@@ -1322,7 +1356,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	fontHash, fontErr := verifier.HashFile(filepath.Join(sqpackDir, fontIndex))
 	textHash, textErr := verifier.HashFile(filepath.Join(sqpackDir, textIndex))
 	if fontErr != nil && textErr != nil {
-		return ClientStatusResult{Status: "unknown", Label: "文件缺失", Description: "无法读取客户端关键索引数据包"}, nil
+		return ClientStatusResult{Status: "unknown", Label: "文件缺失", Description: fmt.Sprintf("无法读取客户端关键索引数据包（文本索引: %v；字体索引: %v）", textErr, fontErr)}, nil
 	}
 
 	// 如果有本地备份，核对本地备份
@@ -1366,8 +1400,10 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	ctx, cancel := context.WithTimeout(parentCtx, 4*time.Second)
 	defer cancel()
 
+	var cloudErr error
 	if reg == region.Global {
-		if r, err := cloud.ReleaseByTag(ctx, repo, version); err == nil && r != nil {
+		r, err := cloud.ReleaseByTag(ctx, repo, version)
+		if err == nil && r != nil {
 			matchedCloud := true
 			checkedCloudCount := 0
 			if wantFont, ok := r.AssetSHA256(fontIndex); ok && fontErr == nil {
@@ -1397,10 +1433,19 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 					Description: fmt.Sprintf("与云端官方原版 (%s) 哈希不符，当前文件已被外部修改", version),
 				}, nil
 			}
+		} else if err != nil && !errors.Is(err, verifier.ErrNotFound) {
+			cloudErr = err
 		}
 	}
 
 	// 5. 本地尚无备份且未检测到已知修改
+	if cloudErr != nil {
+		return ClientStatusResult{
+			Status:      "original",
+			Label:       "官方原版",
+			Description: fmt.Sprintf("客户端关键数据包完整，未检测到已知修改（%s，云端校验未完成: %v；首次汉化将自动建立原版备份）", version, cloudErr),
+		}, nil
+	}
 	return ClientStatusResult{
 		Status:      "original",
 		Label:       "官方原版",
@@ -1827,11 +1872,15 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 				if req.ReplaceText {
 					if h, err := verifier.HashFile(filepath.Join(sqpackDir, "0a0000.win32.index")); err == nil {
 						recordFiles["0a0000.win32.index"] = h
+					} else {
+						a.emitPatchLog(fmt.Sprintf("[警告] 计算汉化后文本索引哈希失败: %v", err))
 					}
 				}
 				if req.ReplaceFont {
 					if h, err := verifier.HashFile(filepath.Join(sqpackDir, "000000.win32.index")); err == nil {
 						recordFiles["000000.win32.index"] = h
+					} else {
+						a.emitPatchLog(fmt.Sprintf("[警告] 计算汉化后字体索引哈希失败: %v", err))
 					}
 				}
 				if len(recordFiles) > 0 {
@@ -1848,6 +1897,8 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 					}
 				}
 			}
+		} else {
+			a.emitPatchLog(fmt.Sprintf("[警告] 读取版本文件 (%s) 记录汉化状态失败: %v", verPath, err))
 		}
 	}
 
@@ -1872,7 +1923,9 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	for id, on := range req.Rules {
 		cfgSaved.Rules[id] = on
 	}
-	_ = a.SaveConfig(cfgSaved)
+	if err := a.SaveConfig(cfgSaved); err != nil {
+		a.emitPatchLog(fmt.Sprintf("[警告] 保存本地配置失败: %v", err))
+	}
 
 	return resp, nil
 }

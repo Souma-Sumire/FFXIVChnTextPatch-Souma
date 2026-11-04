@@ -224,7 +224,7 @@ func (u *Updater) get(ctx context.Context, url string) ([]byte, error) {
 func ExtractZip(zipPath, destDir string) error {
 	reader, err := zip.OpenReader(zipPath)
 	if err != nil {
-		return fmt.Errorf("打开快照包失败: %w", err)
+		return fmt.Errorf("打开快照包 %s 失败: %w", zipPath, err)
 	}
 	defer reader.Close()
 	cleanDest := filepath.Clean(destDir)
@@ -237,37 +237,37 @@ func ExtractZip(zipPath, destDir string) error {
 		}
 		if f.FileInfo().IsDir() {
 			if err := os.MkdirAll(target, 0o755); err != nil {
-				return err
+				return fmt.Errorf("创建目录 %s 失败: %w", target, err)
 			}
 			continue
 		}
 		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
-			return err
+			return fmt.Errorf("创建父目录 %s 失败: %w", filepath.Dir(target), err)
 		}
 		src, err := f.Open()
 		if err != nil {
-			return err
+			return fmt.Errorf("打开压缩条目 %s 失败: %w", f.Name, err)
 		}
 		tmp := target + ".part"
 		dst, err := os.Create(tmp)
 		if err != nil {
 			_ = src.Close()
-			return err
+			return fmt.Errorf("创建临时文件 %s 失败: %w", tmp, err)
 		}
 		if _, err := io.Copy(dst, src); err != nil {
 			_ = src.Close()
 			_ = dst.Close()
 			_ = os.Remove(tmp)
-			return err
+			return fmt.Errorf("解压写入 %s 失败: %w", target, err)
 		}
 		_ = src.Close()
 		if err := dst.Close(); err != nil {
 			_ = os.Remove(tmp)
-			return err
+			return fmt.Errorf("关闭临时文件 %s 失败: %w", tmp, err)
 		}
 		if err := os.Rename(tmp, target); err != nil {
 			_ = os.Remove(tmp)
-			return err
+			return fmt.Errorf("覆盖目标文件 %s 失败: %w", target, err)
 		}
 	}
 	return nil

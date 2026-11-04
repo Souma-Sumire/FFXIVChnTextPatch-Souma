@@ -43,6 +43,7 @@ interface BootstrapInfo {
   version: string;
   resourceDir: string;
   offline: boolean;
+  offlineReason?: string;
   rules: RuleMeta[];
   languages: LanguageOption[];
   regionLanguages?: Record<string, RegionLanguage[]>;
@@ -807,11 +808,13 @@ function showUpdateDialog(info: AppUpdateInfo): void {
   });
 }
 
-function setOfflineState(offline: boolean): void {
+function setOfflineState(offline: boolean, reason?: string): void {
   el.btnImportOffline.classList.toggle("hidden", !offline);
   el.provisionOfflineWrap?.classList.toggle("hidden", !offline);
   if (offline && !el.viewProvisioning.classList.contains("hidden")) {
-    el.provisionDetail.textContent = "连接云端或下载资源失败，已进入离线状态";
+    el.provisionDetail.textContent = reason
+      ? `连接云端或下载资源失败：${reason}`
+      : "连接云端或下载资源失败，已进入离线状态";
     el.provisionMeta.textContent = "可点击下方按钮选择本地离线资源包 (*.zip) 导入";
   }
 }
@@ -893,7 +896,7 @@ async function bootstrapApp(): Promise<void> {
       // 容错防御
     }
     log(`初始化失败: ${describeError(error)}`, "error");
-    setOfflineState(true);
+    setOfflineState(true, describeError(error));
     switchView("workbench");
   }
 }
@@ -927,7 +930,7 @@ async function loadBootstrap(): Promise<void> {
     el.versionBadge.textContent = `v${info.version}`;
   }
   updateResourceBuildMeta(info.resourceTime, info.resourceHash);
-  setOfflineState(info.offline);
+  setOfflineState(info.offline, info.offlineReason);
   el.gamePath.value = currentGameDir();
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
@@ -1265,7 +1268,8 @@ async function checkClientEnvironment(): Promise<void> {
     } else if (clientStatus.label === "文件损坏" || clientStatus.label === "文件缺失") {
       logKind = "error";
     }
-    log(`[状态] 客户端：${clientStatus.label}`, logKind);
+    const detail = clientStatus.description ? `（${clientStatus.description}）` : "";
+    log(`[状态] 客户端：${clientStatus.label}${detail}`, logKind);
   } catch (err) {
     log(`[错误] 客户端校验失败: ${describeError(err)}`, "error");
   } finally {
@@ -1688,8 +1692,8 @@ function wireEvents(): void {
           el.gamePath.value = detected[0];
           log(`[探测] 自动定位到该区服客户端目录：${detected[0]}`);
         }
-      } catch {
-        // 忽略自动探测异常
+      } catch (err) {
+        log(`[警告] 自动探测游戏目录失败: ${describeError(err)}`, "warn");
       }
     }
 
@@ -1983,9 +1987,10 @@ function wireRuntimeEvents(): void {
     return;
   }
 
-  on("resource-offline", (offline: unknown) => {
+  on("resource-offline", (offline: unknown, reason?: unknown) => {
     const isOff = typeof offline === "boolean" ? offline : true;
-    setOfflineState(isOff);
+    const reasonStr = typeof reason === "string" && reason ? reason : undefined;
+    setOfflineState(isOff, reasonStr);
   });
 
   let pendingResourceProgress: PatchProgressEvent | null = null;

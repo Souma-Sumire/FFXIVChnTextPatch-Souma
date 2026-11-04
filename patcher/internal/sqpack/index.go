@@ -52,7 +52,7 @@ func OpenIndex(path string) (*Index, error) {
 	}
 	headerLength := int32(binary.LittleEndian.Uint32(data[0x0C:]))
 	if headerLength <= 0 || int(headerLength)+24 > len(data) {
-		return nil, fmt.Errorf("索引头长度非法: %d", headerLength)
+		return nil, fmt.Errorf("索引头长度非法 (%d): %s", headerLength, path)
 	}
 	if typ := int32(binary.LittleEndian.Uint32(data[0x14:])); typ != 2 {
 		return nil, fmt.Errorf("不是索引文件 (type=%d): %s", typ, path)
@@ -60,7 +60,7 @@ func OpenIndex(path string) (*Index, error) {
 
 	segments, err := resolveSegments(data, int(headerLength))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("解析索引段失败 (%s): %w", path, err)
 	}
 
 	idx := &Index{
@@ -84,7 +84,7 @@ func OpenIndex(path string) (*Index, error) {
 			numFiles := folderSize / 16
 			folder := &Folder{ID: id, NumFiles: numFiles, FileIndexOffset: fileIndexOffset}
 			if err := folder.readFiles(data, false); err != nil {
-				return nil, err
+				return nil, fmt.Errorf("读取索引文件表失败 (%s): %w", path, err)
 			}
 			idx.Folders[id] = folder
 		}
@@ -96,7 +96,7 @@ func OpenIndex(path string) (*Index, error) {
 		numFiles := multiplier * segments[0].Size / 16
 		folder := &Folder{ID: 0, NumFiles: numFiles, FileIndexOffset: segments[0].Offset}
 		if err := folder.readFiles(data, idx.IsIndex2); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("读取索引文件表失败 (%s): %w", path, err)
 		}
 		idx.Folders[0] = folder
 	}
