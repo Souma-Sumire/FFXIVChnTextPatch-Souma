@@ -1320,13 +1320,13 @@ func TestDetermineOriginalNonGlobal(t *testing.T) {
 	}
 	empty := map[string]FileHash{}
 
-	textOrig, fontOrig := determineOriginal(region.China, CloudLocalOnly, "v1", nil, empty, nil, "", nil)
+	textOrig, fontOrig := determineOriginal(region.China, CloudLocalOnly, "v1", nil, empty, nil, nil)
 	if !textOrig || !fontOrig {
 		t.Fatalf("无备份且无记录时应视为原版，got text=%v font=%v", textOrig, fontOrig)
 	}
 
 	patched := map[string]string{"0a0000.win32.index": "text-index-sha"}
-	textOrig, fontOrig = determineOriginal(region.China, CloudLocalOnly, "v1", nil, hashes, nil, "", patched)
+	textOrig, fontOrig = determineOriginal(region.China, CloudLocalOnly, "v1", nil, hashes, nil, patched)
 	if textOrig {
 		t.Fatal("记录命中文本索引时应判定为已汉化")
 	}
@@ -1400,20 +1400,20 @@ func TestCopyFileVerifiesHash(t *testing.T) {
 func TestBackupOverwriteGuardRejectsConflict(t *testing.T) {
 	version := "2026.10.16.0000.0000"
 
-	env := newTestEnv(t, version, allContents("game-content", TextFiles))
-	env.seedBackup(t, region.CHS, version, allContents("backup-content", TextFiles))
+	env := newTestEnv(t, version, allContents("game-content", AllFiles))
+	env.seedBackup(t, region.CHS, version, allContents("backup-content", AllFiles))
 	srcDir := filepath.Join(env.backupRoot, region.BackupFolder(region.CHS))
 
 	meta, err := readBackupMeta(srcDir)
 	if err != nil || meta == nil {
 		t.Fatalf("读取备份清单失败: %v", err)
 	}
-	gameHashes, err := hashAll(env.sqpackDir, TextFiles)
+	gameHashes, err := hashAll(env.sqpackDir, AllFiles)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// 用备份目录作为目标，制造“已有当前版本备份但内容不同”的冲突
-	if err := backupFromGameOverwrite(Config{}, srcDir, env.sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err == nil {
+	if _, err := ensureAllOriginalFilesBackedUp(context.Background(), Config{ReplaceText: true}, &Result{}, region.China, CloudLocalOnly, version, meta, srcDir, env.sqpackDir, gameHashes, nil, true, true); err == nil {
 		t.Fatal("备份与游戏目录内容冲突时应拒绝覆盖")
 	}
 }
@@ -1421,7 +1421,7 @@ func TestBackupOverwriteGuardRejectsConflict(t *testing.T) {
 // TestBackupLogReflectsActualWork 验证日志与实际动作一致：备份已就绪时不再声称“正在建立备份”。
 func TestBackupLogReflectsActualWork(t *testing.T) {
 	version := "2026.10.16.0000.0000"
-	contents := allContents("game-content", TextFiles)
+	contents := allContents("game-content", AllFiles)
 	env := newTestEnv(t, version, contents)
 	env.seedBackup(t, region.CHS, version, contents)
 	backupDir := filepath.Join(env.backupRoot, region.BackupFolder(region.CHS))
@@ -1430,31 +1430,36 @@ func TestBackupLogReflectsActualWork(t *testing.T) {
 	if err != nil || meta == nil {
 		t.Fatalf("读取备份清单失败: %v", err)
 	}
-	gameHashes, err := hashAll(env.sqpackDir, TextFiles)
+	gameHashes, err := hashAll(env.sqpackDir, AllFiles)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	var logs []string
-	cfg := Config{Log: func(format string, args ...any) {
-		logs = append(logs, fmt.Sprintf(format, args...))
-	}}
+	cfg := Config{
+		ReplaceText: true,
+		Log: func(format string, args ...any) {
+			logs = append(logs, fmt.Sprintf(format, args...))
+		},
+	}
 
-	if err := ensureBackupFromGame(cfg, backupDir, env.sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err != nil {
+	if _, err := ensureAllOriginalFilesBackedUp(context.Background(), cfg, &Result{}, region.China, CloudLocalOnly, version, meta, backupDir, env.sqpackDir, gameHashes, nil, true, true); err != nil {
 		t.Fatalf("备份已就绪时不应失败: %v", err)
 	}
-	if len(logs) != 1 || !strings.Contains(logs[0], "无需重复备份") {
-		t.Fatalf("备份已就绪时不应提示建立备份，got=%v", logs)
+	for _, entry := range logs {
+		if strings.Contains(entry, "正在将官方原版") {
+			t.Fatalf("备份已就绪时不应提示建立备份，got=%v", logs)
+		}
 	}
 
 	logs = nil
 	if err := os.RemoveAll(backupDir); err != nil {
 		t.Fatal(err)
 	}
-	if err := ensureBackupFromGame(cfg, backupDir, env.sqpackDir, version, meta, TextFiles, gameHashes, "文本"); err != nil {
+	if _, err := ensureAllOriginalFilesBackedUp(context.Background(), cfg, &Result{}, region.China, CloudLocalOnly, version, nil, backupDir, env.sqpackDir, gameHashes, nil, true, true); err != nil {
 		t.Fatalf("备份缺失时应重建: %v", err)
 	}
-	if len(logs) != 1 || !strings.Contains(logs[0], "正在建立文本官方原版备份") {
+	if len(logs) == 0 || !strings.Contains(logs[0], "正在将官方原版") {
 		t.Fatalf("备份缺失时应提示建立备份，got=%v", logs)
 	}
 }

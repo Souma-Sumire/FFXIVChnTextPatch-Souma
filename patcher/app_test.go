@@ -357,7 +357,7 @@ func TestCheckClientStatusNonGlobalPatched(t *testing.T) {
 		t.Fatal(err)
 	}
 	textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
-	if err := createMinimalIndexFile(textIndexPath); err != nil {
+	if err := os.WriteFile(textIndexPath, sqpack.CreateMockIndex("exd", "addon_0_tc.exd"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	textHash, _ := verifier.HashFile(textIndexPath)
@@ -827,7 +827,7 @@ func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
 	}
 	textIndex := filepath.Join(sqpackDir, "0a0000.win32.index")
 	fontIndex := filepath.Join(sqpackDir, "000000.win32.index")
-	if err := createMinimalIndexFile(textIndex); err != nil {
+	if err := os.WriteFile(textIndex, sqpack.CreateMockIndex("exd", "addon_0_chs.exd"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if err := createMinimalIndexFile(fontIndex); err != nil {
