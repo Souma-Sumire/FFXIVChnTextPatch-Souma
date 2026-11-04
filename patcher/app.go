@@ -1324,7 +1324,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 				return ClientStatusResult{
 					Status:      "patched",
 					Label:       "已汉化",
-					Description: fmt.Sprintf("已成功应用本汉化器补丁 (%s)", rec.Version),
+					Description: rec.Version,
 				}, nil
 			}
 		}
@@ -1335,8 +1335,8 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	if reg != region.Global {
 		return ClientStatusResult{
 			Status:      "unsupported",
-			Label:       "不支持检测",
-			Description: "非国际服没有官方原版哈希，无法判断当前文件是否原版",
+			Label:       "无法校验",
+			Description: "该区服缺少官方校验数据",
 		}, nil
 	}
 
@@ -1390,14 +1390,14 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 			return ClientStatusResult{
 				Status:      "original",
 				Label:       "官方原版",
-				Description: fmt.Sprintf("与官方原版备份 (%s) 哈希完全一致", version),
+				Description: version,
 			}, nil
 		}
 		// 本地有当前版本的备份但哈希不匹配，且非本工具汉化产物 -> 被外部修改
 		return ClientStatusResult{
 			Status:      "modified",
 			Label:       "非原版",
-			Description: fmt.Sprintf("与本地原版备份 (%s) 哈希不符，当前文件已被外部修改", version),
+			Description: "文件已被外部修改",
 		}, nil
 	}
 
@@ -1411,7 +1411,6 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	ctx, cancel := context.WithTimeout(parentCtx, 4*time.Second)
 	defer cancel()
 
-	var cloudErr error
 	if reg == region.Global {
 		r, err := cloud.ReleaseByTag(ctx, repo, version)
 		if err == nil && r != nil {
@@ -1434,33 +1433,26 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 					return ClientStatusResult{
 						Status:      "original",
 						Label:       "官方原版",
-						Description: fmt.Sprintf("与云端官方原版 (%s) 哈希完全一致", version),
+						Description: version,
 					}, nil
 				}
 				// 官方 Release 存在且哈希不匹配 -> 绝对是非原版！绝不能漏判为原版！
 				return ClientStatusResult{
 					Status:      "modified",
 					Label:       "非原版",
-					Description: fmt.Sprintf("与云端官方原版 (%s) 哈希不符，当前文件已被外部修改", version),
+					Description: "文件已被外部修改",
 				}, nil
 			}
 		} else if err != nil && !errors.Is(err, verifier.ErrNotFound) {
-			cloudErr = err
+			a.emitPatchLog(fmt.Sprintf("[警告] 获取官方校验数据失败，本次跳过权威校验: %v", err))
 		}
 	}
 
-	// 5. 本地尚无备份且未检测到已知修改
-	if cloudErr != nil {
-		return ClientStatusResult{
-			Status:      "original",
-			Label:       "官方原版",
-			Description: fmt.Sprintf("客户端关键数据包完整，未检测到已知修改（%s，云端校验未完成: %v；首次汉化将自动建立原版备份）", version, cloudErr),
-		}, nil
-	}
+	// 5. 本地尚无备份且未发现改动
 	return ClientStatusResult{
 		Status:      "original",
 		Label:       "官方原版",
-		Description: fmt.Sprintf("客户端关键数据包完整，未检测到已知修改（%s，首次汉化将自动建立原版备份）", version),
+		Description: version,
 	}, nil
 }
 
@@ -1487,7 +1479,7 @@ func (a *App) waitFontConfirm(ctx context.Context) (bool, error) {
 	a.confirmCh = ch
 	a.confirmMu.Unlock()
 
-	runtime.EventsEmit(a.ctx, "font-confirm", "当前为官方原版字体，不替换字体将无法显示中文（已使用第三方插件加载字体的除外），确定继续吗？")
+	runtime.EventsEmit(a.ctx, "font-confirm", "当前字体是官方原版，需要替换字体才能显示中文（已用第三方插件加载字体的除外），确定继续吗？")
 	select {
 	case ok := <-ch:
 		return ok, nil
@@ -1852,11 +1844,11 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		// 客户端文件，此时还原只会白拷数 GB，还会把上一次已成功的汉化回滚成原版。
 		if !patchWroteData(resp) {
 			if cancelled {
-				a.emitPatchLog("[提示] 汉化已取消，客户端文件未被修改")
+				a.emitPatchLog("[提示] 汉化已取消，客户端保持原样")
 				resp.Cancelled = true
 				return resp, nil
 			}
-			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（客户端文件未被修改，无需还原）", err))
+			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（客户端保持原样，无需还原）", err))
 			return resp, err
 		}
 		if cancelled {
@@ -2009,7 +2001,7 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 	a.clearPatchedRecord(gameDir)
 	resp.Restored = restored
 	if len(restored) == 0 {
-		a.emitPatchLog("[完成] 客户端已是官方原版，无需重复还原")
+		a.emitPatchLog("[完成] 客户端已是官方原版，无需还原")
 	} else {
 		a.emitPatchLog("[完成] 官方原版文件已全部恢复完成")
 	}
@@ -2106,25 +2098,27 @@ func (a *App) InstallAppUpdate() error {
 		return errors.New("当前已是最新版本")
 	}
 
-	a.emitPatchLog(fmt.Sprintf("[更新] 开始下载 v%s…", info.LatestVersion))
 	a.emitAppUpdateProgress("download", fmt.Sprintf("正在下载 v%s", info.LatestVersion), 0, 0)
 
 	downloadCtx, cancelDownload := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancelDownload()
-	// 下载会在多个加速镜像之间自动切换。节点只写日志供排查，进度文案保持用户视角，
-	// 不把镜像域名这类实现细节暴露到界面上。
+	// 正常网络下首个线路即可完成下载，线路名对用户没有意义。
+	// 只有首条线路失败、真正发生切换时才记录，便于排查网络问题。
 	node := ""
 	detail := fmt.Sprintf("正在下载 v%s", info.LatestVersion)
 	tmpPath, err := updater.PrepareAppUpdate(downloadCtx, a.getCloud(), info, exe, func(done, total int64) {
 		a.emitAppUpdateProgress("download", detail, done, total)
 	}, func(label string) {
+		if node == "" {
+			node = label
+			return
+		}
+		a.emitPatchLog(fmt.Sprintf("[更新] 下载线路 %s 不可用，已切换", node))
 		node = label
-		a.emitPatchLog(fmt.Sprintf("[更新] 下载节点: %s", label))
 	})
 	if err != nil {
 		return fmt.Errorf("下载新版本失败: %w", err)
 	}
-	a.emitPatchLog(fmt.Sprintf("[更新] 下载完成（节点: %s）", node))
 
 	a.emitAppUpdateProgress("install", "正在安装更新", 0, 0)
 	if _, err := updater.SwapExecutable(tmpPath, exe); err != nil {
@@ -2132,8 +2126,8 @@ func (a *App) InstallAppUpdate() error {
 		return err
 	}
 
-	a.emitPatchLog(fmt.Sprintf("[更新] 新版本 v%s 已安装，重启后生效", info.LatestVersion))
-	a.emitAppUpdateProgress("done", "更新完成，重启后生效", 0, 0)
+	a.emitPatchLog(fmt.Sprintf("[更新] 新版本 v%s 已安装", info.LatestVersion))
+	a.emitAppUpdateProgress("done", "更新已安装，重启后生效", 0, 0)
 	return nil
 }
 
