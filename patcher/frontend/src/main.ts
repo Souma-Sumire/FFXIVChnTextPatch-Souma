@@ -146,7 +146,9 @@ interface AppUpdateInfo {
   releaseNotes: string;
   releaseUrl: string;
   downloadUrl: string;
+  downloadSha256?: string;
   mirrorUrl?: string;
+  selfUpdateSupported: boolean;
 }
 
 interface ImportResourceResult {
@@ -161,6 +163,8 @@ interface ImportResourceResult {
 interface GoApp {
   GetAppVersion(): Promise<string>;
   CheckAppUpdate(): Promise<AppUpdateInfo>;
+  InstallAppUpdate(): Promise<void>;
+  RestartApp(): Promise<void>;
   ImportOfflineResource(filePath?: string): Promise<ImportResourceResult>;
   GetBootstrap(): Promise<BootstrapInfo>;
   SaveConfig(config: AppConfig): Promise<void>;
@@ -689,6 +693,7 @@ function setBusy(value: boolean, label = ""): void {
   updateTextScopeState();
   updateFontUiAssetState();
   updateRestoreButtonState();
+  refreshUpdateAffordance();
 }
 
 function setWindowTitle(): void {
@@ -762,8 +767,33 @@ function describeError(error: unknown): string {
   return String(error);
 }
 
-async function checkAppUpdate(interactive = false): Promise<void> {
+// updateLocked 表示当前禁止检查或安装主程序更新：汉化、还原等占用客户端的任务期间一律不允许。
+function updateLocked(): boolean {
+  return isPatching || busy;
+}
+
+// refreshUpdateAffordance 依据任务状态与已知更新结果同步版本区入口的可见性。
+function refreshUpdateAffordance(): void {
+  const locked = updateLocked();
+  el.btnAppUpdate.classList.toggle("hidden", !latestUpdateInfo?.hasUpdate || locked);
+  el.versionBadge.disabled = locked;
+  el.versionBadge.title = locked ? "汉化进行中，完成后可检查更新" : "点击检查主程序更新";
+  el.btnAppUpdate.title = latestUpdateInfo
+    ? `发现新版本 v${latestUpdateInfo.latestVersion}，点击更新`
+    : "发现新版本，点击查看";
+}
+
+type UpdateCheckMode = { interactive?: boolean; prompt?: boolean };
+
+async function checkAppUpdate(mode: UpdateCheckMode = {}): Promise<void> {
+  const { interactive = false, prompt = false } = mode;
   if (checkingAppUpdate) return;
+  if (updateLocked()) {
+    if (interactive) {
+      log("[提示] 汉化进行中，暂不能检查更新。", "warn");
+    }
+    return;
+  }
   checkingAppUpdate = true;
   if (interactive) {
     log("[检查] 正在检查汉化器主程序更新...");
@@ -771,19 +801,16 @@ async function checkAppUpdate(interactive = false): Promise<void> {
   try {
     const info = await call("CheckAppUpdate");
     latestUpdateInfo = info;
+    refreshUpdateAffordance();
     if (info.hasUpdate) {
-      el.btnAppUpdate.classList.remove("hidden");
-      el.btnAppUpdate.title = `发现新版本 v${info.latestVersion}，点击查看更新`;
       log(`[更新] 发现新版本 v${info.latestVersion}。`, "ok");
-      if (interactive) {
+      // 结果返回时可能已开始汉化，此时不弹窗，只保留版本入口供任务结束后点击。
+      if ((interactive || prompt) && !updateLocked()) {
         showUpdateDialog(info);
       }
-    } else {
-      el.btnAppUpdate.classList.add("hidden");
-      if (interactive) {
-        log("[检查] 当前汉化器已是最新版本。", "ok");
-        await showConfirm("检查更新", `当前已是最新版本 (v${info.currentVersion})。`, "确定");
-      }
+    } else if (interactive) {
+      log("[检查] 当前汉化器已是最新版本。", "ok");
+      await showConfirm("检查更新", `当前已是最新版本 (v${info.currentVersion})。`, "确定");
     }
   } catch (err) {
     if (interactive) {
@@ -797,15 +824,77 @@ async function checkAppUpdate(interactive = false): Promise<void> {
 
 function showUpdateDialog(info: AppUpdateInfo): void {
   const notes = info.releaseNotes ? `\n\n更新说明：\n${info.releaseNotes}` : "";
-  const mirrorHint = info.mirrorUrl ? "\n\n若 GitHub 无法访问，可点击「镜像下载」。" : "";
-  const text = `发现新版本 v${info.latestVersion}（当前为 v${info.currentVersion}）${notes}${mirrorHint}`;
-  void openModal("发现新版本", text, "前往下载", info.mirrorUrl ? "镜像下载" : "").then((result) => {
+  const canSelfUpdate = info.selfUpdateSupported === true;
+  const tail = canSelfUpdate
+    ? "\n\n将自动下载并替换当前程序，完成后自动重启。更新期间无法汉化。"
+    : "\n\n当前平台不支持自动更新，请手动下载后覆盖原程序。";
+  const text = `发现新版本 v${info.latestVersion}（当前为 v${info.currentVersion}）${notes}${tail}`;
+  const downloadUrl = manualDownloadUrl(info);
+  const altText = downloadUrl !== (info.downloadUrl || info.releaseUrl) ? "镜像下载" : "";
+  const okText = canSelfUpdate ? "立即更新" : "手动下载";
+  void openModal("发现新版本", text, okText, canSelfUpdate ? altText : "").then((result) => {
     if (result === "ok") {
-      void call("OpenLink", info.downloadUrl || info.releaseUrl);
-    } else if (result === "alt" && info.mirrorUrl) {
-      void call("OpenLink", info.mirrorUrl);
+      if (canSelfUpdate) {
+        void installAppUpdate(info);
+      } else {
+        void call("OpenLink", downloadUrl);
+      }
+    } else if (result === "alt") {
+      void call("OpenLink", downloadUrl);
     }
   });
+}
+
+// manualDownloadUrl 优先给出加速镜像地址：直连 GitHub 在部分网络下不可用。
+function manualDownloadUrl(info: AppUpdateInfo): string {
+  return info.mirrorUrl || info.downloadUrl || info.releaseUrl;
+}
+
+// installAppUpdate 下载并替换当前程序。新版本启动后由后端退出当前进程。
+async function installAppUpdate(info: AppUpdateInfo): Promise<void> {
+  if (updateLocked()) {
+    log("[提示] 汉化进行中，暂不能更新主程序。", "warn");
+    return;
+  }
+  try {
+    setBusy(true, `正在下载新版本 v${info.latestVersion}…`);
+    refreshUpdateAffordance();
+    await call("InstallAppUpdate");
+  } catch (err) {
+    setBusy(false);
+    refreshUpdateAffordance();
+    log(`[错误] 自动更新失败: ${describeError(err)}`, "error");
+    const goManual = await showConfirm(
+      "自动更新失败",
+      `${describeError(err)}\n\n是否手动下载最新版本覆盖当前程序？`,
+      "手动下载",
+    );
+    if (goManual) {
+      void call("OpenLink", manualDownloadUrl(info));
+    }
+    return;
+  }
+
+  setBusy(false);
+  latestUpdateInfo = null;
+  refreshUpdateAffordance();
+  log(`[更新] 新版本 v${info.latestVersion} 已安装，重启后生效。`, "ok");
+
+  const restart = await openModal(
+    "更新已安装",
+    `新版本 v${info.latestVersion} 已安装完成，重启程序后生效。`,
+    "立即重启",
+    "稍后重启",
+  );
+  if (restart !== "ok") {
+    log("[更新] 已选择稍后重启，新版本将在下次启动程序时生效。");
+    return;
+  }
+  try {
+    await call("RestartApp");
+  } catch (err) {
+    log(`[错误] 重启失败: ${describeError(err)}`, "error");
+  }
 }
 
 function setOfflineState(offline: boolean, reason?: string): void {
@@ -875,7 +964,7 @@ async function bootstrapApp(): Promise<void> {
 
     await loadBootstrap();
     switchView("workbench");
-    void checkAppUpdate(false);
+    void checkAppUpdate({ prompt: true });
 
     if (currentGameDir()) {
       await refreshGameInfo();
@@ -1619,12 +1708,21 @@ function markCustomPreset(): void {
 }
 
 function wireEvents(): void {
-  el.versionBadge.addEventListener("click", () => void checkAppUpdate(true));
+  el.versionBadge.addEventListener("click", () => {
+    if (updateLocked()) {
+      log("[提示] 汉化进行中，暂不能检查更新。", "warn");
+      return;
+    }
+    void checkAppUpdate({ interactive: true });
+  });
   el.btnAppUpdate.addEventListener("click", () => {
+    if (updateLocked()) {
+      return;
+    }
     if (latestUpdateInfo?.hasUpdate) {
       showUpdateDialog(latestUpdateInfo);
     } else {
-      void checkAppUpdate(true);
+      void checkAppUpdate({ interactive: true });
     }
   });
   el.btnImportOffline.addEventListener("click", () => void handleImportOfflineResource());
@@ -1880,18 +1978,6 @@ function wireEvents(): void {
     }
   });
 
-  el.btnPatch.addEventListener("mouseenter", () => {
-    if (isPatching && !isStopping) {
-      if (el.btnPatchText) el.btnPatchText.textContent = "停止";
-    }
-  });
-
-  el.btnPatch.addEventListener("mouseleave", () => {
-    if (isPatching && !isStopping) {
-      if (el.btnPatchText) el.btnPatchText.textContent = "正在汉化";
-    }
-  });
-
   el.btnPatch.addEventListener("click", async () => {
     if (isPatching) {
       if (isStopping) return;
@@ -1934,7 +2020,7 @@ function wireEvents(): void {
     isPatching = true;
     isStopping = false;
     el.btnPatch.classList.add("is-patching");
-    if (el.btnPatchText) el.btnPatchText.textContent = "正在汉化";
+    if (el.btnPatchText) el.btnPatchText.textContent = "停止汉化";
     el.btnPatch.disabled = false;
 
     try {
@@ -1991,6 +2077,20 @@ function wireRuntimeEvents(): void {
     const isOff = typeof offline === "boolean" ? offline : true;
     const reasonStr = typeof reason === "string" && reason ? reason : undefined;
     setOfflineState(isOff, reasonStr);
+  });
+
+  // 自更新进度：下载阶段显示百分比，替换与重启阶段只更新提示文案。
+  on("app-update-progress", (data: unknown) => {
+    const ev = asProgress(data);
+    if (!busy) return;
+    if (ev.total > 0) {
+      const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
+      el.busyIndicator.textContent = `${ev.detail}… ${pct.toFixed(0)}%`;
+      el.progressBar.style.width = `${pct.toFixed(1)}%`;
+      el.actionProgressPercent.textContent = `${pct.toFixed(0)}%`;
+      return;
+    }
+    el.busyIndicator.textContent = ev.detail ? `${ev.detail}…` : "正在更新…";
   });
 
   let pendingResourceProgress: PatchProgressEvent | null = null;

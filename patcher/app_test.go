@@ -694,6 +694,38 @@ func TestAppCheckAppUpdate(t *testing.T) {
 	}
 }
 
+func TestAppCheckAppUpdateBlockedWhileBusy(t *testing.T) {
+	app := NewApp()
+	app.cloudOverride = &mockCloud{
+		recent: []*verifier.Release{
+			{Tag: "patcher-v3.0.0"},
+		},
+	}
+	if err := app.beginBusy(); err != nil {
+		t.Fatalf("占用忙碌标记失败: %v", err)
+	}
+	defer app.endBusy()
+
+	if _, err := app.CheckAppUpdate(); err == nil {
+		t.Fatal("汉化进行中不应允许检查更新")
+	}
+}
+
+func TestAppInstallAppUpdateBlockedWhileBusy(t *testing.T) {
+	app := NewApp()
+	if err := app.beginBusy(); err != nil {
+		t.Fatalf("占用忙碌标记失败: %v", err)
+	}
+	defer app.endBusy()
+
+	if err := app.InstallAppUpdate(); err == nil {
+		t.Fatal("汉化进行中不应允许自更新")
+	}
+	if err := app.RestartApp(); err == nil {
+		t.Fatal("任务进行中不应允许重启程序")
+	}
+}
+
 func TestAppImportOfflineResource(t *testing.T) {
 	tmpDir := t.TempDir()
 	zipPath := filepath.Join(tmpDir, "pack.zip")

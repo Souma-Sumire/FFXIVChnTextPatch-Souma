@@ -146,7 +146,9 @@ type GitHubClient struct {
 	preferredNode string
 	// directFast 表示实测过直连下载速度可接受，用于决定是否还需要提供镜像入口。
 	directFast bool
-	mu         sync.RWMutex
+	// nodeHook 在每次尝试下载节点前回调，用于让界面显示当前正在使用哪个镜像。
+	nodeHook func(node string)
+	mu       sync.RWMutex
 }
 
 // NewGitHubClient 创建默认 GitHub API 客户端。
@@ -251,6 +253,34 @@ func (c *GitHubClient) preferred() string {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.preferredNode
+}
+
+// SetNodeHook 设置下载节点回调，每次切换候选节点（镜像或直连）时触发。
+// 传 nil 取消回调。
+func (c *GitHubClient) SetNodeHook(hook func(node string)) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.nodeHook = hook
+}
+
+func (c *GitHubClient) notifyNode(node string) {
+	c.mu.RLock()
+	hook := c.nodeHook
+	c.mu.RUnlock()
+	if hook != nil {
+		hook(nodeLabel(node))
+	}
+}
+
+// nodeLabel 把节点标识转成界面可读的名称：镜像取域名，直连显式说明。
+func nodeLabel(node string) string {
+	if node == "" || node == "direct" {
+		return "GitHub 直连"
+	}
+	if u, err := url.Parse(node); err == nil && u.Host != "" {
+		return u.Host
+	}
+	return strings.TrimRight(node, "/")
 }
 
 func (c *GitHubClient) isDirectFast() bool {
@@ -727,6 +757,7 @@ func (c *GitHubClient) Download(ctx context.Context, rawURL, dst string, progres
 	candidates := c.candidateURLs(rawURL)
 	var lastErr error
 	for _, cand := range candidates {
+		c.notifyNode(cand.mirror)
 		start := time.Now()
 		written, err := c.downloadCandidate(ctx, cand.url, downloadDst, progress)
 		if err == nil {
@@ -749,7 +780,7 @@ func (c *GitHubClient) Download(ctx context.Context, rawURL, dst string, progres
 	if lastErr == nil {
 		lastErr = errors.New("无可用下载节点")
 	}
-	return fmt.Errorf("下载失败（已尝试所有镜像与直连节点）: %w", lastErr)
+	return fmt.Errorf("下载失败，请检查网络后重试: %w", lastErr)
 }
 
 func (c *GitHubClient) downloadCandidate(ctx context.Context, u, dst string, progress func(done, total int64)) (int64, error) {

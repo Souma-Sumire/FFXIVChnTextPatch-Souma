@@ -233,7 +233,9 @@ CI 只发布 exe 与 macOS 包（`build_patcher.yml`），仓库不发布离线�
 - `preset` 为 `custom` 时不持久化：`selected` 是前端内存中的 `Set`，重载后回退 `recommended`。
 - `resourceHash` 未在界面展示：`updateResourceBuildMeta` 忽略 hash 参数，仅显示构建时间。
 - 表列表 7114 项，勾选与搜索都整表重建 DOM，无防抖，全展开时明显卡顿。
-- `CheckAppUpdate` 只返回版本信息，前端提示并打开 Release 页，不自动安装；弹窗另提供「镜像下载」。只有 `patcher-v*` 参与版本比较——仓库里还有 `v2.20.0`、`v2.18.x` 等旧版 Java 汉化器的 tag，按「形如 x.y.z」采信会误判为更新版本。降级到网页列表时按 `releases/download/<tag>/FFXIVChnTextPatch-SM-v2.exe`（macOS 为 `-macOS.zip`）直接拼地址。
+- 主程序自更新：`CheckAppUpdate` 只返回版本信息，前端弹窗提供「立即更新」（Windows）与「手动下载」。点立即更新后 `App.InstallAppUpdate` 复用 `verifier.GitHubClient.Download`（自带镜像回退）把新 exe 下到程序同目录临时文件，按发布方 SHA256 与 PE 头校验，再由 `updater.SwapExecutable` 把旧程序改名 `.old`、新程序放到原位并 `LaunchExecutable` 启动，随后 `runtime.Quit` 退出旧进程；下次启动时 `CleanupStaleAppFiles` 清理 `.old` 与中断的临时文件。启动失败会 `RollbackExecutable` 恢复旧程序。macOS 发布包是 `.app` 压缩包，改为标记「不支持自动更新」并回落到手动下载。
+- 汉化、还原等占用客户端的任务期间（`beginBusy` 生效）`CheckAppUpdate` 与 `InstallAppUpdate` 均直接拒绝；前端同时隐藏「新版本」入口并禁用版本按钮，任务结束再恢复。
+- 只有 `patcher-v*` 参与版本比较——仓库里还有 `v2.20.0`、`v2.18.x` 等旧版 Java 汉化器的 tag，按「形如 x.y.z」采信会误判为更新版本。降级到网页列表时按 `releases/download/<tag>/FFXIVChnTextPatch-SM-v2.exe`（macOS 为 `-macOS.zip`）直接拼地址，此时拿不到 SHA256，只做体积与 PE 头校验。
 
 ## 13. 代码索引
 
@@ -248,7 +250,7 @@ CI 只发布 exe 与 macOS 包（`build_patcher.yml`），仓库不发布离线�
 | CSV 读写 | `internal/csvx/csv.go` |
 | 译文规则 | `internal/pipeline/rules.go`、`pipeline.go` |
 | `<hex:...>` 处理 | `internal/text/hex.go` |
-| 资源同步、离线包、更新检查 | `internal/updater/` |
+| 资源同步、离线包、更新检查与自更新 | `internal/updater/` |
 | 区服语言 | `internal/region/region.go` |
 | 进程互斥、目录探测 | `internal/gameproc/`、`internal/gamescan/scan.go` |
 
