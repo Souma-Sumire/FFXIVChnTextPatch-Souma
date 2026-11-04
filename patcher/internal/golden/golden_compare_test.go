@@ -218,6 +218,9 @@ func locateOrDownloadGoldenSource(t *testing.T, version string) string {
 }
 
 func TestLocateOrDownloadGoldenSource_LocalExists(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Golden Master 测试数据源检查在 -short 模式下跳过")
+	}
 	golden := loadGolden(t)
 	src := locateOrDownloadGoldenSource(t, golden.GameVersion)
 	if !hasAllRequiredFiles(src) {

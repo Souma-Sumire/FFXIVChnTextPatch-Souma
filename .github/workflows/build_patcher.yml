@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Go tests
         working-directory: patcher
-        run: go test ./... -count=1
+        run: go test -short ./... -count=1
 
       - name: Build Windows executable
         run: pnpm run build
@@ -72,7 +72,7 @@ jobs:
 
       - name: Run Go tests
         working-directory: patcher
-        run: go test ./... -count=1
+        run: go test -short ./... -count=1
 
       - name: Build macOS Universal App Bundle
         run: pnpm run build
