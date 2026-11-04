@@ -97,7 +97,7 @@ if (isMac) {
   }
 
   if (hasWails) {
-    run("wails", ["build", "-platform", "darwin/universal", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
+    run("wails", ["build", "-platform", "darwin/universal", "-skipfrontend", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
     const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
     const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
     if (fs.existsSync(appPath)) {
