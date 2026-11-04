@@ -65,21 +65,21 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 
 	datFile, err := os.OpenFile(dat0Path, os.O_RDWR, 0)
 	if err != nil {
-		return stats, fmt.Errorf("打开 dat0 失败: %w", err)
+		return stats, fmt.Errorf("打开 dat0 (%s) 失败: %w", dat0Path, err)
 	}
 	defer datFile.Close()
 	indexFile, err := os.OpenFile(opts.TextIndexPath, os.O_RDWR, 0)
 	if err != nil {
-		return stats, fmt.Errorf("打开 index 失败: %w", err)
+		return stats, fmt.Errorf("打开 index (%s) 失败: %w", opts.TextIndexPath, err)
 	}
 	defer indexFile.Close()
 
 	datLength, err := datFile.Seek(0, io.SeekEnd)
 	if err != nil {
-		return stats, err
+		return stats, fmt.Errorf("定位 dat0 (%s) 末尾失败: %w", dat0Path, err)
 	}
 	if datLength%8 != 0 {
-		return stats, fmt.Errorf("dat0 长度未按 8 字节对齐: %d", datLength)
+		return stats, fmt.Errorf("dat0 (%s) 长度未按 8 字节对齐: %d", dat0Path, datLength)
 	}
 
 	fileList, err := readRootExl(opts.TextIndexPath, index)
@@ -178,15 +178,15 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 				}
 				exdfBytes, err := exd.BuildEXDF(newEntries)
 				if err != nil {
-					return stats, err
+					return stats, fmt.Errorf("封装 EXDF (%s) 失败: %w", exdFileName, err)
 				}
 				block, err := sqpack.BuildBinaryBlock(exdfBytes)
 				if err != nil {
-					return stats, err
+					return stats, fmt.Errorf("压缩二进制块 (%s) 失败: %w", exdFileName, err)
 				}
 
 				if _, err := datFile.WriteAt(block, datLength); err != nil {
-					return stats, fmt.Errorf("写入 dat0 失败: %w", err)
+					return stats, fmt.Errorf("写入 dat0 (%s, %s, off=%d) 失败: %w", dat0Path, exdFileName, datLength, err)
 				}
 				pending = append(pending, pendingOffset{entry: exdEntry, offset: datLength / 8})
 				datLength += int64(len(block))
@@ -209,13 +209,13 @@ func loadCSV(path string) (map[int]int, map[int][]string, error) {
 		return nil, nil, err
 	}
 	if len(rows) < 2 {
-		return nil, nil, fmt.Errorf("CSV 行数不足")
+		return nil, nil, fmt.Errorf("CSV (%s) 行数不足 (%d 行)", path, len(rows))
 	}
 	offsetMap := make(map[int]int, len(rows[1]))
 	for i := 1; i < len(rows[1]); i++ {
 		offset, err := strconv.Atoi(strings.TrimSpace(rows[1][i]))
 		if err != nil {
-			return nil, nil, fmt.Errorf("CSV 第 2 行不是列 Offset 映射表: %w", err)
+			return nil, nil, fmt.Errorf("CSV (%s) 第 2 行第 %d 列不是列 Offset 映射表: %w", path, i+1, err)
 		}
 		offsetMap[offset] = i - 1
 	}
@@ -227,7 +227,7 @@ func loadCSV(path string) (map[int]int, map[int][]string, error) {
 		}
 		key, err := strconv.Atoi(strings.TrimSpace(row[0]))
 		if err != nil {
-			return nil, nil, fmt.Errorf("CSV 数据行主键非法: %q", row[0])
+			return nil, nil, fmt.Errorf("CSV (%s) 第 %d 行主键非法 (%q): %w", path, i+1, row[0], err)
 		}
 		dataMap[key] = row[1:]
 	}
@@ -262,7 +262,7 @@ func buildEntries(exh *exd.EXHF, file *exd.File, tableName string,
 			}
 			jaBytes := entry.GetString(int(dataset.Offset))
 			if int(dataset.Offset)+4 > len(chunk) {
-				return nil, 0, fmt.Errorf("字符串列偏移越界: %d", dataset.Offset)
+				return nil, 0, fmt.Errorf("表 %s 行 %d 字符串列偏移越界: offset=%d chunkLen=%d", tableName, rowIndex, dataset.Offset, len(chunk))
 			}
 			binary.BigEndian.PutUint32(chunk[dataset.Offset:], uint32(len(newString)))
 
@@ -282,7 +282,7 @@ func buildEntries(exh *exd.EXHF, file *exd.File, tableName string,
 					if target != "" {
 						encoded, err := text.ParseTargetString(target)
 						if err != nil {
-							return nil, 0, err
+							return nil, 0, fmt.Errorf("表 %s 行 %d 列 %d 编码文本失败: %w", tableName, rowIndex, col, err)
 						}
 						newString = append(newString, encoded...)
 						replaced = true
@@ -385,23 +385,24 @@ func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, prog
 	}
 	sort.Strings(fonts)
 
-	datFile, err := os.OpenFile(datPathFor(indexPath, 0), os.O_RDWR, 0)
+	dat0Path := datPathFor(indexPath, 0)
+	datFile, err := os.OpenFile(dat0Path, os.O_RDWR, 0)
 	if err != nil {
-		return stats, fmt.Errorf("打开字体 dat0 失败: %w", err)
+		return stats, fmt.Errorf("打开字体 dat0 (%s) 失败: %w", dat0Path, err)
 	}
 	defer datFile.Close()
 	indexFile, err := os.OpenFile(indexPath, os.O_RDWR, 0)
 	if err != nil {
-		return stats, fmt.Errorf("打开字体 index 失败: %w", err)
+		return stats, fmt.Errorf("打开字体 index (%s) 失败: %w", indexPath, err)
 	}
 	defer indexFile.Close()
 
 	datLength, err := datFile.Seek(0, io.SeekEnd)
 	if err != nil {
-		return stats, err
+		return stats, fmt.Errorf("定位字体 dat0 (%s) 末尾失败: %w", dat0Path, err)
 	}
 	if datLength%8 != 0 {
-		return stats, fmt.Errorf("字体 dat0 长度未按 8 字节对齐: %d", datLength)
+		return stats, fmt.Errorf("字体 dat0 (%s) 长度未按 8 字节对齐: %d", dat0Path, datLength)
 	}
 
 	pending := make([]pendingOffset, 0, len(fonts))
@@ -428,7 +429,7 @@ func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, prog
 			return stats, fmt.Errorf("构建字体块失败 %s: %w", name, err)
 		}
 		if _, err := datFile.WriteAt(block, datLength); err != nil {
-			return stats, fmt.Errorf("写入字体 dat0 失败: %w", err)
+			return stats, fmt.Errorf("写入字体 dat0 (%s, %s, off=%d) 失败: %w", dat0Path, name, datLength, err)
 		}
 		pending = append(pending, pendingOffset{entry: entry, offset: datLength / 8})
 		datLength += int64(len(block))
@@ -456,15 +457,15 @@ func commitIndexOffsets(datFile, indexFile *os.File, pending []pendingOffset) er
 		return nil
 	}
 	if err := datFile.Sync(); err != nil {
-		return fmt.Errorf("同步 dat0 失败: %w", err)
+		return fmt.Errorf("同步 dat0 (%s) 失败: %w", datFile.Name(), err)
 	}
 	for _, p := range pending {
 		if err := sqpack.WriteDataOffset(indexFile, p.entry, p.offset); err != nil {
-			return err
+			return fmt.Errorf("回写索引偏移 (%s, pt=%d) 失败: %w", indexFile.Name(), p.entry.Pt, err)
 		}
 	}
 	if err := indexFile.Sync(); err != nil {
-		return fmt.Errorf("同步 index 失败: %w", err)
+		return fmt.Errorf("同步 index (%s) 失败: %w", indexFile.Name(), err)
 	}
 	return nil
 }

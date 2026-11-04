@@ -36,7 +36,7 @@ func OpenDat(path string) (*DatFile, error) {
 	st, err := f.Stat()
 	if err != nil {
 		_ = f.Close()
-		return nil, err
+		return nil, fmt.Errorf("获取 dat 文件信息失败 (%s): %w", path, err)
 	}
 	return &DatFile{f: f, size: st.Size()}, nil
 }
@@ -53,11 +53,11 @@ func (d *DatFile) ReadAt(off int64, n int) ([]byte, error) {
 
 func (d *DatFile) readAt(off int64, n int) ([]byte, error) {
 	if n < 0 {
-		return nil, fmt.Errorf("非法读取长度: %d", n)
+		return nil, fmt.Errorf("非法读取长度 (%s): %d", d.f.Name(), n)
 	}
 	buf := make([]byte, n)
 	if _, err := d.f.ReadAt(buf, off); err != nil {
-		return nil, fmt.Errorf("读取 dat 失败 (off=%d len=%d): %w", off, n, err)
+		return nil, fmt.Errorf("读取 dat (%s) 失败 (off=%d len=%d): %w", d.f.Name(), off, n, err)
 	}
 	return buf, nil
 }
@@ -80,13 +80,13 @@ func (d *DatFile) ExtractFile(fileOffset int64) ([]byte, error) {
 	}
 
 	if fileSize < 0 || blockCount < 0 {
-		return nil, fmt.Errorf("dat 文件头非法: fileSize=%d blocks=%d", fileSize, blockCount)
+		return nil, fmt.Errorf("dat (%s, off=%d) 文件头非法: fileSize=%d blocks=%d", d.f.Name(), fileOffset, fileSize, blockCount)
 	}
 	if int64(fileSize) > maxDecompressedFileSize {
-		return nil, fmt.Errorf("dat 文件头非法: 解包尺寸 %d 超过上限 %d", fileSize, maxDecompressedFileSize)
+		return nil, fmt.Errorf("dat (%s, off=%d) 文件头非法: 解包尺寸 %d 超过上限 %d", d.f.Name(), fileOffset, fileSize, maxDecompressedFileSize)
 	}
 	if blockCount > 0 && int64(blockCount)*maxBlockEntrySize > d.size {
-		return nil, fmt.Errorf("dat 文件头非法: 块数 %d 超出文件尺寸 %d", blockCount, d.size)
+		return nil, fmt.Errorf("dat (%s, off=%d) 文件头非法: 块数 %d 超出文件尺寸 %d", d.f.Name(), fileOffset, blockCount, d.size)
 	}
 
 	switch contentType {
@@ -95,7 +95,7 @@ func (d *DatFile) ExtractFile(fileOffset int64) ([]byte, error) {
 	case 4:
 		return d.extractType4(fileOffset, int64(headerLength), fileSize, blockCount)
 	default:
-		return nil, fmt.Errorf("暂不支持的 dat 内容类型: %d", contentType)
+		return nil, fmt.Errorf("dat (%s, off=%d) 暂不支持的 dat 内容类型: %d", d.f.Name(), fileOffset, contentType)
 	}
 }
 
@@ -266,7 +266,7 @@ func (d *DatFile) readBlockAt(dataOff int64, compressedSize, decompressedSize in
 	r := flate.NewReader(bytes.NewReader(compr))
 	defer r.Close()
 	if _, err := io.ReadFull(r, out); err != nil {
-		return nil, fmt.Errorf("Deflate 解压失败: %w", err)
+		return nil, fmt.Errorf("dat (%s, off=%d) Deflate 解压失败: %w", d.f.Name(), dataOff, err)
 	}
 	return out, nil
 }

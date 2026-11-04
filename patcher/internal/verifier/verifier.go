@@ -284,20 +284,22 @@ func resolveCloud(ctx context.Context, cfg Config, version string, result *Resul
 	release, err := cfg.Cloud.ReleaseByTag(ctx, cfg.Repo, version)
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
-			result.Plan.Notes = append(result.Plan.Notes,
-				fmt.Sprintf("云端尚未收录当前游戏版本 (%s) 的原文件备份，已直接基于本地文件汉化", version))
+			note := fmt.Sprintf("云端尚未收录当前游戏版本 (%s) 的原文件备份，已直接基于本地文件汉化", version)
+			cfg.log("[提示] %s", note)
+			result.Plan.Notes = append(result.Plan.Notes, note)
 			return nil, CloudPending
 		}
-		cfg.log("按版本查询 Release 失败: %v", err)
-		result.Plan.Notes = append(result.Plan.Notes, "无法访问云端备份，已直接基于本地文件处理")
+		cfg.log("[警告] 按版本 (%s) 查询云端备份失败: %v", version, err)
+		result.Plan.Notes = append(result.Plan.Notes, fmt.Sprintf("无法访问云端备份（%v），已直接基于本地文件处理", err))
 		return nil, CloudLocalOnly
 	}
 
 	if CompareVersion(version, release.Tag) == 0 {
 		return release, CloudMatched
 	}
-	result.Plan.Notes = append(result.Plan.Notes,
-		fmt.Sprintf("当前游戏版本 (%s) 与云端备份版本 (%s) 不一致，已直接基于本地文件汉化", version, release.Tag))
+	note := fmt.Sprintf("当前游戏版本 (%s) 与云端备份版本 (%s) 不一致，已直接基于本地文件汉化", version, release.Tag)
+	cfg.log("[提示] %s", note)
+	result.Plan.Notes = append(result.Plan.Notes, note)
 	return release, CloudPending
 }
 
@@ -541,11 +543,12 @@ func ensureAllOriginalFilesBackedUp(ctx context.Context, cfg Config, result *Res
 				got, err := HashFile(backupPath)
 				if err != nil {
 					_ = os.Remove(backupPath)
-					return nil, err
+					return nil, fmt.Errorf("计算下载原版 %s 哈希失败: %w", name, err)
 				}
 				if !strings.EqualFold(got.SHA256, cloudSHA) {
 					_ = os.Remove(backupPath)
-					return nil, fmt.Errorf("下载原版 %s 后 SHA256 校验失败", name)
+					return nil, fmt.Errorf("下载原版 %s 后 SHA256 校验失败（期望 %s，实际 %s，大小 %d）",
+						name, shortHash(cloudSHA), shortHash(got.SHA256), got.Size)
 				}
 				meta.Files[name] = got
 				result.Downloaded = append(result.Downloaded, name)
@@ -591,7 +594,7 @@ func restoreFromBackup(backupDir, sqpackDir string, files []string, meta *Backup
 		src := filepath.Join(backupDir, name)
 		dst := filepath.Join(sqpackDir, name)
 		if _, err := os.Stat(src); err != nil {
-			return fmt.Errorf("备份文件缺失: %s", name)
+			return fmt.Errorf("备份文件缺失或不可访问 (%s): %w", name, err)
 		}
 		want := ""
 		if meta != nil {
@@ -802,10 +805,16 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 
 	// 2. 准备当前版本的云端 Release（国际服可用时）
 	var release *Release
+	var cloudErr error
 	if reg == region.Global && cfg.Cloud != nil {
 		rel, err := cfg.Cloud.ReleaseByTag(ctx, cfg.Repo, version)
 		if err == nil {
 			release = rel
+		} else {
+			cloudErr = err
+			if !errors.Is(err, ErrNotFound) {
+				cfg.log("[警告] 获取云端原文件清单 (%s) 失败: %v", version, err)
+			}
 		}
 	}
 
@@ -817,6 +826,9 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		// 国际服可借当前版本的云端 Release 逐文件核对，取不到就只能拒绝：
 		// 用旧版本文件覆盖新版客户端会缺新增条目，且这份错误基线会被后续汉化沿用。
 		if release == nil {
+			if cloudErr != nil {
+				return nil, fmt.Errorf("本地备份为游戏版本 %s，与当前版本 %s 不一致，且获取版本 %s 的云端原文件失败（%v）；请联网后重试，或使用官方启动器修复客户端", meta.Version, version, version, cloudErr)
+			}
 			return nil, fmt.Errorf("本地备份为游戏版本 %s，与当前版本 %s 不一致，且无法获取版本 %s 的云端原文件；请联网后重试，或使用官方启动器修复客户端", meta.Version, version, version)
 		}
 	}
@@ -834,7 +846,8 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 				return nil, fmt.Errorf("读取 %s 失败，无法确认客户端状态: %w", name, err)
 			}
 			if !strings.EqualFold(got.SHA256, want) {
-				return nil, fmt.Errorf("当前 %s 已与汉化记录不一致（游戏更新或第三方修改）；为避免用旧备份覆盖新内容，已中止还原。请使用官方启动器修复客户端", name)
+				return nil, fmt.Errorf("当前 %s 哈希 (%s) 已与汉化记录 (%s) 不一致（游戏更新或第三方修改）；为避免用旧备份覆盖新内容，已中止还原。请使用官方启动器修复客户端",
+					name, shortHash(got.SHA256), shortHash(want))
 			}
 		}
 	}
@@ -851,8 +864,11 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		backupPath := filepath.Join(backupDir, name)
 		want, hasMeta := meta.Files[name]
 		hasValidBackup := false
+		var bh FileHash
+		var bhErr error
 		if hasMeta {
-			if bh, err := HashFile(backupPath); err == nil && bh.SHA256 != "" && strings.EqualFold(bh.SHA256, want.SHA256) {
+			bh, bhErr = HashFile(backupPath)
+			if bhErr == nil && bh.SHA256 != "" && strings.EqualFold(bh.SHA256, want.SHA256) {
 				if reg == region.Global && release != nil {
 					if cloudSHA, ok := release.AssetSHA256(name); ok {
 						hasValidBackup = strings.EqualFold(bh.SHA256, cloudSHA)
@@ -906,7 +922,8 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 				}
 				if !strings.EqualFold(got.SHA256, cloudSHA) {
 					_ = os.Remove(backupPath)
-					return nil, fmt.Errorf("下载 %s 后 SHA256 校验失败", name)
+					return nil, fmt.Errorf("下载 %s 后 SHA256 校验失败（期望 %s，实际 %s，大小 %d）",
+						name, shortHash(cloudSHA), shortHash(got.SHA256), got.Size)
 				}
 				meta.Files[name] = got
 				verified[name] = true
@@ -917,14 +934,21 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		// 非国际服且缺失备份
 		if reg != region.Global {
 			if _, err := os.Stat(backupPath); err != nil {
-				return nil, fmt.Errorf("本地备份文件缺失: %s", name)
+				return nil, fmt.Errorf("本地备份文件缺失或不可访问 (%s): %w", name, err)
+			}
+			if bhErr != nil {
+				return nil, fmt.Errorf("读取本地备份文件 %s 失败: %w", name, bhErr)
 			}
 			if hasMeta {
-				return nil, fmt.Errorf("本地备份文件 %s 现存哈希与汉化前记录不一致（可能已被外部修改或损坏），无法还原", name)
+				return nil, fmt.Errorf("本地备份文件 %s 现存哈希 (%s) 与汉化前记录 (%s) 不一致（可能已被外部修改或损坏），无法还原",
+					name, shortHash(bh.SHA256), shortHash(want.SHA256))
 			}
 			return nil, fmt.Errorf("本地备份中未收录文件 %s，无法还原", name)
 		}
 
+		if cloudErr != nil {
+			return nil, fmt.Errorf("本地原版备份不存在，且无法从云端获取版本 %s 的原文件 %s（%v）；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, name, cloudErr)
+		}
 		return nil, fmt.Errorf("本地原版备份不存在，且无法从云端获取版本 %s 的原文件 %s；建议使用官方启动器设置中的【检查与修复游戏文件】恢复原版客户端", version, name)
 	}
 
@@ -933,7 +957,9 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 	if len(verified) == len(AllFiles) && (reg != region.Global || release != nil || meta.Version == version) {
 		meta.Version = version
 	}
-	_ = writeBackupMeta(backupDir, meta)
+	if err := writeBackupMeta(backupDir, meta); err != nil {
+		cfg.log("[警告] 更新备份清单失败: %v", err)
+	}
 
 	// 5. 比对游戏目录哈希，只还原真正被修改过的文件以减少磁盘 IO
 	return restoreLocalBackup(&cfg, backupDir, sqpackDir, meta, reg)

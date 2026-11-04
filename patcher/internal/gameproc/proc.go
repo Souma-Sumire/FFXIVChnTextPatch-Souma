@@ -181,7 +181,7 @@ func KillProcesses(procs []ProcessInfo) ([]string, error) {
 		if err := procKiller(p.PID); err == nil {
 			killed = append(killed, p.Name)
 		} else {
-			lastErr = err
+			lastErr = fmt.Errorf("%s (PID %d): %w", p.Name, p.PID, err)
 		}
 	}
 	if len(killed) == 0 && lastErr != nil {
