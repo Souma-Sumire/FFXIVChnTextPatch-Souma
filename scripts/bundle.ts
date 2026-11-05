@@ -146,6 +146,8 @@ export function generateManifestAndSnapshot(): void {
 
   const rulesInfo = sha256File(RULES_PATH);
   const tablesInfo = sha256File(TABLES_PATH);
+
+  // 字体包：macOS 无法运行 Windows 版编译组件，靠这份预编译字体按需下载。
   const fontKeys = listRelativeFiles(FONT_PATH, "font");
   const fonts: Record<string, { sha256: string; size: number }> = {};
   for (const key of fontKeys) {
@@ -184,14 +186,12 @@ export function generateManifestAndSnapshot(): void {
       size: fontZipData.length,
       count: fontZipEntries.length,
     };
-    console.log(`已重新生成字体包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipEntries.length} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
+    console.log(
+      `已重新生成字体包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipEntries.length} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`,
+    );
   } else {
     const zipHash = sha256File(FONT_ZIP_PATH);
-    fontZipInfo = {
-      sha256: zipHash.sha256,
-      size: zipHash.size,
-      count: fontKeys.length,
-    };
+    fontZipInfo = { sha256: zipHash.sha256, size: zipHash.size, count: fontKeys.length };
     console.log(`字体文件未变更，复用现有: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}`);
   }
 
@@ -215,8 +215,12 @@ export function generateManifestAndSnapshot(): void {
   };
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   console.log(`已生成同步清单: ${path.relative(RESOURCE_PATH, MANIFEST_PATH)}（${fontKeys.length} 个字体）`);
-  console.log(`已生成全量快照包: ${path.relative(RESOURCE_PATH, ZIP_PATH)}（${zipEntries.length} 个文件，${(zipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
-  console.log(`已处理字体快照包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipInfo.count} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
+  console.log(
+    `已生成全量快照包: ${path.relative(RESOURCE_PATH, ZIP_PATH)}（${zipEntries.length} 个文件，${(zipInfo.size / 1024 / 1024).toFixed(2)} MB）`,
+  );
+  console.log(
+    `已处理字体包: ${path.relative(RESOURCE_PATH, FONT_ZIP_PATH)}（${fontZipInfo.count} 个文件，${(fontZipInfo.size / 1024 / 1024).toFixed(2)} MB）`,
+  );
 }
 
 generateManifestAndSnapshot();

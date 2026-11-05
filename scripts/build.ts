@@ -73,7 +73,14 @@ function resolveAppVersion(): string {
 }
 
 const appVersion = resolveAppVersion();
-console.log(`\n构建版本: ${appVersion}`);
+const releaseBuild = process.argv.includes("--release") || process.env.PATCHER_RELEASE === "1";
+console.log(`\n构建版本: ${appVersion}（${releaseBuild ? "发布构建" : "本地开发构建"}）`);
+
+// 字体编译组件不再打进主程序：运行时按需下载到数据目录（见 ensureFontCompiler），
+// 拿不到时改用同样按需下载的预编译字体包，构建本身不依赖这个二进制。
+// development tag 让本地构建只校验工作区 resource/，不向云端同步 CSV 与字体；
+// 发布构建不带该 tag，保持「内置词条始终为云端最新」的行为。
+const goTags = releaseBuild ? "desktop,production" : "desktop,production,development";
 
 // 1. 构建前端产物
 const nodeModules = path.join(frontendDir, "node_modules");
@@ -97,7 +104,7 @@ if (isMac) {
   }
 
   if (hasWails) {
-    run("wails", ["build", "-platform", "darwin/universal", "-skipfrontend", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
+    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-skipfrontend", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
     const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
     const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
     if (fs.existsSync(appPath)) {
@@ -106,7 +113,7 @@ if (isMac) {
     }
   } else {
     const outBin = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2");
-    run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
+    run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
     console.log(`\n构建成功: ${outBin}`);
   }
 } else {
@@ -121,6 +128,6 @@ if (isMac) {
     }
   }
   const ldflags = `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
-  run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
+  run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
   console.log(`\n构建成功: ${outExe}`);
 }

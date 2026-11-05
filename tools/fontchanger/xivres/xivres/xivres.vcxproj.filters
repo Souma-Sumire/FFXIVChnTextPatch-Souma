@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Project Items">
+      <UniqueIdentifier>{5414d1f9-ea36-49e7-9889-80e52683e767}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{bbec9cf7-3df8-471b-98d8-c11a09a41f08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\sqpack">
+      <UniqueIdentifier>{39ead3bc-6656-4dad-bbab-ce3268a7fafc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impl">
+      <UniqueIdentifier>{ba54be73-c054-4585-8c89-1d0e77b57d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\util">
+      <UniqueIdentifier>{e85d0ad4-6102-4282-a237-b9e6aa5c925c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impl\util">
+      <UniqueIdentifier>{b7e06e23-2ccd-4a5d-8678-761c8552a4c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\resource types">
+      <UniqueIdentifier>{8bf3810a-d583-4d6a-8352-3a8b17e011c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\resource types\model">
+      <UniqueIdentifier>{9a959273-42cd-43c0-95b8-1f8f89f8193f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\resource types\texture">
+      <UniqueIdentifier>{94dc9cb9-f283-4c1a-a482-abcf8cc5cb32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\resource types\excel">
+      <UniqueIdentifier>{fdd80b22-3353-4573-80dc-61db18bd7979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impl\resource types">
+      <UniqueIdentifier>{2e0d0943-03e3-4cee-862b-e3ce724b25ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impl\resource types\excel">
+      <UniqueIdentifier>{13bc3874-766d-487d-b968-a048666e84aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impl\sqpack">
+      <UniqueIdentifier>{1c6a6c4b-2b04-4fa6-ba38-6e9826047e86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\resource types\sound resource">
+      <UniqueIdentifier>{cd306381-91c4-4276-b052-ccb1b979e66a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impl\resource types\texture">
+      <UniqueIdentifier>{c883337d-7528-4d57-81e7-33cef9e4506f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json">
+      <Filter>Project Items</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\xivres\common.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\xivstring.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.byte_order.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.on_dtor.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.dxt.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.listener_manager.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.sha1.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.span_cast.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\game_layout.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\pe_image.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.byte_regex.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\installation.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.thread_pool.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\sqpack.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\sqpack.generator.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\sqpack.reader.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\packed_stream.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\unpacked_stream.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\packed_stream.hotswap.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\unpacked_stream.placeholder.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\packed_stream.placeholder.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\unpacked_stream.standard.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\packed_stream.standard.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\equipment_deformer_parameter.h">
+      <Filter>Headers\resource types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\equipment_and_gimmick_parameter.h">
+      <Filter>Headers\resource types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\ex_skeleton_table.h">
+      <Filter>Headers\resource types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\image_change_data.h">
+      <Filter>Headers\resource types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\fontdata.h">
+      <Filter>Headers\resource types</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\texture.mipmap_stream.h">
+      <Filter>Headers\resource types\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\texture.stream.h">
+      <Filter>Headers\resource types\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\texture.h">
+      <Filter>Headers\resource types\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\stream.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.zlib_wrapper.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.bitmap_copy.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.unicode.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\sound.h">
+      <Filter>Headers\resource types\sound resource</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\excel.type2gen.h">
+      <Filter>Headers\resource types\excel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\excel.h">
+      <Filter>Headers\resource types\excel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\packed_stream.texture.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\model.h">
+      <Filter>Headers\resource types\model</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\packed_stream.model.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\unpacked_stream.model.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\unpacked_stream.texture.h">
+      <Filter>Headers\sqpack</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\path_spec.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\util.pixel_formats.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\texture.preview.h">
+      <Filter>Headers\resource types\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xivres\textools.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="impl\common.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\game_layout.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\pe_image.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\util.byte_regex.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\installation.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\stream.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\xivstring.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\util.bitmap_copy.cpp">
+      <Filter>Impl\util</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\util.dxt.cpp">
+      <Filter>Impl\util</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\util.unicode.cpp">
+      <Filter>Impl\util</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\util.zlib_wrapper.cpp">
+      <Filter>Impl\util</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\excel.cpp">
+      <Filter>Impl\resource types\excel</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\excel.type2gen.cpp">
+      <Filter>Impl\resource types\excel</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\packed_stream.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\packed_stream.model.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\packed_stream.placeholder.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\packed_stream.standard.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\packed_stream.texture.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\unpacked_stream.texture.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\unpacked_stream.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\unpacked_stream.model.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\unpacked_stream.placeholder.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\unpacked_stream.standard.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\sqpack.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\sqpack.generator.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\sqpack.reader.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\packed_stream.hotswap.cpp">
+      <Filter>Impl\sqpack</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\fontdata.cpp">
+      <Filter>Impl\resource types</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\sound.cpp">
+      <Filter>Impl\resource types</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\texture.mipmap_stream.cpp">
+      <Filter>Impl\resource types\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\texture.cpp">
+      <Filter>Impl\resource types\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\texture.stream.cpp">
+      <Filter>Impl\resource types\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\texture.preview.cpp">
+      <Filter>Impl\resource types\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\path_spec.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\textools.cpp">
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\util.thread_pool.cpp">
+      <Filter>Impl\util</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

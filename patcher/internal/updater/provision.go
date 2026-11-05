@@ -9,11 +9,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
-	"sort"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
 )
 
@@ -23,9 +20,7 @@ type ResourceStatus struct {
 	DownloadedFiles int    `json:"downloadedFiles"`
 	DownloadedBytes int64  `json:"downloadedBytes"`
 	CSVHash         string `json:"csvHash,omitempty"`
-	FontHash        string `json:"fontHash,omitempty"`
 	CSVUpdated      bool   `json:"csvUpdated,omitempty"`
-	FontUpdated     bool   `json:"fontUpdated,omitempty"`
 	GeneratedAt     string `json:"generatedAt,omitempty"`
 }
 
@@ -76,6 +71,9 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		progress = func(string, string, int64, int64) {}
 	}
 	progress = throttleProgress(progress)
+	if u.LocalOnly {
+		return u.provisionLocal(resourceDir, progress)
+	}
 	if err := os.MkdirAll(resourceDir, 0o755); err != nil {
 		return st, fmt.Errorf("创建资源目录失败: %w", err)
 	}
@@ -87,14 +85,13 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	}
 
 	st.CSVHash = remote.RawEXD.SHA256
-	st.FontHash = remote.Font.SHA256
 	st.GeneratedAt = remote.GeneratedAt
 
 	local, _ := ReadLocalManifest(resourceDir)
 	// 快速通道：清单与上次校验一致，且本地文件的数量/大小/修改时间都没变，
-	// 直接认定内容未被改动，省掉逐文件哈希（7114 个 CSV 与 280MB 字体）。
+	// 直接认定内容未被改动，省掉逐文件哈希。
 	if stamp := readVerifyStamp(resourceDir); stamp != nil &&
-		local != nil && local.RawEXD.SHA256 == remote.RawEXD.SHA256 && local.Font.SHA256 == remote.Font.SHA256 &&
+		local != nil && local.RawEXD.SHA256 == remote.RawEXD.SHA256 &&
 		metaModulesComplete(resourceDir, local, remote, true) && stamp.matches(resourceDir, remote) {
 		progress("done", "资源已是最新", 1, 1)
 		return st, nil
@@ -104,11 +101,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		bundleDirMatchesWithProgress(resourceDir, "rawexd.zip", remote.RawEXD, func(done, total int64) {
 			progress("verify", "核对 CSV 文件", done, total)
 		})
-	progress("verify", "校验字体文件", 0, 0)
-	fontOK := fontsCompleteWithProgress(resourceDir, local, remote, func(done, total int64) {
-		progress("verify", "校验字体文件", done, total)
-	})
-	if metaModulesComplete(resourceDir, local, remote, cloudCSVOK) && fontOK {
+	if metaModulesComplete(resourceDir, local, remote, cloudCSVOK) {
 		writeVerifyStamp(resourceDir, buildVerifyStamp(resourceDir, remote))
 		progress("done", "资源已是最新", 1, 1)
 		return st, nil
@@ -159,47 +152,6 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		st.DownloadedBytes += meta.want.Size
 	}
 
-	// 字体独立检查与下载：仅当字体哈希不一致或缺失时才下载
-	if remote.Font.SHA256 != "" {
-		if !fontOK {
-			progress("font", "下载字体包", 0, 0)
-			if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, false, func(done, total int64) {
-				progress("font", "下载字体包", done, total)
-			}); err != nil {
-				return st, err
-			}
-			st.FontUpdated = true
-			st.DownloadedFiles++
-			st.DownloadedBytes += remote.Font.Size
-		}
-	} else {
-		fontKeys := sortedFontKeys(remote)
-		var fontTotal int64
-		for _, key := range fontKeys {
-			if fontMatches(resourceDir, key, remote.Fonts[key]) {
-				continue
-			}
-			fontTotal += remote.Fonts[key].Size
-		}
-		var fontDone int64
-		for _, key := range fontKeys {
-			want := remote.Fonts[key]
-			if fontMatches(resourceDir, key, want) {
-				continue
-			}
-			dst := filepath.Join(resourceDir, filepath.FromSlash(key))
-			progress("font", key, fontDone, fontTotal)
-			if err := u.downloadVerified(ctx, key, dst, want, func(done, _ int64) {
-				progress("font", key, fontDone+done, fontTotal)
-			}); err != nil {
-				return st, err
-			}
-			fontDone += want.Size
-			st.DownloadedFiles++
-			st.DownloadedBytes += want.Size
-		}
-	}
-
 	if err := writeManifest(resourceDir, remote); err != nil {
 		return st, err
 	}
@@ -208,69 +160,90 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	return st, nil
 }
 
-// EnsureFontPack 只校验（必要时下载）字体包，供自定义词条目录场景使用：
-// 该场景跳过整包同步，但字体仍取自内置资源目录，写入客户端前必须确认其完整性。
-// 返回值表示是否发生了下载或修复。离线时退回本地清单核对，仍可确认完整性。
-func (u *Updater) EnsureFontPack(ctx context.Context, resourceDir string, progress ProgressFunc) (bool, error) {
+// provisionLocal 只检查工作区里的资源是否齐全，绝不联网、也不改动任何文件。
+// 本地开发时 resource/ 是唯一事实来源：改 CSV、换字体后重新构建即可生效。
+func (u *Updater) provisionLocal(resourceDir string, progress ProgressFunc) (ResourceStatus, error) {
+	var st ResourceStatus
+	progress("verify", "校验本地资源", 0, 0)
+	csvDir := filepath.Join(resourceDir, "rawexd")
+	if !dirExists(csvDir) {
+		return st, fmt.Errorf("本地开发构建不下载云端资源，但 %s 不存在", csvDir)
+	}
+	if entries, err := os.ReadDir(csvDir); err != nil || len(entries) == 0 {
+		return st, fmt.Errorf("本地开发构建不下载云端资源，但 %s 为空或不可读", csvDir)
+	}
+	tablesPath := filepath.Join(resourceDir, "tables.json")
+	data, err := os.ReadFile(tablesPath)
+	if err != nil {
+		return st, fmt.Errorf("本地开发构建不下载云端资源，但缺少 %s: %w", tablesPath, err)
+	}
+	if !json.Valid(data) {
+		return st, fmt.Errorf("本地开发构建不下载云端资源，但 %s 不是合法 JSON", tablesPath)
+	}
+	if _, err := os.Stat(filepath.Join(resourceDir, "rules.json")); err != nil {
+		return st, fmt.Errorf("本地开发构建不下载云端资源，但缺少 rules.json: %w", err)
+	}
+	progress("done", "使用本地资源", 1, 1)
+	return st, nil
+}
+
+// EnsureFontPack 按需准备预编译字体包，只在字体来源选「内置字体包」时调用。
+// 本地已有且校验通过时直接返回，不联网。
+func (u *Updater) EnsureFontPack(ctx context.Context, resourceDir string, progress ProgressFunc) error {
 	if progress == nil {
 		progress = func(string, string, int64, int64) {}
 	}
 	progress = throttleProgress(progress)
-	if err := os.MkdirAll(resourceDir, 0o755); err != nil {
-		return false, fmt.Errorf("创建资源目录失败: %w", err)
+
+	if u.LocalOnly {
+		fontDir := filepath.Join(resourceDir, "font")
+		if !dirExists(fontDir) {
+			return fmt.Errorf("本地开发构建不下载云端字体包，但 %s 不存在", fontDir)
+		}
+		return nil
 	}
+
 	remote, err := u.FetchManifest(ctx)
 	if err != nil {
-		local, _ := ReadLocalManifest(resourceDir)
-		if local == nil || local.Font.SHA256 == "" || !fontsComplete(resourceDir, local, local) {
-			return false, fmt.Errorf("字体包校验未通过且无法联网修复: %w", err)
-		}
-		return false, nil
+		return fmt.Errorf("获取云端资源清单失败: %w", err)
 	}
-	local, _ := ReadLocalManifest(resourceDir)
-	if fontsComplete(resourceDir, local, remote) {
-		return false, nil
+	if remote.Font.SHA256 == "" {
+		return errors.New("云端清单里没有字体包")
 	}
-
-	if remote.Font.SHA256 != "" {
-		progress("font", "下载字体包", 0, 0)
-		if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, false, func(done, total int64) {
-			progress("font", "下载字体包", done, total)
-		}); err != nil {
-			return false, err
-		}
-		return true, nil
+	if bundleDirMatches(resourceDir, "font.zip", remote.Font) {
+		return nil
 	}
-
-	fontKeys := sortedFontKeys(remote)
-	var fontTotal int64
-	for _, key := range fontKeys {
-		if fontMatches(resourceDir, key, remote.Fonts[key]) {
-			continue
+	if zipMatches(resourceDir, "font.zip", remote.Font) {
+		// 包本身可信，只是解压目录缺失或被改动：重新解压即可。
+		progress("font", "解压字体包", 0, 0)
+		if err := ExtractZip(filepath.Join(resourceDir, "font.zip"), resourceDir); err != nil {
+			return fmt.Errorf("解压 font.zip 失败: %w", err)
 		}
-		fontTotal += remote.Fonts[key].Size
+		return nil
 	}
-	var fontDone int64
-	for _, key := range fontKeys {
-		want := remote.Fonts[key]
-		if fontMatches(resourceDir, key, want) {
-			continue
-		}
-		dst := filepath.Join(resourceDir, filepath.FromSlash(key))
-		progress("font", key, fontDone, fontTotal)
-		if err := u.downloadVerified(ctx, key, dst, want, func(done, _ int64) {
-			progress("font", key, fontDone+done, fontTotal)
-		}); err != nil {
-			return false, err
-		}
-		fontDone += want.Size
+	progress("font", "下载字体包", 0, 0)
+	if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, true, func(done, total int64) {
+		progress("font", "下载字体包", done, total)
+	}); err != nil {
+		return err
 	}
-	return true, nil
+	return nil
 }
 
 // SyncTableDoc 只同步 tables.json，用于首次运行或表清单缺失时，
 // 避免为了列出可汉化数据表去下载整个快照包。云端清单必须可获取，不做离线兜底。
 func (u *Updater) SyncTableDoc(ctx context.Context, resourceDir string) (bool, error) {
+	if u.LocalOnly {
+		dst := filepath.Join(resourceDir, "tables.json")
+		data, err := os.ReadFile(dst)
+		if err != nil {
+			return false, fmt.Errorf("本地开发构建不下载云端资源，但缺少 %s: %w", dst, err)
+		}
+		if !json.Valid(data) {
+			return false, fmt.Errorf("本地开发构建不下载云端资源，但 %s 不是合法 JSON", dst)
+		}
+		return false, nil
+	}
 	if err := os.MkdirAll(resourceDir, 0o755); err != nil {
 		return false, fmt.Errorf("创建资源目录失败: %w", err)
 	}
@@ -459,34 +432,6 @@ func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress fun
 	return out.Close()
 }
 
-func sortedFontKeys(manifest *Manifest) []string {
-	keys := make([]string, 0, len(manifest.Fonts))
-	for key := range manifest.Fonts {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-func fontMatches(resourceDir, key string, want FileInfo) bool {
-	return fontFileMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want)
-}
-
-// fontFileMatches 直接对本地字体文件重算哈希，不采信 manifest 里的历史记录：
-// 清单记录的是下载时的期望值，文件被外部改动或写坏后仍会与记录一致。
-func fontFileMatches(path string, want FileInfo) bool {
-	if want.SHA256 == "" {
-		return want.Size > 0 && fileSizeMatches(path, want.Size)
-	}
-	got, err := HashFile(path)
-	return err == nil && got.SHA256 == want.SHA256 && (want.Size <= 0 || got.Size == want.Size)
-}
-
-func fileSizeMatches(path string, size int64) bool {
-	st, err := os.Stat(path)
-	return err == nil && st.Size() == size
-}
-
 func dirExists(path string) bool {
 	st, err := os.Stat(path)
 	return err == nil && st.IsDir()
@@ -510,76 +455,14 @@ func metaModulesComplete(resourceDir string, local, remote *Manifest, csvOK bool
 	return true
 }
 
-func nonFontModulesComplete(resourceDir string, local, remote *Manifest) bool {
-	csvOK := local != nil && remote != nil && local.RawEXD.SHA256 == remote.RawEXD.SHA256 &&
-		bundleDirMatches(resourceDir, "rawexd.zip", remote.RawEXD)
-	return metaModulesComplete(resourceDir, local, remote, csvOK)
-}
-
-func fontsComplete(resourceDir string, local, remote *Manifest) bool {
-	return fontsCompleteWithProgress(resourceDir, local, remote, nil)
-}
-
-// fontsCompleteWithProgress 并发核对字体文件哈希。
-// 字体包体积最大（数百 MB），串行读取会明显拖慢启动，这里按文件并发摊开。
-func fontsCompleteWithProgress(resourceDir string, local, remote *Manifest, progress FileProgress) bool {
+// modulesComplete 判断 CSV 快照、规则与表清单是否都与云端一致。
+func modulesComplete(resourceDir string, local, remote *Manifest) bool {
 	if local == nil || remote == nil {
 		return false
 	}
-	if local.Font.SHA256 != remote.Font.SHA256 || !dirExists(filepath.Join(resourceDir, "font")) {
-		return false
-	}
-	keys := sortedFontKeys(remote)
-	var total int64
-	for _, key := range keys {
-		total += remote.Fonts[key].Size
-	}
-	if progress != nil {
-		progress(0, total)
-	}
-	if len(keys) == 0 {
-		return true
-	}
-	workers := runtime.GOMAXPROCS(0)
-	if workers > 8 {
-		workers = 8
-	}
-	if workers > len(keys) {
-		workers = len(keys)
-	}
-	var (
-		wg     sync.WaitGroup
-		idx    atomic.Int64
-		done   atomic.Int64
-		failed atomic.Bool
-	)
-	for i := 0; i < workers; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for {
-				n := int(idx.Add(1)) - 1
-				if n >= len(keys) || failed.Load() {
-					return
-				}
-				key := keys[n]
-				want := remote.Fonts[key]
-				if !fontFileMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want) {
-					failed.Store(true)
-					return
-				}
-				if progress != nil {
-					progress(done.Add(want.Size), total)
-				}
-			}
-		}()
-	}
-	wg.Wait()
-	return !failed.Load()
-}
-
-func modulesComplete(resourceDir string, local, remote *Manifest) bool {
-	return nonFontModulesComplete(resourceDir, local, remote) && fontsComplete(resourceDir, local, remote)
+	csvOK := local.RawEXD.SHA256 == remote.RawEXD.SHA256 &&
+		bundleDirMatches(resourceDir, "rawexd.zip", remote.RawEXD)
+	return metaModulesComplete(resourceDir, local, remote, csvOK)
 }
 
 // ReadLocalManifest 读取本地资源目录中的 manifest.json。
@@ -592,18 +475,14 @@ func ReadLocalManifest(resourceDir string) (*Manifest, error) {
 	if err := json.Unmarshal(data, &m); err != nil {
 		return nil, err
 	}
-	if m.Fonts == nil {
-		m.Fonts = map[string]FileInfo{}
-	}
 	return &m, nil
 }
 
 // HasLocalResource 检查本地是否已有可运行的必要基础资源。
+// manifest.json 只是同步元数据，本地开发构建本来就没有，不参与可用性判定。
 func HasLocalResource(resourceDir string) bool {
-	for _, name := range []string{"manifest.json", "tables.json"} {
-		if _, err := os.Stat(filepath.Join(resourceDir, name)); err != nil {
-			return false
-		}
+	if _, err := os.Stat(filepath.Join(resourceDir, "tables.json")); err != nil {
+		return false
 	}
 	return dirExists(filepath.Join(resourceDir, "rawexd"))
 }

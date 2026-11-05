@@ -174,6 +174,30 @@ func csvDirHasTables(dir string, known map[string]bool) bool {
 	return err == nil && len(keys) > 0
 }
 
+// missingCopyCount 统计副本相对内置词条还缺多少份 CSV。旧版本直接往正式目录里复制，
+// 中途被强杀会留下半成品；这里只用于提示，不自动删除或重建，以免覆盖用户已有的修改。
+func missingCopyCount(dstDir, srcDir string, known map[string]bool) int {
+	srcKeys, err := validCSVKeys(srcDir, known)
+	if err != nil {
+		return 0
+	}
+	dstKeys, err := validCSVKeys(dstDir, known)
+	if err != nil {
+		return 0
+	}
+	have := make(map[string]struct{}, len(dstKeys))
+	for _, key := range dstKeys {
+		have[key] = struct{}{}
+	}
+	missing := 0
+	for _, key := range srcKeys {
+		if _, ok := have[key]; !ok {
+			missing++
+		}
+	}
+	return missing
+}
+
 // csvDirUpdatedAt 返回目录内最新的文件修改时间，展示在词条列表的名字后面。
 func csvDirUpdatedAt(dir string) string {
 	var latest time.Time
@@ -379,8 +403,13 @@ func (a *App) csvContext(cfg AppConfig, doc TablesDoc, regionKey string) CSVCont
 		ResourceReady: updater.HasLocalResource(resourceDir),
 	}
 	if ctx.ResourceReady {
-		ctx.ResourceUpdatedAt = resourceUpdatedAt(resourceDir)
-		ctx.ResourceHash = resourceHash(resourceDir)
+		if a.updater.LocalOnly {
+			// 本地开发构建没有云端清单：直接取工作区 CSV 的最新修改时间。
+			ctx.ResourceUpdatedAt = csvDirUpdatedAt(filepath.Join(resourceDir, "rawexd"))
+		} else {
+			ctx.ResourceUpdatedAt = resourceUpdatedAt(resourceDir)
+			ctx.ResourceHash = resourceHash(resourceDir)
+		}
 	}
 	for _, dir := range conf.Dirs {
 		label := conf.Labels[dir]
@@ -532,6 +561,9 @@ func openInFileManager(dir string) error {
 // customCSVDirName 是自动生成的自定义词条目录名，位于 resource 目录内。
 const customCSVDirName = "custom-csv"
 
+// csvCopyTmpSuffix 是制作副本时的临时目录后缀：整份复制完成后才改名为正式目录。
+const csvCopyTmpSuffix = ".building"
+
 // customCSVDir 返回自动生成的自定义词条目录路径。dataRootFor 只在资源落到系统缓存目录时
 // 改写到持久目录，那种情况下用户编辑的 CSV 同样不该留在缓存里。
 func customCSVDir(resourceDir string) string {
@@ -559,6 +591,9 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 	if pathWithin(dstDir, srcDir) || pathWithin(srcDir, dstDir) {
 		return current, errors.New("自定义词条目录不能与内置词条目录重叠")
 	}
+	// 复制到临时目录，全部写完再改名成正式目录：进程被强杀时只会留下 .building，
+	// 正式目录要么不存在、要么完整，不会再出现半成品被当成可用副本的情况。
+	tmpDir := dstDir + csvCopyTmpSuffix
 
 	entries, err := os.ReadDir(dstDir)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -570,6 +605,9 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 			return current, errors.New("已存在内置词条副本，如需繁體副本请先删除现有副本目录")
 		}
 		a.emitPatchLog("[词条] 已存在内置词条副本，直接使用其中的 CSV（不会覆盖你的修改）")
+		if missing := missingCopyCount(dstDir, srcDir, knownTableKeys(doc)); missing > 0 {
+			a.emitPatchLog(fmt.Sprintf("[词条] 副本比内置词条少 %d 份 CSV（多为上次复制被中断所致），这些表会回退为原文；需要完整副本请先删除现有副本再重新制作", missing))
+		}
 	} else {
 		transform := func(data []byte) ([]byte, error) { return data, nil }
 		detail := "制作副本"
@@ -581,11 +619,15 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 			transform = convertCSVS2TW
 			detail = "简繁转换"
 		}
-		if err := os.MkdirAll(dstDir, 0o755); err != nil {
+		// 上次被强杀留下的半成品先清掉，否则 rename 会失败，也可能混进新副本。
+		if err := os.RemoveAll(tmpDir); err != nil {
+			return current, fmt.Errorf("清理上次未完成的副本失败: %w", err)
+		}
+		if err := os.MkdirAll(tmpDir, 0o755); err != nil {
 			return current, fmt.Errorf("创建自定义词条目录失败: %w", err)
 		}
 		var lastEmit time.Time
-		copyErr := copyCSVTree(srcDir, dstDir, transform, func(done, total int) {
+		copyErr := copyCSVTree(srcDir, tmpDir, transform, func(done, total int) {
 			if a.ctx == nil || (done != total && time.Since(lastEmit) < 100*time.Millisecond) {
 				return
 			}
@@ -598,9 +640,17 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 			})
 		})
 		if copyErr != nil {
-			// 复制中断时清掉半成品，避免下次误把它当成可用副本。
-			_ = os.RemoveAll(dstDir)
+			_ = os.RemoveAll(tmpDir)
 			return current, fmt.Errorf("复制内置词条失败: %w", copyErr)
+		}
+		// Windows 的 rename 不能覆盖已存在的目录，上一次失败留下的空目录要先删掉。
+		if err := os.Remove(dstDir); err != nil && !errors.Is(err, os.ErrNotExist) {
+			_ = os.RemoveAll(tmpDir)
+			return current, fmt.Errorf("清理空的自定义词条目录失败: %w", err)
+		}
+		if err := os.Rename(tmpDir, dstDir); err != nil {
+			_ = os.RemoveAll(tmpDir)
+			return current, fmt.Errorf("提交自定义词条目录失败: %w", err)
 		}
 		if convert {
 			a.emitPatchLog("[词条] 已生成内置词条副本（已简繁转换），可直接编辑其中的 CSV")

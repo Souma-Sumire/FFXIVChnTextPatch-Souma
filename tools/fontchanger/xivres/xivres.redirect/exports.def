@@ -1,0 +1,3 @@
+LIBRARY xivres.redirect.dll
+EXPORTS
+	DirectInput8Create=FORWARDER_DirectInput8Create		@1

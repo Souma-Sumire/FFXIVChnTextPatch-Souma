@@ -35,6 +35,8 @@ type Options struct {
 	Rules           *pipeline.Registry
 	Progress        func(done, total int, file string)
 	Log             func(format string, args ...any)
+	// Undo 非空时记录写前状态，失败/中止后可据此撤回本次写入（可为 nil）。
+	Undo *Undo
 }
 
 // Stats 记录替换统计。
@@ -202,7 +204,7 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 		}
 		stats.Tables++
 	}
-	if err := commitIndexOffsets(datFile, indexFile, pending); err != nil {
+	if err := commitIndexOffsets(datFile, indexFile, pending, opts.Undo); err != nil {
 		return stats, err
 	}
 	return stats, nil
@@ -364,6 +366,12 @@ func ReplaceFont(indexPath, fontDir string, progress func(done, total int, file 
 
 // ReplaceFontWithContext 支持 context 取消的字体替换。
 func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, progress func(done, total int, file string)) (Stats, error) {
+	return ReplaceFontWithUndo(ctx, indexPath, fontDir, progress, nil)
+}
+
+// ReplaceFontWithUndo 在 ReplaceFontWithContext 的基础上记录写前状态，
+// undo 非空时失败后可调用 Revert 撤回本次写入。
+func ReplaceFontWithUndo(ctx context.Context, indexPath, fontDir string, progress func(done, total int, file string), undo *Undo) (Stats, error) {
 	var stats Stats
 	if progress == nil {
 		progress = func(int, int, string) {}
@@ -441,7 +449,7 @@ func ReplaceFontWithContext(ctx context.Context, indexPath, fontDir string, prog
 		stats.AppendedBytes += int64(len(block))
 		stats.Files++
 	}
-	if err := commitIndexOffsets(datFile, indexFile, pending); err != nil {
+	if err := commitIndexOffsets(datFile, indexFile, pending, undo); err != nil {
 		return stats, err
 	}
 	stats.Tables = 1
@@ -457,7 +465,8 @@ type pendingOffset struct {
 // commitIndexOffsets 先确保 dat 数据块全部落盘，再批量回写索引并刷盘。
 // 顺序不可颠倒：任何时刻索引都只能指向已持久化的数据，否则崩溃或掉电后
 // 会留下指向空洞的坏索引，游戏读取该表时会得到损坏数据。
-func commitIndexOffsets(datFile, indexFile *os.File, pending []pendingOffset) error {
+// undo 非空时在改写每个偏移前记录其原值，供失败后撤回。
+func commitIndexOffsets(datFile, indexFile *os.File, pending []pendingOffset, undo *Undo) error {
 	if len(pending) == 0 {
 		return nil
 	}
@@ -465,6 +474,7 @@ func commitIndexOffsets(datFile, indexFile *os.File, pending []pendingOffset) er
 		return fmt.Errorf("同步 dat0 (%s) 失败: %w", datFile.Name(), err)
 	}
 	for _, p := range pending {
+		undo.Record(p.entry)
 		if err := sqpack.WriteDataOffset(indexFile, p.entry, p.offset); err != nil {
 			return fmt.Errorf("回写索引偏移 (%s, pt=%d) 失败: %w", indexFile.Name(), p.entry.Pt, err)
 		}

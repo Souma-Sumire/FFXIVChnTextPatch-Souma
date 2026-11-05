@@ -1,0 +1,458 @@
+{
+  "AXIS_96": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 9.6,
+    "lineHeight": 13,
+    "ascent": 10,
+    "glyphs": 7593
+  },
+  "AXIS_12": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 7593
+  },
+  "AXIS_14": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 7593
+  },
+  "AXIS_18": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 7593
+  },
+  "AXIS_36": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 7593
+  },
+  "Jupiter_16": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 16,
+    "lineHeight": 21,
+    "ascent": 17,
+    "glyphs": 183
+  },
+  "Jupiter_20": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 20,
+    "lineHeight": 27,
+    "ascent": 21,
+    "glyphs": 183
+  },
+  "Jupiter_23": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 23,
+    "lineHeight": 31,
+    "ascent": 24,
+    "glyphs": 183
+  },
+  "Jupiter_45": {
+    "family": "JupiterN",
+    "subfamily": "Regular",
+    "size": 45,
+    "lineHeight": 60,
+    "ascent": 48,
+    "glyphs": 23
+  },
+  "Jupiter_46": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 46,
+    "lineHeight": 61,
+    "ascent": 49,
+    "glyphs": 183
+  },
+  "Jupiter_90": {
+    "family": "JupiterN",
+    "subfamily": "Regular",
+    "size": 90,
+    "lineHeight": 120,
+    "ascent": 95,
+    "glyphs": 23
+  },
+  "Meidinger_16": {
+    "family": "Meidinger",
+    "subfamily": "Regular",
+    "size": 16,
+    "lineHeight": 21,
+    "ascent": 17,
+    "glyphs": 22
+  },
+  "Meidinger_20": {
+    "family": "Meidinger",
+    "subfamily": "Regular",
+    "size": 20,
+    "lineHeight": 27,
+    "ascent": 21,
+    "glyphs": 22
+  },
+  "Meidinger_40": {
+    "family": "Meidinger",
+    "subfamily": "Regular",
+    "size": 40,
+    "lineHeight": 53,
+    "ascent": 42,
+    "glyphs": 22
+  },
+  "MiedingerMid_10": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 10,
+    "lineHeight": 13,
+    "ascent": 11,
+    "glyphs": 184
+  },
+  "MiedingerMid_12": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 184
+  },
+  "MiedingerMid_14": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 184
+  },
+  "MiedingerMid_18": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 184
+  },
+  "MiedingerMid_36": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 184
+  },
+  "TrumpGothic_184": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 18.4,
+    "lineHeight": 25,
+    "ascent": 20,
+    "glyphs": 183
+  },
+  "TrumpGothic_23": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 23,
+    "lineHeight": 31,
+    "ascent": 25,
+    "glyphs": 183
+  },
+  "TrumpGothic_34": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 34,
+    "lineHeight": 46,
+    "ascent": 37,
+    "glyphs": 183
+  },
+  "TrumpGothic_68": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 68,
+    "lineHeight": 92,
+    "ascent": 73,
+    "glyphs": 183
+  },
+  "AXIS_12_lobby": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 7593
+  },
+  "AXIS_14_lobby": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 7593
+  },
+  "AXIS_18_lobby": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 7593
+  },
+  "AXIS_36_lobby": {
+    "family": "AXIS",
+    "subfamily": "Regular",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 7593
+  },
+  "Jupiter_16_lobby": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 16,
+    "lineHeight": 21,
+    "ascent": 17,
+    "glyphs": 183
+  },
+  "Jupiter_20_lobby": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 20,
+    "lineHeight": 27,
+    "ascent": 21,
+    "glyphs": 183
+  },
+  "Jupiter_23_lobby": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 23,
+    "lineHeight": 31,
+    "ascent": 24,
+    "glyphs": 183
+  },
+  "Jupiter_45_lobby": {
+    "family": "JupiterN",
+    "subfamily": "Regular",
+    "size": 45,
+    "lineHeight": 60,
+    "ascent": 48,
+    "glyphs": 23
+  },
+  "Jupiter_46_lobby": {
+    "family": "Jupiter",
+    "subfamily": "Regular",
+    "size": 46,
+    "lineHeight": 61,
+    "ascent": 49,
+    "glyphs": 183
+  },
+  "Jupiter_90_lobby": {
+    "family": "JupiterN",
+    "subfamily": "Regular",
+    "size": 90,
+    "lineHeight": 120,
+    "ascent": 95,
+    "glyphs": 23
+  },
+  "Meidinger_16_lobby": {
+    "family": "Meidinger",
+    "subfamily": "Regular",
+    "size": 16,
+    "lineHeight": 21,
+    "ascent": 17,
+    "glyphs": 22
+  },
+  "Meidinger_20_lobby": {
+    "family": "Meidinger",
+    "subfamily": "Regular",
+    "size": 20,
+    "lineHeight": 27,
+    "ascent": 21,
+    "glyphs": 22
+  },
+  "Meidinger_40_lobby": {
+    "family": "Meidinger",
+    "subfamily": "Regular",
+    "size": 40,
+    "lineHeight": 53,
+    "ascent": 42,
+    "glyphs": 22
+  },
+  "MiedingerMid_10_lobby": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 10,
+    "lineHeight": 13,
+    "ascent": 11,
+    "glyphs": 184
+  },
+  "MiedingerMid_12_lobby": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 184
+  },
+  "MiedingerMid_14_lobby": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 184
+  },
+  "MiedingerMid_18_lobby": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 184
+  },
+  "MiedingerMid_36_lobby": {
+    "family": "MiedingerMid",
+    "subfamily": "Medium",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 184
+  },
+  "TrumpGothic_184_lobby": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 18.4,
+    "lineHeight": 25,
+    "ascent": 20,
+    "glyphs": 183
+  },
+  "TrumpGothic_23_lobby": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 23,
+    "lineHeight": 31,
+    "ascent": 25,
+    "glyphs": 183
+  },
+  "TrumpGothic_34_lobby": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 34,
+    "lineHeight": 46,
+    "ascent": 37,
+    "glyphs": 183
+  },
+  "TrumpGothic_68_lobby": {
+    "family": "TrumpGothic",
+    "subfamily": "Regular",
+    "size": 68,
+    "lineHeight": 92,
+    "ascent": 73,
+    "glyphs": 183
+  },
+  "ChnAXIS_120": {
+    "family": "ChnAXIS",
+    "subfamily": "Regular",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 7593
+  },
+  "ChnAXIS_140": {
+    "family": "ChnAXIS",
+    "subfamily": "Regular",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 7593
+  },
+  "ChnAXIS_180": {
+    "family": "ChnAXIS",
+    "subfamily": "Regular",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 7593
+  },
+  "ChnAXIS_360": {
+    "family": "ChnAXIS",
+    "subfamily": "Regular",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 7593
+  },
+  "KrnAXIS_120": {
+    "family": "KrnAXIS",
+    "subfamily": "Regular",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 7593
+  },
+  "KrnAXIS_140": {
+    "family": "KrnAXIS",
+    "subfamily": "Regular",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 7593
+  },
+  "KrnAXIS_180": {
+    "family": "KrnAXIS",
+    "subfamily": "Regular",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 7593
+  },
+  "KrnAXIS_360": {
+    "family": "KrnAXIS",
+    "subfamily": "Regular",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 7593
+  },
+  "tcaxis_120": {
+    "family": "tcaxis",
+    "subfamily": "Regular",
+    "size": 12,
+    "lineHeight": 16,
+    "ascent": 13,
+    "glyphs": 7593
+  },
+  "tcaxis_140": {
+    "family": "tcaxis",
+    "subfamily": "Regular",
+    "size": 14,
+    "lineHeight": 19,
+    "ascent": 15,
+    "glyphs": 7593
+  },
+  "tcaxis_180": {
+    "family": "tcaxis",
+    "subfamily": "Regular",
+    "size": 18,
+    "lineHeight": 24,
+    "ascent": 19,
+    "glyphs": 7593
+  },
+  "tcaxis_360": {
+    "family": "tcaxis",
+    "subfamily": "Regular",
+    "size": 36,
+    "lineHeight": 48,
+    "ascent": 38,
+    "glyphs": 7593
+  }
+}

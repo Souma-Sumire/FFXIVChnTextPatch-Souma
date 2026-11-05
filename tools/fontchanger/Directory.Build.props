@@ -1,0 +1,20 @@
+<Project>
+  <!--
+    vcpkg MSBuild 集成（自包含）。
+
+    上游工程依赖 Visual Studio 自带的 vcpkg 集成（vcpkg integrate install 写入的全局配置）。
+    GitHub Actions 的 windows-latest 镜像已切到 VS2026/Image win25-vs2026，不再预置该集成，
+    结果各工程拿不到 vcpkg 的头文件路径（zlib.h / nlohmann/json_fwd.hpp / srell.hpp 找不到）。
+    这里显式导入 vcpkg 自带的 props/targets，使构建只依赖 VCPKG_ROOT（由 lukka/run-vcpkg 设置）。
+
+    若 VcpkgRoot 已被外部定义（例如 vcpkg integrate install 的全局集成），则沿用该值，不再从环境变量推导。
+    集成文件缺失时静默跳过，退回由 Visual Studio 的全局集成处理。
+  -->
+  <PropertyGroup>
+    <VcpkgRoot Condition="'$(VcpkgRoot)' == '' and '$(VCPKG_ROOT)' != ''">$(VCPKG_ROOT)</VcpkgRoot>
+    <VcpkgRoot Condition="'$(VcpkgRoot)' != '' and !$(VcpkgRoot.EndsWith('\'))">$(VcpkgRoot)\</VcpkgRoot>
+  </PropertyGroup>
+
+  <Import Project="$(VcpkgRoot)scripts\buildsystems\msbuild\vcpkg.props"
+          Condition="'$(VcpkgRoot)' != '' and Exists('$(VcpkgRoot)scripts\buildsystems\msbuild\vcpkg.props')" />
+</Project>

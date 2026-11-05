@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	goruntime "runtime"
@@ -16,6 +19,7 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamecfg"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gameproc"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamescan"
@@ -52,6 +56,8 @@ type App struct {
 
 	updater *updater.Updater
 
+	fontEngine *fontengine.Engine
+
 	// resourceLock 互斥“写资源目录”（同步）与“读资源目录”（汉化）。
 	// 解压是逐文件覆盖，若与汉化并发，CSV 可能被读到一半，产出部分表未汉化的补丁。
 	resourceLock sync.Mutex
@@ -59,9 +65,6 @@ type App struct {
 	// builtinSynced 记录本次运行内置资源是否已同步通过。
 	// 未通过时内置词条不允许汉化，避免读到未校验或残缺的 CSV。
 	builtinSynced atomic.Bool
-
-	// fontPackSynced 记录本次运行字体包是否已校验通过（自定义词条目录场景单独校验）。
-	fontPackSynced atomic.Bool
 
 	// resourceSyncedAt 是上次内置资源检查完成的时间（UnixNano）。
 	// 程序可能长期不退出，开始汉化前据此判断要不要重新确认云端词条版本。
@@ -120,8 +123,11 @@ func (a *App) resourceDir() string {
 
 // NewApp 创建应用实例。
 func NewApp() *App {
+	u := updater.New()
+	u.LocalOnly = localResourceOnly
 	return &App{
-		updater: updater.New(),
+		updater:    u,
+		fontEngine: fontengine.NewEngine(""),
 	}
 }
 
@@ -248,6 +254,9 @@ type AppConfig struct {
 	Rules           map[string]bool   `json:"rules"`
 	Preset          string            `json:"preset"`
 	CSVDirs         CSVDirsByRegion   `json:"csvDirs"`
+	FontPresets     map[string]string `json:"fontPresets,omitempty"`
+	// FontSource 决定换字体时用内置字体包还是现场编译自定义方案：package | compile。
+	FontSource string `json:"fontSource,omitempty"`
 }
 
 // BootstrapInfo 是前端启动所需的全部静态信息。
@@ -255,6 +264,7 @@ type BootstrapInfo struct {
 	Version         string                      `json:"version"`
 	ResourceDir     string                      `json:"resourceDir"`
 	ResourceReady   bool                        `json:"resourceReady"`
+	DevMode         bool                        `json:"devMode"`
 	Rules           []pipeline.RuleMeta         `json:"rules"`
 	Languages       []LanguageOption            `json:"languages"`
 	RegionLanguages map[string][]RegionLanguage `json:"regionLanguages"`
@@ -410,6 +420,10 @@ func configPathFor(resourceDir string) string {
 	return filepath.Join(dataRootFor(resourceDir), "config.json")
 }
 
+func presetsDirFor(resourceDir string) string {
+	return filepath.Join(dataRootFor(resourceDir), "presets")
+}
+
 func normalizeRegionCode(lang string) string {
 	parsed, err := region.ParseLanguage(lang)
 	if err != nil {
@@ -437,6 +451,12 @@ func defaultConfig() AppConfig {
 		Rules:           pipeline.DefaultRuleStates(),
 		Preset:          "recommended",
 		CSVDirs:         CSVDirsByRegion{},
+		FontPresets: map[string]string{
+			"GLOBAL": "global-source-han-sans-sc",
+			"CHS":    "chs-source-han-sans-sc",
+			"KO":     "ko-source-han-sans-sc",
+			"TC":     "tc-source-han-sans-sc",
+		},
 	}
 }
 
@@ -547,6 +567,14 @@ func (a *App) loadConfig(resourceDir string) AppConfig {
 			}
 		}
 	}
+	if len(saved.FontPresets) > 0 {
+		for code, p := range saved.FontPresets {
+			cfg.FontPresets[normalizeRegionCode(code)] = p
+		}
+	}
+	if strings.EqualFold(strings.TrimSpace(saved.FontSource), "compile") {
+		cfg.FontSource = "compile"
+	}
 	return cfg
 }
 
@@ -563,22 +591,16 @@ func shortHash(h string) string {
 	return h
 }
 
-// formatResourceHashDetail 生成“CSV: xxxxxxxx、字体: yyyyyyyy”描述，跳过缺失的哈希。
+// formatResourceHashDetail 生成“CSV: xxxxxxxx”描述，跳过缺失的哈希。
+// 字体不再随资源包分发，因此这里只剩 CSV。
 func formatResourceHashDetail(m *updater.Manifest) string {
 	if m == nil {
 		return "哈希未知"
 	}
-	parts := make([]string, 0, 2)
 	if h := shortHash(m.RawEXD.SHA256); h != "" {
-		parts = append(parts, "CSV: "+h)
+		return "CSV: " + h
 	}
-	if h := shortHash(m.Font.SHA256); h != "" {
-		parts = append(parts, "字体: "+h)
-	}
-	if len(parts) == 0 {
-		return "哈希未知"
-	}
-	return strings.Join(parts, "、")
+	return "哈希未知"
 }
 
 func formatResourceTime(isoStr string) string {
@@ -631,6 +653,9 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 	// 失败也算检查过：否则每次开始汉化都要为同一次网络故障等超时。
 	a.resourceSyncedAt.Store(time.Now().UnixNano())
 	if err != nil {
+		if a.updater.LocalOnly {
+			return fmt.Errorf("本地内置资源不可用：%w", err)
+		}
 		return fmt.Errorf("同步内置资源失败：%w", err)
 	}
 	if status.Updated && status.DownloadedFiles > 0 {
@@ -638,15 +663,14 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 		if status.CSVUpdated {
 			updates = append(updates, "CSV")
 		}
-		if status.FontUpdated {
-			updates = append(updates, "字体")
-		}
 		if len(updates) == 0 {
 			updates = append(updates, "规则配置")
 		}
 		a.emitPatchLog(fmt.Sprintf("[资源] 已同步最新资源（%s）", strings.Join(updates, "、")))
 	} else if status.Updated {
 		a.emitPatchLog("[资源] 已修复内置资源并完成哈希校验")
+	} else if a.updater.LocalOnly {
+		a.emitPatchLog("[资源] 本地开发构建：直接使用 resource/ 中的词条，已跳过云端同步")
 	} else {
 		a.emitPatchLog("[资源] 内置资源已是最新，哈希校验通过")
 	}
@@ -654,38 +678,14 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 	return nil
 }
 
-// ensureFontPack 校验（必要时下载）字体包。自定义词条目录场景跳过整包同步，
-// 但字体仍取自内置资源目录，只凭目录存在就写入等于跳过全部校验。
-func (a *App) ensureFontPack(ctx context.Context, resourceDir string) error {
-	unlock, err := a.lockResource(ctx)
-	if err != nil {
-		return err
-	}
-	defer unlock()
-	updated, err := a.updater.EnsureFontPack(ctx, resourceDir, a.emitResourceProgress)
-	if err != nil {
-		return fmt.Errorf("字体包校验失败：%w", err)
-	}
-	if updated {
-		a.emitPatchLog("[资源] 字体包不完整，已重新下载并校验")
-	} else {
-		a.emitPatchLog("[资源] 字体包校验通过")
-	}
-	a.fontPackSynced.Store(true)
-	return nil
-}
-
 // resourceIncomplete 判断本次请求是否缺少必须的内置资源文件。
-// 表清单由 ensureTableDoc 单独补齐，不触发整包同步。
-func resourceIncomplete(resourceDir string, custom, replaceFont bool) bool {
-	missing := func(name string) bool {
-		_, err := os.Stat(filepath.Join(resourceDir, name))
-		return err != nil
+// 表清单由 ensureTableDoc 单独补齐，不触发整包同步。字体由 fontengine 动态管理。
+func resourceIncomplete(resourceDir string, custom bool) bool {
+	if custom {
+		return false
 	}
-	if replaceFont && missing("font") {
-		return true
-	}
-	return !custom && missing("rawexd")
+	_, err := os.Stat(filepath.Join(resourceDir, "rawexd"))
+	return err != nil
 }
 
 // resourceSyncStale 判断内置词条是否需要在开始汉化前重新确认云端版本。
@@ -694,10 +694,18 @@ func (a *App) resourceSyncStale() bool {
 	return last == 0 || time.Since(time.Unix(0, last)) >= resourceRefreshInterval
 }
 
+// syncFailureHint 按构建模式给出资源同步失败后的处理建议。
+func (a *App) syncFailureHint() string {
+	if a.updater.LocalOnly {
+		return "（本地开发构建不联网，请从仓库恢复 resource/ 后重试）"
+	}
+	return "（可联网重试或改用自定义词条目录）"
+}
+
 // ensureTableDoc 只补齐 tables.json：表清单体积远小于快照包，
 // 首次运行或缺失时不应为了列目录去同步整个内置资源。
 func (a *App) ensureTableDoc(ctx context.Context, resourceDir string) error {
-	if _, err := os.Stat(filepath.Join(resourceDir, "tables.json")); err == nil {
+	if tablesDocUsable(resourceDir) {
 		return nil
 	}
 	a.emitPatchLog("[资源] 正在同步表清单 tables.json...")
@@ -803,6 +811,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		Version:       updater.CleanAppVersion(appVersion),
 		ResourceDir:   resourceDir,
 		ResourceReady: updater.HasLocalResource(resourceDir),
+		DevMode:       a.updater.LocalOnly,
 		Rules:         ruleMetas,
 		Languages: []LanguageOption{
 			{Code: string(region.GLOBAL), Name: "国际服", Region: string(region.Global)},
@@ -934,6 +943,13 @@ func (a *App) SaveConfig(cfg AppConfig) error {
 		csvDirs[normalizeRegionCode(code)] = normalized
 	}
 	cfg.CSVDirs = csvDirs
+	fontPresets := defaultConfig().FontPresets
+	for code, p := range cfg.FontPresets {
+		if p != "" {
+			fontPresets[normalizeRegionCode(code)] = p
+		}
+	}
+	cfg.FontPresets = fontPresets
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return err
@@ -1178,9 +1194,11 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 		}
 	}
 	info.UiAssetType = -1
-	if mf, err := updater.ReadLocalManifest(a.resourceDir()); err == nil && mf != nil {
-		info.ResourceTime = formatResourceTime(mf.GeneratedAt)
-		info.ResourceHash = shortHash(mf.RawEXD.SHA256)
+	if !a.updater.LocalOnly {
+		if mf, err := updater.ReadLocalManifest(a.resourceDir()); err == nil && mf != nil {
+			info.ResourceTime = formatResourceTime(mf.GeneratedAt)
+			info.ResourceHash = shortHash(mf.RawEXD.SHA256)
+		}
 	}
 	if cfgPath, err := gamecfg.FindConfigFile(); err == nil {
 		if val, exists, err := gamecfg.ReadUiAssetType(cfgPath); err == nil && exists {
@@ -1191,10 +1209,20 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 }
 
 // ClientStatusResult 表示客户端环境状态。
+// ClientPartStatus 描述文本 / 字体其中一组文件的状态。
+type ClientPartStatus struct {
+	Status      string `json:"status"`
+	Label       string `json:"label"`
+	Description string `json:"description,omitempty"`
+}
+
 type ClientStatusResult struct {
 	Status      string `json:"status"` // "original" | "modified" | "unknown" | "mismatch"
 	Label       string `json:"label"`  // "官方原版" | "已修改" | "未知版本" | "区服不匹配"
 	Description string `json:"description"`
+	// Text / Font 是分开的两组状态：文本（0a0000）与字体（000000）。
+	Text ClientPartStatus `json:"text"`
+	Font ClientPartStatus `json:"font"`
 }
 
 // writeFileAtomic 先写临时文件再改名，避免进程中断留下截断的清单文件。
@@ -1231,10 +1259,11 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	}
 
 	versionData, err := os.ReadFile(filepath.Join(gameDir, "game", "ffxivgame.ver"))
-	if err != nil {
-		return ClientStatusResult{Status: "unknown", Label: "版本未知", Description: fmt.Sprintf("无法读取 ffxivgame.ver：%v", err)}, nil
+	version := ""
+	versionErr := err
+	if err == nil {
+		version = strings.TrimSpace(string(versionData))
 	}
-	version := strings.TrimSpace(string(versionData))
 
 	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
 	fontIndex := "000000.win32.index"
@@ -1243,95 +1272,79 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	fontHash, fontErr := verifier.HashFile(filepath.Join(sqpackDir, fontIndex))
 	textHash, textErr := verifier.HashFile(filepath.Join(sqpackDir, textIndex))
 	if fontErr != nil && textErr != nil {
-		return ClientStatusResult{Status: "unknown", Label: "文件缺失", Description: fmt.Sprintf("无法读取客户端关键索引数据包（文本索引: %v；字体索引: %v）", textErr, fontErr)}, nil
+		missing := ClientPartStatus{Status: "missing", Label: "文件缺失", Description: fmt.Sprintf("文本索引: %v；字体索引: %v", textErr, fontErr)}
+		return ClientStatusResult{Status: "unknown", Label: "文件缺失", Description: missing.Description, Text: missing, Font: missing}, nil
 	}
 
-	// 2. 检查本地是否有当前版本的原版备份
-	backupDir := filepath.Join(backupRootFor(a.resourceDir()), string(reg))
-	metaPath := filepath.Join(backupDir, "meta.json")
+	// 本地原版备份（同版本才有效）
 	var meta verifier.BackupMeta
 	hasBackupMeta := false
-	if data, err := os.ReadFile(metaPath); err == nil {
-		if json.Unmarshal(data, &meta) == nil && meta.Version == version && len(meta.Files) > 0 {
+	backupDir := filepath.Join(backupRootFor(a.resourceDir()), string(reg))
+	if data, err := os.ReadFile(filepath.Join(backupDir, "meta.json")); err == nil {
+		if json.Unmarshal(data, &meta) == nil && versionErr == nil && meta.Version == version && len(meta.Files) > 0 {
 			hasBackupMeta = true
 		}
 	}
 
-	if hasBackupMeta {
-		matchedBackup := true
-		if backupFont, ok := meta.Files[fontIndex]; ok && fontErr == nil {
-			if !strings.EqualFold(fontHash.SHA256, backupFont.SHA256) {
-				matchedBackup = false
-			}
-		}
-		if backupText, ok := meta.Files[textIndex]; ok && textErr == nil {
-			if !strings.EqualFold(textHash.SHA256, backupText.SHA256) {
-				matchedBackup = false
-			}
-		}
-		if matchedBackup {
-			return ClientStatusResult{
-				Status:      "original",
-				Label:       "官方原版",
-				Description: version,
-			}, nil
-		}
-		return ClientStatusResult{
-			Status:      "modified",
-			Label:       "已修改",
-			Description: "文件与本地原版备份不一致",
-		}, nil
-	}
-
-	// 3. 本地无当前版本备份时，国际服查询云端 Release 进行比对
-	if reg == region.Global {
+	// 国际服且本地没有备份时，用云端 Release 作为比对基准
+	var cloudAsset func(string) (string, bool)
+	if reg == region.Global && !hasBackupMeta && versionErr == nil {
 		cloud := a.getCloud()
-		repo := "Souma-Sumire/FFXIVChnTextPatch-Souma"
 		parentCtx := a.ctx
 		if parentCtx == nil {
 			parentCtx = context.Background()
 		}
 		ctx, cancel := context.WithTimeout(parentCtx, 4*time.Second)
-		defer cancel()
-
-		r, err := cloud.ReleaseByTag(ctx, repo, version)
-		if err == nil && r != nil {
-			matchedCloud := true
-			checkedCloudCount := 0
-			if wantFont, ok := r.AssetSHA256(fontIndex); ok && fontErr == nil {
-				checkedCloudCount++
-				if !strings.EqualFold(fontHash.SHA256, wantFont) {
-					matchedCloud = false
-				}
-			}
-			if wantText, ok := r.AssetSHA256(textIndex); ok && textErr == nil {
-				checkedCloudCount++
-				if !strings.EqualFold(textHash.SHA256, wantText) {
-					matchedCloud = false
-				}
-			}
-			if checkedCloudCount > 0 {
-				if matchedCloud {
-					return ClientStatusResult{
-						Status:      "original",
-						Label:       "官方原版",
-						Description: version,
-					}, nil
-				}
-				return ClientStatusResult{
-					Status:      "modified",
-					Label:       "已修改",
-					Description: "文件与云端官方原版不一致",
-				}, nil
-			}
+		r, relErr := cloud.ReleaseByTag(ctx, "Souma-Sumire/FFXIVChnTextPatch-Souma", version)
+		cancel()
+		if relErr == nil && r != nil {
+			cloudAsset = func(name string) (string, bool) { return r.AssetSHA256(name) }
 		}
 	}
 
-	// 4. 【云端没更新 + 游戏更新了 = 显示未知】
+	// 文本 / 字体分别判定，互不影响
+	partStatus := func(index string, hash verifier.FileHash, hashErr error) ClientPartStatus {
+		if hashErr != nil {
+			return ClientPartStatus{Status: "missing", Label: "文件缺失", Description: hashErr.Error()}
+		}
+		if hasBackupMeta {
+			if want, ok := meta.Files[index]; ok {
+				if strings.EqualFold(hash.SHA256, want.SHA256) {
+					return ClientPartStatus{Status: "original", Label: "原版", Description: version}
+				}
+				return ClientPartStatus{Status: "modified", Label: "已修改", Description: "与原版备份不一致"}
+			}
+		}
+		if cloudAsset != nil {
+			if want, ok := cloudAsset(index); ok {
+				if strings.EqualFold(hash.SHA256, want) {
+					return ClientPartStatus{Status: "original", Label: "原版", Description: version}
+				}
+				return ClientPartStatus{Status: "modified", Label: "已修改", Description: "与云端原版不一致"}
+			}
+		}
+		return ClientPartStatus{Status: "unknown", Label: "未知版本", Description: "云端尚未收录该版本"}
+	}
+
+	textPart := partStatus(textIndex, textHash, textErr)
+	fontPart := partStatus(fontIndex, fontHash, fontErr)
+
+	summary := ClientPartStatus{Status: "unknown", Label: "未知版本", Description: "云端尚未收录该版本的原版备份"}
+	switch {
+	case textPart.Status == "original" && fontPart.Status == "original":
+		summary = ClientPartStatus{Status: "original", Label: "原版", Description: version}
+	case textPart.Status == "modified" || fontPart.Status == "modified":
+		summary = ClientPartStatus{Status: "modified", Label: "已修改", Description: "部分文件与原版不一致"}
+	case textPart.Status == "missing" || fontPart.Status == "missing":
+		summary = ClientPartStatus{Status: "unknown", Label: "文件缺失", Description: "客户端索引文件缺失"}
+	}
+
 	return ClientStatusResult{
-		Status:      "unknown",
-		Label:       "未知版本",
-		Description: "云端尚未收录该版本的原版备份",
+		Status:      summary.Status,
+		Label:       summary.Label,
+		Description: summary.Description,
+		Text:        textPart,
+		Font:        fontPart,
 	}, nil
 }
 
@@ -1505,23 +1518,174 @@ func (a *App) emitProgress(stage, detail string, done, total int64) {
 	runtime.EventsEmit(a.ctx, "patch-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
-// patchWroteData 判断本次汉化是否已向 dat 追加过数据块，即客户端文件是否已被改动。
-func patchWroteData(resp PatchResponse) bool {
-	return resp.Text.AppendedBytes > 0 || resp.Font.AppendedBytes > 0
+// revertWrites 逆序撤回本次已开始写入的文件组，返回真正被改回的文件组数。
+// 每个文件组各自独立，某组失败不影响继续撤回其他组。
+func revertWrites(undos []*replace.Undo) (int, error) {
+	changed := 0
+	var errs []error
+	for i := len(undos) - 1; i >= 0; i-- {
+		reverted, err := undos[i].Revert()
+		if reverted {
+			changed++
+		}
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return changed, errors.Join(errs...)
 }
 
-// autoRestore 在汉化中断或失败后把官方原文件写回客户端，并把进度回报到界面。
-// autoRestore 在汉化中断或失败后把官方原文件写回客户端，并把进度回报到界面。
-func (a *App) autoRestore(ctx context.Context, gameDir, backupRoot string, lang region.Language) ([]string, error) {
-	restored, err := verifier.RestoreToGameWithContext(ctx, gameDir, backupRoot, lang, a.emitProgress,
-		func(format string, args ...any) {
-			a.emitPatchLog(fmt.Sprintf(format, args...))
-		})
-	if err != nil {
-		return restored, err
+// ensureFontCompiler 确保字体编译组件就绪：已存在就直接用，否则按需下载。
+// 组件单独发布在 fontchanger-cli 分支，不随主程序打包。
+func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error {
+	if _, err := a.fontEngine.ResolveBinary(); err == nil {
+		return nil
 	}
-	a.emitPatchLog("[提示] 已自动恢复至官方原版状态")
-	return restored, nil
+	dir := dataRootFor(resourceDir)
+	path := filepath.Join(dir, fontengine.CLIBinaryName)
+	if st, err := os.Stat(path); err == nil && st.Size() > 1<<20 {
+		a.fontEngine.SetBinPath(path)
+		return nil
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("创建字体组件目录失败: %w", err)
+	}
+	a.emitPatchLog("[字体] 正在下载字体编译组件...")
+	var lastErr error
+	for _, url := range updater.FontCompilerURLs() {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		tmp := path + ".part"
+		_ = os.Remove(tmp)
+		if err := a.updater.DownloadFile(ctx, url, tmp, nil); err != nil {
+			lastErr = err
+			continue
+		}
+		if err := verifyExecutable(tmp); err != nil {
+			lastErr = err
+			_ = os.Remove(tmp)
+			continue
+		}
+		if err := os.Rename(tmp, path); err != nil {
+			lastErr = err
+			_ = os.Remove(tmp)
+			continue
+		}
+		a.fontEngine.SetBinPath(path)
+		a.emitPatchLog("[字体] 字体编译组件已就绪")
+		return nil
+	}
+	if lastErr == nil {
+		lastErr = errors.New("没有可用的下载节点")
+	}
+	return fmt.Errorf("下载字体编译组件失败: %w", lastErr)
+}
+
+// verifyExecutable 粗略确认下载到的是 Windows 可执行文件（MZ 头 + 合理体积）。
+func verifyExecutable(path string) error {
+	st, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	if st.Size() < 1<<20 {
+		return fmt.Errorf("下载内容过小（%d 字节）", st.Size())
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	var head [2]byte
+	if _, err := io.ReadFull(f, head[:]); err != nil {
+		return err
+	}
+	if head[0] != 'M' || head[1] != 'Z' {
+		return errors.New("下载内容不是有效的 Windows 可执行文件")
+	}
+	return nil
+}
+
+// checkFontSource 在写入任何客户端文件之前确认本次字体来源可用。
+// 选了「自定义方案」就必须能拿到编译组件：拿不到直接报错中止，
+// 不再等文本汉化跑完再悄悄换成内置字体包。
+func (a *App) checkFontSource(ctx context.Context, resourceDir, gameDir string) error {
+	if a.fontSourceMode(resourceDir) != "compile" {
+		return nil
+	}
+	if goruntime.GOOS != "windows" {
+		return errors.New("「自定义方案」需要 Windows 版字体编译组件，当前平台无法现场编译字体；请把字体来源改为「内置字体包」")
+	}
+	a.fontEngine.SetGameDir(gameDir)
+	if err := a.ensureFontCompiler(ctx, resourceDir); err != nil {
+		return fmt.Errorf("字体来源是「自定义方案」，但字体编译组件不可用：%w；可改用「内置字体包」", err)
+	}
+	return nil
+}
+
+// fontSourceMode 返回界面选择的字体来源：compile（自定义方案）或 package（内置字体包）。
+func (a *App) fontSourceMode(resourceDir string) string {
+	if strings.EqualFold(strings.TrimSpace(a.loadConfig(resourceDir).FontSource), "compile") {
+		return "compile"
+	}
+	return "package"
+}
+
+// hasFontTexture 判断目录里是否已有字体贴图（.tex）。
+// 字体包与现场编译的产物都以 .tex 作为「确实生成了字体」的判据。
+func hasFontTexture(dir string) bool {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return false
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(strings.ToLower(entry.Name()), ".tex") {
+			return true
+		}
+	}
+	return false
+}
+
+// localFontPackage 判断本地是否已有可用的预编译字体包（resource/font 下有 .tex）。
+// 有就直接用，不再走云端校验，避免把离线生成的字体覆盖掉。
+func localFontPackage(resourceDir string) (string, bool) {
+	dir := filepath.Join(resourceDir, "font")
+	if !hasFontTexture(dir) {
+		return "", false
+	}
+	return dir, true
+}
+
+// maxFontTextureSize 读字体目录里每个 .tex 的宽高，返回最大边长。
+// 1024 与原版字体一致，不需要游戏开启高分辨率贴图；更大的才需要。
+func maxFontTextureSize(dir string) int {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return 0
+	}
+	maxSide := 0
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(strings.ToLower(entry.Name()), ".tex") {
+			continue
+		}
+		f, err := os.Open(filepath.Join(dir, entry.Name()))
+		if err != nil {
+			continue
+		}
+		var head [16]byte
+		_, err = io.ReadFull(f, head[:])
+		_ = f.Close()
+		if err != nil {
+			continue
+		}
+		if w := int(binary.LittleEndian.Uint16(head[8:])); w > maxSide {
+			maxSide = w
+		}
+		if h := int(binary.LittleEndian.Uint16(head[10:])); h > maxSide {
+			maxSide = h
+		}
+	}
+	return maxSide
 }
 
 // StartPatch 执行完整的校验与汉化流程。
@@ -1572,23 +1736,21 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			region.DisplayName(actualReg), region.DisplayName(targetReg))
 	}
 
-	if req.ReplaceFont {
-		cfgRes, cfgErr := gamecfg.EnsureHighResolutionUiAsset("")
-		if cfgErr != nil {
-			if errors.Is(cfgErr, gamecfg.ErrConfigNotFound) {
-				a.emitPatchLog("[提示] 未在“我的文档”中找到游戏配置文件，请在游戏系统设置中确认开启高分辨率界面")
-			} else {
-				a.emitPatchLog(fmt.Sprintf("[警告] 检查/修改游戏配置文件失败: %v", cfgErr))
-			}
-		} else if cfgRes.Modified {
-			a.emitPatchLog("[配置] 已自动备份游戏配置文件并开启高分辨率模式")
-		} else {
-			a.emitPatchLog("[配置] 游戏界面已是高分辨率模式")
-		}
-	}
-
 	resourceDir := a.resourceDir()
 	regionKey := normalizeRegionCode(string(lang))
+
+	// 字体来源先定下来：选了自定义方案却拿不到编译组件时，在写入任何文件之前就报错，
+	// 而不是等文本汉化跑完再回退成内置字体包。
+	if req.ReplaceFont {
+		if err := a.checkFontSource(patchCtx, resourceDir, req.GameDir); err != nil {
+			if errors.Is(err, context.Canceled) {
+				a.emitPatchLog("[提示] 汉化已取消：下载字体编译组件时被中止")
+				resp.Cancelled = true
+				return resp, nil
+			}
+			return resp, err
+		}
+	}
 
 	// 表清单缺失时先补一份；补不到就无法列出可汉化的表，直接中止。
 	if err := a.ensureTableDoc(patchCtx, resourceDir); err != nil {
@@ -1597,7 +1759,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			resp.Cancelled = true
 			return resp, nil
 		}
-		return resp, fmt.Errorf("%w；已中止汉化，请联网重试", err)
+		return resp, fmt.Errorf("%w；已中止汉化%s", err, a.syncFailureHint())
 	}
 	customSelected := a.csvSelectedDir(resourceDir, regionKey) != ""
 	// 程序可能长期不退出，只在启动时同步会让词条一直停在旧版本：
@@ -1615,7 +1777,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		}
 	}
 	// 内置词条只有同步跑通后才允许汉化；启动时同步失败过就在开始前再试一次。
-	needSync := resourceIncomplete(resourceDir, customSelected, req.ReplaceFont)
+	needSync := resourceIncomplete(resourceDir, customSelected)
 	if !customSelected && !a.builtinSynced.Load() {
 		needSync = true
 		a.emitPatchLog("[资源] 内置词条尚未同步通过，开始前先重试一次…")
@@ -1627,19 +1789,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 				resp.Cancelled = true
 				return resp, nil
 			}
-			return resp, fmt.Errorf("内置词条未同步通过，已中止汉化（可联网重试或改用自定义词条目录）：%w", err)
-		}
-	}
-	// 自定义词条目录不触发整包同步，但勾选了替换字体时字体包必须经过校验，
-	// 否则内置资源目录里残留的旧字体会被直接写入客户端。
-	if customSelected && req.ReplaceFont && !a.builtinSynced.Load() && !a.fontPackSynced.Load() {
-		if err := a.ensureFontPack(patchCtx, resourceDir); err != nil {
-			if errors.Is(err, context.Canceled) {
-				a.emitPatchLog("[提示] 汉化已取消：校验字体包时被中止")
-				resp.Cancelled = true
-				return resp, nil
-			}
-			return resp, err
+			return resp, fmt.Errorf("内置词条未同步通过，已中止汉化%s：%w", a.syncFailureHint(), err)
 		}
 	}
 
@@ -1653,8 +1803,9 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		}
 	}
 
-	manifest, manifestErr := updater.ReadLocalManifest(resourceDir)
-	if manifest != nil {
+	if a.updater.LocalOnly {
+		a.emitPatchLog("[资源] 本地开发构建：使用工作区 resource/ 中的内置词条")
+	} else if manifest, manifestErr := updater.ReadLocalManifest(resourceDir); manifest != nil {
 		resTime := formatResourceTime(manifest.GeneratedAt)
 		resDetail := formatResourceHashDetail(manifest)
 		if resTime != "" {
@@ -1747,6 +1898,10 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			runtime.EventsEmit(a.ctx, "patch-log", fmt.Sprintf(format, args...))
 		},
 	}
+	// undos 记录本次已开始写入的文件组，失败或中止时按相反顺序撤回。
+	// 它只撤销「本次写入」，不依赖原版备份，所以未知版本也能回滚。
+	var undos []*replace.Undo
+
 	cfg.ApplyText = func(ctx context.Context) error {
 		a.emitPatchLog("[文本] 开始汉化游戏文本数据...")
 		var lastLoggedPct int = -1
@@ -1760,9 +1915,15 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 				}
 			}
 		}
+		textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
+		undo, undoErr := replace.NewUndo(textIndexPath)
+		if undoErr != nil {
+			return undoErr
+		}
+		undos = append(undos, undo)
 		stats, err := replace.ReplaceEXDF(replace.Options{
 			Context:         ctx,
-			TextIndexPath:   filepath.Join(sqpackDir, "0a0000.win32.index"),
+			TextIndexPath:   textIndexPath,
 			CSVResourceDir:  csvDir,
 			QuietMissingCSV: customCSV,
 			SourceLanguage:  string(lang),
@@ -1771,6 +1932,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			Rules:           registry,
 			Progress:        formatter,
 			Log:             cfg.Log,
+			Undo:            undo,
 		})
 		if err == nil {
 			a.emitPatchLog(fmt.Sprintf("[文本] 文本汉化完成：修改 %d 个数据表，更新 %d 个文件，替换 %d 条文本", stats.Tables, stats.Files, stats.Entries))
@@ -1779,14 +1941,96 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		return err
 	}
 	cfg.ApplyFont = func(ctx context.Context) error {
-		a.emitPatchLog("[字体] 开始写入高清中文字体...")
-		stats, err := replace.ReplaceFontWithContext(
+		a.emitPatchLog("[字体] 开始处理字体...")
+		targetReg := region.Of(lang)
+		presetID := a.getActiveFontPreset(regionKey)
+		configJson, err := fontengine.GetPresetContent(presetID, presetsDirFor(resourceDir))
+		if err != nil {
+			defaultID := fontengine.DefaultPresetForRegion(targetReg)
+			a.emitPatchLog(fmt.Sprintf("[字体] 方案 %s 不可用（%v），改用默认方案 %s", presetID, err, defaultID))
+			configJson, err = fontengine.GetPresetContent(defaultID, "")
+			if err != nil {
+				return fmt.Errorf("读取字体配置失败: %w", err)
+			}
+		}
+
+		if err := fontengine.ValidatePresetForRegion(configJson, targetReg); err != nil {
+			return fmt.Errorf("字体配置与当前客户端区服不匹配: %w", err)
+		}
+
+		tempFontDir, err := os.MkdirTemp("", "patched-font-*")
+		if err != nil {
+			return fmt.Errorf("创建字体临时目录失败: %w", err)
+		}
+		defer os.RemoveAll(tempFontDir)
+
+		a.fontEngine.SetGameDir(req.GameDir)
+		fontDir := ""
+		// 字体来源由界面选择，两条路互斥：选哪条就用哪条，任何一步失败都直接中止，
+		// 不会自动换成另一种来源，否则用户无法判断最终生效的到底是哪一套字体。
+		if a.fontSourceMode(resourceDir) == "compile" {
+			if goruntime.GOOS != "windows" {
+				return errors.New("「自定义方案」需要 Windows 版字体编译组件，当前平台无法现场编译字体；请把字体来源改为「内置字体包」")
+			}
+			if err := a.ensureFontCompiler(ctx, resourceDir); err != nil {
+				return fmt.Errorf("字体编译组件不可用：%w", err)
+			}
+			a.emitPatchLog("[字体] 正在用 FFXIV-FontChanger 编译编辑器里的方案...")
+			if err := a.fontEngine.CompileRaw(ctx, configJson, tempFontDir, func(pct int, msg string) {
+				a.emitProgress("font", msg, int64(pct), 100)
+			}); err != nil {
+				return fmt.Errorf("字体编译失败：%w", err)
+			}
+			if !hasFontTexture(tempFontDir) {
+				return errors.New("字体编译没有产出字体贴图（.tex），已中止")
+			}
+			fontDir = tempFontDir
+		} else {
+			// 内置字体包：本地已有 resource/font 就直接用，不联网、不覆盖。
+			if dir, ok := localFontPackage(resourceDir); ok {
+				a.emitPatchLog("[字体] 使用内置字体包")
+				fontDir = dir
+			} else {
+				a.emitPatchLog("[字体] 本地没有字体包，正在下载（首次使用）...")
+				if err := a.updater.EnsureFontPack(ctx, resourceDir, a.emitResourceProgress); err != nil {
+					return fmt.Errorf("获取字体包失败：%w", err)
+				}
+				fontDir = filepath.Join(resourceDir, "font")
+			}
+		}
+
+		// 4096 的字体贴图需要游戏开启「高分辨率 UI 贴图」（FFXIV-FontChanger 的
+		// Wiki 也是这么要求的），否则大厅/界面会闪退。1024 的原版规格不需要。
+		if side := maxFontTextureSize(fontDir); side > 1024 {
+			cfgRes, cfgErr := gamecfg.EnsureHighResolutionUiAsset("")
+			if cfgErr != nil {
+				if errors.Is(cfgErr, gamecfg.ErrConfigNotFound) {
+					a.emitPatchLog(fmt.Sprintf("[提示] 字体贴图为 %dpx，请在游戏设置中开启高分辨率界面贴图，否则可能闪退", side))
+				} else {
+					a.emitPatchLog(fmt.Sprintf("[警告] 检查/修改游戏配置文件失败: %v", cfgErr))
+				}
+			} else if cfgRes.Modified {
+				a.emitPatchLog(fmt.Sprintf("[配置] 字体贴图为 %dpx，已备份配置并开启高分辨率贴图", side))
+			} else {
+				a.emitPatchLog(fmt.Sprintf("[配置] 字体贴图为 %dpx，游戏已是高分辨率贴图", side))
+			}
+		}
+
+		a.emitPatchLog("[字体] 正在写入客户端数据包...")
+		fontIndexPath := filepath.Join(sqpackDir, "000000.win32.index")
+		undo, undoErr := replace.NewUndo(fontIndexPath)
+		if undoErr != nil {
+			return undoErr
+		}
+		undos = append(undos, undo)
+		stats, err := replace.ReplaceFontWithUndo(
 			ctx,
-			filepath.Join(sqpackDir, "000000.win32.index"),
-			filepath.Join(resourceDir, "font"),
+			fontIndexPath,
+			fontDir,
 			func(done, total int, file string) {
 				a.emitProgress("font", file, int64(done), int64(total))
 			},
+			undo,
 		)
 		if err == nil {
 			a.emitPatchLog(fmt.Sprintf("[字体] 字体汉化完成：替换 %d 个字体文件", stats.Files))
@@ -1798,29 +2042,49 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	result, err := verifier.Run(patchCtx, cfg)
 	if err != nil {
 		cancelled := errors.Is(err, context.Canceled)
-		// 只有真正写入过数据块才需要还原：资源缺失、备份校验失败等早期错误没有改动
-		// 客户端文件，此时还原只会白拷数 GB，还会把上一次已成功的汉化回滚成原版。
-		if !patchWroteData(resp) {
+		restoredOriginals := result != nil && (result.RestoredText || result.RestoredFont)
+
+		if len(undos) > 0 {
+			// 本次已经动过客户端文件：只撤回本次写入，回到「汉化之前」的样子，
+			// 不再用原版备份把 6 个文件整体覆盖——那会连带回滚本次没碰的文件组，
+			// 而且未知版本根本没有可用的原版备份。
 			if cancelled {
-				a.emitPatchLog("[提示] 汉化已取消，客户端保持原样")
-				resp.Cancelled = true
+				a.emitPatchLog("[提示] 汉化已被用户中止，正在撤回本次写入，恢复为写入前的文件...")
+			} else {
+				a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v，正在撤回本次写入，恢复为写入前的文件...", err))
+			}
+			changed, rbErr := revertWrites(undos)
+			switch {
+			case rbErr != nil:
+				a.emitPatchLog(fmt.Sprintf("[警告] 撤回本次写入失败: %v，请点击「还原」手动恢复", rbErr))
+			case changed > 0:
+				a.emitPatchLog("[回滚] 已撤回本次写入，客户端文件回到写入前的状态")
+			case restoredOriginals:
+				a.emitPatchLog("[提示] 本次尚未写入数据；客户端文件已按官方原版还原")
+			default:
+				a.emitPatchLog("[提示] 本次尚未写入数据，客户端文件未被修改")
+			}
+			resp.Cancelled = cancelled
+			if cancelled {
 				return resp, nil
 			}
-			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（客户端保持原样，无需还原）", err))
 			return resp, err
 		}
-		if cancelled {
-			a.emitPatchLog("[提示] 汉化已被用户中止，正在自动恢复官方原版...")
-			// 已取消的 ctx 无法用于还原，恢复流程必须完整跑完。
-			if _, restoreErr := a.autoRestore(context.Background(), req.GameDir, backupRoot, lang); restoreErr != nil {
-				a.emitPatchLog(fmt.Sprintf("[警告] 恢复官方原版失败: %v，请手动点击还原", restoreErr))
-			}
-			resp.Cancelled = true
-			return resp, nil
+
+		// 写入前就失败了：不做任何还原，只按实际发生的事写日志。
+		switch {
+		case cancelled && restoredOriginals:
+			a.emitPatchLog("[提示] 汉化已取消：本次尚未写入数据，客户端文件已按官方原版还原")
+		case cancelled:
+			a.emitPatchLog("[提示] 汉化已取消，客户端文件未被修改")
+		case restoredOriginals:
+			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（本次尚未写入数据；客户端文件已按官方原版还原）", err))
+		default:
+			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（本次未修改客户端文件）", err))
 		}
-		a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v，正在自动恢复官方原版以保护游戏文件...", err))
-		if _, restoreErr := a.autoRestore(patchCtx, req.GameDir, backupRoot, lang); restoreErr != nil {
-			a.emitPatchLog(fmt.Sprintf("[警告] 自动恢复官方原版失败: %v，请手动点击还原", restoreErr))
+		resp.Cancelled = cancelled
+		if cancelled {
+			return resp, nil
 		}
 		return resp, err
 	}
@@ -1862,10 +2126,13 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 }
 
 // RestoreOriginal 从本地备份或云端备份还原文本与字体原文件。
-func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error) {
+func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont bool) (RestoreResponse, error) {
 	var resp RestoreResponse
 	if gameDir == "" {
 		return resp, errors.New("请先选择游戏目录")
+	}
+	if !restoreText && !restoreFont {
+		return resp, errors.New("请至少勾选文本或字体")
 	}
 	lang, err := region.ParseLanguage(language)
 	if err != nil {
@@ -1907,12 +2174,22 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 			region.DisplayName(actualReg), region.DisplayName(targetReg))
 	}
 
-	a.emitPatchLog("[还原] 开始执行官方原版恢复流程...")
+	scope := "文本 + 字体"
+	if restoreText != restoreFont {
+		if restoreText {
+			scope = "仅文本"
+		} else {
+			scope = "仅字体"
+		}
+	}
+	a.emitPatchLog(fmt.Sprintf("[还原] 开始执行官方原版恢复流程（%s）...", scope))
 	resourceDir := a.resourceDir()
 	restored, err := verifier.Restore(patchCtx, verifier.RestoreConfig{
 		GameDir:    gameDir,
 		BackupRoot: backupRootFor(resourceDir),
 		Language:   lang,
+		Text:       restoreText,
+		Font:       restoreFont,
 		Repo:       "Souma-Sumire/FFXIVChnTextPatch-Souma",
 		Cloud:      a.getCloud(),
 		OnProgress: func(stage, detail string, done, total int64) {
@@ -1943,6 +2220,9 @@ func (a *App) RestoreOriginal(gameDir, language string) (RestoreResponse, error)
 // SyncResources 从云端同步 CSV 汉化数据。
 func (a *App) SyncResources() (SyncSummary, error) {
 	var summary SyncSummary
+	if a.updater.LocalOnly {
+		return summary, errors.New("本地开发构建不访问云端资源，请直接修改工作区 resource/")
+	}
 	if err := a.beginBusy(); err != nil {
 		return summary, err
 	}
@@ -1992,6 +2272,9 @@ func (a *App) EnsureHighResolutionUiAsset() (gamecfg.ModifyResult, error) {
 // 汉化、还原进行中直接拒绝：此时替换程序或拉取元数据都会干扰正在写入客户端的任务。
 func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
 	current := updater.CleanAppVersion(appVersion)
+	if a.updater.LocalOnly {
+		return updater.AppUpdateInfo{CurrentVersion: current, LatestVersion: current}, nil
+	}
 	if a.isBusy() {
 		return updater.AppUpdateInfo{CurrentVersion: current, LatestVersion: current}, errors.New("汉化进行中，已跳过检查更新")
 	}
@@ -2010,6 +2293,9 @@ func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
 // InstallAppUpdate 下载最新版本、替换当前程序并重启。
 // 成功后当前进程退出，由新版本接管；下载或替换失败时保持原程序可用并返回错误。
 func (a *App) InstallAppUpdate() error {
+	if a.updater.LocalOnly {
+		return errors.New("本地开发构建不支持自动更新，请重新构建")
+	}
 	if !updater.SelfUpdateSupported() {
 		return updater.ErrSelfUpdateUnsupported
 	}
@@ -2112,3 +2398,270 @@ func (a *App) emitAppUpdateProgress(stage, detail string, done, total int64) {
 	}
 	runtime.EventsEmit(a.ctx, "app-update-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
+
+// getActiveFontPreset 返回该区服当前选中的方案 id。
+// 配置里记的方案可能已被删除、改名或换过版本，这里只返回确实还能用的 id，
+// 否则就退回该区服的默认方案（方案文件本身缺失才会走到更外层的报错）。
+func (a *App) getActiveFontPreset(regionKey string) string {
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+	normKey := normalizeRegionCode(regionKey)
+	resourceDir := a.resourceDir()
+	cfg := a.loadConfig(resourceDir)
+
+	parsedLang, _ := region.ParseLanguage(normKey)
+	targetReg := region.Of(parsedLang)
+	fallback := fontengine.DefaultPresetForRegion(targetReg)
+
+	stored := ""
+	if cfg.FontPresets != nil {
+		stored = cfg.FontPresets[normKey]
+	}
+	if stored == "" || stored == fallback {
+		return fallback
+	}
+	for _, preset := range fontengine.GetPresetsForRegion(targetReg, presetsDirFor(resourceDir)) {
+		if preset.ID == stored {
+			return stored
+		}
+	}
+	return fallback
+}
+
+func (a *App) resolveLanguageAndGameDir(language string) (region.Language, string) {
+	a.cfgMu.Lock()
+	cfg := a.loadConfig(a.resourceDir())
+	a.cfgMu.Unlock()
+
+	langStr := strings.TrimSpace(language)
+	if langStr == "" {
+		langStr = cfg.Language
+	}
+	parsedLang, err := region.ParseLanguage(langStr)
+	if err != nil {
+		parsedLang = region.GLOBAL
+	}
+	normKey := normalizeRegionCode(string(parsedLang))
+	gameDir := ""
+	if cfg.GameDirs != nil {
+		gameDir = cfg.GameDirs[normKey]
+	}
+	return parsedLang, gameDir
+}
+
+func (a *App) GetFontPresets(language string) ([]fontengine.PresetSummary, error) {
+	parsedLang, _ := a.resolveLanguageAndGameDir(language)
+	targetReg := region.Of(parsedLang)
+	return fontengine.GetPresetsForRegion(targetReg, presetsDirFor(a.resourceDir())), nil
+}
+
+func (a *App) GetFontPreset(id string) (string, error) {
+	return fontengine.GetPresetContent(id, presetsDirFor(a.resourceDir()))
+}
+
+func (a *App) SaveFontPreset(language string, name string, configJson string) (fontengine.PresetSummary, error) {
+	parsedLang, _ := a.resolveLanguageAndGameDir(language)
+	targetReg := region.Of(parsedLang)
+	resourceDir := a.resourceDir()
+	summary, err := fontengine.SaveCustomPreset(name, configJson, presetsDirFor(resourceDir), targetReg)
+	if err != nil {
+		return fontengine.PresetSummary{}, err
+	}
+	_ = a.SelectFontPreset(string(parsedLang), summary.ID)
+	return summary, nil
+}
+
+// DeleteFontPreset 删除自定义字体方案；内置方案不允许删除。
+// 删掉的正好是当前选中方案时，配置切回该区服的默认方案。
+func (a *App) DeleteFontPreset(language string, presetId string) error {
+	parsedLang, _ := a.resolveLanguageAndGameDir(language)
+	resourceDir := a.resourceDir()
+	if err := fontengine.DeleteCustomPreset(presetId, presetsDirFor(resourceDir)); err != nil {
+		return err
+	}
+	targetReg := region.Of(parsedLang)
+	regionKey := normalizeRegionCode(string(parsedLang))
+
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+	cfg := a.loadConfig(resourceDir)
+	if cfg.FontPresets == nil || cfg.FontPresets[regionKey] != presetId {
+		return nil
+	}
+	cfg.FontPresets[regionKey] = fontengine.DefaultPresetForRegion(targetReg)
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+	return writeFileAtomic(configPathFor(resourceDir), append(data, '\n'))
+}
+
+// RenameFontPreset 重命名字体方案（仅自定义方案）；配置里指向旧 id 时同步改成新 id。
+func (a *App) RenameFontPreset(language string, presetId string, newName string) (fontengine.PresetSummary, error) {
+	parsedLang, _ := a.resolveLanguageAndGameDir(language)
+	resourceDir := a.resourceDir()
+	summary, err := fontengine.RenameCustomPreset(presetId, newName, presetsDirFor(resourceDir))
+	if err != nil {
+		return fontengine.PresetSummary{}, err
+	}
+	regionKey := normalizeRegionCode(string(parsedLang))
+
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+	cfg := a.loadConfig(resourceDir)
+	if cfg.FontPresets == nil || cfg.FontPresets[regionKey] != presetId {
+		return summary, nil
+	}
+	cfg.FontPresets[regionKey] = summary.ID
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return summary, err
+	}
+	if err := writeFileAtomic(configPathFor(resourceDir), append(data, '\n')); err != nil {
+		return summary, err
+	}
+	return summary, nil
+}
+
+// SelectFontPreset 记录该区服选中的方案。只接受当前区服可用的方案，
+// 免得配置里留下一个后来会因为区服不匹配而编译失败的 id。
+func (a *App) SelectFontPreset(language string, presetId string) error {
+	resourceDir := a.resourceDir()
+	langStr := strings.TrimSpace(language)
+	if langStr == "" {
+		langStr = a.loadConfig(resourceDir).Language
+	}
+	parsedLang, err := region.ParseLanguage(langStr)
+	if err != nil {
+		return err
+	}
+	targetReg := region.Of(parsedLang)
+	available := fontengine.GetPresetsForRegion(targetReg, presetsDirFor(resourceDir))
+	usable := false
+	for _, preset := range available {
+		if preset.ID == presetId {
+			usable = true
+			break
+		}
+	}
+	if !usable {
+		return fmt.Errorf("字体方案不可用于当前区服：%s", presetId)
+	}
+
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+
+	cfg := a.loadConfig(resourceDir)
+	regionKey := normalizeRegionCode(langStr)
+	if cfg.FontPresets == nil {
+		cfg.FontPresets = map[string]string{}
+	}
+	cfg.FontPresets[regionKey] = presetId
+
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+	return writeFileAtomic(configPathFor(resourceDir), append(data, '\n'))
+}
+
+func (a *App) GetSystemFonts() ([]string, error) {
+	return fontengine.ListSystemFonts()
+}
+
+// RenderFontPreview 用字体编译组件渲染预览：与写进客户端的字形走同一套栅格化，
+// 所以预览看到的就是游戏里的效果。组件不可用时直接报错，不用浏览器近似渲染顶替。
+func (a *App) RenderFontPreview(configJson string, fontName string, text string, maxWidth int) (string, error) {
+	ctx := context.Background()
+	if a.ctx != nil {
+		ctx = a.ctx
+	}
+	_, gameDir := a.resolveLanguageAndGameDir("")
+	a.fontEngine.SetGameDir(gameDir)
+	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
+		return "", fmt.Errorf("预览需要字体编译组件：%w", err)
+	}
+	pngBytes, err := a.fontEngine.RenderPreview(ctx, configJson, fontName, text, maxWidth)
+	if err != nil {
+		return "", err
+	}
+	b64 := base64.StdEncoding.EncodeToString(pngBytes)
+	return "data:image/png;base64," + b64, nil
+}
+
+func (a *App) ExportFontTTMP(configJson string, savePath string) error {
+	ctx := context.Background()
+	if a.ctx != nil {
+		ctx = a.ctx
+	}
+	_, gameDir := a.resolveLanguageAndGameDir("")
+	a.fontEngine.SetGameDir(gameDir)
+	return a.fontEngine.CompileTTMP(ctx, configJson, savePath, func(pct int, msg string) {
+		runtime.EventsEmit(a.ctx, "font-export-progress", map[string]any{
+			"percent": pct,
+			"message": msg,
+		})
+	})
+}
+
+// SelectFontFile 弹出原生文件选择框供用户选取本地 TTF/OTF 字体文件
+func (a *App) SelectFontFile() (string, error) {
+	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "选择字体文件",
+		Filters: []runtime.FileFilter{
+			{DisplayName: "字体文件 (*.ttf;*.otf)", Pattern: "*.ttf;*.otf"},
+			{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
+		},
+	})
+}
+
+// SelectFontJsonFile 弹出原生文件选择框供用户选取字体方案 JSON 文件
+func (a *App) SelectFontJsonFile() (string, error) {
+	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "导入字体方案文件",
+		Filters: []runtime.FileFilter{
+			{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
+			{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
+		},
+	})
+}
+
+// SelectFontJsonSavePath 弹出原生文件保存框供用户导出 JSON 方案
+func (a *App) SelectFontJsonSavePath(defaultName string) (string, error) {
+	if defaultName == "" {
+		defaultName = "FFXIV_Font_Preset.json"
+	}
+	return runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:           "导出字体方案 JSON 文件",
+		DefaultFilename: defaultName,
+		Filters: []runtime.FileFilter{
+			{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
+		},
+	})
+}
+
+// SelectTTMPSavePath 弹出原生文件保存框供用户指定 TTMP2 输出路径
+func (a *App) SelectTTMPSavePath() (string, error) {
+	return runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:           "导出 Penumbra TTMP2 模组包",
+		DefaultFilename: "FFXIV_Custom_Font.ttmp2",
+		Filters: []runtime.FileFilter{
+			{DisplayName: "Penumbra TTMP2 模组包 (*.ttmp2)", Pattern: "*.ttmp2"},
+		},
+	})
+}
+
+// ReadTextFile 读取指定文本文件内容
+func (a *App) ReadTextFile(filePath string) (string, error) {
+	bytes, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
+}
+
+// WriteTextFile 将文本内容写入指定文件
+func (a *App) WriteTextFile(filePath string, content string) error {
+	return os.WriteFile(filePath, []byte(content), 0644)
+}
+

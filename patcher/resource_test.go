@@ -9,26 +9,17 @@ import (
 
 func TestResourceIncomplete(t *testing.T) {
 	dir := t.TempDir()
-	if resourceIncomplete(dir, true, false) {
+	if resourceIncomplete(dir, true) {
 		t.Fatal("自定义词条目录不要求内置 rawexd")
 	}
-	if !resourceIncomplete(dir, false, false) {
+	if !resourceIncomplete(dir, false) {
 		t.Fatal("内置词条需要 rawexd 目录")
 	}
 	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if resourceIncomplete(dir, false, false) {
+	if resourceIncomplete(dir, false) {
 		t.Fatal("表清单由轻量同步单独补齐，不应阻止内置词条")
-	}
-	if !resourceIncomplete(dir, false, true) {
-		t.Fatal("勾选字体但缺少 font 目录时应要求同步")
-	}
-	if err := os.MkdirAll(filepath.Join(dir, "font"), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if resourceIncomplete(dir, false, true) {
-		t.Fatal("字体目录存在时不应要求同步")
 	}
 }
 

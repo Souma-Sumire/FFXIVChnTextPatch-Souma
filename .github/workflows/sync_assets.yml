@@ -34,7 +34,7 @@ jobs:
       - name: Build Resource Bundles
         run: node scripts/bundle.ts
 
-      - name: Deploy to assets branch
+      - name: Deploy to assets-v2 branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -47,4 +47,4 @@ jobs:
           git add -f resource/manifest.json resource/rules.json resource/tables.json resource/rawexd.zip resource/font.zip
 
           git commit -m "chore: 自动化更新汉化资源快照 (${{ github.sha }})"
-          git push origin assets-temp:assets --force
+          git push origin assets-temp:assets-v2 --force

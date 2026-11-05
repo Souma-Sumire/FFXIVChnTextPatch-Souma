@@ -298,6 +298,53 @@ func TestCopyBuiltinCSVDirectory(t *testing.T) {
 	}
 }
 
+// 复制先落到 .building 临时目录，完成后再改名；上次被强杀留下的半成品必须被清掉，
+// 不能混进新副本，也不能让正式目录出现缺文件的中间状态。
+func TestCopyBuiltinCSVDirectoryIsAtomic(t *testing.T) {
+	app, resDir := newCSVTestApp(t)
+	writeTestCSV(t, filepath.Join(resDir, "rawexd"), "BNpcName")
+	dstDir := customCSVDir(resDir)
+	tmpDir := dstDir + csvCopyTmpSuffix
+	if err := os.MkdirAll(tmpDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "Stale.csv"), []byte("key,0\n1,旧\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := app.CopyBuiltinCSVDirectory("GLOBAL", false); err != nil {
+		t.Fatalf("制作副本失败: %v", err)
+	}
+	if _, err := os.Stat(tmpDir); !os.IsNotExist(err) {
+		t.Fatalf("临时目录应已清理: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dstDir, "Stale.csv")); !os.IsNotExist(err) {
+		t.Fatalf("半成品文件不应混入副本: %v", err)
+	}
+	for _, name := range []string{"Item.csv", "BNpcName.csv"} {
+		if _, err := os.Stat(filepath.Join(dstDir, name)); err != nil {
+			t.Fatalf("副本缺少 %s: %v", name, err)
+		}
+	}
+}
+
+// 副本比内置词条少文件时要能被识别（用于提示旧版本留下的半成品副本）。
+func TestMissingCopyCount(t *testing.T) {
+	src, dst := t.TempDir(), t.TempDir()
+	writeTestCSV(t, src, "Item")
+	writeTestCSV(t, src, "quest/000/Test001")
+	writeTestCSV(t, dst, "Item")
+	known := map[string]bool{"Item": true, "BNpcName": true, "quest/000/Test001": true}
+
+	if got := missingCopyCount(dst, src, known); got != 1 {
+		t.Fatalf("缺少数量应为 1，实际 %d", got)
+	}
+	writeTestCSV(t, dst, "quest/000/Test001")
+	if got := missingCopyCount(dst, src, known); got != 0 {
+		t.Fatalf("完整副本不应报缺文件，实际 %d", got)
+	}
+}
+
 func TestResourceUpdatedAt(t *testing.T) {
 	resDir := t.TempDir()
 	if got := resourceUpdatedAt(resDir); got != "" {
@@ -411,6 +458,8 @@ func TestRemoveCSVDirectoryFilesRejectsUnsafePaths(t *testing.T) {
 
 func TestCSVContextResourceHash(t *testing.T) {
 	app, resDir := newCSVTestApp(t)
+	// 该用例验证发布构建的清单哈希展示，与构建模式无关。
+	app.updater.LocalOnly = false
 	manifest := `{"generatedAt":"2026-10-16T08:30:00Z","rawexd":{"sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","size":1}}`
 	if err := os.WriteFile(filepath.Join(resDir, "manifest.json"), []byte(manifest), 0o644); err != nil {
 		t.Fatal(err)

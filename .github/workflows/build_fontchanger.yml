@@ -1,0 +1,78 @@
+name: Build FontChanger CLI
+
+on:
+  workflow_dispatch:
+  # C++ 源码或本工作流有改动时自动重编，并把新组件推到 fontchanger-cli 分支，
+  # 保证任何人的 pnpm run build 都能拿到最新组件。
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/fontchanger/**"
+      - ".github/workflows/build_fontchanger.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: '5f96cd15fd745122cf27e0524606d6c1efc5fd07'
+          vcpkgDirectory: '${{ runner.workspace }}/vcpkg'
+          vcpkgJsonGlob: 'tools/fontchanger/FontChanger.FontEditor/vcpkg.json'
+
+      # 该动作只负责克隆并引导 vcpkg，并设置 VCPKG_ROOT；依赖安装由 MSBuild 的 manifest 模式在构建时完成
+      # （见 tools/fontchanger/Directory.Build.props / .targets）。这里先做一次快速自检，
+      # 免得集成缺失时退化成一连串 C1083 头文件错误。
+      - name: Verify vcpkg toolchain
+        shell: pwsh
+        run: |
+          $root = $env:VCPKG_ROOT
+          if (-not $root) { throw 'VCPKG_ROOT 未设置，run-vcpkg 步骤未生效' }
+          if (-not (Test-Path (Join-Path $root 'vcpkg.exe'))) { throw "vcpkg.exe 不存在: $root" }
+          if (-not (Test-Path (Join-Path $root 'scripts\buildsystems\msbuild\vcpkg.targets'))) {
+            throw "vcpkg MSBuild 集成文件缺失: $root\scripts\buildsystems\msbuild"
+          }
+          Write-Host "vcpkg root: $root"
+
+      - name: Build Solution
+        working-directory: tools/fontchanger
+        run: |
+          msbuild FFXIV-FontChanger.sln /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Copy Binary
+        working-directory: tools/fontchanger
+        run: |
+          mkdir -p bin
+          cp build/Release/FontChanger.FontEditor64.exe bin/fontchanger-cli.exe
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: fontchanger-cli
+          path: tools/fontchanger/bin/fontchanger-cli.exe
+
+      # 发布到 fontchanger-cli 分支：构建时 scripts/build.ts 从这里下载组件再嵌入主程序，
+      # 这样仓库不用提交二进制，任何 clone/fork 的构建都能拿到同一个组件。
+      - name: Publish CLI to branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cp tools/fontchanger/build/Release/FontChanger.FontEditor64.exe fontchanger-cli.exe
+          git checkout --orphan cli-temp
+          git reset
+          git add -f fontchanger-cli.exe
+          git commit -m "chore: 更新字体编译组件 (${{ github.sha }})"
+          git push origin cli-temp:fontchanger-cli --force

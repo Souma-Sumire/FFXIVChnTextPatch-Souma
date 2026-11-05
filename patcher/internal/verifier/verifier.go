@@ -31,9 +31,11 @@ type Plan struct {
 }
 
 type Result struct {
-	Plan         Plan     `json:"plan"`
-	TextPatched  bool     `json:"textPatched"`
-	FontPatched  bool     `json:"fontPatched"`
+	Plan        Plan `json:"plan"`
+	TextPatched bool `json:"textPatched"`
+	FontPatched bool `json:"fontPatched"`
+	// RestoredText/RestoredFont 表示对应文件是否真的被覆盖还原过；
+	// 客户端本来就是原版时不会写任何文件，两者为 false。
 	RestoredText bool     `json:"restoredText"`
 	RestoredFont bool     `json:"restoredFont"`
 	Cancelled    bool     `json:"cancelled"`
@@ -87,6 +89,12 @@ func (c *Config) event(stage, detail string, done, total int64) {
 // 1. 确保是原版：有可信备份先还原对应文件为原版，无备份但云端有则下载备份并还原；
 // 2. 云端未收录且无本地备份（未知版本）时，弹窗警告用户，确认后直接在当前文件写入且不建立备份；
 // 3. 执行汉化替换。
+//
+// 第 1 步逐文件比对哈希，只覆盖真正被改动的文件；客户端本来就是原版时不会写入任何文件，
+// 日志也只说明「已是官方原版，无需还原」，不会声称正在还原。
+//
+// 出错时同样返回已填好 RestoredText/RestoredFont 的 Result，方便调用方如实说明
+// 客户端到底被改动了什么（写入阶段的撤回由调用方负责）。
 func Run(ctx context.Context, cfg Config) (*Result, error) {
 	if cfg.GameDir == "" {
 		return nil, fmt.Errorf("未设置游戏目录")
@@ -105,33 +113,23 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 
 	version, err := readGameVersion(cfg.GameDir)
 	if err != nil {
-		return nil, err
+		return result, err
 	}
 	result.Plan.GameVersion = version
 	cfg.log("[校验] 正在校验游戏客户端与备份完整性（版本 %s）...", version)
 
 	meta, err := readBackupMeta(backupDir)
 	if err != nil {
-		return nil, err
+		return result, err
 	}
 
 	hasBackup := IsBackupComplete(meta, backupDir, version)
 
 	if hasBackup {
-		cfg.log("[备份] 本地已存在版本 %s 的可信原版备份，汉化前先确保还原至原版...", version)
-		if cfg.ReplaceText {
-			cfg.log("[文本] 正在从本地备份还原官方原版文本...")
-			if err := RestoreFiles(backupDir, sqpackDir, TextFiles, meta); err != nil {
-				return nil, fmt.Errorf("从本地备份还原文本原文件失败: %w", err)
-			}
-			result.RestoredText = true
-		}
-		if cfg.ReplaceFont {
-			cfg.log("[字体] 正在从本地备份还原官方原版字体...")
-			if err := RestoreFiles(backupDir, sqpackDir, FontFiles, meta); err != nil {
-				return nil, fmt.Errorf("从本地备份还原字体原文件失败: %w", err)
-			}
-			result.RestoredFont = true
+		cfg.log("[备份] 本地已存在版本 %s 的可信原版备份", version)
+		result.RestoredText, result.RestoredFont, err = restoreOriginals(&cfg, backupDir, sqpackDir, meta)
+		if err != nil {
+			return result, err
 		}
 	} else {
 		// 本地没有当前版本的可信备份，尝试云端
@@ -147,23 +145,13 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			cfg.log("[云端] 检测到云端已收录版本 %s 的官方原版，正在下载建立本地备份...", version)
 			downloadedMeta, dlErr := downloadAndCreateBackup(ctx, cfg, release, backupDir, version, string(reg), result)
 			if dlErr != nil {
-				return nil, fmt.Errorf("从云端建立原版备份失败: %w", dlErr)
+				return result, fmt.Errorf("从云端建立原版备份失败: %w", dlErr)
 			}
 			meta = downloadedMeta
 
-			if cfg.ReplaceText {
-				cfg.log("[文本] 正在还原官方原版文本...")
-				if err := RestoreFiles(backupDir, sqpackDir, TextFiles, meta); err != nil {
-					return nil, fmt.Errorf("还原文本原文件失败: %w", err)
-				}
-				result.RestoredText = true
-			}
-			if cfg.ReplaceFont {
-				cfg.log("[字体] 正在还原官方原版字体...")
-				if err := RestoreFiles(backupDir, sqpackDir, FontFiles, meta); err != nil {
-					return nil, fmt.Errorf("还原字体原文件失败: %w", err)
-				}
-				result.RestoredFont = true
+			result.RestoredText, result.RestoredFont, err = restoreOriginals(&cfg, backupDir, sqpackDir, meta)
+			if err != nil {
+				return result, err
 			}
 		} else {
 			// 云端未收录 + 游戏已更新 = 未知版本
@@ -172,11 +160,11 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			result.Plan.Notes = append(result.Plan.Notes, note)
 
 			if cfg.ConfirmUnknown == nil {
-				return nil, fmt.Errorf("当前游戏版本 (%s) 无法确认是否为原版，缺少确认回调", version)
+				return result, fmt.Errorf("当前游戏版本 (%s) 无法确认是否为原版，缺少确认回调", version)
 			}
 			ok, confirmErr := cfg.ConfirmUnknown(ctx, version)
 			if confirmErr != nil {
-				return nil, confirmErr
+				return result, confirmErr
 			}
 			if !ok {
 				result.Cancelled = true
@@ -190,7 +178,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	if cfg.ReplaceText && cfg.ApplyText != nil {
 		cfg.event("text", "正在替换文本", 0, 0)
 		if err := cfg.ApplyText(ctx); err != nil {
-			return nil, fmt.Errorf("文本汉化失败: %w", err)
+			return result, fmt.Errorf("文本汉化失败: %w", err)
 		}
 		result.TextPatched = true
 	}
@@ -198,12 +186,47 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	if cfg.ReplaceFont && cfg.ApplyFont != nil {
 		cfg.event("font", "正在替换字体", 0, 0)
 		if err := cfg.ApplyFont(ctx); err != nil {
-			return nil, fmt.Errorf("字体汉化失败: %w", err)
+			return result, fmt.Errorf("字体汉化失败: %w", err)
 		}
 		result.FontPatched = true
 	}
 
 	return result, nil
+}
+
+// restoreOriginals 在汉化前把本次要处理的文件组还原为官方原版。
+// 返回值表示该组是否真的覆盖过客户端文件——本来就是原版时一个字节都不会写。
+func restoreOriginals(cfg *Config, backupDir, sqpackDir string, meta *BackupMeta) (textRestored, fontRestored bool, err error) {
+	if cfg.ReplaceText {
+		textRestored, err = restoreGroup(cfg, backupDir, sqpackDir, TextFiles, meta, "文本")
+		if err != nil {
+			return textRestored, fontRestored, fmt.Errorf("从本地备份还原文本原文件失败: %w", err)
+		}
+	}
+	if cfg.ReplaceFont {
+		fontRestored, err = restoreGroup(cfg, backupDir, sqpackDir, FontFiles, meta, "字体")
+		if err != nil {
+			return textRestored, fontRestored, fmt.Errorf("从本地备份还原字体原文件失败: %w", err)
+		}
+	}
+	return textRestored, fontRestored, nil
+}
+
+// restoreGroup 还原一组文件，并且只说实际发生的事：
+// 客户端已是原版时提示无需还原，真的覆盖了文件才逐条提示正在还原。
+func restoreGroup(cfg *Config, backupDir, sqpackDir string, files []string, meta *BackupMeta, label string) (bool, error) {
+	restored, err := RestoreFiles(backupDir, sqpackDir, files, meta, func(name string) {
+		cfg.log("[%s] %s 不是官方原版，正在从本地备份还原...", label, name)
+	})
+	if err != nil {
+		return false, err
+	}
+	if len(restored) == 0 {
+		cfg.log("[%s] 客户端%s已是官方原版，无需还原", label, label)
+		return false, nil
+	}
+	cfg.log("[%s] 已还原 %d 个官方原版文件", label, len(restored))
+	return true, nil
 }
 
 func readGameVersion(gameDir string) (string, error) {
@@ -331,12 +354,16 @@ func restoreSequence(files []string) []string {
 	return ordered
 }
 
-func RestoreFiles(backupDir, sqpackDir string, files []string, meta *BackupMeta) error {
-	for _, name := range restoreSequence(files) {
+// RestoreFiles 把 files 中与备份哈希不一致的文件从备份覆盖回客户端，返回实际写入的文件名。
+// 已经和备份一致的文件直接跳过、不产生写入；onRestore 在每次真正开始覆盖前回调（可为 nil）。
+func RestoreFiles(backupDir, sqpackDir string, files []string, meta *BackupMeta, onRestore func(name string)) ([]string, error) {
+	seq := restoreSequence(files)
+	restored := make([]string, 0, len(seq))
+	for _, name := range seq {
 		src := filepath.Join(backupDir, name)
 		dst := filepath.Join(sqpackDir, name)
 		if _, err := os.Stat(src); err != nil {
-			return fmt.Errorf("备份文件缺失 (%s): %w", name, err)
+			return restored, fmt.Errorf("备份文件缺失 (%s): %w", name, err)
 		}
 		want := ""
 		if meta != nil {
@@ -345,16 +372,20 @@ func RestoreFiles(backupDir, sqpackDir string, files []string, meta *BackupMeta)
 			}
 		}
 		if want == "" {
-			return fmt.Errorf("备份清单中缺少 %s 的哈希记录", name)
+			return restored, fmt.Errorf("备份清单中缺少 %s 的哈希记录", name)
 		}
 		if dstHash, err := HashFile(dst); err == nil && strings.EqualFold(want, dstHash.SHA256) {
 			continue
 		}
-		if _, err := copyFile(src, dst, want); err != nil {
-			return fmt.Errorf("还原 %s 失败: %w", name, err)
+		if onRestore != nil {
+			onRestore(name)
 		}
+		if _, err := copyFile(src, dst, want); err != nil {
+			return restored, fmt.Errorf("还原 %s 失败: %w", name, err)
+		}
+		restored = append(restored, name)
 	}
-	return nil
+	return restored, nil
 }
 
 func copyFile(src, dst, wantSHA string) (FileHash, error) {
@@ -450,6 +481,9 @@ type RestoreConfig struct {
 	Language   region.Language
 	Repo       string
 	Cloud      Cloud
+	// Text / Font 指定这次只还原哪一组文件；两个都为 false 时还原全部（兼容旧行为）。
+	Text       bool
+	Font       bool
 	OnProgress func(stage, detail string, done, total int64)
 	Log        func(format string, args ...any)
 }
@@ -460,7 +494,8 @@ func (c *RestoreConfig) log(format string, args ...any) {
 	}
 }
 
-// Restore 手动恢复全部 6 个核心文件为官方原版。
+// Restore 手动恢复全部 6 个核心文件为官方原版，返回真正被覆盖的文件名。
+// 客户端本来就与备份一致时返回空列表，不写任何文件。
 func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 	if cfg.GameDir == "" {
 		return nil, fmt.Errorf("未设置游戏目录")
@@ -513,30 +548,27 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		meta = downloadedMeta
 	}
 
-	cfg.log("[还原] 正在将官方原版还原至客户端...")
-	if err := RestoreFiles(backupDir, sqpackDir, AllFiles, meta); err != nil {
+	// 只还原用户勾选的那一组：两个都没勾时按"全部还原"处理（旧调用方兼容）。
+	files := AllFiles
+	if cfg.Text || cfg.Font {
+		files = nil
+		if cfg.Text {
+			files = append(files, TextFiles...)
+		}
+		if cfg.Font {
+			files = append(files, FontFiles...)
+		}
+	}
+
+	// 逐文件比对，只覆盖真正被改动的文件；客户端本来就是原版时返回空列表。
+	restored, err := RestoreFiles(backupDir, sqpackDir, files, meta, func(name string) {
+		cfg.log("[还原] %s 已被改动，正在覆盖为官方原版...", name)
+	})
+	if err != nil {
 		return nil, err
 	}
-
-	restored := make([]string, len(AllFiles))
-	copy(restored, AllFiles)
 	sort.Strings(restored)
 	return restored, nil
-}
-
-// RestoreToGameWithContext 是外部调用的便捷封装。
-func RestoreToGameWithContext(ctx context.Context, gameDir, backupRoot string, lang region.Language,
-	onProgress func(stage, detail string, done, total int64), logFn func(format string, args ...any)) ([]string, error) {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	return Restore(ctx, RestoreConfig{
-		GameDir:    gameDir,
-		BackupRoot: backupRoot,
-		Language:   lang,
-		OnProgress: onProgress,
-		Log:        logFn,
-	})
 }
 
 func readBackupMeta(backupDir string) (*BackupMeta, error) {

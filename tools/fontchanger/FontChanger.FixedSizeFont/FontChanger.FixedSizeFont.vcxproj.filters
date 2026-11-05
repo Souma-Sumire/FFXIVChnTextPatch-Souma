@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Project Items">
+      <UniqueIdentifier>{495a9e79-1b3b-4044-a1b8-6f4c7055f184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\TeamHypersomnia-rectpack2D">
+      <UniqueIdentifier>{a9f7b0d9-1c5a-4e26-8c3f-74fdab39433b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Impls">
+      <UniqueIdentifier>{e6b341a1-0d3c-47f8-83b4-89d1f430e6fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\util">
+      <UniqueIdentifier>{6e0542ed-b588-481e-95dd-26c9f5e03baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\fixed_size_font">
+      <UniqueIdentifier>{ac494522-4b97-43e9-8d9d-d31029720b4e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json">
+      <Filter>Project Items</Filter>
+    </None>
+    <None Include="data\game_fonts.json" />
+    <None Include="data\glyph_merge_shapes.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\fontdata_packer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\text_measurer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\TeamHypersomnia-rectpack2D\src\rect_structs.h">
+      <Filter>Headers\TeamHypersomnia-rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\TeamHypersomnia-rectpack2D\src\insert_and_split.h">
+      <Filter>Headers\TeamHypersomnia-rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\TeamHypersomnia-rectpack2D\src\empty_spaces.h">
+      <Filter>Headers\TeamHypersomnia-rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\TeamHypersomnia-rectpack2D\src\finders_interface.h">
+      <Filter>Headers\TeamHypersomnia-rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\TeamHypersomnia-rectpack2D\src\empty_space_allocators.h">
+      <Filter>Headers\TeamHypersomnia-rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\TeamHypersomnia-rectpack2D\src\best_bin_finder.h">
+      <Filter>Headers\TeamHypersomnia-rectpack2D</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\util.truetype.h">
+      <Filter>Headers\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\wrapping_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\image_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\image_glyph_files.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\glyph_merging_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\merged_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\opentype_positioning.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\outline_clipping.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\fontdata_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\freetype_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FontChanger.FixedSizeFont\directwrite_fixed_size_font.h">
+      <Filter>Headers\fixed_size_font</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="impl\directwrite_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\fontdata_packer.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\freetype_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\fontdata_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\merged_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\opentype_positioning.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\text_measurer.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\wrapping_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\image_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\image_glyph_files.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\glyph_merging_fixed_size_font.cpp">
+      <Filter>Impls</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

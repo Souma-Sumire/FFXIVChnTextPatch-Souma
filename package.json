@@ -3,11 +3,13 @@
   "scripts": {
     "bundle": "node scripts/bundle.ts",
     "build": "node scripts/build.ts",
+    "build:release": "node scripts/build.ts --release",
     "csv": "node scripts/csv.ts",
     "csv:root": "node scripts/csv.ts --root",
     "csv:folder": "node scripts/csv.ts --folder",
     "hash": "node scripts/hash.ts",
-    "mod": "node scripts/mod.ts"
+    "mod": "node scripts/mod.ts",
+    "update:fontchanger": "node scripts/update_fontchanger.ts"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

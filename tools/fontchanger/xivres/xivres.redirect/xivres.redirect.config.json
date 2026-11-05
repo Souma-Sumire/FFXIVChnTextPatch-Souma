@@ -1,0 +1,79 @@
+{
+	"ttmpChoicesFiles": [
+		"choices.alt.json",
+		"choices.json"
+	],
+	"logReplacedPaths": false,
+	"logDialogueCharacterNames": true,
+	"logPathFilters": [
+		{
+			"pattern": ".*",
+			"include": true
+		},
+		{
+			"pattern": "^(music|exd|bg|bgcommon)/.*",
+			"include": false
+		},
+		{
+			"pattern": "^sound/(foot|system)/.*",
+			"include": false
+		},
+		{
+			"pattern": "^ui/(uld|icon)/.*",
+			"include": false
+		},
+		{
+			"pattern": ".*",
+			"include": true
+		}
+	],
+	"additionalRoots": [
+		{
+			"path": "C:\\Program Files (x86)\\FINAL FANTASY XIV - KOREA\\game",
+			"overrideResources": [
+				{
+					"types": [
+						"atex",
+						"tex"
+					],
+					"paths": [
+						"^ui/"
+					]
+				},
+				{
+					"types": [
+						"fdt",
+						"tex"
+					],
+					"paths": [
+						"^common/font"
+					]
+				}
+			]
+		}
+	],
+	"ttmpRoots": [
+		"ttmp"
+	],
+	"rawFileRoots": [
+		"sqraw"
+	],
+	"pathReplacements": [
+		{
+			"from": "^sound/voice/(vo_battle|vo_cm|vo_emote)/.*$",
+			"to": "sound/empty256.scd"
+		},
+		{
+			"from": "^((?:sound/voice/vo_line)/.*?[_/.])(?:ja|en|fr|de|chs|ko)(?=[_/.])",
+			"to": "$1ko"
+		},
+		{
+			"from": "^((?!sound/|cut/).*[_/.])(?:ja|en|fr|de|chs|ko)(?=[_/.])",
+			"to": "$1ko"
+		}
+	],
+	"forcedCharacterLanguages": {
+		"tataru": "en",
+		"": "ko"
+	}
+}

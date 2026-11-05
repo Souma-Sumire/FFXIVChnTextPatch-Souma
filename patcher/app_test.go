@@ -262,7 +262,7 @@ func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
 	app.skipProcessCheck = true
 
 	for _, lang := range []string{"CHS", "TC", "KO"} {
-		_, err := app.RestoreOriginal(gameDir, lang)
+		_, err := app.RestoreOriginal(gameDir, lang, true, true)
 		if err == nil {
 			t.Fatalf("%s 本地无备份时 RestoreOriginal 应该报错，但返回成功", lang)
 		}
@@ -593,13 +593,11 @@ func TestCheckClientStatusRegionMismatch(t *testing.T) {
 	}
 
 	// 校验 RestoreOriginal 拦截
-	_, err = app.RestoreOriginal(cnDir, "GLOBAL")
+	_, err = app.RestoreOriginal(cnDir, "GLOBAL", true, true)
 	if err == nil || !strings.Contains(err.Error(), "区服不匹配") {
 		t.Fatalf("RestoreOriginal 在区服不匹配时应拦截并报错，实际为: %v", err)
 	}
 }
-
-
 
 func TestCheckGameNotRunning(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -640,6 +638,8 @@ func TestCancelPatch(t *testing.T) {
 
 func TestAppCheckAppUpdate(t *testing.T) {
 	app := NewApp()
+	// 该用例验证云端更新逻辑，与构建模式无关。
+	app.updater.LocalOnly = false
 	app.cloudOverride = &mockCloud{
 		recent: []*verifier.Release{
 			{
@@ -661,6 +661,7 @@ func TestAppCheckAppUpdate(t *testing.T) {
 
 func TestAppCheckAppUpdateBlockedWhileBusy(t *testing.T) {
 	app := NewApp()
+	app.updater.LocalOnly = false
 	app.cloudOverride = &mockCloud{
 		recent: []*verifier.Release{
 			{Tag: "patcher-v3.0.0"},

@@ -19,3 +19,5 @@ resource/*.zip
 /resource/custom-csv/
 /.workbuddy/
 patcher/internal/golden/testdata/golden_source/
+tools/fontchanger/build/
+tools/fontchanger/bin/

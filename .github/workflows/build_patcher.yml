@@ -35,7 +35,7 @@ jobs:
         run: go test -short ./... -count=1
 
       - name: Build Windows executable
-        run: pnpm run build
+        run: pnpm run build:release
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
@@ -75,7 +75,7 @@ jobs:
         run: go test -short ./... -count=1
 
       - name: Build macOS Universal App Bundle
-        run: pnpm run build
+        run: pnpm run build:release
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v7
