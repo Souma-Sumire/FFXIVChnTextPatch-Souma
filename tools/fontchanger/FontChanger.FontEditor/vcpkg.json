@@ -1,0 +1,25 @@
+{
+  "name": "font-editor-native-app",
+  "version-string": "_",
+  "builtin-baseline": "5f96cd15fd745122cf27e0524606d6c1efc5fd07",
+  "dependencies": [
+    "clipper2",
+    "exprtk",
+    "freetype",
+    {
+      "name": "harfbuzz",
+      "features": [
+        "freetype"
+      ]
+    },
+    {
+      "name": "minizip",
+      "features": [
+        "unofficial-iowin32"
+      ]
+    },
+    "nlohmann-json",
+    "srell",
+    "zlib"
+  ]
+}

@@ -39,6 +39,36 @@ func CleanAppVersion(v string) string {
 	return strings.TrimSpace(v)
 }
 
+// DisplayAppVersion 返回界面展示的版本号。预览版保留 beta.1 这类后缀，
+// 其余构建后缀（git describe 的提交距离）仍按基线版本显示。
+func DisplayAppVersion(v string) string {
+	clean := CleanAppVersion(v)
+	if !isPreviewTag(v) {
+		return clean
+	}
+	raw := strings.TrimSpace(v)
+	raw = strings.TrimPrefix(raw, "refs/tags/")
+	raw = strings.TrimPrefix(raw, "patcher-")
+	return strings.TrimPrefix(raw, "v")
+}
+
+// isPreviewTag 判断 tag 是否为预览版。后缀关键字须与 build_patcher.yml 的判定一致，
+// 否则 CI 建了 Pre-release，客户端却仍会把它推给所有用户。
+func isPreviewTag(tag string) bool {
+	t := strings.ToLower(strings.TrimSpace(tag))
+	t = strings.TrimPrefix(t, "refs/tags/")
+	t = strings.TrimPrefix(t, "patcher-")
+	t = strings.TrimPrefix(t, "v")
+	suffix := strings.TrimPrefix(t, CleanAppVersion(t))
+	suffix = strings.TrimPrefix(suffix, "-")
+	for _, keyword := range []string{"alpha", "beta", "rc", "preview"} {
+		if strings.HasPrefix(suffix, keyword) {
+			return true
+		}
+	}
+	return false
+}
+
 // IsPatcherReleaseTag 判断该 tag 是否属于汉化器主程序 Release。
 // 只有 build_patcher.yml 的 patcher-v* 才是主程序发布。仓库里同时存在
 // v2.20.0、v2.18.x 这类旧版 Java 汉化器的 tag，只要「形如 x.y.z」就采信，
@@ -127,9 +157,10 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 	}
 
 	cleanCurrent := CleanAppVersion(currentVersion)
+	displayCurrent := DisplayAppVersion(currentVersion)
 	info := &AppUpdateInfo{
-		CurrentVersion:      cleanCurrent,
-		LatestVersion:       cleanCurrent,
+		CurrentVersion:      displayCurrent,
+		LatestVersion:       displayCurrent,
 		ReleaseURL:          fmt.Sprintf("https://github.com/%s/releases/latest", repo),
 		SelfUpdateSupported: SelfUpdateSupported(),
 	}
@@ -144,6 +175,10 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 
 	for _, rel := range releases {
 		if rel == nil || !IsPatcherReleaseTag(rel.Tag) {
+			continue
+		}
+		// 网页端兜底列表不带 prerelease 字段，只能靠 tag 后缀识别预览版。
+		if rel.Prerelease || isPreviewTag(rel.Tag) {
 			continue
 		}
 		ver := CleanAppVersion(rel.Tag)
@@ -187,7 +222,9 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 	}
 
 	if cleanCurrent != "dev" && cleanCurrent != "" {
-		if verifier.CompareVersion(highestVersion, cleanCurrent) > 0 {
+		cmp := verifier.CompareVersion(highestVersion, cleanCurrent)
+		// 预览版与同号正式版比较结果相等，仍需让预览用户升级到正式版。
+		if cmp > 0 || (cmp == 0 && isPreviewTag(currentVersion)) {
 			info.HasUpdate = true
 		}
 	}

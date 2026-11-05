@@ -335,3 +335,144 @@ func TestCheckAppUpdatePicksHighestPatcherTag(t *testing.T) {
 		t.Errorf("下载地址应基于 patcher tag 拼装，实际 %q", info.DownloadURL)
 	}
 }
+
+func TestIsPreviewTag(t *testing.T) {
+	cases := []struct {
+		tag  string
+		want bool
+	}{
+		{"patcher-v2.2.0-beta.1", true},
+		{"patcher-v2.2.0-rc1", true},
+		{"patcher-v2.2.0-preview.2", true},
+		{"patcher-v2.2.0-alpha.3", true},
+		{"PATCHER-V2.2.0-BETA.1", true},
+		{"refs/tags/patcher-v2.2.0-beta.1", true},
+		{"patcher-v2.2.0", false},
+		{"patcher-v2.1.4", false},
+		{"2.1.2-8-g28272842", false},
+		{"dev", false},
+		{"v2.20.0", false},
+	}
+	for _, c := range cases {
+		if got := isPreviewTag(c.tag); got != c.want {
+			t.Errorf("isPreviewTag(%q) = %v, want %v", c.tag, got, c.want)
+		}
+	}
+}
+
+func TestDisplayAppVersion(t *testing.T) {
+	cases := []struct {
+		input string
+		want  string
+	}{
+		{"patcher-v2.2.0-beta.1", "2.2.0-beta.1"},
+		{"2.2.0-rc1", "2.2.0-rc1"},
+		{"refs/tags/patcher-v2.2.0-preview.2", "2.2.0-preview.2"},
+		{"patcher-v2.2.0", "2.2.0"},
+		{"2.1.2-8-g28272842", "2.1.2"},
+		{"dev", "dev"},
+	}
+	for _, c := range cases {
+		if got := DisplayAppVersion(c.input); got != c.want {
+			t.Errorf("DisplayAppVersion(%q) = %q, want %q", c.input, got, c.want)
+		}
+	}
+}
+
+// 预览版的 tag 后缀与 GitHub 的 prerelease 标记都要挡住，否则普通用户会被推测试包。
+func TestCheckAppUpdateIgnoresPreviewRelease(t *testing.T) {
+	cloud := &mockUpdateCloud{
+		releases: []*verifier.Release{
+			{Tag: "patcher-v2.2.0-beta.1", Prerelease: true, URL: "https://example.com/beta"},
+			{Tag: "patcher-v2.2.0-rc.1", URL: "https://example.com/rc"},
+			{Tag: "patcher-v2.1.4", URL: "https://example.com/2.1.4"},
+		},
+	}
+
+	info, err := CheckAppUpdate(context.Background(), cloud, "o/r", "2.1.3")
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if info.LatestVersion != "2.1.4" {
+		t.Errorf("预览版不应参与版本比较，实际 latest=%q", info.LatestVersion)
+	}
+	if !info.HasUpdate {
+		t.Error("应提示 2.1.3 -> 2.1.4 的正式版更新")
+	}
+	if !strings.HasSuffix(info.ReleaseURL, "/2.1.4") {
+		t.Errorf("Release 链接应指向正式版，实际 %q", info.ReleaseURL)
+	}
+}
+
+// 仓库里只有预览版时，普通用户应保持「已是最新版本」。
+func TestCheckAppUpdateOnlyPreviewReleases(t *testing.T) {
+	cloud := &mockUpdateCloud{
+		releases: []*verifier.Release{
+			{Tag: "patcher-v2.2.0-beta.1", Prerelease: true},
+		},
+	}
+	info, err := CheckAppUpdate(context.Background(), cloud, "o/r", "2.1.4")
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if info.HasUpdate || info.LatestVersion != "2.1.4" {
+		t.Errorf("只有预览版时不应提示更新，hasUpdate=%v latest=%q", info.HasUpdate, info.LatestVersion)
+	}
+}
+
+// 手动在 GitHub 标为 Pre-release、tag 却没有预览后缀的发布同样不能推给用户。
+func TestCheckAppUpdateIgnoresGitHubPrerelease(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/repos/test/repo/releases" {
+			http.NotFound(w, r)
+			return
+		}
+		releases := []map[string]any{
+			{"tag_name": "patcher-v2.2.0", "prerelease": true, "assets": []map[string]string{}},
+			{"tag_name": "patcher-v2.1.4", "prerelease": false, "assets": []map[string]string{}},
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(releases)
+	}))
+	defer srv.Close()
+
+	client := verifier.NewGitHubClient()
+	client.APIBase = srv.URL
+	client.HTTP = srv.Client()
+
+	info, err := CheckAppUpdate(context.Background(), client, "test/repo", "2.1.3")
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if info.LatestVersion != "2.1.4" || !info.HasUpdate {
+		t.Errorf("应取正式版 2.1.4，实际 hasUpdate=%v latest=%q", info.HasUpdate, info.LatestVersion)
+	}
+}
+
+// 同号正式版发布后，预览版用户仍应收到升级提示；正式版用户则不应误报。
+func TestCheckAppUpdatePreviewUserUpgradesToFinal(t *testing.T) {
+	cloud := &mockUpdateCloud{
+		releases: []*verifier.Release{
+			{Tag: "patcher-v2.2.0", URL: "https://example.com/2.2.0"},
+		},
+	}
+
+	info, err := CheckAppUpdate(context.Background(), cloud, "o/r", "2.2.0-beta.1")
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if !info.HasUpdate {
+		t.Error("同号正式版发布后，预览版用户应收到升级提示")
+	}
+	if info.CurrentVersion != "2.2.0-beta.1" || info.LatestVersion != "2.2.0" {
+		t.Errorf("版本展示应区分预览版与正式版，current=%q latest=%q", info.CurrentVersion, info.LatestVersion)
+	}
+
+	infoFinal, err := CheckAppUpdate(context.Background(), cloud, "o/r", "2.2.0")
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if infoFinal.HasUpdate {
+		t.Error("正式版用户不应收到同版本的更新提示")
+	}
+}

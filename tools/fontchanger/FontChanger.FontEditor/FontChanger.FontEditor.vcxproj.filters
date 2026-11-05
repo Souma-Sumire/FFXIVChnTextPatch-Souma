@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandLineRender.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="FileHistory.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Project Items</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.GlyphImages.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.GlyphFiles.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseWindow.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportPreviewWindow.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.Characters.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.Font.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.Typography.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.GlyphMerging.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FontElementEditorDialog.Monospacing.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressDialog.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Window.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Controls.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Menu.Edit.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Menu.Export.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Menu.File.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Menu.HotReload.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFontReloader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="GlyphFileTools.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="WicImage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.Menu.View.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInstallationManagerDialog.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FontGeneratorConfig.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscUtil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="NegativeBearingCodepointsDialog.cpp">
+      <Filter>Source\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInstallationRepository.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Project Items">
+      <UniqueIdentifier>{d719eb54-8ca7-4c80-b874-9d9e8aee8c68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{9191263d-3d41-49ff-9708-53b106238b9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Windows">
+      <UniqueIdentifier>{87361262-3322-453c-8860-c8d0cfba0907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Dialogs">
+      <UniqueIdentifier>{4bb79045-e455-4d25-a7c7-884c5be6efd9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Project Items</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Project Items</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseWindow.h">
+      <Filter>Source\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportPreviewWindow.h">
+      <Filter>Source\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="MainWindow.h">
+      <Filter>Source\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="FontElementEditorDialog.h">
+      <Filter>Source\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="FontElementEditorDialog.Internal.h">
+      <Filter>Source\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFontReloader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="GlyphFileTools.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="WicImage.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressDialog.h">
+      <Filter>Source\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="MainWindow.Internal.h">
+      <Filter>Source\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInstallationManagerDialog.h">
+      <Filter>Source\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="FontGeneratorConfig.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandLineRender.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHistory.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="MiscUtil.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="NegativeBearingCodepointsDialog.h">
+      <Filter>Source\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInstallationRepository.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json">
+      <Filter>Project Items</Filter>
+    </None>
+    <MASM Include="CallAtkModuleVf43.asm">
+      <Filter>Source</Filter>
+    </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FontChanger.FontEditor.rc">
+      <Filter>Project Items</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="FontChanger.FontEditor.ico">
+      <Filter>Project Items</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,178 @@
+name: Build FontChanger CLI
+
+on:
+  workflow_dispatch:
+  # C++ 源码或本工作流有改动时自动重编，并把新组件推到 fontchanger-cli 分支，
+  # 保证任何人的 pnpm run build 都能拿到最新组件。
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/fontchanger/**"
+      - ".github/workflows/build_fontchanger.yml"
+
+concurrency:
+  group: build-fontchanger
+  cancel-in-progress: true
+
+env:
+  VCPKG_COMMIT_ID: "5f96cd15fd745122cf27e0524606d6c1efc5fd07"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      # vcpkg 的下载与二进制缓存都放在 vcpkg 目录之外。
+      # restore-keys 兼容旧缓存（已包含 14/15 个编译好的二进制包），构建完成后以 v2 主键保存完整 15/15 产物。
+      - name: Cache vcpkg downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}/vcpkg-downloads
+          key: vcpkg-downloads-v2-${{ runner.os }}-${{ hashFiles('tools/fontchanger/FontChanger.FontEditor/vcpkg.json') }}
+          restore-keys: |
+            vcpkg-downloads-v2-${{ runner.os }}-
+            vcpkg-downloads-${{ runner.os }}-
+
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}/vcpkg-bincache
+          key: vcpkg-binaries-v2-${{ runner.os }}-${{ hashFiles('tools/fontchanger/FontChanger.FontEditor/vcpkg.json') }}
+          restore-keys: |
+            vcpkg-binaries-v2-${{ runner.os }}-
+            vcpkg-binaries-${{ runner.os }}-
+
+      # 自行引导 vcpkg，不依赖 lukka/run-vcpkg 与其内部无重试的 tls12-download.exe：
+      # 1. 直接原地复用 Runner 镜像预装的 C:\vcpkg（已含完整 git 历史与 vcpkg.exe，避免跨盘硬链接报错和网络克隆）
+      # 2. 若环境无预装 vcpkg.exe，才使用带重试的 curl 下载并缓存在 vcpkg-downloads
+      # 3. 预热 exprtk 归档并提供 git 浅克隆 Overlay 兜底，规避 GitHub codeload 偶发 504
+      - name: Setup vcpkg and cache
+        shell: pwsh
+        run: |
+          $downloads = Join-Path $env:RUNNER_WORKSPACE 'vcpkg-downloads'
+          $binaries = Join-Path $env:RUNNER_WORKSPACE 'vcpkg-bincache'
+          New-Item -ItemType Directory -Force -Path $downloads, $binaries | Out-Null
+
+          if ($env:VCPKG_INSTALLATION_ROOT -and (Test-Path (Join-Path $env:VCPKG_INSTALLATION_ROOT '.git'))) {
+            $root = $env:VCPKG_INSTALLATION_ROOT
+            Write-Host "Using preinstalled vcpkg at $root"
+          } else {
+            $root = Join-Path $env:RUNNER_WORKSPACE 'vcpkg'
+            if (-not (Test-Path (Join-Path $root '.git'))) {
+              Write-Host "Cloning vcpkg from GitHub into $root..."
+              New-Item -ItemType Directory -Force -Path $root | Out-Null
+              git clone --no-checkout https://github.com/microsoft/vcpkg.git $root
+              if ($LASTEXITCODE -ne 0) { throw 'Failed to clone vcpkg' }
+            }
+          }
+
+          git config --global --add safe.directory ($root -replace '\\', '/')
+          git -C $root cat-file -e "$($env:VCPKG_COMMIT_ID)^{commit}" 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            git -C $root fetch origin $env:VCPKG_COMMIT_ID
+            if ($LASTEXITCODE -ne 0) { throw "Failed to fetch vcpkg commit $($env:VCPKG_COMMIT_ID)" }
+          }
+          git -C $root checkout --force $env:VCPKG_COMMIT_ID
+          if ($LASTEXITCODE -ne 0) { throw "Failed to checkout vcpkg commit $($env:VCPKG_COMMIT_ID)" }
+
+          $targetVcpkgExe = Join-Path $root 'vcpkg.exe'
+          if (-not (Test-Path $targetVcpkgExe)) {
+            $metaPath = Join-Path $root 'scripts\vcpkg-tool-metadata.txt'
+            $config = ConvertFrom-StringData (Get-Content $metaPath -Raw)
+            $versionDate = $config.VCPKG_TOOL_RELEASE_TAG.Trim()
+            $cachedVcpkgExe = Join-Path $downloads "vcpkg-$versionDate.exe"
+            if (-not (Test-Path $cachedVcpkgExe)) {
+              $toolUrl = "https://github.com/microsoft/vcpkg-tool/releases/download/$versionDate/vcpkg.exe"
+              Write-Host "Downloading vcpkg-tool ($versionDate) with retry..."
+              curl.exe --fail --location --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30 --max-time 120 -o $cachedVcpkgExe $toolUrl
+              if ($LASTEXITCODE -ne 0 -or -not (Test-Path $cachedVcpkgExe)) {
+                Remove-Item $cachedVcpkgExe -Force -ErrorAction SilentlyContinue
+                throw "Failed to download vcpkg.exe from $toolUrl"
+              }
+            }
+            Copy-Item $cachedVcpkgExe $targetVcpkgExe -Force
+          }
+          (Get-Item $targetVcpkgExe).LastWriteTime = (Get-Date).AddMinutes(1)
+          Set-Content -Value '' -Path (Join-Path $root 'vcpkg.disable-metrics') -Force
+
+          if (-not (Test-Path (Join-Path $root 'scripts\buildsystems\msbuild\vcpkg.targets'))) {
+            throw "vcpkg MSBuild 集成文件缺失: $root\scripts\buildsystems\msbuild"
+          }
+          & $targetVcpkgExe version --disable-metrics
+
+          "VCPKG_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VCPKG_DOWNLOADS=$downloads" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VCPKG_BINARY_SOURCES=clear;files,$($binaries -replace '\\', '/'),readwrite" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "vcpkg root: $root"
+          Write-Host "downloads: $downloads"
+          Write-Host "binaries: $binaries"
+
+          $exprtkArchive = Join-Path $downloads 'ArashPartow-exprtk-0.0.3.tar.gz'
+          $expectedSha512 = '1493b68929d3cb4e97c0180ef6f111ae4edbbee072ab78223976005b8402e4e7b56d94f013fbbc009f4db2652167fa3b4ba3c33d4029572ebbe61a36df9da9e4'
+          $archiveReady = (Test-Path $exprtkArchive) -and ((Get-FileHash -Algorithm SHA512 $exprtkArchive).Hash.ToLower() -eq $expectedSha512)
+          if (-not $archiveReady) {
+            Write-Host 'Pre-fetching exprtk 0.0.3 archive...'
+            curl.exe --fail --location --retry 5 --retry-all-errors --retry-delay 5 --max-time 60 -o $exprtkArchive 'https://github.com/ArashPartow/exprtk/archive/0.0.3.tar.gz'
+            if ($LASTEXITCODE -eq 0 -and (Test-Path $exprtkArchive) -and ((Get-FileHash -Algorithm SHA512 $exprtkArchive).Hash.ToLower() -eq $expectedSha512)) {
+              $archiveReady = $true
+              Write-Host 'exprtk archive downloaded and verified.'
+            } else {
+              Remove-Item $exprtkArchive -Force -ErrorAction SilentlyContinue
+              Write-Warning 'codeload archive download failed; falling back to shallow git clone overlay port for exprtk...'
+              $overlays = Join-Path $env:RUNNER_WORKSPACE 'vcpkg-overlays'
+              $exprtkPort = Join-Path $overlays 'exprtk'
+              $exprtkSrc = Join-Path $exprtkPort 'src'
+              New-Item -ItemType Directory -Force -Path $exprtkPort | Out-Null
+              Copy-Item (Join-Path $root 'ports\exprtk\vcpkg.json') (Join-Path $exprtkPort 'vcpkg.json') -Force
+              git clone --depth 1 --branch 0.0.3 https://github.com/ArashPartow/exprtk.git $exprtkSrc
+              if ($LASTEXITCODE -ne 0) { throw 'exprtk git clone fallback failed' }
+              @(
+                'file(COPY "${CMAKE_CURRENT_LIST_DIR}/src/exprtk.hpp" DESTINATION "${CURRENT_PACKAGES_DIR}/include")'
+                'vcpkg_install_copyright(FILE_LIST "${CMAKE_CURRENT_LIST_DIR}/src/license.txt")'
+              ) | Set-Content -Path (Join-Path $exprtkPort 'portfile.cmake') -Encoding utf8
+              "VCPKG_OVERLAY_PORTS=$($overlays -replace '\\', '/')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
+
+      - name: Build Solution
+        working-directory: tools/fontchanger
+        run: |
+          msbuild FFXIV-FontChanger.sln /p:Configuration=Release /p:Platform=x64 /m /p:MultiProcessorCompilation=true
+
+      - name: Copy Binary
+        working-directory: tools/fontchanger
+        shell: bash
+        run: |
+          mkdir -p bin
+          cp build/Release/FontChanger.FontEditor64.exe bin/fontchanger-cli.exe
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: fontchanger-cli
+          path: tools/fontchanger/bin/fontchanger-cli.exe
+
+      # 发布到 fontchanger-cli 分支：构建时 scripts/build.ts 从这里下载组件再嵌入主程序，
+      # 这样仓库不用提交二进制，任何 clone/fork 的构建都能拿到同一个组件。
+      - name: Publish CLI to branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cp tools/fontchanger/build/Release/FontChanger.FontEditor64.exe fontchanger-cli.exe
+          git checkout --orphan cli-temp
+          git reset
+          git add -f fontchanger-cli.exe
+          git commit -m "chore: 更新字体编译组件 (${{ github.sha }})"
+          git push origin cli-temp:fontchanger-cli --force

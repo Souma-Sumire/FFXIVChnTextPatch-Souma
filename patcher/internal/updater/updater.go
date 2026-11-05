@@ -12,8 +12,10 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -36,16 +38,19 @@ type BundleInfo struct {
 
 // Manifest 对应 resource/manifest.json。
 type Manifest struct {
-	GeneratedAt string              `json:"generatedAt"`
-	RootHash    string              `json:"rootHash,omitempty"`
-	RawEXD      BundleInfo          `json:"rawexd"`
-	Font        BundleInfo          `json:"font"`
-	Rules       BundleInfo          `json:"rules"`
-	Tables      BundleInfo          `json:"tables"`
-	Fonts       map[string]FileInfo `json:"fonts"`
+	GeneratedAt string     `json:"generatedAt"`
+	RootHash    string     `json:"rootHash,omitempty"`
+	RawEXD      BundleInfo `json:"rawexd"`
+	// Font 是预编译字体包：macOS 或编译组件不可用时按需下载，平时不下载。
+	Font   BundleInfo `json:"font"`
+	Rules  BundleInfo `json:"rules"`
+	Tables BundleInfo `json:"tables"`
 }
 
 // DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像，已实测可用）。
+//
+// 资源统一发布在 assets 分支：新版与旧版汉化器共用同一份快照，字体包也已确认向下兼容，
+// 因此不再单独维护第二条资源分支。
 func DefaultNodes() []string {
 	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/resource/"
 	return []string{
@@ -59,10 +64,33 @@ func DefaultNodes() []string {
 	}
 }
 
+// FontCompilerURLs 返回字体编译组件的下载地址（直连 + 镜像）。
+// 组件单独发布在 fontchanger-cli 分支，不随主程序打包，用到时才下载。
+func FontCompilerURLs() []string {
+	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/fontchanger-cli/fontchanger-cli.exe"
+	return []string{
+		raw,
+		"https://gh-proxy.com/" + raw,
+		"https://cdn.gh-proxy.org/" + raw,
+		"https://hk.gh-proxy.org/" + raw,
+		"https://gh.monlor.com/" + raw,
+		"https://ghfast.top/" + raw,
+		"https://wget.la/" + raw,
+	}
+}
+
+// DownloadFile 把任意 URL 下载到 dst，用于字体编译组件这类不在清单里的文件。
+func (u *Updater) DownloadFile(ctx context.Context, url, dst string, progress func(done, total int64)) error {
+	return u.fetchToFile(ctx, url, dst, progress)
+}
+
 // Updater 负责清单拉取与资源下载。
 type Updater struct {
-	HTTP          *http.Client
-	Nodes         []string
+	HTTP  *http.Client
+	Nodes []string
+	// LocalOnly 为 true 时只校验本地资源，不向云端发任何请求。
+	// 本地开发构建用它保住工作区里的 resource/；发布构建恒为 false。
+	LocalOnly     bool
 	preferredNode string
 	mu            sync.RWMutex
 
@@ -152,6 +180,9 @@ func (u *Updater) nodes() []string {
 // FetchManifest 并发向所有节点发起请求，首个成功且合法的清单直接胜出并返回。
 // 同一进程内 30 秒内重复调用会复用上一次的结果。
 func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
+	if u.LocalOnly {
+		return nil, errors.New("本地开发构建不访问云端资源清单")
+	}
 	if m := u.cachedManifest(); m != nil {
 		return m, nil
 	}
@@ -197,9 +228,6 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 				}
 				return
 			}
-			if m.Fonts == nil {
-				m.Fonts = map[string]FileInfo{}
-			}
 			select {
 			case resCh <- response{manifest: &m, node: n}:
 			case <-raceCtx.Done():
@@ -207,7 +235,7 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 		}(node)
 	}
 
-	var lastErr error
+	var failures []nodeFailure
 	for i := 0; i < len(nodes); i++ {
 		select {
 		case <-ctx.Done():
@@ -219,14 +247,53 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 				u.cacheManifest(res.manifest)
 				return res.manifest, nil
 			}
-			lastErr = res.err
+			failures = append(failures, nodeFailure{node: res.node, err: res.err})
 		}
 	}
 
-	if lastErr == nil {
-		lastErr = errors.New("没有可用的下载节点")
+	return nil, describeManifestFailures(failures)
+}
+
+// nodeFailure 记录某个节点这一轮的失败原因。
+type nodeFailure struct {
+	node string
+	err  error
+}
+
+// 错误信息里已经带了节点前缀，末尾的完整 URL 只是噪音，统一裁掉。
+var trailingURLErr = regexp.MustCompile(`:\s*https?://\S+$`)
+
+// describeManifestFailures 汇总整轮请求的结果。
+// 只抛最后一个节点的错误会让人以为没有换节点重试，这里把每个节点的结果都列出来。
+func describeManifestFailures(failures []nodeFailure) error {
+	if len(failures) == 0 {
+		return errors.New("没有可用的下载节点")
 	}
-	return nil, lastErr
+	parts := make([]string, 0, len(failures))
+	all404 := true
+	for _, f := range failures {
+		msg := trailingURLErr.ReplaceAllString(f.err.Error(), "")
+		if !strings.Contains(msg, "404") {
+			all404 = false
+		}
+		parts = append(parts, shortNodeName(f.node)+": "+msg)
+	}
+	var b strings.Builder
+	fmt.Fprintf(&b, "已向全部 %d 个下载节点请求资源清单，都失败了", len(failures))
+	if all404 {
+		b.WriteString("（所有节点都是 404，说明资源分支或路径不存在）")
+	}
+	b.WriteString("：")
+	b.WriteString(strings.Join(parts, "；"))
+	return errors.New(b.String())
+}
+
+// shortNodeName 取节点的主机名，便于在错误信息里辨认是哪个加速节点。
+func shortNodeName(node string) string {
+	if u, err := url.Parse(node); err == nil && u.Host != "" {
+		return u.Host
+	}
+	return strings.TrimRight(node, "/")
 }
 
 func (u *Updater) get(ctx context.Context, url string) ([]byte, error) {

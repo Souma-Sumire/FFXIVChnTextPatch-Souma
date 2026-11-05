@@ -1,0 +1,4723 @@
+{
+	"exportMapChnAxisToFont": false,
+	"exportMapFontLobbyToFont": true,
+	"exportMapKrnAxisToFont": true,
+	"exportMapTcAxisToFont": false,
+	"fontSets": [
+		{
+			"discardStep": 1,
+			"expectedTexCount": 6,
+			"faces": [
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 9.6,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.7000000476837158,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 11.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"glyphMerging": {
+								"fitMode": "condenseThenShrink",
+								"letterSpacing": 0.0,
+								"lineAlignment": "center",
+								"lineSpacing": 0.0,
+								"mappings": [
+									{
+										"codepoints": "",
+										"shape": "amPm",
+										"textMode": "subtract",
+										"texts": [
+											"A\nM",
+											"P\nM"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"m",
+											"Lv",
+											"ST",
+											"Nv"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "box",
+										"textMode": "subtract",
+										"texts": [
+											"?",
+											"A",
+											"B",
+											"C",
+											"D",
+											"E",
+											"F",
+											"G",
+											"H",
+											"I",
+											"J",
+											"K",
+											"L",
+											"M",
+											"N",
+											"O",
+											"P",
+											"Q",
+											"R",
+											"S",
+											"T",
+											"U",
+											"V",
+											"W",
+											"X",
+											"Y",
+											"Z",
+											"+",
+											"E"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "bozja",
+										"textMode": "subtract",
+										"texts": [
+											"I",
+											"II",
+											"III",
+											"IV",
+											"V",
+											"VI"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "time",
+										"textMode": "subtract",
+										"texts": [
+											"LT",
+											"ST",
+											"ET",
+											"OZ",
+											"SZ",
+											"EZ",
+											"HL",
+											"HS",
+											"HE"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "numberBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9",
+											"10",
+											"11",
+											"12",
+											"13",
+											"14",
+											"15",
+											"16",
+											"17",
+											"18",
+											"19",
+											"20",
+											"21",
+											"22",
+											"23",
+											"24",
+											"25",
+											"26",
+											"27",
+											"28",
+											"29",
+											"30",
+											"31"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hexagon",
+										"textMode": "subtract",
+										"texts": [
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hollowBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"A"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"_A"
+										]
+									}
+								],
+								"textOffset": [
+									0.0,
+									0.0
+								],
+								"textSize": null,
+								"textTransform": {
+									"rotation": 0.0,
+									"scaleX": 1.0,
+									"scaleY": 1.0,
+									"skew": 0.0
+								}
+							},
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 9.6,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										57378,
+										57378
+									],
+									[
+										57380,
+										57380
+									],
+									[
+										57384,
+										57384
+									],
+									[
+										57440,
+										57454
+									],
+									[
+										57456,
+										57482
+									],
+									[
+										57487,
+										57529
+									],
+									[
+										57537,
+										57542
+									],
+									[
+										57552,
+										57560
+									],
+									[
+										57568,
+										57577
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "AXIS_96",
+					"previewText": "0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 12.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.7000000476837158,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 13.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"glyphMerging": {
+								"fitMode": "condenseThenShrink",
+								"letterSpacing": 0.0,
+								"lineAlignment": "center",
+								"lineSpacing": 0.0,
+								"mappings": [
+									{
+										"codepoints": "",
+										"shape": "amPm",
+										"textMode": "subtract",
+										"texts": [
+											"A\nM",
+											"P\nM"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"m",
+											"Lv",
+											"ST",
+											"Nv"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "box",
+										"textMode": "subtract",
+										"texts": [
+											"?",
+											"A",
+											"B",
+											"C",
+											"D",
+											"E",
+											"F",
+											"G",
+											"H",
+											"I",
+											"J",
+											"K",
+											"L",
+											"M",
+											"N",
+											"O",
+											"P",
+											"Q",
+											"R",
+											"S",
+											"T",
+											"U",
+											"V",
+											"W",
+											"X",
+											"Y",
+											"Z",
+											"+",
+											"E"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "bozja",
+										"textMode": "subtract",
+										"texts": [
+											"I",
+											"II",
+											"III",
+											"IV",
+											"V",
+											"VI"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "time",
+										"textMode": "subtract",
+										"texts": [
+											"LT",
+											"ST",
+											"ET",
+											"OZ",
+											"SZ",
+											"EZ",
+											"HL",
+											"HS",
+											"HE"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "numberBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9",
+											"10",
+											"11",
+											"12",
+											"13",
+											"14",
+											"15",
+											"16",
+											"17",
+											"18",
+											"19",
+											"20",
+											"21",
+											"22",
+											"23",
+											"24",
+											"25",
+											"26",
+											"27",
+											"28",
+											"29",
+											"30",
+											"31"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hexagon",
+										"textMode": "subtract",
+										"texts": [
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hollowBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"A"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"_A"
+										]
+									}
+								],
+								"textOffset": [
+									0.0,
+									0.0
+								],
+								"textSize": null,
+								"textTransform": {
+									"rotation": 0.0,
+									"scaleX": 1.0,
+									"scaleY": 1.0,
+									"skew": 0.0
+								}
+							},
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 12.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										57378,
+										57378
+									],
+									[
+										57380,
+										57380
+									],
+									[
+										57384,
+										57384
+									],
+									[
+										57440,
+										57454
+									],
+									[
+										57456,
+										57482
+									],
+									[
+										57487,
+										57529
+									],
+									[
+										57537,
+										57542
+									],
+									[
+										57552,
+										57560
+									],
+									[
+										57568,
+										57577
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "AXIS_12",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 14.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.7000000476837158,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 15.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"glyphMerging": {
+								"fitMode": "condenseThenShrink",
+								"letterSpacing": 0.0,
+								"lineAlignment": "center",
+								"lineSpacing": 0.0,
+								"mappings": [
+									{
+										"codepoints": "",
+										"shape": "amPm",
+										"textMode": "subtract",
+										"texts": [
+											"A\nM",
+											"P\nM"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"m",
+											"Lv",
+											"ST",
+											"Nv"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "box",
+										"textMode": "subtract",
+										"texts": [
+											"?",
+											"A",
+											"B",
+											"C",
+											"D",
+											"E",
+											"F",
+											"G",
+											"H",
+											"I",
+											"J",
+											"K",
+											"L",
+											"M",
+											"N",
+											"O",
+											"P",
+											"Q",
+											"R",
+											"S",
+											"T",
+											"U",
+											"V",
+											"W",
+											"X",
+											"Y",
+											"Z",
+											"+",
+											"E"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "bozja",
+										"textMode": "subtract",
+										"texts": [
+											"I",
+											"II",
+											"III",
+											"IV",
+											"V",
+											"VI"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "time",
+										"textMode": "subtract",
+										"texts": [
+											"LT",
+											"ST",
+											"ET",
+											"OZ",
+											"SZ",
+											"EZ",
+											"HL",
+											"HS",
+											"HE"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "numberBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9",
+											"10",
+											"11",
+											"12",
+											"13",
+											"14",
+											"15",
+											"16",
+											"17",
+											"18",
+											"19",
+											"20",
+											"21",
+											"22",
+											"23",
+											"24",
+											"25",
+											"26",
+											"27",
+											"28",
+											"29",
+											"30",
+											"31"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hexagon",
+										"textMode": "subtract",
+										"texts": [
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hollowBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"A"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"_A"
+										]
+									}
+								],
+								"textOffset": [
+									0.0,
+									0.0
+								],
+								"textSize": null,
+								"textTransform": {
+									"rotation": 0.0,
+									"scaleX": 1.0,
+									"scaleY": 1.0,
+									"skew": 0.0
+								}
+							},
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 14.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										57378,
+										57378
+									],
+									[
+										57380,
+										57380
+									],
+									[
+										57384,
+										57384
+									],
+									[
+										57440,
+										57454
+									],
+									[
+										57456,
+										57482
+									],
+									[
+										57487,
+										57529
+									],
+									[
+										57537,
+										57542
+									],
+									[
+										57552,
+										57560
+									],
+									[
+										57568,
+										57577
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "AXIS_14",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 18,
+									"lineHeight": 24
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 18.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 19.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"glyphMerging": {
+								"fitMode": "condenseThenShrink",
+								"letterSpacing": 0.0,
+								"lineAlignment": "center",
+								"lineSpacing": 0.0,
+								"mappings": [
+									{
+										"codepoints": "",
+										"shape": "amPm",
+										"textMode": "subtract",
+										"texts": [
+											"A\nM",
+											"P\nM"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"m",
+											"Lv",
+											"ST",
+											"Nv"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "box",
+										"textMode": "subtract",
+										"texts": [
+											"?",
+											"A",
+											"B",
+											"C",
+											"D",
+											"E",
+											"F",
+											"G",
+											"H",
+											"I",
+											"J",
+											"K",
+											"L",
+											"M",
+											"N",
+											"O",
+											"P",
+											"Q",
+											"R",
+											"S",
+											"T",
+											"U",
+											"V",
+											"W",
+											"X",
+											"Y",
+											"Z",
+											"+",
+											"E"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "bozja",
+										"textMode": "subtract",
+										"texts": [
+											"I",
+											"II",
+											"III",
+											"IV",
+											"V",
+											"VI"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "time",
+										"textMode": "subtract",
+										"texts": [
+											"LT",
+											"ST",
+											"ET",
+											"OZ",
+											"SZ",
+											"EZ",
+											"HL",
+											"HS",
+											"HE"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "numberBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9",
+											"10",
+											"11",
+											"12",
+											"13",
+											"14",
+											"15",
+											"16",
+											"17",
+											"18",
+											"19",
+											"20",
+											"21",
+											"22",
+											"23",
+											"24",
+											"25",
+											"26",
+											"27",
+											"28",
+											"29",
+											"30",
+											"31"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hexagon",
+										"textMode": "subtract",
+										"texts": [
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hollowBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"A"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"_A"
+										]
+									}
+								],
+								"textOffset": [
+									0.0,
+									0.0
+								],
+								"textSize": null,
+								"textTransform": {
+									"rotation": 0.0,
+									"scaleX": 1.0,
+									"scaleY": 1.0,
+									"skew": 0.0
+								}
+							},
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 18.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										57378,
+										57378
+									],
+									[
+										57380,
+										57380
+									],
+									[
+										57384,
+										57384
+									],
+									[
+										57440,
+										57454
+									],
+									[
+										57456,
+										57482
+									],
+									[
+										57487,
+										57529
+									],
+									[
+										57537,
+										57542
+									],
+									[
+										57552,
+										57560
+									],
+									[
+										57568,
+										57577
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "AXIS_18",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ifi\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6[][]\r\n7[]\r\n8[]\r\n9\r\n9()[]\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 101,
+									"lineHeight": 128
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 6,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"glyphMerging": {
+								"fitMode": "condenseThenShrink",
+								"letterSpacing": 0.0,
+								"lineAlignment": "center",
+								"lineSpacing": 0.0,
+								"mappings": [
+									{
+										"codepoints": "",
+										"shape": "amPm",
+										"textMode": "subtract",
+										"texts": [
+											"A\nM",
+											"P\nM"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"m",
+											"Lv",
+											"ST",
+											"Nv"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "box",
+										"textMode": "subtract",
+										"texts": [
+											"?",
+											"A",
+											"B",
+											"C",
+											"D",
+											"E",
+											"F",
+											"G",
+											"H",
+											"I",
+											"J",
+											"K",
+											"L",
+											"M",
+											"N",
+											"O",
+											"P",
+											"Q",
+											"R",
+											"S",
+											"T",
+											"U",
+											"V",
+											"W",
+											"X",
+											"Y",
+											"Z",
+											"+",
+											"E"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "bozja",
+										"textMode": "subtract",
+										"texts": [
+											"I",
+											"II",
+											"III",
+											"IV",
+											"V",
+											"VI"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "time",
+										"textMode": "subtract",
+										"texts": [
+											"LT",
+											"ST",
+											"ET",
+											"OZ",
+											"SZ",
+											"EZ",
+											"HL",
+											"HS",
+											"HE"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "none",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "numberBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9",
+											"10",
+											"11",
+											"12",
+											"13",
+											"14",
+											"15",
+											"16",
+											"17",
+											"18",
+											"19",
+											"20",
+											"21",
+											"22",
+											"23",
+											"24",
+											"25",
+											"26",
+											"27",
+											"28",
+											"29",
+											"30",
+											"31"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hexagon",
+										"textMode": "subtract",
+										"texts": [
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "hollowBox",
+										"textMode": "subtract",
+										"texts": [
+											"0",
+											"1",
+											"2",
+											"3",
+											"4",
+											"5",
+											"6",
+											"7",
+											"8",
+											"9"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"A"
+										]
+									},
+									{
+										"codepoints": "",
+										"shape": "ime",
+										"textMode": "subtract",
+										"texts": [
+											"_A"
+										]
+									}
+								],
+								"textOffset": [
+									0.0,
+									0.0
+								],
+								"textSize": null,
+								"textTransform": {
+									"rotation": 0.0,
+									"scaleX": 1.0,
+									"scaleY": 1.0,
+									"skew": 0.0
+								}
+							},
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										57378,
+										57378
+									],
+									[
+										57380,
+										57380
+									],
+									[
+										57384,
+										57384
+									],
+									[
+										57440,
+										57454
+									],
+									[
+										57456,
+										57482
+									],
+									[
+										57487,
+										57529
+									],
+									[
+										57537,
+										57542
+									],
+									[
+										57552,
+										57560
+									],
+									[
+										57568,
+										57577
+									]
+								],
+								"horizontalOffset": 9,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "AXIS_36",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ifi\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6[][]\r\n7[]\r\n8[]\r\n9\r\n9()[]\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Jupiter",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 16.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"onum",
+									"tnum",
+									"smcp"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 16.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									],
+									[
+										824,
+										824
+									],
+									[
+										8211,
+										8212
+									],
+									[
+										8216,
+										8218
+									],
+									[
+										8220,
+										8221
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Jupiter_16",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Jupiter",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 20.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"onum",
+									"tnum",
+									"smcp"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 20.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									],
+									[
+										824,
+										824
+									],
+									[
+										8211,
+										8212
+									],
+									[
+										8216,
+										8218
+									],
+									[
+										8220,
+										8221
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Jupiter_20",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Jupiter",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 23.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"onum",
+									"tnum",
+									"smcp"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 23.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									],
+									[
+										824,
+										824
+									],
+									[
+										8211,
+										8212
+									],
+									[
+										8216,
+										8218
+									],
+									[
+										8220,
+										8221
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Jupiter_23",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "JupiterN",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 102,
+									"lineHeight": 123
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 45.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"onum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": true,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 45.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										48,
+										57
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": -3
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 2,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 45.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										33,
+										33
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": -5
+							}
+						}
+					],
+					"name": "Jupiter_45",
+					"previewText": "0123456789!!!\r\n0123456789!!!"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 101,
+									"lineHeight": 128
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Jupiter",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 46.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"onum",
+									"tnum",
+									"smcp"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 2,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 2,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Jupiter_46",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Gulim",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 204,
+									"lineHeight": 246
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 192.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": -30,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 1,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 292.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 30,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										33,
+										33
+									]
+								],
+								"horizontalOffset": -16,
+								"letterSpacing": -40
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"onum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": true,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 192.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										48,
+										57
+									]
+								],
+								"horizontalOffset": 16,
+								"letterSpacing": -16
+							}
+						}
+					],
+					"name": "Jupiter_90",
+					"previewText": "0123456789!!!\r\n0123456789!!!"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Meidinger",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 16.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 16.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										33
+									],
+									[
+										37,
+										37
+									],
+									[
+										43,
+										43
+									],
+									[
+										45,
+										57
+									],
+									[
+										63,
+										63
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Meidinger_16",
+					"previewText": "0123456789?!%+-./"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Meidinger",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 20.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 20.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										33
+									],
+									[
+										37,
+										37
+									],
+									[
+										43,
+										43
+									],
+									[
+										45,
+										57
+									],
+									[
+										63,
+										63
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Meidinger_20",
+					"previewText": "0123456789?!%+-./"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Meidinger",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 86,
+									"lineHeight": 115
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "Meidinger",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 40.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 2,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										127
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "Meidinger_40",
+					"previewText": "0123456789?!%+-./"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "MiedingerMid",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 8.888889,
+									"lineHeight": 12.222223
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 10.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 10.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										168
+									],
+									[
+										170,
+										173
+									],
+									[
+										175,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "MiedingerMid_10",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "MiedingerMid",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 10.666667,
+									"lineHeight": 14.666667
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 12.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 12.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										168
+									],
+									[
+										170,
+										173
+									],
+									[
+										175,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "MiedingerMid_12",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "MiedingerMid",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 13,
+									"lineHeight": 17
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 14.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 14.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										168
+									],
+									[
+										170,
+										173
+									],
+									[
+										175,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "MiedingerMid_14",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "MiedingerMid",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 17,
+									"lineHeight": 22
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 18.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 18.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										168
+									],
+									[
+										170,
+										173
+									],
+									[
+										175,
+										255
+									],
+									[
+										338,
+										339
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "MiedingerMid_18",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 91,
+									"lineHeight": 117
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "MiedingerMid",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 36.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										127
+									],
+									[
+										128,
+										255
+									],
+									[
+										256,
+										383
+									],
+									[
+										768,
+										879
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 2,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 2,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "MiedingerMid_36",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "TrumpGothic",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 16,
+									"lineHeight": 23
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 18.4,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 18.4,
+							"transform": {
+								"rotation": -0.0,
+								"scaleX": 0.6666669845581055,
+								"scaleY": 1.0,
+								"skew": -0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										255
+									],
+									[
+										259,
+										259
+									],
+									[
+										262,
+										263
+									],
+									[
+										338,
+										339
+									],
+									[
+										350,
+										350
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									],
+									[
+										824,
+										824
+									],
+									[
+										8211,
+										8212
+									],
+									[
+										8216,
+										8218
+									],
+									[
+										8220,
+										8221
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "TrumpGothic_184",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "TrumpGothic",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 20,
+									"lineHeight": 28
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 23.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 23.0,
+							"transform": {
+								"rotation": -0.0,
+								"scaleX": 0.6666669845581055,
+								"scaleY": 1.0,
+								"skew": -0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										255
+									],
+									[
+										259,
+										259
+									],
+									[
+										262,
+										263
+									],
+									[
+										338,
+										339
+									],
+									[
+										350,
+										350
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									],
+									[
+										824,
+										824
+									],
+									[
+										8211,
+										8212
+									],
+									[
+										8216,
+										8218
+									],
+									[
+										8220,
+										8221
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "TrumpGothic_23",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "TrumpGothic",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 30,
+									"lineHeight": 42
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 34.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"synthesis": {
+									"allow": true
+								},
+								"weight": 400
+							},
+							"mergeMode": 1,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 34.0,
+							"transform": {
+								"rotation": -0.0,
+								"scaleX": 0.6666669845581055,
+								"scaleY": 1.0,
+								"skew": -0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										126
+									],
+									[
+										160,
+										255
+									],
+									[
+										259,
+										259
+									],
+									[
+										262,
+										263
+									],
+									[
+										338,
+										339
+									],
+									[
+										350,
+										350
+									],
+									[
+										352,
+										353
+									],
+									[
+										376,
+										376
+									],
+									[
+										769,
+										769
+									],
+									[
+										774,
+										774
+									],
+									[
+										776,
+										776
+									],
+									[
+										824,
+										824
+									],
+									[
+										8211,
+										8212
+									],
+									[
+										8216,
+										8218
+									],
+									[
+										8220,
+										8221
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "TrumpGothic_34",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				},
+				{
+					"elements": [
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "AXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 96,
+									"lineHeight": 119
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 0,
+							"size": 96.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.0,
+							"lookup": {
+								"features": [],
+								"name": "TrumpGothic",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 0,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 1,
+							"size": 68.0,
+							"transform": {
+								"rotation": 0.0,
+								"scaleX": 1.0,
+								"scaleY": 1.0,
+								"skew": 0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						},
+						{
+							"gamma": 1.399999976158142,
+							"lookup": {
+								"features": [
+									"tnum"
+								],
+								"name": "Comic Sans MS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"mergeMode": 2,
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 1,
+									"renderMode": 5
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"renderer": 2,
+							"size": 96.0,
+							"transform": {
+								"rotation": -0.0,
+								"scaleX": 0.6666669845581055,
+								"scaleY": 1.0,
+								"skew": -0.0
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										32,
+										1114111
+									]
+								],
+								"horizontalOffset": 1,
+								"letterSpacing": 0
+							}
+						}
+					],
+					"name": "TrumpGothic_68",
+					"previewText": "Character\r\n!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\r\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\r\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\r\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\r\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\r\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\r\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\r\n6\r\n7\r\n8\r\n9\r\n\r\n\r\n"
+				}
+			],
+			"sideLength": 4096,
+			"texFilenameFormat": "font{}.tex"
+		}
+	]
+}

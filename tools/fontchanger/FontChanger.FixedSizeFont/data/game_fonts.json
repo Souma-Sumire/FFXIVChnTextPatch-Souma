@@ -1,0 +1,93 @@
+{
+	"comment": "The game's fonts, read by FontChanger.FixedSizeFont and FontChanger.Presets. fontTypes: the fonts of each font type (the texture files, as a format of the texture number, and how many the game loads; and the fonts, as the FDT file name without the extension, the family and the size), in the order the game's files list them. linkedFonts: fonts whose glyph tables must list the same characters in the same order, as the game may draw a glyph of the second with that of the first at the same position. fontTables: the tables of 41 fonts the game loads its fonts from, by the font type of the client (the lobby's for font_lobby); a font's texture count is that of its font type, unless textureCounts says otherwise. families: the families, with the subfamily their fonts have.",
+	"families": {
+		"AXIS": {"subfamily": "Regular"},
+		"Jupiter": {"subfamily": "Regular"},
+		"JupiterN": {"subfamily": "Regular"},
+		"Meidinger": {"subfamily": "Regular"},
+		"MiedingerMid": {"subfamily": "Medium"},
+		"TrumpGothic": {"subfamily": "Regular"},
+		"ChnAXIS": {"subfamily": "Regular"},
+		"KrnAXIS": {"subfamily": "Regular"},
+		"tcaxis": {"subfamily": "Regular"}
+	},
+	"fontTypes": {
+		"font": {
+			"textures": "common/font/font{}.tex", "textureCount": 7,
+			"fonts": [
+				["AXIS_96", "AXIS", 9.6], ["AXIS_12", "AXIS", 12], ["AXIS_14", "AXIS", 14], ["AXIS_18", "AXIS", 18], ["AXIS_36", "AXIS", 36],
+				["Jupiter_16", "Jupiter", 16], ["Jupiter_20", "Jupiter", 20], ["Jupiter_23", "Jupiter", 23], ["Jupiter_45", "JupiterN", 45], ["Jupiter_46", "Jupiter", 46], ["Jupiter_90", "JupiterN", 90],
+				["Meidinger_16", "Meidinger", 16], ["Meidinger_20", "Meidinger", 20], ["Meidinger_40", "Meidinger", 40],
+				["MiedingerMid_10", "MiedingerMid", 10], ["MiedingerMid_12", "MiedingerMid", 12], ["MiedingerMid_14", "MiedingerMid", 14], ["MiedingerMid_18", "MiedingerMid", 18], ["MiedingerMid_36", "MiedingerMid", 36],
+				["TrumpGothic_184", "TrumpGothic", 18.4], ["TrumpGothic_23", "TrumpGothic", 23], ["TrumpGothic_34", "TrumpGothic", 34], ["TrumpGothic_68", "TrumpGothic", 68]
+			]
+		},
+		"font_lobby": {
+			"textures": "common/font/font_lobby{}.tex", "textureCount": 6,
+			"fonts": [
+				["AXIS_12_lobby", "AXIS", 12], ["AXIS_14_lobby", "AXIS", 14], ["AXIS_18_lobby", "AXIS", 18], ["AXIS_36_lobby", "AXIS", 36],
+				["Jupiter_16_lobby", "Jupiter", 16], ["Jupiter_20_lobby", "Jupiter", 20], ["Jupiter_23_lobby", "Jupiter", 23], ["Jupiter_45_lobby", "JupiterN", 45], ["Jupiter_46_lobby", "Jupiter", 46], ["Jupiter_90_lobby", "JupiterN", 90],
+				["Meidinger_16_lobby", "Meidinger", 16], ["Meidinger_20_lobby", "Meidinger", 20], ["Meidinger_40_lobby", "Meidinger", 40],
+				["MiedingerMid_10_lobby", "MiedingerMid", 10], ["MiedingerMid_12_lobby", "MiedingerMid", 12], ["MiedingerMid_14_lobby", "MiedingerMid", 14], ["MiedingerMid_18_lobby", "MiedingerMid", 18], ["MiedingerMid_36_lobby", "MiedingerMid", 36],
+				["TrumpGothic_184_lobby", "TrumpGothic", 18.4], ["TrumpGothic_23_lobby", "TrumpGothic", 23], ["TrumpGothic_34_lobby", "TrumpGothic", 34], ["TrumpGothic_68_lobby", "TrumpGothic", 68]
+			]
+		},
+		"chn_axis": {
+			"textures": "common/font/font_chn_{}.tex", "textureCount": 20,
+			"fonts": [["ChnAXIS_120", "ChnAXIS", 12], ["ChnAXIS_140", "ChnAXIS", 14], ["ChnAXIS_180", "ChnAXIS", 18], ["ChnAXIS_360", "ChnAXIS", 36]]
+		},
+		"krn_axis": {
+			"textures": "common/font/font_krn_{}.tex", "textureCount": 9,
+			"fonts": [["KrnAXIS_120", "KrnAXIS", 12], ["KrnAXIS_140", "KrnAXIS", 14], ["KrnAXIS_180", "KrnAXIS", 18], ["KrnAXIS_360", "KrnAXIS", 36]]
+		},
+		"tc_axis": {
+			"textures": "common/font/font_tc_{}.tex", "textureCount": 20,
+			"fonts": [["tcaxis_120", "tcaxis", 12], ["tcaxis_140", "tcaxis", 14], ["tcaxis_180", "tcaxis", 18], ["tcaxis_360", "tcaxis", 36]]
+		}
+	},
+	"linkedFonts": [["AXIS_18", "AXIS_36"], ["AXIS_18_lobby", "AXIS_36_lobby"]],
+	"fontTables": {
+		"font": {
+			"slots": [
+				"AXIS_18", "AXIS_14", "AXIS_12", "AXIS_96",
+				"MiedingerMid_36", "MiedingerMid_18", "MiedingerMid_14", "MiedingerMid_12", "MiedingerMid_10", "Meidinger_40", "Meidinger_20", "Meidinger_16",
+				"TrumpGothic_68", "TrumpGothic_34", "TrumpGothic_23", "TrumpGothic_184", "Jupiter_46", "Jupiter_23", "Jupiter_20", "Jupiter_16", "Jupiter_90", "Jupiter_45",
+				"AXIS_36",
+				"MiedingerMid_36", "MiedingerMid_18", "MiedingerMid_14", "MiedingerMid_12", "MiedingerMid_10", "Meidinger_40", "Meidinger_20", "Meidinger_16",
+				"TrumpGothic_68", "TrumpGothic_34", "TrumpGothic_23", "TrumpGothic_184", "Jupiter_46", "Jupiter_23", "Jupiter_20", "Jupiter_16", "Jupiter_90", "Jupiter_45"
+			]
+		},
+		"font_lobby": {
+			"slots": [
+				"AXIS_18_lobby", "AXIS_14_lobby", "AXIS_12_lobby", "AXIS_12_lobby",
+				"MiedingerMid_36_lobby", "MiedingerMid_18_lobby", "MiedingerMid_14_lobby", "MiedingerMid_12_lobby", "MiedingerMid_10_lobby", "Meidinger_40_lobby", "Meidinger_20_lobby", "Meidinger_16_lobby",
+				"TrumpGothic_68_lobby", "TrumpGothic_34_lobby", "TrumpGothic_23_lobby", "TrumpGothic_184_lobby", "Jupiter_46_lobby", "Jupiter_23_lobby", "Jupiter_20_lobby", "Jupiter_16_lobby", "Jupiter_90_lobby", "Jupiter_45_lobby",
+				"AXIS_36_lobby",
+				"MiedingerMid_36_lobby", "MiedingerMid_18_lobby", "MiedingerMid_14_lobby", "MiedingerMid_12_lobby", "MiedingerMid_10_lobby", "Meidinger_40_lobby", "Meidinger_20_lobby", "Meidinger_16_lobby",
+				"TrumpGothic_68_lobby", "TrumpGothic_34_lobby", "TrumpGothic_23_lobby", "TrumpGothic_184_lobby", "Jupiter_46_lobby", "Jupiter_23_lobby", "Jupiter_20_lobby", "Jupiter_16_lobby", "Jupiter_90_lobby", "Jupiter_45_lobby"
+			]
+		},
+		"chn_axis": {
+			"textureCounts": {"font": 3},
+			"slots": [
+				"ChnAXIS_180", "ChnAXIS_140", "ChnAXIS_120", "ChnAXIS_120",
+				"ChnAXIS_360", "ChnAXIS_180", "ChnAXIS_180", "ChnAXIS_180", "ChnAXIS_180", "ChnAXIS_360", "ChnAXIS_360", "ChnAXIS_180",
+				"ChnAXIS_360", "ChnAXIS_360", "ChnAXIS_360", "ChnAXIS_180", "ChnAXIS_360", "ChnAXIS_360", "ChnAXIS_180", "ChnAXIS_180", "ChnAXIS_360", "ChnAXIS_360",
+				"ChnAXIS_360",
+				"MiedingerMid_36", "MiedingerMid_18", "MiedingerMid_14", "MiedingerMid_12", "MiedingerMid_10", "Meidinger_40", "Meidinger_20", "Meidinger_16",
+				"TrumpGothic_68", "TrumpGothic_34", "TrumpGothic_23", "TrumpGothic_184", "Jupiter_46", "Jupiter_23", "Jupiter_20", "Jupiter_16", "Jupiter_90", "Jupiter_45"
+			]
+		},
+		"krn_axis": {
+			"textureCounts": {"font": 3},
+			"slots": [
+				"KrnAXIS_180", "KrnAXIS_140", "KrnAXIS_120", "KrnAXIS_120",
+				"KrnAXIS_360", "KrnAXIS_180", "KrnAXIS_180", "KrnAXIS_180", "KrnAXIS_180", "KrnAXIS_360", "KrnAXIS_360", "KrnAXIS_180",
+				"KrnAXIS_360", "KrnAXIS_360", "KrnAXIS_360", "KrnAXIS_180", "KrnAXIS_360", "KrnAXIS_360", "KrnAXIS_180", "KrnAXIS_180", "KrnAXIS_360", "KrnAXIS_360",
+				"KrnAXIS_360",
+				"MiedingerMid_36", "MiedingerMid_18", "MiedingerMid_14", "MiedingerMid_12", "MiedingerMid_10", "Meidinger_40", "Meidinger_20", "Meidinger_16",
+				"TrumpGothic_68", "TrumpGothic_34", "TrumpGothic_23", "TrumpGothic_184", "Jupiter_46", "Jupiter_23", "Jupiter_20", "Jupiter_16", "Jupiter_90", "Jupiter_45"
+			]
+		}
+	}
+}

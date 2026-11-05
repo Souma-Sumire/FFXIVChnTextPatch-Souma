@@ -1,0 +1,16 @@
+{
+  "name": "xivres",
+  "version-string": "1.0.0.0",
+  "builtin-baseline": "5f96cd15fd745122cf27e0524606d6c1efc5fd07",
+  "dependencies": [
+    "nlohmann-json",
+    {
+      "name": "minizip",
+      "features": [
+        "unofficial-iowin32"
+      ]
+    },
+    "srell",
+    "zlib"
+  ]
+}

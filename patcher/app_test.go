@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
@@ -262,7 +263,7 @@ func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
 	app.skipProcessCheck = true
 
 	for _, lang := range []string{"CHS", "TC", "KO"} {
-		_, err := app.RestoreOriginal(gameDir, lang)
+		_, err := app.RestoreOriginal(gameDir, lang, true, true)
 		if err == nil {
 			t.Fatalf("%s 本地无备份时 RestoreOriginal 应该报错，但返回成功", lang)
 		}
@@ -593,13 +594,11 @@ func TestCheckClientStatusRegionMismatch(t *testing.T) {
 	}
 
 	// 校验 RestoreOriginal 拦截
-	_, err = app.RestoreOriginal(cnDir, "GLOBAL")
+	_, err = app.RestoreOriginal(cnDir, "GLOBAL", true, true)
 	if err == nil || !strings.Contains(err.Error(), "区服不匹配") {
 		t.Fatalf("RestoreOriginal 在区服不匹配时应拦截并报错，实际为: %v", err)
 	}
 }
-
-
 
 func TestCheckGameNotRunning(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -640,6 +639,8 @@ func TestCancelPatch(t *testing.T) {
 
 func TestAppCheckAppUpdate(t *testing.T) {
 	app := NewApp()
+	// 该用例验证云端更新逻辑，与构建模式无关。
+	app.updater.LocalOnly = false
 	app.cloudOverride = &mockCloud{
 		recent: []*verifier.Release{
 			{
@@ -661,6 +662,7 @@ func TestAppCheckAppUpdate(t *testing.T) {
 
 func TestAppCheckAppUpdateBlockedWhileBusy(t *testing.T) {
 	app := NewApp()
+	app.updater.LocalOnly = false
 	app.cloudOverride = &mockCloud{
 		recent: []*verifier.Release{
 			{Tag: "patcher-v3.0.0"},
@@ -919,5 +921,40 @@ func TestGetCloudReusesClient(t *testing.T) {
 		MirrorDownloadURL("https://github.com/foo/bar/releases/download/v1/app.exe")
 	if !strings.Contains(got, "wget.la") {
 		t.Errorf("节点记忆应跨调用保留，实际 %q", got)
+	}
+}
+
+// 内置方案的边长是设计好的：主集 4096、大厅 2048，编译前不能被统一改写。
+func TestConstrainPresetForCompileKeepsBuiltin(t *testing.T) {
+	in := `{"fontSets":[{"sideLength":4096,"texFilenameFormat":"font{}.tex"},{"sideLength":2048,"texFilenameFormat":"font_lobby{}.tex"}]}`
+
+	out, changed, err := constrainPresetForCompile(fontengine.BuiltinChnAXISPresetID, in)
+	if err != nil {
+		t.Fatalf("内置方案不应报错: %v", err)
+	}
+	if changed != 0 || out != in {
+		t.Fatalf("内置方案的边长不该被改写，changed=%d out=%s", changed, out)
+	}
+	if !strings.Contains(out, `"sideLength":2048`) {
+		t.Fatal("大厅子集的 2048 应保留")
+	}
+}
+
+// 用户自带方案统一到 4096，避免小边长装不下字形后在替换阶段失败。
+func TestConstrainPresetForCompileFixesCustom(t *testing.T) {
+	in := `{"fontSets":[{"sideLength":1024,"texFilenameFormat":"font{}.tex"}]}`
+
+	out, changed, err := constrainPresetForCompile("custom:mine", in)
+	if err != nil {
+		t.Fatalf("自定义方案不应报错: %v", err)
+	}
+	if changed != 1 {
+		t.Fatalf("应改写 1 处，实际 %d", changed)
+	}
+	if !strings.Contains(out, `"sideLength":4096`) {
+		t.Fatalf("自定义方案边长应为 4096，实际 %s", out)
+	}
+	if strings.Contains(out, `"sideLength":1024`) {
+		t.Fatalf("旧的 1024 应被覆盖，实际 %s", out)
 	}
 }

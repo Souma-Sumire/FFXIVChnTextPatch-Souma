@@ -1,0 +1,346 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\xivres\common.h" />
+    <ClInclude Include="include\xivres\equipment_deformer_parameter.h" />
+    <ClInclude Include="include\xivres\equipment_and_gimmick_parameter.h" />
+    <ClInclude Include="include\xivres\ex_skeleton_table.h" />
+    <ClInclude Include="include\xivres\excel.h" />
+    <ClInclude Include="include\xivres\excel.type2gen.h" />
+    <ClInclude Include="include\xivres\fontdata.h" />
+    <ClInclude Include="include\xivres\game_layout.h" />
+    <ClInclude Include="include\xivres\pe_image.h" />
+    <ClInclude Include="include\xivres\util.byte_regex.h" />
+    <ClInclude Include="include\xivres\installation.h" />
+    <ClInclude Include="include\xivres\image_change_data.h" />
+    <ClInclude Include="include\xivres\path_spec.h" />
+    <ClInclude Include="include\xivres\util.byte_order.h" />
+    <ClInclude Include="include\xivres\util.module_relative.h" />
+    <ClInclude Include="include\xivres\util.on_dtor.h" />
+    <ClInclude Include="include\xivres\util.dxt.h" />
+    <ClInclude Include="include\xivres\util.listener_manager.h" />
+    <ClInclude Include="include\xivres\util.h" />
+    <ClInclude Include="include\xivres\util.bitmap_copy.h" />
+    <ClInclude Include="include\xivres\texture.preview.h" />
+    <ClInclude Include="include\xivres\util.thread_pool.h" />
+    <ClInclude Include="include\xivres\util.sha1.h" />
+    <ClInclude Include="include\xivres\util.span_cast.h" />
+    <ClInclude Include="include\xivres\util.zlib_wrapper.h" />
+    <ClInclude Include="include\xivres\texture.mipmap_stream.h" />
+    <ClInclude Include="include\xivres\network.h" />
+    <ClInclude Include="include\xivres\model.h" />
+    <ClInclude Include="include\xivres\util.pixel_formats.h" />
+    <ClInclude Include="include\xivres\stream.h" />
+    <ClInclude Include="include\xivres\stream.oplocking.h" />
+    <ClInclude Include="include\xivres\textools.h" />
+    <ClInclude Include="include\xivres\xivstring.h" />
+    <ClInclude Include="include\xivres\sound.h" />
+    <ClInclude Include="include\xivres\sqpack.h" />
+    <ClInclude Include="include\xivres\packed_stream.standard.h" />
+    <ClInclude Include="include\xivres\unpacked_stream.standard.h" />
+    <ClInclude Include="include\xivres\sqpack.generator.h" />
+    <ClInclude Include="include\xivres\packed_stream.placeholder.h" />
+    <ClInclude Include="include\xivres\unpacked_stream.placeholder.h" />
+    <ClInclude Include="include\xivres\packed_stream.h" />
+    <ClInclude Include="include\xivres\unpacked_stream.h" />
+    <ClInclude Include="include\xivres\packed_stream.hotswap.h" />
+    <ClInclude Include="include\xivres\packed_stream.oplocking.h" />
+    <ClInclude Include="include\xivres\packed_stream.model.h" />
+    <ClInclude Include="include\xivres\unpacked_stream.model.h" />
+    <ClInclude Include="include\xivres\sqpack.reader.h" />
+    <ClInclude Include="include\xivres\packed_stream.texture.h" />
+    <ClInclude Include="include\xivres\unpacked_stream.texture.h" />
+    <ClInclude Include="include\xivres\texture.h" />
+    <ClInclude Include="include\xivres\texture.stream.h" />
+    <ClInclude Include="include\xivres\util.unicode.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="impl\packed_stream.standard.cpp" />
+    <ClCompile Include="impl\path_spec.cpp" />
+    <ClCompile Include="impl\unpacked_stream.standard.cpp" />
+    <ClCompile Include="impl\common.cpp" />
+    <ClCompile Include="impl\unpacked_stream.placeholder.cpp" />
+    <ClCompile Include="impl\packed_stream.placeholder.cpp" />
+    <ClCompile Include="impl\excel.cpp" />
+    <ClCompile Include="impl\excel.type2gen.cpp" />
+    <ClCompile Include="impl\fontdata.cpp" />
+    <ClCompile Include="impl\pe_image.cpp" />
+    <ClCompile Include="impl\util.byte_regex.cpp" />
+    <ClCompile Include="impl\installation.cpp" />
+    <ClCompile Include="impl\packed_stream.hotswap.cpp" />
+    <ClCompile Include="impl\packed_stream.oplocking.cpp" />
+    <ClCompile Include="impl\util.bitmap_copy.cpp" />
+    <ClCompile Include="impl\util.dxt.cpp" />
+    <ClCompile Include="impl\texture.preview.cpp" />
+    <ClCompile Include="impl\util.thread_pool.cpp" />
+    <ClCompile Include="impl\util.zlib_wrapper.cpp" />
+    <ClCompile Include="impl\stream.cpp" />
+    <ClCompile Include="impl\util.module_relative.cpp" />
+    <ClCompile Include="impl\stream.oplocking.cpp" />
+    <ClCompile Include="impl\texture.mipmap_stream.cpp" />
+    <ClCompile Include="impl\packed_stream.model.cpp" />
+    <ClCompile Include="impl\unpacked_stream.model.cpp" />
+    <ClCompile Include="impl\network.cpp" />
+    <ClCompile Include="impl\packed_stream.cpp" />
+    <ClCompile Include="impl\unpacked_stream.cpp" />
+    <ClCompile Include="impl\sound.cpp" />
+    <ClCompile Include="impl\textools.cpp" />
+    <ClCompile Include="impl\xivstring.cpp" />
+    <ClCompile Include="impl\sqpack.cpp" />
+    <ClCompile Include="impl\sqpack.generator.cpp" />
+    <ClCompile Include="impl\sqpack.reader.cpp" />
+    <ClCompile Include="impl\texture.cpp" />
+    <ClCompile Include="impl\packed_stream.texture.cpp" />
+    <ClCompile Include="impl\unpacked_stream.texture.cpp" />
+    <ClCompile Include="impl\texture.stream.cpp" />
+    <ClCompile Include="impl\util.unicode.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{58DADDF6-5733-40E0-855C-CC3B4BF235EB}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>xivres</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>xivres</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\Temp_$(Platform)_$(ProjectName)\</IntDir>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\Temp_$(Platform)_$(ProjectName)\</IntDir>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\Temp_$(Platform)_$(ProjectName)\</IntDir>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\Temp_$(Platform)_$(ProjectName)\</IntDir>
+    <IncludePath>$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgInstalledDir>$(SolutionDir)build\vcpkg_$(Platform)_$(ProjectName)\</VcpkgInstalledDir>
+    <VcpkgAdditionalInstallOptions>--feature-flags=versions</VcpkgAdditionalInstallOptions>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Vcpkg">
+    <VcpkgInstalledDir>$(SolutionDir)build\vcpkg_$(Platform)_$(ProjectName)\</VcpkgInstalledDir>
+    <VcpkgAdditionalInstallOptions>--feature-flags=versions</VcpkgAdditionalInstallOptions>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgInstalledDir>$(SolutionDir)build\vcpkg_$(Platform)_$(ProjectName)\</VcpkgInstalledDir>
+    <VcpkgAdditionalInstallOptions>--feature-flags=versions</VcpkgAdditionalInstallOptions>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgTriplet>x64-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Vcpkg">
+    <VcpkgInstalledDir>$(SolutionDir)build\vcpkg_$(Platform)_$(ProjectName)\</VcpkgInstalledDir>
+    <VcpkgAdditionalInstallOptions>--feature-flags=versions</VcpkgAdditionalInstallOptions>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>ws2_32.lib;Wldap32.lib;Crypt32.lib;Iphlpapi.lib;Shlwapi.lib;version.lib</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4099 /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>ws2_32.lib;Wldap32.lib;Crypt32.lib;Iphlpapi.lib;Shlwapi.lib;version.lib</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4099 /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>ws2_32.lib;Wldap32.lib;Crypt32.lib;Iphlpapi.lib;Shlwapi.lib;version.lib</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4099 /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>ws2_32.lib;Wldap32.lib;Crypt32.lib;Iphlpapi.lib;Shlwapi.lib;version.lib</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4099 /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

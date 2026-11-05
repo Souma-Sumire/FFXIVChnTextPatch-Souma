@@ -9,26 +9,17 @@ import (
 
 func TestResourceIncomplete(t *testing.T) {
 	dir := t.TempDir()
-	if resourceIncomplete(dir, true, false) {
+	if resourceIncomplete(dir, true) {
 		t.Fatal("自定义词条目录不要求内置 rawexd")
 	}
-	if !resourceIncomplete(dir, false, false) {
+	if !resourceIncomplete(dir, false) {
 		t.Fatal("内置词条需要 rawexd 目录")
 	}
 	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if resourceIncomplete(dir, false, false) {
+	if resourceIncomplete(dir, false) {
 		t.Fatal("表清单由轻量同步单独补齐，不应阻止内置词条")
-	}
-	if !resourceIncomplete(dir, false, true) {
-		t.Fatal("勾选字体但缺少 font 目录时应要求同步")
-	}
-	if err := os.MkdirAll(filepath.Join(dir, "font"), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if resourceIncomplete(dir, false, true) {
-		t.Fatal("字体目录存在时不应要求同步")
 	}
 }
 
@@ -45,6 +36,40 @@ func TestResourceSyncStale(t *testing.T) {
 	app.resourceSyncedAt.Store(time.Now().Add(-resourceRefreshInterval - time.Minute).UnixNano())
 	if !app.resourceSyncStale() {
 		t.Fatal("超过间隔后应视为过期")
+	}
+}
+
+func TestIsAppBundlePath(t *testing.T) {
+	cases := []struct {
+		path string
+		want bool
+	}{
+		{filepath.FromSlash("/Applications/FFXIVChnTextPatch-SM-v2.app/Contents/MacOS"), true},
+		{filepath.FromSlash("/Users/me/Downloads/X.app/Contents/MacOS/resource"), true},
+		{filepath.FromSlash("/Applications/X.app/Contents/Resources"), false},
+		{filepath.FromSlash("/Users/me/Library/Application Support/FFXIVChnTextPatch/resource"), false},
+		{filepath.FromSlash("/tmp/patcher"), false},
+	}
+	for _, tc := range cases {
+		if got := isAppBundlePath(tc.path); got != tc.want {
+			t.Errorf("isAppBundlePath(%q) = %v, want %v", tc.path, got, tc.want)
+		}
+	}
+}
+
+func TestWithinDir(t *testing.T) {
+	parent := filepath.FromSlash("/Users/me/Library/Caches")
+	child := filepath.Join(parent, "FFXIVChnTextPatch", "resource")
+	sibling := filepath.FromSlash("/Users/me/Library/Caches2/FFXIVChnTextPatch")
+
+	if !withinDir(parent, parent) {
+		t.Fatal("目录自身应判定为在内")
+	}
+	if !withinDir(child, parent) {
+		t.Fatal("子目录应判定为在内")
+	}
+	if withinDir(sibling, parent) {
+		t.Fatal("只有相同前缀、不同目录名时不应误判")
 	}
 }
 
