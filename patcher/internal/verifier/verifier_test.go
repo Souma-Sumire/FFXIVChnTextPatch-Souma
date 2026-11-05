@@ -5,6 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -13,6 +15,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
@@ -164,8 +167,40 @@ func canonicalFiles(prefix string) map[string]string {
 	return m
 }
 
+func logContains(logs []string, sub string) bool {
+	for _, line := range logs {
+		if strings.Contains(line, sub) {
+			return true
+		}
+	}
+	return false
+}
+
+// setModTime 给 6 个核心文件打上固定旧时间，用来断言它们没有被重写。
+func setModTime(t *testing.T, dir string, mod time.Time) {
+	t.Helper()
+	for _, name := range AllFiles {
+		if err := os.Chtimes(filepath.Join(dir, name), mod, mod); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func requireModTime(t *testing.T, dir string, want time.Time) {
+	t.Helper()
+	for _, name := range AllFiles {
+		fi, err := os.Stat(filepath.Join(dir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !fi.ModTime().Equal(want) {
+			t.Fatalf("%s 被重写了（mtime=%s），原版文件不该被覆盖", name, fi.ModTime())
+		}
+	}
+}
+
 // 场景 1：本地已存在该版本的可信原版备份。
-// 汉化前先确保从备份还原回原版，然后再写入。
+// 汉化前先从备份还原回原版，然后再写入。
 func TestRun_WithExistingValidBackup(t *testing.T) {
 	orig := canonicalFiles("original-v1")
 	env := newTestEnv(t, "2026.10.16.0000.0000", orig)
@@ -174,6 +209,7 @@ func TestRun_WithExistingValidBackup(t *testing.T) {
 	// 将游戏目录的文本文件弄脏（模拟已汉化或被修改）
 	_ = os.WriteFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"), []byte("dirty-text-index"), 0o644)
 
+	var logs []string
 	textPatched := false
 	fontPatched := false
 
@@ -183,6 +219,7 @@ func TestRun_WithExistingValidBackup(t *testing.T) {
 		Language:    region.GLOBAL,
 		ReplaceText: true,
 		ReplaceFont: true,
+		Log:         func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
 		ApplyText: func(ctx context.Context) error {
 			// 汉化替换执行时，验证文件已被先还原为原版
 			cur, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
@@ -201,11 +238,18 @@ func TestRun_WithExistingValidBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Run 失败: %v", err)
 	}
-	if !res.RestoredText || !res.RestoredFont {
-		t.Fatalf("应标记文本与字体均已还原，实际: RestoredText=%v, RestoredFont=%v", res.RestoredText, res.RestoredFont)
+	// 只有文本被改动过；字体本来是原版，不需要还原。
+	if !res.RestoredText || res.RestoredFont {
+		t.Fatalf("应只标记文本已还原，实际: RestoredText=%v, RestoredFont=%v", res.RestoredText, res.RestoredFont)
 	}
 	if !textPatched || !fontPatched {
 		t.Fatalf("汉化替换函数未被调用: text=%v, font=%v", textPatched, fontPatched)
+	}
+	if !logContains(logs, "0a0000.win32.index 不是官方原版，正在从本地备份还原") {
+		t.Fatalf("被改动的文本文件应提示正在还原，实际日志: %v", logs)
+	}
+	if !logContains(logs, "[字体] 客户端字体已是官方原版，无需还原") {
+		t.Fatalf("字体未改动时应说明无需还原，实际日志: %v", logs)
 	}
 }
 
@@ -294,11 +338,10 @@ func TestRun_UnknownVersion_ConfirmYes(t *testing.T) {
 		t.Fatalf("用户确认继续后应执行汉化写入")
 	}
 
-	// 核心验证：绝对不可备份不可信的文件！
 	backupDir := filepath.Join(env.backupRoot, "global")
 	meta, _ := readBackupMeta(backupDir)
-	if meta != nil && len(meta.Files) > 0 {
-		t.Fatalf("未知版本继续汉化时不应创建本地备份，但发现了备份: %+v", meta)
+	if meta == nil || len(meta.Files) != len(AllFiles) {
+		t.Fatalf("未知版本继续汉化时应创建本地还原基线备份，实际备份清单: %+v", meta)
 	}
 }
 
@@ -352,8 +395,8 @@ func TestRestore_WithBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Restore 失败: %v", err)
 	}
-	if len(restored) != 6 {
-		t.Fatalf("还原应恢复全部 6 个文件，实际: %d", len(restored))
+	if len(restored) != 1 || restored[0] != "0a0000.win32.index" {
+		t.Fatalf("只有被改动的索引文件需要还原，实际: %v", restored)
 	}
 
 	content, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
@@ -381,7 +424,7 @@ func TestRestore_NoBackup_CloudAvailable(t *testing.T) {
 		t.Fatalf("Restore 失败: %v", err)
 	}
 	if len(restored) != 6 {
-		t.Fatalf("还原应恢复 6 个文件，实际: %d", len(restored))
+		t.Fatalf("客户端 6 个文件全被改动，还原应覆盖 6 个，实际: %d", len(restored))
 	}
 
 	content, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
@@ -436,5 +479,142 @@ func TestDetectClientRegion(t *testing.T) {
 	reg, err = DetectClientRegion(gameDir)
 	if err != nil || reg != region.Taiwan {
 		t.Fatalf("繁中服客户端探测错误: reg=%s, err=%v", reg, err)
+	}
+}
+
+// 场景 9：客户端本来就是官方原版。
+// 汉化前的「确保原版」不该写任何文件，日志也不能声称正在还原。
+func TestRun_AlreadyOriginal_SkipsRestore(t *testing.T) {
+	orig := canonicalFiles("already-original")
+	env := newTestEnv(t, "2026.10.16.0000.0000", orig)
+	env.seedBackup(t, region.GLOBAL, "2026.10.16.0000.0000", orig)
+	old := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+	setModTime(t, env.sqpackDir, old)
+
+	var logs []string
+	textPatched := false
+	res, err := Run(context.Background(), Config{
+		GameDir:     env.gameDir,
+		BackupRoot:  env.backupRoot,
+		Language:    region.GLOBAL,
+		ReplaceText: true,
+		ReplaceFont: true,
+		Log:         func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+		ApplyText: func(ctx context.Context) error {
+			textPatched = true
+			return nil
+		},
+		ApplyFont: func(ctx context.Context) error { return nil },
+	})
+	if err != nil {
+		t.Fatalf("Run 失败: %v", err)
+	}
+	if !textPatched {
+		t.Fatalf("客户端已是原版时仍应继续汉化")
+	}
+	if res.RestoredText || res.RestoredFont {
+		t.Fatalf("客户端已是原版，不应标记还原，实际: text=%v, font=%v", res.RestoredText, res.RestoredFont)
+	}
+	requireModTime(t, env.sqpackDir, old)
+
+	if !logContains(logs, "[文本] 客户端文本已是官方原版，无需还原") ||
+		!logContains(logs, "[字体] 客户端字体已是官方原版，无需还原") {
+		t.Fatalf("日志应说明文本与字体已是官方原版，实际: %v", logs)
+	}
+	for _, line := range logs {
+		if strings.Contains(line, "正在从本地备份还原") || strings.Contains(line, "正在还原官方原版") {
+			t.Fatalf("客户端已是原版时不应提示正在还原，实际: %s", line)
+		}
+	}
+}
+
+// 场景 10：手动还原时客户端已是官方原版，不应覆盖任何文件。
+func TestRestore_AlreadyOriginal(t *testing.T) {
+	orig := canonicalFiles("already-original")
+	env := newTestEnv(t, "2026.10.16.0000.0000", orig)
+	env.seedBackup(t, region.GLOBAL, "2026.10.16.0000.0000", orig)
+	old := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+	setModTime(t, env.sqpackDir, old)
+
+	var logs []string
+	restored, err := Restore(context.Background(), RestoreConfig{
+		GameDir:    env.gameDir,
+		BackupRoot: env.backupRoot,
+		Language:   region.GLOBAL,
+		Log:        func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+	})
+	if err != nil {
+		t.Fatalf("Restore 失败: %v", err)
+	}
+	if len(restored) != 0 {
+		t.Fatalf("客户端已是原版时不应还原任何文件，实际: %v", restored)
+	}
+	requireModTime(t, env.sqpackDir, old)
+	if logContains(logs, "正在覆盖为官方原版") {
+		t.Fatalf("没有文件被改动时不应提示正在还原，实际: %v", logs)
+	}
+}
+
+// 场景 11：汉化在写入阶段失败。Run 必须把「先回原版」到底改过哪些文件如实回报给
+// 调用方（app.go 靠它决定日志措辞），并且自己不做任何回滚——写入的撤回由调用方负责。
+func TestRun_WriteFailureReportsRestoredOriginals(t *testing.T) {
+	orig := canonicalFiles("write-fail")
+	env := newTestEnv(t, "2026.10.16.0000.0000", orig)
+	env.seedBackup(t, region.GLOBAL, "2026.10.16.0000.0000", orig)
+	// 文本索引被改脏（模拟上一次汉化或其它工具），字体系文件保持原版。
+	if err := os.WriteFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"), []byte("dirty"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := Run(context.Background(), Config{
+		GameDir:     env.gameDir,
+		BackupRoot:  env.backupRoot,
+		Language:    region.GLOBAL,
+		ReplaceText: true,
+		ReplaceFont: true,
+		ApplyText:   func(ctx context.Context) error { return errors.New("模拟写入失败") },
+		ApplyFont:   func(ctx context.Context) error { return nil },
+	})
+	if err == nil {
+		t.Fatal("写入失败时应返回错误")
+	}
+	if res == nil {
+		t.Fatal("出错时也要返回 Result，调用方需要知道先回原版时改过哪些文件")
+	}
+	if !res.RestoredText {
+		t.Fatal("文本索引已从备份还原，RestoredText 应为 true")
+	}
+	if res.RestoredFont {
+		t.Fatalf("字体本来就是原版，不应标记还原，实际: RestoredText=%v RestoredFont=%v", res.RestoredText, res.RestoredFont)
+	}
+	content, readErr := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	if string(content) != orig["0a0000.win32.index"] {
+		t.Fatal("先回原版后的文本索引应等于备份内容")
+	}
+}
+
+func TestIsValidReleaseJSON(t *testing.T) {
+	cases := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{"release list", `[{"tag_name":"patcher-v2.1.0"}]`, true},
+		{"release object", `{"tag_name":"patcher-v2.1.0"}`, true},
+		{"api error", `{"message":"API rate limit exceeded"}`, false},
+		{"empty object", `{}`, false},
+		{"empty list", `[]`, false},
+		{"null", `null`, false},
+		{"html error page", `<html>not found</html>`, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isValidReleaseJSON([]byte(tc.input)); got != tc.want {
+				t.Fatalf("isValidReleaseJSON(%s) = %v, want %v", tc.input, got, tc.want)
+			}
+		})
 	}
 }

@@ -1,0 +1,212 @@
+{
+	"exportMapChnAxisToFont": false,
+	"exportMapFontLobbyToFont": false,
+	"exportMapKrnAxisToFont": false,
+	"exportMapTcAxisToFont": false,
+	"fontSets": [
+		{
+			"discardStep": 1,
+			"expectedTexCount": 9,
+			"sideLength": 4096,
+			"texFilenameFormat": "font_krn_{}.tex",
+			"faces": [
+				{
+					"name": "KrnAXIS_120",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\n6\n7\n8\n9\n\n\n",
+					"elements": [
+						{
+							"size": 12,
+							"gamma": 1,
+							"renderer": 1,
+							"mergeMode": 0,
+							"lookup": {
+								"features": [],
+								"name": "KrnAXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					]
+				},
+				{
+					"name": "KrnAXIS_140",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\n6\n7\n8\n9\n\n\n",
+					"elements": [
+						{
+							"size": 14,
+							"gamma": 1,
+							"renderer": 1,
+							"mergeMode": 0,
+							"lookup": {
+								"features": [],
+								"name": "KrnAXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					]
+				},
+				{
+					"name": "KrnAXIS_180",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\n6\n7\n8\n9\n\n\n",
+					"elements": [
+						{
+							"size": 18,
+							"gamma": 1,
+							"renderer": 1,
+							"mergeMode": 0,
+							"lookup": {
+								"features": [],
+								"name": "KrnAXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					]
+				},
+				{
+					"name": "KrnAXIS_360",
+					"previewText": "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\n0英en-US: _The_ (89) quick brown foxes jump over the [01] lazy dogs.\n1日ja-JP: _パングラム_(pangram)で[23]つの字体（フォント）をテストします。\n2中zh-CN: _(天)地玄黃_，宇[宙]洪荒。蓋此身髮，4大5常。\n3韓ko-KR: 45 _다(람)쥐_ 67 헌 쳇바퀴에 타[고]파.\n4露ru-RU: Съешь (ж)е ещё этих мягких 23 [ф]ранцузских булок да 45 выпей чаю.\n5泰th-TH: เป็นมนุษย์สุดประเสริฐเลิศคุณค่า\n6\n7\n8\n9\n\n\n",
+					"elements": [
+						{
+							"size": 36,
+							"gamma": 1,
+							"renderer": 1,
+							"mergeMode": 0,
+							"lookup": {
+								"features": [],
+								"name": "KrnAXIS",
+								"stretch": 5,
+								"style": 0,
+								"weight": 400
+							},
+							"renderSpecific": {
+								"directwrite": {
+									"gridFitMode": 2,
+									"measureMode": 2,
+									"renderMode": 4
+								},
+								"empty": {
+									"ascent": 0,
+									"lineHeight": 0
+								},
+								"freetype": {
+									"forceAutohint": false,
+									"noAutohint": false,
+									"noBitmap": false,
+									"noHinting": false,
+									"renderMode": 1
+								}
+							},
+							"wrapModifiers": {
+								"baselineShift": 0,
+								"codepointReplacements": {},
+								"codepoints": [
+									[
+										0,
+										1114111
+									]
+								],
+								"horizontalOffset": 0,
+								"letterSpacing": 0
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

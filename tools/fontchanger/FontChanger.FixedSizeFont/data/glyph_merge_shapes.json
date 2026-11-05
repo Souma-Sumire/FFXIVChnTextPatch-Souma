@@ -1,0 +1,63 @@
+{
+	"comment": "Built-in shapes of glyph merging, read by FontChanger.FixedSizeFont and FontChanger.DalamudPlugin. Units are 1/1000 em, y grows downwards, and the baseline is at y = 880. Outlines follow the Lodestone web font (FFXIV_Lodestone_SSF); the hollow box is the game's only. A shape is a rounded rectangle (rect: x1, y1, x2, y2) or a rounded polygon (polygon), with corners rounded by radius. area is where the text is fitted and centered in. ring makes it hollow: the inside is cut out that far in, at least a pixel, and the text is drawn on it. more is the shape for texts of more than one character. underline is the IME box for texts beginning with \"_\": the bar is cut out, and the text goes in its area. game is where the game's glyphs of the shape are at the sizes of its fonts (size, advance, x1, y1, x2, y2): the shape's vertices' box is stretched to that box, and the advance taken; as the game draws them, which in fonts larger than 35 px drops the first column of the IME indicators (U+E020-E027) and U+E0BB when it loads them (AtkFontManager.BuildFont), drawing them a pixel left and advancing a pixel less than their files say. A shape may instead be SVG path data (path), placed as another shape is (placedAs: the box of that shape's vertices is stretched to its game's), with the text area that box. presets: the glyphs of the game's private use area drawn by glyph merging, read by FontChanger.FixedSizeFont and FontChanger.Presets, in groups as the font editor offers them. Each is a list of runs of codepoints from first, of a shape (none: the text alone) and of texts: the numbers from and to of numbers if given, then those of texts.",
+	"shapes": {
+		"box": {
+			"advance": 1000, "rect": [71, 71, 929, 926], "radius": 110, "area": [165, 159, 835, 850],
+			"game": [[9.6, 1041.7, 152.3, 60.8, 1027.0, 908.0], [12, 1000, 127.2, 29.8, 1039.5, 930.2], [14, 1000, 142.4, 70.7, 1000.4, 937.2], [18, 1000, 107.4, 57.9, 977.8, 935.4], [36, 1000, 153.6, 37.4, 1013.1, 900.3]]
+		},
+		"numberBox": {
+			"advance": 1000, "rect": [71, 71, 929, 926], "radius": 110, "area": [132, 192, 879, 816],
+			"game": [[9.6, 1041.7, 152.3, 60.8, 1027.0, 908.0], [12, 1000, 127.2, 29.8, 1039.5, 930.2], [14, 1000, 85.3, 61.2, 967.1, 927.7], [18, 1000, 107.4, 57.9, 988.9, 935.4], [36, 1000, 153.6, 37.4, 1013.1, 900.3]],
+			"more": {
+				"advance": 1000, "rect": [75, 75, 926, 922], "radius": 110, "area": [154, 199, 827, 793],
+				"game": [[9.6, 1041.7, 160.0, 61.5, 1062.0, 928.1], [12, 1000, 149.5, 63.2, 1016.8, 941.3], [14, 1000, 119.5, 70.2, 985.1, 917.5], [18, 1000, 126.4, 76.1, 984.8, 920.9], [36, 1000, 162.9, 46.9, 1003.5, 892.8]]
+			}
+		},
+		"ime": {
+			"advance": 1000, "rect": [28, 28, 972, 969], "radius": 121, "area": [105, 111, 895, 880],
+			"underline": {"bar": [120, 783, 400, 876], "area": [443, 111, 900, 880]},
+			"game": [[9.6, 1041.7, 222.9, -2.6, 1166.9, 969.4], [12, 1000, 188.5, 7.4, 1150.4, 991.5], [14, 1000, 119.3, 37.0, 1080.7, 998.7], [18, 1000, 159.6, 21.2, 1099.7, 979.5], [36, 972.2, 166.5, 6.0, 1111.2, 944.8]]
+		},
+		"hollowBox": {
+			"advance": 1000, "rect": [45, 45, 955, 955], "radius": 145, "ring": 50, "area": [180, 210, 820, 790],
+			"game": [[9.6, 1041.7, 76.0, 46.2, 1040.7, 941.4], [12, 1000, 100.9, 51.9, 993.9, 929.2], [14, 1000, 86.4, 36.9, 966.2, 936.6], [18, 1000, 93.0, 46.3, 970.1, 935.6], [36, 1000, 111.0, 19.0, 1007.5, 907.6]]
+		},
+		"amPm": {
+			"advance": 750, "rect": [41, 61, 699, 916], "radius": 110, "area": [107, 136, 626, 841],
+			"game": [[9.6, 729.2, 132.5, 53.6, 826.9, 942.6], [12, 750, 111.9, 52.5, 805.2, 929.4], [14, 785.7, 95.1, 47.0, 776.3, 927.8], [18, 777.8, 100.3, 53.8, 766.8, 921.0], [36, 750, 139.1, 74.5, 778.0, 907.7]]
+		},
+		"hexagon": {
+			"advance": 1250, "polygon": [[287, 0], [972, 0], [1257, 499], [972, 998], [287, 998], [1, 499]], "radius": 130, "area": [263, 196, 983, 812],
+			"game": [[9.6, 1250, 88.0, -15.1, 1391.4, 1033.5], [12, 1250, 62.8, -14.1, 1348.5, 1012.7], [14, 1285.7, 57.3, -20.4, 1336.8, 1012.8], [18, 1277.8, 49.8, -12.2, 1327.8, 1013.3], [36, 1250, 83.5, 2.5, 1344.0, 1000.3]]
+		},
+		"bozja": {
+			"advance": 1750, "rect": [168, 50, 1582, 948], "radius": 200, "area": [330, 163, 1420, 837],
+			"game": [[9.6, 1770.8, 278.3, 47.1, 1729.1, 976.6], [12, 1750, 250.4, 18.6, 1688.5, 963.4], [14, 1785.7, 204.4, 42.4, 1643.3, 951.1], [18, 1777.8, 214.6, 46.7, 1644.7, 954.3], [36, 1750, 250.1, 57.7, 1666.5, 963.1]]
+		},
+		"time": {
+			"advance": 2000, "rect": [63, 31, 1938, 967], "radius": 234, "area": [220, 156, 1780, 852],
+			"game": [[9.6, 1979.2, 145.5, 47.3, 2040.9, 984.6], [12, 2000, 133.9, 46.7, 2033.8, 996.4], [14, 2000, 143.4, 37.7, 2000.5, 979.9], [18, 2000, 110.9, 17.1, 1995.7, 976.4], [36, 2000, 140.9, -1.5, 2020.4, 952.4]]
+		},
+		"star": {
+			"advance": 1750, "placedAs": "bozja",
+			"path": "M335,50 Q240,52 176,116 Q112,180 110,275 L110,725 Q112,820 176,883 Q240,946 335,948 L689,948 L647,665 L313,500 L647,335 L689,50 Z M784,50 L962,233 L1330,169 L1156,500 L1330,831 L962,767 L784,948 L1377,948 Q1472,946 1536,883 Q1600,820 1602,725 L1602,275 Q1600,180 1536,116 Q1472,52 1377,50 Z"
+		}
+	},
+	"presets": [
+		[{"shape": "amPm", "first": "E06D", "texts": ["A\nM", "P\nM"]}],
+		[{"shape": "none", "first": "E060", "numbers": [0, 9], "texts": ["Lv", "ST", "Nv"]}],
+		[{"shape": "ime", "first": "E020", "texts": ["\u3042", "\u30A2", "A", "_\uFF71", "_A", "\uAC00", "\u4E2D", "\u82F1"]}],
+		[{"shape": "none", "first": "E028", "texts": ["m", "\u5206"]}],
+		[
+			{"shape": "box", "first": "E070", "texts": ["?", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]},
+			{"shape": "box", "first": "E0AF", "texts": ["+", "E"]}
+		],
+		[{"shape": "numberBox", "first": "E08F", "numbers": [0, 31]}],
+		[{"shape": "hollowBox", "first": "E0E0", "numbers": [0, 9]}],
+		[{"shape": "hexagon", "first": "E0B1", "numbers": [1, 9]}],
+		[{"shape": "star", "first": "E0C0", "texts": [" "]}],
+		[{"shape": "bozja", "first": "E0C1", "texts": ["I", "II", "III", "IV", "V", "VI"]}],
+		[{"shape": "time", "first": "E0D0", "texts": ["LT", "ST", "ET", "OZ", "SZ", "EZ", "HL", "HS", "HE"]}],
+		[{"shape": "time", "first": "E0D9", "texts": ["\u672C", "\u670D", "\u827E"]}]
+	]
+}

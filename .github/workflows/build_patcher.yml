@@ -6,6 +6,10 @@ on:
     tags:
       - "patcher-v*"
 
+concurrency:
+  group: build-patcher-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -35,7 +39,7 @@ jobs:
         run: go test -short ./... -count=1
 
       - name: Build Windows executable
-        run: pnpm run build
+        run: pnpm run build:release
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
@@ -75,13 +79,14 @@ jobs:
         run: go test -short ./... -count=1
 
       - name: Build macOS Universal App Bundle
-        run: pnpm run build
+        run: pnpm run build:release
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v7
         with:
           name: FFXIVChnTextPatch-SM-v2-macos
           path: FFXIVChnTextPatch-SM-v2-macOS.zip
+          if-no-files-found: error
           retention-days: 7
 
   release:
@@ -92,12 +97,26 @@ jobs:
       contents: write
 
     steps:
-      - name: Resolve release title
+      - name: Resolve release metadata
         id: ver
         run: |
-          RAW_TAG="${{ github.ref_name }}"
-          CLEAN_VER="${RAW_TAG#patcher-}"
-          echo "version=${CLEAN_VER}" >> $GITHUB_OUTPUT
+          CLEAN_VER="${GITHUB_REF_NAME#patcher-}"
+          TITLE="汉化器 ${CLEAN_VER}"
+          PRERELEASE=false
+          MAKE_LATEST=true
+
+          # 预览 tag 形如 patcher-v2.2.0-beta.1，后缀须与客户端的预览判定一致。
+          # GitHub 不允许把 prerelease 设为 latest，因此显式传 false。
+          VER_LOWER="${CLEAN_VER,,}"
+          if [[ "${VER_LOWER}" =~ ^v?[0-9.]+-(alpha|beta|rc|preview) ]]; then
+            TITLE="${TITLE} 预览版"
+            PRERELEASE=true
+            MAKE_LATEST=false
+          fi
+
+          echo "title=${TITLE}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+          echo "make_latest=${MAKE_LATEST}" >> "$GITHUB_OUTPUT"
 
       - name: Download artifacts
         uses: actions/download-artifact@v7
@@ -110,11 +129,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          name: 汉化器 ${{ steps.ver.outputs.version }}
+          name: ${{ steps.ver.outputs.title }}
           files: |
             FFXIVChnTextPatch-SM-v2.exe
             FFXIVChnTextPatch-SM-v2-macOS.zip
+          fail_on_unmatched_files: true
           draft: false
-          prerelease: false
-          make_latest: true
+          prerelease: ${{ steps.ver.outputs.prerelease }}
+          make_latest: ${{ steps.ver.outputs.make_latest }}
           generate_release_notes: true

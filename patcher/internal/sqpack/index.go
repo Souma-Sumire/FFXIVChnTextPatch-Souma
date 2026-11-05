@@ -81,6 +81,9 @@ func OpenIndex(path string) (*Index, error) {
 			id := int32(binary.LittleEndian.Uint32(data[pos:]))
 			fileIndexOffset := int32(binary.LittleEndian.Uint32(data[pos+4:]))
 			folderSize := int32(binary.LittleEndian.Uint32(data[pos+8:]))
+			if fileIndexOffset < 0 || folderSize < 0 {
+				return nil, fmt.Errorf("索引目录表条目非法 (%s): offset=%d size=%d", path, fileIndexOffset, folderSize)
+			}
 			numFiles := folderSize / 16
 			folder := &Folder{ID: id, NumFiles: numFiles, FileIndexOffset: fileIndexOffset}
 			if err := folder.readFiles(data, false); err != nil {
@@ -93,7 +96,7 @@ func OpenIndex(path string) (*Index, error) {
 		if idx.IsIndex2 {
 			multiplier = 2
 		}
-		numFiles := multiplier * segments[0].Size / 16
+		numFiles := int32(int64(multiplier) * int64(segments[0].Size) / 16)
 		folder := &Folder{ID: 0, NumFiles: numFiles, FileIndexOffset: segments[0].Offset}
 		if err := folder.readFiles(data, idx.IsIndex2); err != nil {
 			return nil, fmt.Errorf("读取索引文件表失败 (%s): %w", path, err)
@@ -117,6 +120,10 @@ func resolveSegments(data []byte, start int) ([4]dataSegment, error) {
 		segments[i].Offset = int32(binary.LittleEndian.Uint32(data[pos+4:]))
 		segments[i].Size = int32(binary.LittleEndian.Uint32(data[pos+8:]))
 		copy(segments[i].SHA1[:], data[pos+12:pos+32])
+		// 负数偏移会让后续切片直接 panic，畸形索引必须在解析阶段拒绝。
+		if segments[i].Offset < 0 || segments[i].Size < 0 {
+			return segments, fmt.Errorf("索引段 %d 的偏移或长度非法: offset=%d size=%d", i, segments[i].Offset, segments[i].Size)
+		}
 		pos += 32
 		if i == 0 {
 			pos += 4
@@ -128,6 +135,16 @@ func resolveSegments(data []byte, start int) ([4]dataSegment, error) {
 
 func (f *Folder) readFiles(data []byte, isIndex2 bool) error {
 	pos := int(f.FileIndexOffset)
+	if pos < 0 || f.NumFiles < 0 {
+		return fmt.Errorf("index 文件表头非法: offset=%d files=%d", f.FileIndexOffset, f.NumFiles)
+	}
+	entrySize := 16
+	if isIndex2 {
+		entrySize = 8
+	}
+	if maxFiles := (len(data) - pos) / entrySize; int(f.NumFiles) > maxFiles {
+		return fmt.Errorf("index 文件表头 entry 数量超出数据长度: files=%d max=%d", f.NumFiles, maxFiles)
+	}
 	f.Files = make(map[int32]*IndexFile, f.NumFiles)
 	for i := int32(0); i < f.NumFiles; i++ {
 		if isIndex2 {

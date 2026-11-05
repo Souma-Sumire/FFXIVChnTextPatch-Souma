@@ -10,18 +10,21 @@ const frontendDir = path.join(patcherDir, "frontend");
 const isWin = process.platform === "win32";
 const isMac = process.platform === "darwin";
 
+// macOS 没有 C.UTF-8 locale，沿用系统 locale；只有 Windows 需要强制子进程输出 UTF-8。
+const buildEnv = { ...process.env, ...(isWin ? { LANG: "C.UTF-8" } : {}) };
+
 function run(cmd: string, args: string[], cwd: string): void {
   if (isWin && (cmd === "pnpm" || cmd === "npm")) {
     execFileSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", cmd, ...args], {
       cwd,
       stdio: "inherit",
-      env: { ...process.env, LANG: "C.UTF-8" },
+      env: buildEnv,
     });
   } else {
     execFileSync(cmd, args, {
       cwd,
       stdio: "inherit",
-      env: { ...process.env, LANG: "C.UTF-8" },
+      env: buildEnv,
     });
   }
 }
@@ -73,7 +76,14 @@ function resolveAppVersion(): string {
 }
 
 const appVersion = resolveAppVersion();
-console.log(`\n构建版本: ${appVersion}`);
+const releaseBuild = process.argv.includes("--release") || process.env.PATCHER_RELEASE === "1";
+console.log(`\n构建版本: ${appVersion}（${releaseBuild ? "发布构建" : "本地开发构建"}）`);
+
+// 字体编译组件不再打进主程序：运行时按需下载到数据目录（见 ensureFontCompiler），
+// 拿不到时改用同样按需下载的预编译字体包，构建本身不依赖这个二进制。
+// development tag 让本地构建只校验工作区 resource/，不向云端同步 CSV 与字体；
+// 发布构建不带该 tag，保持「内置词条始终为云端最新」的行为。
+const goTags = releaseBuild ? "desktop,production" : "desktop,production,development";
 
 // 1. 构建前端产物
 const nodeModules = path.join(frontendDir, "node_modules");
@@ -96,17 +106,30 @@ if (isMac) {
     hasWails = false;
   }
 
+  if (!hasWails && releaseBuild) {
+    console.error("\n构建失败: 未检测到 Wails CLI，macOS 发布构建无法产出 .app 与 zip。请先执行 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.2");
+    process.exit(1);
+  }
+
   if (hasWails) {
-    run("wails", ["build", "-platform", "darwin/universal", "-skipfrontend", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
+    // Wails CLI v2.10.2 跳过前端构建的参数只有 -s，没有 -skipfrontend 这个长名。
+    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-s", "-skipbindings", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
     const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
     const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
-    if (fs.existsSync(appPath)) {
-      run("ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", appPath, zipPath], repoRoot);
-      console.log(`\n构建成功: ${zipPath}`);
+    if (!fs.existsSync(appPath)) {
+      console.error(`\n构建失败: wails 构建结束但未找到 ${appPath}`);
+      process.exit(1);
     }
+    run("ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", appPath, zipPath], repoRoot);
+    if (!fs.existsSync(zipPath)) {
+      console.error(`\n构建失败: 打包结束但未找到 ${zipPath}`);
+      process.exit(1);
+    }
+    console.log(`\n构建成功: ${zipPath}`);
   } else {
     const outBin = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2");
-    run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
+    console.warn("\n[警告] 未检测到 Wails CLI，本次只编译命令行二进制，不会生成 .app 或 macOS zip；发布构建不可使用此模式。");
+    run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
     console.log(`\n构建成功: ${outBin}`);
   }
 } else {
@@ -121,6 +144,6 @@ if (isMac) {
     }
   }
   const ldflags = `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
-  run("go", ["build", "-tags", "desktop,production", "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
+  run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
   console.log(`\n构建成功: ${outExe}`);
 }

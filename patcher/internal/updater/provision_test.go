@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync/atomic"
 	"testing"
 )
@@ -28,24 +29,23 @@ func newMockNode(t *testing.T, files, zipFiles map[string]string) *mockNode {
 	if zipFiles == nil {
 		zipFiles = map[string]string{}
 	}
-	fontFiles := map[string]string{}
-	for k, v := range files {
-		if filepath.ToSlash(k) == "font/A.fdt" || filepath.ToSlash(k) == "font/B.tex" {
-			fontFiles[k] = v
-		}
-	}
 	m.zipData = buildTestZip(t, zipFiles)
-	m.fontZipData = buildTestZip(t, fontFiles)
 	m.manifest = Manifest{
 		GeneratedAt: "2026-10-29T06:00:00Z",
 		RawEXD:      bundleOfBytes(m.zipData, len(zipFiles)),
-		Font:        bundleOfBytes(m.fontZipData, len(fontFiles)),
 		Rules:       bundleOfText(files["rules.json"]),
 		Tables:      bundleOfText(files["tables.json"]),
-		Fonts: map[string]FileInfo{
-			"font/A.fdt": fileInfoOf(files["font/A.fdt"]),
-			"font/B.tex": fileInfoOf(files["font/B.tex"]),
-		},
+	}
+	// 文件里带了 font/ 条目就顺带提供一个字体包，供按需下载的测试使用。
+	fontFiles := map[string]string{}
+	for key, content := range files {
+		if strings.HasPrefix(key, "font/") {
+			fontFiles[key] = content
+		}
+	}
+	if len(fontFiles) > 0 {
+		m.fontZipData = buildTestZip(t, fontFiles)
+		m.manifest.Font = bundleOfBytes(m.fontZipData, len(fontFiles))
 	}
 	m.srv = httptest.NewServer(http.HandlerFunc(m.handle))
 	t.Cleanup(m.srv.Close)
@@ -62,11 +62,6 @@ func bundleOfText(content string) BundleInfo {
 	return BundleInfo{SHA256: hex.EncodeToString(sum[:]), Size: int64(len(content))}
 }
 
-func fileInfoOf(content string) FileInfo {
-	sum := sha256.Sum256([]byte(content))
-	return FileInfo{SHA256: hex.EncodeToString(sum[:]), Size: int64(len(content))}
-}
-
 func (m *mockNode) handle(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/resource/manifest.json" {
 		m.hits.Add(1)
@@ -77,6 +72,10 @@ func (m *mockNode) handle(w http.ResponseWriter, r *http.Request) {
 	case r.URL.Path == "/resource/rawexd.zip":
 		_, _ = w.Write(m.zipData)
 	case r.URL.Path == "/resource/font.zip":
+		if len(m.fontZipData) == 0 {
+			http.NotFound(w, r)
+			return
+		}
 		_, _ = w.Write(m.fontZipData)
 	case len(r.URL.Path) > len("/resource/"):
 		key := r.URL.Path[len("/resource/"):]
@@ -100,8 +99,6 @@ func provisionFixture(t *testing.T) (*mockNode, map[string]string) {
 	files := map[string]string{
 		"rules.json":  `{"specialWord":{}}`,
 		"tables.json": `{"folders":{},"tables":{},"files":[]}`,
-		"font/A.fdt":  "font-a",
-		"font/B.tex":  "font-b",
 	}
 	zipFiles := map[string]string{
 		"rawexd/A.csv":       "csv-a",
@@ -166,7 +163,7 @@ func TestProvisionRepairsMissingFile(t *testing.T) {
 	if _, err := node.updater().Provision(context.Background(), dir, nil); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Remove(filepath.Join(dir, "font", "A.fdt")); err != nil {
+	if err := os.Remove(filepath.Join(dir, "rules.json")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -177,11 +174,8 @@ func TestProvisionRepairsMissingFile(t *testing.T) {
 	if !status.Updated {
 		t.Fatalf("缺失文件应触发修复: %+v", status)
 	}
-	if data, err := os.ReadFile(filepath.Join(dir, "font", "A.fdt")); err != nil || string(data) != "font-a" {
-		t.Fatalf("字体未修复: %v %q", err, data)
-	}
-	if _, err := os.Stat(filepath.Join(dir, "font", "B.tex")); err != nil {
-		t.Fatal("已存在的字体不应被删除")
+	if data, err := os.ReadFile(filepath.Join(dir, "rules.json")); err != nil || string(data) != `{"specialWord":{}}` {
+		t.Fatalf("rules.json 未修复: %v %q", err, data)
 	}
 }
 
@@ -209,13 +203,17 @@ func TestProvisionOfflineWithoutLocalResource(t *testing.T) {
 	}
 }
 
-// 字体文件大小一致但内容损坏时，不能判定资源完整。
-func TestModulesCompleteDetectsCorruptedFont(t *testing.T) {
+// 规则文件损坏时，不能判定资源完整。
+func TestModulesCompleteDetectsCorruptedRules(t *testing.T) {
 	dir := t.TempDir()
-	for _, name := range []string{"manifest.json", "rules.json", "tables.json"} {
+	for _, name := range []string{"manifest.json", "tables.json"} {
 		if err := os.WriteFile(filepath.Join(dir, name), []byte("{}"), 0o644); err != nil {
 			t.Fatal(err)
 		}
+	}
+	rulesPath := filepath.Join(dir, "rules.json")
+	if err := os.WriteFile(rulesPath, []byte("good-rules"), 0o644); err != nil {
+		t.Fatal(err)
 	}
 	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
 		t.Fatal(err)
@@ -228,35 +226,143 @@ func TestModulesCompleteDetectsCorruptedFont(t *testing.T) {
 	if err := ExtractZip(zipPath, dir); err != nil {
 		t.Fatal(err)
 	}
-	fontPath := filepath.Join(dir, "font", "A.fdt")
-	if err := os.MkdirAll(filepath.Dir(fontPath), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(fontPath, []byte("good"), 0o644); err != nil {
-		t.Fatal(err)
-	}
 
-	goodHash := sha256.Sum256([]byte("good"))
+	goodHash := sha256.Sum256([]byte("good-rules"))
 	mf := &Manifest{
 		GeneratedAt: "2026-11-01T00:00:00Z",
 		RawEXD:      bundleOfBytes(zipData, 1),
-		Font:        BundleInfo{SHA256: "font"},
-		Rules:       BundleInfo{SHA256: "rules"},
+		Rules:       BundleInfo{SHA256: hex.EncodeToString(goodHash[:]), Size: int64(len("good-rules"))},
 		Tables:      BundleInfo{SHA256: "tables"},
-		Fonts: map[string]FileInfo{
-			"font/A.fdt": {SHA256: hex.EncodeToString(goodHash[:]), Size: 4},
-		},
 	}
 
 	if !modulesComplete(dir, mf, mf) {
-		t.Fatal("字体内容完好时应判定资源完整")
+		t.Fatal("内容完好时应判定资源完整")
 	}
 
-	// 同尺寸替换为损坏内容
-	if err := os.WriteFile(fontPath, []byte("evil"), 0o644); err != nil {
+	// 删除 rules.json 后应判定不完整
+	if err := os.Remove(rulesPath); err != nil {
 		t.Fatal(err)
 	}
 	if modulesComplete(dir, mf, mf) {
-		t.Error("字体内容与哈希不符时不应判定资源完整")
+		t.Error("缺失必要元数据文件时不应判定资源完整")
+	}
+}
+
+// 本地开发构建只校验工作区资源，绝不发网络请求，也不写入任何文件。
+func TestProvisionLocalOnlyValidatesWithoutNetwork(t *testing.T) {
+	dir := t.TempDir()
+	u := &Updater{LocalOnly: true, Nodes: []string{"http://127.0.0.1:1/resource/"}}
+
+	if _, err := u.Provision(context.Background(), dir, nil); err == nil {
+		t.Fatal("缺少 rawexd 时应返回错误")
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "rawexd", "quest"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "rawexd", "quest", "A.csv"), []byte("a"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "tables.json"), []byte(`{"files":["quest/A"]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "rules.json"), []byte(`{}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	status, err := u.Provision(context.Background(), dir, nil)
+	if err != nil {
+		t.Fatalf("本地资源完整时不应失败: %v", err)
+	}
+	if status.Updated || status.DownloadedFiles != 0 {
+		t.Fatalf("本地开发构建不应下载或改动资源: %+v", status)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "manifest.json")); !os.IsNotExist(err) {
+		t.Fatalf("本地开发构建不应写 manifest.json: %v", err)
+	}
+}
+
+func TestSyncTableDocLocalOnly(t *testing.T) {
+	dir := t.TempDir()
+	u := &Updater{LocalOnly: true}
+	if _, err := u.SyncTableDoc(context.Background(), dir); err == nil {
+		t.Fatal("缺少 tables.json 时应返回错误")
+	}
+	if err := os.WriteFile(filepath.Join(dir, "tables.json"), []byte(`{"files":["A"]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	updated, err := u.SyncTableDoc(context.Background(), dir)
+	if err != nil || updated {
+		t.Fatalf("本地 tables.json 可用时应直接返回: updated=%v err=%v", updated, err)
+	}
+}
+
+func TestEnsureFontPackLocalOnly(t *testing.T) {
+	dir := t.TempDir()
+	u := &Updater{LocalOnly: true, Nodes: []string{"http://127.0.0.1:1/resource/"}}
+	if err := u.EnsureFontPack(context.Background(), dir, nil); err == nil {
+		t.Fatal("缺少 font 目录时应返回错误")
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "font"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := u.EnsureFontPack(context.Background(), dir, nil); err != nil {
+		t.Fatalf("本地 font 目录存在时不应联网: %v", err)
+	}
+}
+
+// manifest.json 只是同步元数据；本地开发构建没有它，内置词条同样可用。
+func TestHasLocalResourceWithoutManifest(t *testing.T) {
+	dir := t.TempDir()
+	if HasLocalResource(dir) {
+		t.Fatal("空目录不应判定为可用")
+	}
+	if err := os.WriteFile(filepath.Join(dir, "tables.json"), []byte(`{"files":["A"]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if !HasLocalResource(dir) {
+		t.Fatal("rawexd 与 tables.json 齐全时应判定为可用")
+	}
+}
+
+// 字体包不参与启动同步，只在真正需要字体替换时按需下载。
+func TestEnsureFontPackDownloadsOnDemand(t *testing.T) {
+	files := map[string]string{
+		"rules.json":  `{"specialWord":{}}`,
+		"tables.json": `{"folders":{},"tables":{},"files":[]}`,
+		"font/A.fdt":  "font-a",
+		"font/B.tex":  "font-b",
+	}
+	node := newMockNode(t, files, map[string]string{"rawexd/A.csv": "csv-a"})
+	dir := t.TempDir()
+
+	if _, err := node.updater().Provision(context.Background(), dir, nil); err != nil {
+		t.Fatalf("Provision 失败: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "font")); err == nil {
+		t.Fatal("启动同步不应下载字体包")
+	}
+
+	if err := node.updater().EnsureFontPack(context.Background(), dir, nil); err != nil {
+		t.Fatalf("按需下载字体包失败: %v", err)
+	}
+	for key, want := range map[string]string{"font/A.fdt": "font-a", "font/B.tex": "font-b"} {
+		got, err := os.ReadFile(filepath.Join(dir, filepath.FromSlash(key)))
+		if err != nil || string(got) != want {
+			t.Fatalf("%s 内容不正确: %v %q", key, err, got)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(dir, "font.zip")); err != nil {
+		t.Fatal("应保留 font.zip 作为可信来源")
+	}
+
+	before := node.hits.Load()
+	if err := node.updater().EnsureFontPack(context.Background(), dir, nil); err != nil {
+		t.Fatal(err)
+	}
+	if node.hits.Load() != before {
+		t.Fatalf("已校验通过时不应重新下载，新增请求 %d", node.hits.Load()-before)
 	}
 }

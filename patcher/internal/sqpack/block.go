@@ -9,11 +9,12 @@ import (
 )
 
 const (
-	blockPartSize    = 16000
-	blockAlignSize   = 128
-	textureTypeDXT5  = 5184
-	typeBinaryBlock  = 2
-	typeTextureBlock = 4
+	blockPartSize      = 16000
+	blockAlignSize     = 128
+	textureTypeDXT5    = 5184
+	textureTypeB8G8R8A = 5200
+	typeBinaryBlock    = 2
+	typeTextureBlock   = 4
 )
 
 // CompressBlock 使用 Raw Deflate（无 zlib 头 / 无 Adler32）压缩，等价于旧版 jzlib level 9 raw deflate。
@@ -100,7 +101,7 @@ func BuildBinaryBlock(data []byte) ([]byte, error) {
 
 // BuildTexBlock 构建 Type 4 纹理块（font*.tex）。
 func BuildTexBlock(data []byte) ([]byte, error) {
-	if len(data) < 28 {
+	if len(data) < 32 {
 		return nil, fmt.Errorf("纹理数据过短: %d", len(data))
 	}
 	mipOffsetIndex := int(int32(binary.LittleEndian.Uint32(data[28:])))
@@ -125,8 +126,15 @@ func BuildTexBlock(data []byte) ([]byte, error) {
 	dataHeaderLength := alignBlockHeader(24 + mipCount*20 + partCount*2)
 
 	uncompMipSize := width * height
-	if textureType == textureTypeDXT5 {
+	switch textureType {
+	case textureTypeDXT5:
 		uncompMipSize = width * height * 2
+	case textureTypeB8G8R8A:
+		uncompMipSize = width * height * 4
+	default:
+		if rawMip := len(data) - len(texHeader); rawMip > 0 {
+			uncompMipSize = rawMip
+		}
 	}
 
 	header := make([]byte, dataHeaderLength)

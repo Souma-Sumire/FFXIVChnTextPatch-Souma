@@ -15,16 +15,27 @@ import (
 )
 
 // ParseFile 读取并解析 CSV 文件（UTF-8，自动去除 BOM）。
+// 引号未闭合等结构错误会返回 error，由调用方决定是否跳过该表。
 func ParseFile(path string) ([][]string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("读取 CSV 失败: %w", err)
 	}
-	return Parse(data), nil
+	rows, err := parse(data, true)
+	if err != nil {
+		return nil, fmt.Errorf("解析 CSV 失败: %w", err)
+	}
+	return rows, nil
 }
 
-// Parse 解析 CSV 字节流。
+// Parse 解析 CSV 字节流。结构错误按当前行截断，不返回错误；
+// 需要严格校验时用 ParseFile。
 func Parse(data []byte) [][]string {
+	rows, _ := parse(data, false)
+	return rows
+}
+
+func parse(data []byte, strict bool) ([][]string, error) {
 	s := string(bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF}))
 	var rows [][]string
 	row := make([]string, 0, 16)
@@ -61,8 +72,10 @@ func Parse(data []byte) [][]string {
 			}
 			var val string
 			if i < n && s[i] == '"' {
+				quoteStart := i
 				i++
 				var b strings.Builder
+				closed := false
 				for i < n {
 					if s[i] == '"' {
 						if i+1 < n && s[i+1] == '"' {
@@ -71,12 +84,27 @@ func Parse(data []byte) [][]string {
 							continue
 						}
 						i++
+						closed = true
 						break
 					}
 					b.WriteByte(s[i])
 					i++
 				}
-				val = b.String()
+				if !closed {
+					if strict {
+						return nil, fmt.Errorf("第 %d 行存在未闭合的引号字段", len(rows)+1)
+					}
+					// 宽松模式只保留到本行结尾，避免把后续行吞进同一个字段。
+					if nl := strings.IndexByte(s[quoteStart:], '\n'); nl >= 0 {
+						val = strings.TrimRight(s[quoteStart+1:quoteStart+nl], "\r")
+						i = quoteStart + nl
+					} else {
+						val = b.String()
+						i = n
+					}
+				} else {
+					val = b.String()
+				}
 				for i < n && (s[i] == ' ' || s[i] == '\t') {
 					i++
 				}
@@ -103,5 +131,5 @@ func Parse(data []byte) [][]string {
 		}
 		rows = append(rows, append([]string(nil), row...))
 	}
-	return rows
+	return rows, nil
 }

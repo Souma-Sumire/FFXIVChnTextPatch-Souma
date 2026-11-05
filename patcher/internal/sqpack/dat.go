@@ -255,8 +255,23 @@ func (d *DatFile) readBlockAt(dataOff int64, compressedSize, decompressedSize in
 	if decompressedSize < 0 || compressedSize < 0 {
 		return nil, fmt.Errorf("子块尺寸非法: compressed=%d decompressed=%d", compressedSize, decompressedSize)
 	}
-	if compressedSize == 32000 || decompressedSize == 1 {
-		return d.readAt(dataOff, decompressedSize)
+	// 子块头单独损坏时不会经过文件头的 512MB 上限，这里同样要拦：否则一个把尺寸
+	// 报成接近 int32 上限的块会先按声明值分配内存，再在读盘时失败。
+	if compressedSize > maxDecompressedFileSize || decompressedSize > maxDecompressedFileSize {
+		return nil, fmt.Errorf("dat (%s, off=%d) 子块尺寸超过上限: compressed=%d decompressed=%d limit=%d",
+			d.f.Name(), dataOff, compressedSize, decompressedSize, maxDecompressedFileSize)
+	}
+	// 未压缩子块按 decompressedSize 原样读取，压缩子块按 compressedSize 读取。
+	raw := compressedSize == 32000 || decompressedSize == 1
+	readSize := compressedSize
+	if raw {
+		readSize = decompressedSize
+	}
+	if dataOff < 0 || dataOff > d.size || int64(readSize) > d.size-dataOff {
+		return nil, fmt.Errorf("dat (%s, off=%d) 子块越界: size=%d fileSize=%d", d.f.Name(), dataOff, readSize, d.size)
+	}
+	if raw {
+		return d.readAt(dataOff, readSize)
 	}
 	compr, err := d.readAt(dataOff, compressedSize)
 	if err != nil {

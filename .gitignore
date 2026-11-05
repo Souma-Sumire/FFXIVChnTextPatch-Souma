@@ -6,7 +6,7 @@ debug.*
 /scripts/exd
 hashPaths.txt
 config.json
-resource/patched_records.json
+fontchanger/
 patcher/build/
 patcher/frontend/dist/*
 !patcher/frontend/dist/.gitkeep
@@ -19,3 +19,6 @@ resource/*.zip
 /resource/custom-csv/
 /.workbuddy/
 patcher/internal/golden/testdata/golden_source/
+tools/fontchanger/build/
+tools/fontchanger/bin/
+fontchanger-cli.exe

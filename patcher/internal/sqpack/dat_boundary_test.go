@@ -87,6 +87,62 @@ func TestExtractFileRejectsNegativeHeader(t *testing.T) {
 	}
 }
 
+// type2Dat 拼一个含单个子块的最小 type2 dat：24 字节文件头 + 8 字节块表
+// + 补到 128 字节 + 16 字节子块头 + payload。
+func type2Dat(t *testing.T, fileSize, compressedSize, decompressedSize int32, payload []byte) *DatFile {
+	t.Helper()
+	const headerLength = 128
+	buf := make([]byte, headerLength+16)
+	binary.LittleEndian.PutUint32(buf[0:], headerLength)
+	binary.LittleEndian.PutUint32(buf[4:], 2)
+	binary.LittleEndian.PutUint32(buf[8:], uint32(fileSize))
+	binary.LittleEndian.PutUint32(buf[20:], 1)
+	binary.LittleEndian.PutUint32(buf[24:], 0) // 块表条目：块相对偏移 0
+	block := headerLength
+	binary.LittleEndian.PutUint32(buf[block+8:], uint32(compressedSize))
+	binary.LittleEndian.PutUint32(buf[block+12:], uint32(decompressedSize))
+	buf = append(buf, payload...)
+
+	path := filepath.Join(t.TempDir(), "test.win32.dat0")
+	if err := os.WriteFile(path, buf, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return openTestDat(t, path)
+}
+
+// 子块头声明的解包尺寸接近 int32 上限时，必须在分配内存前拒绝。
+func TestExtractSubBlockRejectsOversizedDecompressedSize(t *testing.T) {
+	_, err := type2Dat(t, 8, 8, 1<<30, make([]byte, 8)).ExtractFile(0)
+	if err == nil {
+		t.Fatal("子块解包尺寸超过上限时应报错")
+	}
+	if !strings.Contains(err.Error(), "子块尺寸超过上限") {
+		t.Fatalf("错误信息不符: %v", err)
+	}
+}
+
+// 子块声明的压缩后尺寸超过文件实际长度时，不能先按它分配内存再去读盘。
+func TestExtractSubBlockRejectsOversizedCompressedSize(t *testing.T) {
+	_, err := type2Dat(t, 8, 1<<20, 4, make([]byte, 8)).ExtractFile(0)
+	if err == nil {
+		t.Fatal("子块读取长度超出文件尺寸时应报错")
+	}
+	if !strings.Contains(err.Error(), "子块越界") {
+		t.Fatalf("错误信息不符: %v", err)
+	}
+}
+
+// 未压缩子块（compressedSize=32000）仍按原样读取，边界检查不影响正常路径。
+func TestExtractSubBlockKeepsUncompressedPath(t *testing.T) {
+	out, err := type2Dat(t, 8, 32000, 4, []byte("abcd")).ExtractFile(0)
+	if err != nil {
+		t.Fatalf("未压缩子块解包失败: %v", err)
+	}
+	if string(out[:4]) != "abcd" {
+		t.Fatalf("未压缩子块内容不正确: %q", out[:4])
+	}
+}
+
 // 空占位块仍按约定返回 ErrEmptyDatBlock，不受新增边界检查影响。
 func TestExtractFileKeepsEmptyBlockSentinel(t *testing.T) {
 	path := writeDat(t, 0, 0, 0, 0, nil)

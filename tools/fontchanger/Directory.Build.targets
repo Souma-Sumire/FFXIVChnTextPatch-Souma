@@ -1,0 +1,8 @@
+<Project>
+  <!--
+    见 Directory.Build.props：显式导入 vcpkg 的 MSBuild targets，
+    使 manifest 模式（各工程自带 vcpkg.json + VcpkgEnableManifest=true）在构建时自动安装依赖并注入 include/lib 路径。
+  -->
+  <Import Project="$(VcpkgRoot)scripts\buildsystems\msbuild\vcpkg.targets"
+          Condition="'$(VcpkgRoot)' != '' and Exists('$(VcpkgRoot)scripts\buildsystems\msbuild\vcpkg.targets')" />
+</Project>

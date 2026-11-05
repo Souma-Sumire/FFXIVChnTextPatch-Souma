@@ -162,7 +162,7 @@ func bypassHost(entries []string, host string) bool {
 		case entry == "*":
 			return true
 		case entry == "<local>":
-			if !strings.Contains(host, ".") {
+			if !strings.Contains(host, ".") && !strings.Contains(host, ":") {
 				return true
 			}
 		default:

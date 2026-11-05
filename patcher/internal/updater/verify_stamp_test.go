@@ -13,21 +13,16 @@ func prepareStampTree(t *testing.T) (string, *Manifest) {
 	if err := os.MkdirAll(filepath.Join(res, "rawexd", "content"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.MkdirAll(filepath.Join(res, "font"), 0o755); err != nil {
-		t.Fatal(err)
-	}
+
 	if err := os.WriteFile(filepath.Join(res, "rawexd", "content", "Item.csv"), []byte("key,0\n1,测试\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(res, "font", "AXIS_36.fdt"), []byte("font-data"), 0o644); err != nil {
-		t.Fatal(err)
-	}
+
 	if err := os.WriteFile(filepath.Join(res, "rawexd.zip"), []byte("zip"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	return res, &Manifest{
 		RawEXD: BundleInfo{SHA256: "aa"},
-		Font:   BundleInfo{SHA256: "bb"},
 		Rules:  BundleInfo{SHA256: "cc"},
 		Tables: BundleInfo{SHA256: "dd"},
 	}
@@ -75,13 +70,13 @@ func TestVerifyStampDetectsChanges(t *testing.T) {
 		t.Fatal("CSV 大小相同但内容变化后不应匹配")
 	}
 
-	// 字体文件被删除
+	// CSV 文件被删除
 	stamp = buildVerifyStamp(res, remote)
-	if err := os.Remove(filepath.Join(res, "font", "AXIS_36.fdt")); err != nil {
+	if err := os.Remove(target); err != nil {
 		t.Fatal(err)
 	}
 	if stamp.matches(res, remote) {
-		t.Fatal("字体文件缺失后不应匹配")
+		t.Fatal("CSV 文件缺失后不应匹配")
 	}
 
 	// 快照包被替换（大小变化）

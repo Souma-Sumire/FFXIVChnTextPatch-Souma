@@ -12,6 +12,10 @@ on:
       - "scripts/bundle.ts"
   workflow_dispatch:
 
+concurrency:
+  group: sync-assets
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -47,4 +51,6 @@ jobs:
           git add -f resource/manifest.json resource/rules.json resource/tables.json resource/rawexd.zip resource/font.zip
 
           git commit -m "chore: 自动化更新汉化资源快照 (${{ github.sha }})"
-          git push origin assets-temp:assets --force
+
+          # 新版与旧版汉化器共用同一份资源快照
+          git push origin assets-temp:refs/heads/assets --force

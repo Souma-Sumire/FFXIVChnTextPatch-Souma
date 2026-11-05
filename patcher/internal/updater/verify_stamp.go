@@ -18,13 +18,12 @@ const verifyStampName = ".verify.json"
 
 // verifyStamp 用来跳过重复的全量哈希校验。
 // 只要云端清单没变、本地文件的数量/大小/修改时间之和也没变，
-// 就说明内容没有被改动过：7114 个 CSV 的 CRC 核对与 280MB 字体的 SHA256
-// 可以退化成一次目录遍历（约 15ms），目录被改过或清单更新时才回到完整校验。
+// 就说明内容没有被改动过：7114 个 CSV 的 CRC 核对可以退化成一次目录遍历（约 15ms），
+// 目录被改过或清单更新时才回到完整校验。
 type verifyStamp struct {
 	Manifest string    `json:"manifest"`
 	Zip      fileStamp `json:"zip"`
 	CSV      treeStamp `json:"csv"`
-	Font     treeStamp `json:"font"`
 }
 
 type fileStamp struct {
@@ -33,9 +32,9 @@ type fileStamp struct {
 }
 
 type treeStamp struct {
-	Files      int    `json:"files"`
-	Size       int64  `json:"size"`
-	ModTimeSum int64  `json:"mtimeSum"`
+	Files      int   `json:"files"`
+	Size       int64 `json:"size"`
+	ModTimeSum int64 `json:"mtimeSum"`
 	// EntriesDigest 是「相对路径|大小|mtime」按路径排序后的清单摘要。
 	// 单靠文件数/总大小/mtime 之和，删一个文件再补一个同大小同时间的文件就能绕过；
 	// 逐文件指纹让增删、互换立刻现形，代价仍只是一次目录遍历。
@@ -44,7 +43,7 @@ type treeStamp struct {
 
 // manifestIdentity 取清单中决定资源内容的四个哈希，任一变化都视为云端资源已更新。
 func manifestIdentity(m *Manifest) string {
-	return m.RawEXD.SHA256 + "|" + m.Font.SHA256 + "|" + m.Rules.SHA256 + "|" + m.Tables.SHA256
+	return m.RawEXD.SHA256 + "|" + m.Rules.SHA256 + "|" + m.Tables.SHA256
 }
 
 func readVerifyStamp(resourceDir string) *verifyStamp {
@@ -81,7 +80,6 @@ func buildVerifyStamp(resourceDir string, remote *Manifest) verifyStamp {
 		s.Zip = fileStamp{Size: st.Size(), ModTime: st.ModTime().UnixNano()}
 	}
 	s.CSV, _ = scanTreeStamp(filepath.Join(resourceDir, "rawexd"))
-	s.Font, _ = scanTreeStamp(filepath.Join(resourceDir, "font"))
 	return s
 }
 
@@ -95,11 +93,7 @@ func (s verifyStamp) matches(resourceDir string, remote *Manifest) bool {
 		return false
 	}
 	csv, ok := scanTreeStamp(filepath.Join(resourceDir, "rawexd"))
-	if !ok || csv != s.CSV {
-		return false
-	}
-	font, ok := scanTreeStamp(filepath.Join(resourceDir, "font"))
-	return ok && font == s.Font
+	return ok && csv == s.CSV
 }
 
 // scanTreeStamp 汇总目录下所有文件的数量、总大小、修改时间之和与逐文件指纹；
