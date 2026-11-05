@@ -9,17 +9,17 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 // ResourceStatus 描述资源自举结果。
 type ResourceStatus struct {
 	Updated         bool   `json:"updated"`
-	Offline         bool   `json:"offline"`
-	OfflineReason   string `json:"offlineReason,omitempty"`
 	DownloadedFiles int    `json:"downloadedFiles"`
 	DownloadedBytes int64  `json:"downloadedBytes"`
 	CSVHash         string `json:"csvHash,omitempty"`
@@ -32,6 +32,42 @@ type ResourceStatus struct {
 // ProgressFunc 接收资源下载进度。
 type ProgressFunc func(stage, detail string, done, total int64)
 
+// FileProgress 接收逐文件/逐字节校验进度。
+type FileProgress func(done, total int64)
+
+// throttleProgress 给高频进度回调限流：阶段或文案变化立即放行，
+// 同一阶段内最多每 60ms 发一次，全部完成时立即放行。
+func throttleProgress(p ProgressFunc) ProgressFunc {
+	if p == nil {
+		return func(string, string, int64, int64) {}
+	}
+	var (
+		mu       sync.Mutex
+		last     time.Time
+		lastKey  string
+		lastDone int64
+	)
+	return func(stage, detail string, done, total int64) {
+		key := stage + "|" + detail
+		mu.Lock()
+		now := time.Now()
+		finished := total > 0 && done >= total
+		if key == lastKey && done == lastDone && lastKey != "" {
+			mu.Unlock()
+			return
+		}
+		if !finished && now.Sub(last) < 60*time.Millisecond {
+			mu.Unlock()
+			return
+		}
+		last = now
+		lastKey = key
+		lastDone = done
+		mu.Unlock()
+		p(stage, detail, done, total)
+	}
+}
+
 // Provision 保证 resourceDir 拥有与云端清单一致的最新资源。
 // 各模块（CSV、字体、规则、表格）独立比对哈希与更新，互不捆绑。
 func (u *Updater) Provision(ctx context.Context, resourceDir string, progress ProgressFunc) (ResourceStatus, error) {
@@ -39,23 +75,14 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	if progress == nil {
 		progress = func(string, string, int64, int64) {}
 	}
+	progress = throttleProgress(progress)
 	if err := os.MkdirAll(resourceDir, 0o755); err != nil {
 		return st, fmt.Errorf("创建资源目录失败: %w", err)
 	}
 
-	progress("manifest", "正在获取资源清单", 0, 0)
+	progress("manifest", "获取资源清单", 0, 0)
 	remote, err := u.FetchManifest(ctx)
 	if err != nil {
-		if hasLocalResource(resourceDir) {
-			st.Offline = true
-			st.OfflineReason = err.Error()
-			if local, _ := ReadLocalManifest(resourceDir); local != nil {
-				st.CSVHash = local.RawEXD.SHA256
-				st.FontHash = local.Font.SHA256
-				st.GeneratedAt = local.GeneratedAt
-			}
-			return st, nil
-		}
 		return st, fmt.Errorf("获取云端资源清单失败: %w", err)
 	}
 
@@ -64,43 +91,67 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	st.GeneratedAt = remote.GeneratedAt
 
 	local, _ := ReadLocalManifest(resourceDir)
-	fontOK := fontsComplete(resourceDir, local, remote)
-	if nonFontModulesComplete(resourceDir, local, remote) && fontOK {
+	// 快速通道：清单与上次校验一致，且本地文件的数量/大小/修改时间都没变，
+	// 直接认定内容未被改动，省掉逐文件哈希（7114 个 CSV 与 280MB 字体）。
+	if stamp := readVerifyStamp(resourceDir); stamp != nil &&
+		local != nil && local.RawEXD.SHA256 == remote.RawEXD.SHA256 && local.Font.SHA256 == remote.Font.SHA256 &&
+		metaModulesComplete(resourceDir, local, remote, true) && stamp.matches(resourceDir, remote) {
+		progress("done", "资源已是最新", 1, 1)
 		return st, nil
 	}
-	// 本地资源比云端更新时保留本地，避免开发中的改动被旧快照覆盖。
-	if local != nil && local.GeneratedAt != "" && remote.GeneratedAt != "" &&
-		local.GeneratedAt > remote.GeneratedAt {
+	progress("verify", "校验 CSV 快照包", 0, 0)
+	cloudCSVOK := local != nil && local.RawEXD.SHA256 == remote.RawEXD.SHA256 &&
+		bundleDirMatchesWithProgress(resourceDir, "rawexd.zip", remote.RawEXD, func(done, total int64) {
+			progress("verify", "核对 CSV 文件", done, total)
+		})
+	progress("verify", "校验字体文件", 0, 0)
+	fontOK := fontsCompleteWithProgress(resourceDir, local, remote, func(done, total int64) {
+		progress("verify", "校验字体文件", done, total)
+	})
+	if metaModulesComplete(resourceDir, local, remote, cloudCSVOK) && fontOK {
+		writeVerifyStamp(resourceDir, buildVerifyStamp(resourceDir, remote))
+		progress("done", "资源已是最新", 1, 1)
 		return st, nil
 	}
 	st.Updated = true
 
-	if local == nil || local.RawEXD.SHA256 != remote.RawEXD.SHA256 || !dirExists(filepath.Join(resourceDir, "rawexd")) {
-		progress("rawexd", "正在下载 CSV 快照包", 0, 0)
-		if err := u.downloadZip(ctx, resourceDir, "rawexd.zip", remote.RawEXD, func(done, total int64) {
-			progress("rawexd", "正在下载 CSV 快照包", done, total)
-		}); err != nil {
-			return st, err
+	if !cloudCSVOK {
+		zipPath := filepath.Join(resourceDir, "rawexd.zip")
+		if zipMatches(resourceDir, "rawexd.zip", remote.RawEXD) {
+			// 快照包本身可信，只是解压目录被改动或缺失：直接重新解压，无需重新下载。
+			progress("rawexd", "修复 CSV 快照", 0, 0)
+			if err := ExtractZip(zipPath, resourceDir); err != nil {
+				return st, fmt.Errorf("解压 rawexd.zip 失败: %w", err)
+			}
+		} else {
+			progress("rawexd", "下载 CSV 快照包", 0, 0)
+			if err := u.downloadZip(ctx, resourceDir, "rawexd.zip", remote.RawEXD, true, func(done, total int64) {
+				progress("rawexd", "下载 CSV 快照包", done, total)
+			}); err != nil {
+				return st, err
+			}
+			st.DownloadedFiles++
+			st.DownloadedBytes += remote.RawEXD.Size
 		}
 		st.CSVUpdated = true
-		st.DownloadedFiles++
-		st.DownloadedBytes += remote.RawEXD.Size
 	}
 
 	metas := []struct {
 		name string
 		want BundleInfo
-		got  BundleInfo
 	}{
-		{"rules.json", remote.Rules, bundleOf(local, func(m *Manifest) BundleInfo { return m.Rules })},
-		{"tables.json", remote.Tables, bundleOf(local, func(m *Manifest) BundleInfo { return m.Tables })},
+		{"rules.json", remote.Rules},
+		{"tables.json", remote.Tables},
 	}
 	for _, meta := range metas {
 		dst := filepath.Join(resourceDir, meta.name)
-		if meta.got.SHA256 == meta.want.SHA256 && fileSizeMatches(dst, meta.want.Size) {
+		// 对本地文件重算哈希再与云端比对：本地 manifest 只是下载时的历史记录，
+		// 拿记录比记录发现不了文件本身已被改动（同尺寸篡改尤其如此）。
+		if got, err := HashFile(dst); err == nil &&
+			got.SHA256 == meta.want.SHA256 && (meta.want.Size <= 0 || got.Size == meta.want.Size) {
 			continue
 		}
-		progress("meta", "正在下载 "+meta.name, 0, 0)
+		progress("meta", "下载 "+meta.name, 0, 0)
 		if err := u.downloadVerified(ctx, meta.name, dst, FileInfo{SHA256: meta.want.SHA256, Size: meta.want.Size}, nil); err != nil {
 			return st, err
 		}
@@ -111,9 +162,9 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	// 字体独立检查与下载：仅当字体哈希不一致或缺失时才下载
 	if remote.Font.SHA256 != "" {
 		if !fontOK {
-			progress("font", "正在下载字体包", 0, 0)
-			if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, func(done, total int64) {
-				progress("font", "正在下载字体包", done, total)
+			progress("font", "下载字体包", 0, 0)
+			if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, false, func(done, total int64) {
+				progress("font", "下载字体包", done, total)
 			}); err != nil {
 				return st, err
 			}
@@ -152,15 +203,90 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 	if err := writeManifest(resourceDir, remote); err != nil {
 		return st, err
 	}
+	writeVerifyStamp(resourceDir, buildVerifyStamp(resourceDir, remote))
 	progress("done", "资源已更新", 1, 1)
 	return st, nil
 }
 
-func bundleOf(local *Manifest, pick func(*Manifest) BundleInfo) BundleInfo {
-	if local == nil {
-		return BundleInfo{}
+// EnsureFontPack 只校验（必要时下载）字体包，供自定义词条目录场景使用：
+// 该场景跳过整包同步，但字体仍取自内置资源目录，写入客户端前必须确认其完整性。
+// 返回值表示是否发生了下载或修复。离线时退回本地清单核对，仍可确认完整性。
+func (u *Updater) EnsureFontPack(ctx context.Context, resourceDir string, progress ProgressFunc) (bool, error) {
+	if progress == nil {
+		progress = func(string, string, int64, int64) {}
 	}
-	return pick(local)
+	progress = throttleProgress(progress)
+	if err := os.MkdirAll(resourceDir, 0o755); err != nil {
+		return false, fmt.Errorf("创建资源目录失败: %w", err)
+	}
+	remote, err := u.FetchManifest(ctx)
+	if err != nil {
+		local, _ := ReadLocalManifest(resourceDir)
+		if local == nil || local.Font.SHA256 == "" || !fontsComplete(resourceDir, local, local) {
+			return false, fmt.Errorf("字体包校验未通过且无法联网修复: %w", err)
+		}
+		return false, nil
+	}
+	local, _ := ReadLocalManifest(resourceDir)
+	if fontsComplete(resourceDir, local, remote) {
+		return false, nil
+	}
+
+	if remote.Font.SHA256 != "" {
+		progress("font", "下载字体包", 0, 0)
+		if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, false, func(done, total int64) {
+			progress("font", "下载字体包", done, total)
+		}); err != nil {
+			return false, err
+		}
+		return true, nil
+	}
+
+	fontKeys := sortedFontKeys(remote)
+	var fontTotal int64
+	for _, key := range fontKeys {
+		if fontMatches(resourceDir, key, remote.Fonts[key]) {
+			continue
+		}
+		fontTotal += remote.Fonts[key].Size
+	}
+	var fontDone int64
+	for _, key := range fontKeys {
+		want := remote.Fonts[key]
+		if fontMatches(resourceDir, key, want) {
+			continue
+		}
+		dst := filepath.Join(resourceDir, filepath.FromSlash(key))
+		progress("font", key, fontDone, fontTotal)
+		if err := u.downloadVerified(ctx, key, dst, want, func(done, _ int64) {
+			progress("font", key, fontDone+done, fontTotal)
+		}); err != nil {
+			return false, err
+		}
+		fontDone += want.Size
+	}
+	return true, nil
+}
+
+// SyncTableDoc 只同步 tables.json，用于首次运行或表清单缺失时，
+// 避免为了列出可汉化数据表去下载整个快照包。云端清单必须可获取，不做离线兜底。
+func (u *Updater) SyncTableDoc(ctx context.Context, resourceDir string) (bool, error) {
+	if err := os.MkdirAll(resourceDir, 0o755); err != nil {
+		return false, fmt.Errorf("创建资源目录失败: %w", err)
+	}
+	remote, err := u.FetchManifest(ctx)
+	if err != nil {
+		return false, fmt.Errorf("获取云端资源清单失败: %w", err)
+	}
+	dst := filepath.Join(resourceDir, "tables.json")
+	if got, err := HashFile(dst); err == nil && got.SHA256 == remote.Tables.SHA256 &&
+		(remote.Tables.Size <= 0 || got.Size == remote.Tables.Size) {
+		return false, nil
+	}
+	if err := u.downloadVerified(ctx, "tables.json", dst, FileInfo{SHA256: remote.Tables.SHA256, Size: remote.Tables.Size}, nil); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func shortHash(h string) string {
@@ -170,7 +296,7 @@ func shortHash(h string) string {
 	return h
 }
 
-func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, want BundleInfo, progress func(done, total int64)) error {
+func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, want BundleInfo, keep bool, progress func(done, total int64)) error {
 	var lastErr error
 	for _, node := range u.nodes() {
 		url := strings.TrimRight(node, "/") + "/" + zipName
@@ -191,12 +317,25 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 			_ = os.Remove(tmp)
 			continue
 		}
-		if err := ExtractZip(tmp, resourceDir); err != nil {
+		zipPath := tmp
+		if keep {
+			// 保留快照包，后续校验解压目录时作为可信来源。
+			zipPath = filepath.Join(resourceDir, zipName)
+			_ = os.Remove(zipPath)
+			if err := os.Rename(tmp, zipPath); err != nil {
+				lastErr = fmt.Errorf("保存 %s 失败: %w", zipName, err)
+				_ = os.Remove(tmp)
+				continue
+			}
+		}
+		if err := ExtractZip(zipPath, resourceDir); err != nil {
 			lastErr = fmt.Errorf("解压 %s 失败: %w", zipName, err)
 			_ = os.Remove(tmp)
 			continue
 		}
-		_ = os.Remove(tmp)
+		if !keep {
+			_ = os.Remove(tmp)
+		}
 		return nil
 	}
 	if lastErr == nil {
@@ -353,17 +492,14 @@ func dirExists(path string) bool {
 	return err == nil && st.IsDir()
 }
 
-func nonFontModulesComplete(resourceDir string, local, remote *Manifest) bool {
-	if local == nil || remote == nil {
+func metaModulesComplete(resourceDir string, local, remote *Manifest, csvOK bool) bool {
+	if local == nil || remote == nil || !csvOK {
 		return false
 	}
 	for _, name := range []string{"manifest.json", "rules.json", "tables.json"} {
 		if _, err := os.Stat(filepath.Join(resourceDir, name)); err != nil {
 			return false
 		}
-	}
-	if local.RawEXD.SHA256 != remote.RawEXD.SHA256 || !dirExists(filepath.Join(resourceDir, "rawexd")) {
-		return false
 	}
 	if local.Rules.SHA256 != remote.Rules.SHA256 {
 		return false
@@ -374,19 +510,72 @@ func nonFontModulesComplete(resourceDir string, local, remote *Manifest) bool {
 	return true
 }
 
+func nonFontModulesComplete(resourceDir string, local, remote *Manifest) bool {
+	csvOK := local != nil && remote != nil && local.RawEXD.SHA256 == remote.RawEXD.SHA256 &&
+		bundleDirMatches(resourceDir, "rawexd.zip", remote.RawEXD)
+	return metaModulesComplete(resourceDir, local, remote, csvOK)
+}
+
 func fontsComplete(resourceDir string, local, remote *Manifest) bool {
+	return fontsCompleteWithProgress(resourceDir, local, remote, nil)
+}
+
+// fontsCompleteWithProgress 并发核对字体文件哈希。
+// 字体包体积最大（数百 MB），串行读取会明显拖慢启动，这里按文件并发摊开。
+func fontsCompleteWithProgress(resourceDir string, local, remote *Manifest, progress FileProgress) bool {
 	if local == nil || remote == nil {
 		return false
 	}
 	if local.Font.SHA256 != remote.Font.SHA256 || !dirExists(filepath.Join(resourceDir, "font")) {
 		return false
 	}
-	for key, want := range remote.Fonts {
-		if !fontFileMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want) {
-			return false
-		}
+	keys := sortedFontKeys(remote)
+	var total int64
+	for _, key := range keys {
+		total += remote.Fonts[key].Size
 	}
-	return true
+	if progress != nil {
+		progress(0, total)
+	}
+	if len(keys) == 0 {
+		return true
+	}
+	workers := runtime.GOMAXPROCS(0)
+	if workers > 8 {
+		workers = 8
+	}
+	if workers > len(keys) {
+		workers = len(keys)
+	}
+	var (
+		wg     sync.WaitGroup
+		idx    atomic.Int64
+		done   atomic.Int64
+		failed atomic.Bool
+	)
+	for i := 0; i < workers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				n := int(idx.Add(1)) - 1
+				if n >= len(keys) || failed.Load() {
+					return
+				}
+				key := keys[n]
+				want := remote.Fonts[key]
+				if !fontFileMatches(filepath.Join(resourceDir, filepath.FromSlash(key)), want) {
+					failed.Store(true)
+					return
+				}
+				if progress != nil {
+					progress(done.Add(want.Size), total)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	return !failed.Load()
 }
 
 func modulesComplete(resourceDir string, local, remote *Manifest) bool {
@@ -417,8 +606,4 @@ func HasLocalResource(resourceDir string) bool {
 		}
 	}
 	return dirExists(filepath.Join(resourceDir, "rawexd"))
-}
-
-func hasLocalResource(resourceDir string) bool {
-	return HasLocalResource(resourceDir)
 }

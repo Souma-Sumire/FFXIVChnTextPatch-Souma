@@ -22,6 +22,17 @@ interface RegionLanguage {
   name: string;
 }
 
+interface CSVDirLabel {
+  title: string;
+  desc: string;
+}
+
+interface CSVConfig {
+  dirs: string[];
+  selected: string;
+  labels?: Record<string, CSVDirLabel>;
+}
+
 interface AppConfig {
   gameDirs: Record<string, string>;
   language: string;
@@ -30,6 +41,7 @@ interface AppConfig {
   replaceFont: boolean;
   rules: Record<string, boolean>;
   preset: string;
+  csvDirs?: Record<string, CSVConfig>;
 }
 
 interface TableEntry {
@@ -39,17 +51,37 @@ interface TableEntry {
   warning: string;
 }
 
+interface CSVDirOption {
+  path: string;
+  valid: boolean;
+  title?: string;
+  desc?: string;
+  updatedAt?: string;
+  canDeleteFiles?: boolean;
+}
+
+// CSVContext 由后端按区服给出：可选目录、当前选中的目录以及对应的表清单。
+interface CSVContext {
+  dirs: CSVDirOption[];
+  selected: string;
+  custom: boolean;
+  defaultDir: string;
+  tableList: TableEntry[];
+  resourceReady: boolean;
+  resourceUpdatedAt?: string;
+  resourceHash?: string;
+}
+
 interface BootstrapInfo {
   version: string;
   resourceDir: string;
-  offline: boolean;
-  offlineReason?: string;
+  resourceReady: boolean;
   rules: RuleMeta[];
   languages: LanguageOption[];
   regionLanguages?: Record<string, RegionLanguage[]>;
   config: AppConfig;
   folders: Record<string, string>;
-  tableList: TableEntry[];
+  csv: CSVContext;
   excluded?: string[];
   resourceTime?: string;
   resourceHash?: string;
@@ -151,23 +183,20 @@ interface AppUpdateInfo {
   selfUpdateSupported: boolean;
 }
 
-interface ImportResourceResult {
-  success: boolean;
-  cancelled: boolean;
-  message: string;
-  resourceTime?: string;
-  resourceHash?: string;
-  tableCount?: number;
-}
-
 interface GoApp {
   GetAppVersion(): Promise<string>;
   CheckAppUpdate(): Promise<AppUpdateInfo>;
   InstallAppUpdate(): Promise<void>;
   RestartApp(): Promise<void>;
-  ImportOfflineResource(filePath?: string): Promise<ImportResourceResult>;
   GetBootstrap(): Promise<BootstrapInfo>;
   SaveConfig(config: AppConfig): Promise<void>;
+  SyncBuiltinResource(): Promise<void>;
+  EnsureTableDoc(): Promise<boolean>;
+  GetCSVContext(language: string): Promise<CSVContext>;
+  SetCSVSelection(language: string, path: string): Promise<CSVContext>;
+  RemoveCSVDirectory(language: string, path: string, deleteFiles: boolean): Promise<CSVContext>;
+  SetCSVDirectoryMeta(language: string, path: string, title: string, desc: string): Promise<CSVContext>;
+  OpenCSVDirectory(language: string, path: string): Promise<void>;
   DetectGamePaths(language: string): Promise<string[]>;
   CancelDetect(): Promise<void>;
   SelectGameDirectory(language: string): Promise<string>;
@@ -175,8 +204,10 @@ interface GoApp {
   CheckClientStatus(gameDir: string, language: string): Promise<ClientStatusResult>;
   StartPatch(req: PatchRequest): Promise<PatchResponse>;
   CancelPatch(): Promise<void>;
+  AnswerUnknownConfirm(ok: boolean): Promise<void>;
   AnswerFontConfirm(ok: boolean): Promise<void>;
   AnswerLauncherConfirm(ok: boolean): Promise<void>;
+  CopyBuiltinCSVDirectory(language: string, convert: boolean): Promise<CSVContext>;
   KillLauncherProcesses(gameDir: string): Promise<string[]>;
   RestoreOriginal(gameDir: string, language: string): Promise<RestoreResponse>;
   EnsureHighResolutionUiAsset(): Promise<{
@@ -249,13 +280,26 @@ let clientStatus: ClientStatusResult | null = null;
 let checkingClient = false;
 type ModalResult = "ok" | "alt" | "cancel";
 let modalResolver: ((result: ModalResult) => void) | null = null;
+
 let busy = false;
 let isPatching = false;
 let isStopping = false;
+let syncingResource = false;
+let tableDocReady = false;
+let tableDocPending: Promise<void> = Promise.resolve();
 let isDetecting = false;
 let detectCanceled = false;
 let latestUpdateInfo: AppUpdateInfo | null = null;
 let checkingAppUpdate = false;
+let invalidCSVNotified = "";
+let csvBusyText = "";
+// csvEditingPath 非空时，对应目录行在下拉里直接显示为可编辑输入框。
+let csvEditingPath: string | null = null;
+// 删除确认气泡挂在 body 上，避免被下拉菜单的滚动容器裁掉。
+let csvDeletePopover: { element: HTMLElement; anchor: HTMLElement; dispose: () => void } | null = null;
+// builtinSyncFailed 表示最近一次内置词条同步失败，仅用于状态提示；
+// 内置词条开始汉化时后端会再试一次，不通过就中止。
+let builtinSyncFailed = false;
 
 let logEntries: LogEntry[] = [];
 let nextLogId = 1;
@@ -273,18 +317,12 @@ let config: AppConfig = {
   replaceFont: true,
   rules: {},
   preset: "recommended",
+  csvDirs: {},
 };
 
 const el = {
-  viewProvisioning: byId("view-provisioning"),
   viewWorkbench: byId("view-workbench"),
   viewTables: byId("view-tables"),
-
-  provisionDetail: byId("provision-detail"),
-  provisionProgressBar: byId("provision-progress-bar"),
-  provisionMeta: byId("provision-meta"),
-  provisionOfflineWrap: byId("provision-offline-wrap"),
-  btnProvisionImportOffline: byId<HTMLButtonElement>("btn-provision-import-offline"),
 
   versionBadge: byId<HTMLButtonElement>("version-badge"),
   btnAppUpdate: byId<HTMLButtonElement>("btn-app-update"),
@@ -301,13 +339,16 @@ const el = {
   replaceFont: byId<HTMLInputElement>("replace-font"),
   fontUiAssetMeta: byId("font-ui-asset-meta"),
   fontUiAssetStatus: byId("font-ui-asset-status"),
-  resourceBuildMeta: byId("resource-build-meta"),
-  resourceBuildTime: byId("resource-build-time"),
-  btnImportOffline: byId<HTMLButtonElement>("btn-import-offline"),
+  csvPicker: byId("csv-picker"),
+  csvTrigger: byId<HTMLButtonElement>("csv-select-trigger"),
+  csvSummary: byId("csv-select-summary"),
+  csvSyncBar: byId("csv-sync-bar"),
+  csvMenu: byId("csv-select-menu"),
+  extendedSection: byId("extended-section"),
   rules: byId("rules"),
 
   btnOpenTables: byId<HTMLButtonElement>("btn-open-tables"),
-  mainPreset: byId<HTMLSelectElement>("main-preset"),
+  scopeSummary: byId("scope-summary"),
 
   btnPatch: byId<HTMLButtonElement>("btn-patch"),
   btnPatchText: byId("btn-patch-text"),
@@ -346,8 +387,7 @@ const el = {
   modalAlt: byId<HTMLButtonElement>("modal-alt"),
 };
 
-function switchView(view: "provisioning" | "workbench" | "tables"): void {
-  el.viewProvisioning.classList.toggle("hidden", view !== "provisioning");
+function switchView(view: "workbench" | "tables"): void {
   el.viewWorkbench.classList.toggle("hidden", view !== "workbench");
   el.viewTables.classList.toggle("hidden", view !== "tables");
 }
@@ -576,11 +616,10 @@ function toggleConsole(open?: boolean): void {
 
 function updateTextScopeState(): void {
   const isEnabled = el.replaceText.checked;
-  el.mainPreset.disabled = !isEnabled || busy;
   el.btnOpenTables.disabled = !isEnabled || busy;
-  const scopeControl = el.mainPreset.closest(".scope-control");
+  const scopeControl = el.btnOpenTables.closest(".scope-control");
   scopeControl?.classList.toggle("disabled", !isEnabled);
-  el.resourceBuildMeta?.classList.toggle("disabled", !isEnabled);
+  el.csvPicker?.classList.toggle("disabled", !isEnabled);
 }
 
 function updateRestoreButtonState(): void {
@@ -684,6 +723,7 @@ function setBusy(value: boolean, label = ""): void {
   el.targetLangTrigger.disabled = value;
   el.replaceText.disabled = value;
   el.replaceFont.disabled = value;
+  el.csvTrigger.disabled = value;
   el.rules.querySelectorAll<HTMLInputElement>("input[type='checkbox']").forEach((cb) => {
     cb.disabled = value;
   });
@@ -720,9 +760,13 @@ function openModal(
   hideCancel = false,
 ): Promise<ModalResult> {
   return new Promise<ModalResult>((resolve) => {
+    // 只有一个弹窗槽位：新弹窗顶掉旧弹窗时先把旧 Promise 按「取消」结算，
+    // 否则等待旧弹窗答案的后端流程（如启动器确认）会一直挂到超时。
+    modalResolver?.("cancel");
     modalResolver = resolve;
     el.modalTitle.textContent = title;
     el.modalText.textContent = text;
+    el.modalText.classList.remove("hidden");
     el.modalOk.textContent = okText;
     if (altText) {
       el.modalAlt.textContent = altText;
@@ -741,6 +785,8 @@ function closeModal(result: ModalResult): void {
   const resolver = modalResolver;
   modalResolver = null;
   resolver?.(result);
+
+  el.modalText.classList.remove("hidden");
 }
 
 el.modalOk.addEventListener("click", () => closeModal("ok"));
@@ -906,44 +952,6 @@ async function installAppUpdate(info: AppUpdateInfo): Promise<void> {
   }
 }
 
-function setOfflineState(offline: boolean, reason?: string): void {
-  el.btnImportOffline.classList.toggle("hidden", !offline);
-  el.provisionOfflineWrap?.classList.toggle("hidden", !offline);
-  if (offline && !el.viewProvisioning.classList.contains("hidden")) {
-    el.provisionDetail.textContent = reason
-      ? `连接云端或下载资源失败：${reason}`
-      : "连接云端或下载资源失败，已进入离线状态";
-    el.provisionMeta.textContent = "可点击下方按钮选择本地离线资源包 (*.zip) 导入";
-  }
-}
-
-async function handleImportOfflineResource(): Promise<void> {
-  if (busy) return;
-  try {
-    setBusy(true, "正在导入离线资源包…");
-    const res = await call("ImportOfflineResource", "");
-    if (res.cancelled) {
-      return;
-    }
-    if (res.success) {
-      log(`[离线包] ${res.message}，汉化资源已就绪。`, "ok");
-      setOfflineState(false);
-      await loadBootstrap();
-      if (currentGameDir()) {
-        await refreshGameInfo();
-        void checkClientEnvironment();
-      }
-      switchView("workbench");
-      await showConfirm("导入成功", `成功导入离线资源包！\n共收录 ${res.tableCount ?? 0} 个数据表文件，汉化资源已就绪。`, "开始使用");
-    }
-  } catch (err) {
-    log(`[错误] 导入离线资源包失败: ${describeError(err)}`, "error");
-    await showConfirm("导入失败", `离线资源包解析失败: ${describeError(err)}`, "确定");
-  } finally {
-    setBusy(false);
-  }
-}
-
 type IdleScheduler = { requestIdleCallback?: (cb: () => void, opts: { timeout: number }) => number };
 
 // runWhenIdle 把磁盘扫描等非紧急任务推迟到界面渲染完成后的空闲时段执行。
@@ -974,6 +982,7 @@ async function bootstrapApp(): Promise<void> {
     await loadBootstrap();
     switchView("workbench");
     void checkAppUpdate({ prompt: true });
+    void syncBuiltinOnStart();
 
     if (currentGameDir()) {
       await refreshGameInfo();
@@ -994,19 +1003,7 @@ async function bootstrapApp(): Promise<void> {
       // 容错防御
     }
     log(`初始化失败: ${describeError(error)}`, "error");
-    setOfflineState(true, describeError(error));
     switchView("workbench");
-  }
-}
-
-function updateResourceBuildMeta(time?: string, _hash?: string): void {
-  if (!el.resourceBuildTime) {
-    return;
-  }
-  if (time) {
-    el.resourceBuildTime.textContent = time;
-  } else {
-    el.resourceBuildTime.textContent = "--";
   }
 }
 
@@ -1023,12 +1020,13 @@ async function loadBootstrap(): Promise<void> {
   if (!config.targetLanguages) {
     config.targetLanguages = {};
   }
+  if (!config.csvDirs) {
+    config.csvDirs = {};
+  }
   setWindowTitle();
   if (el.versionBadge) {
     el.versionBadge.textContent = `v${info.version}`;
   }
-  updateResourceBuildMeta(info.resourceTime, info.resourceHash);
-  setOfflineState(info.offline, info.offlineReason);
   el.gamePath.value = currentGameDir();
   el.replaceText.checked = config.replaceText;
   el.replaceFont.checked = config.replaceFont;
@@ -1040,9 +1038,36 @@ async function loadBootstrap(): Promise<void> {
   renderTargetLangs();
 
   const activePreset = config.preset && config.preset !== "custom" ? config.preset : "recommended";
-  applyPreset(activePreset, false);
+  config.preset = activePreset;
+  applyCSVContext(info.csv, "");
+  tableDocPending = ensureTableDoc();
+}
 
-  renderTables();
+// syncBuiltinOnStart 启动后立刻同步一次内置资源，与当前选中的词条目录无关。
+async function syncBuiltinOnStart(): Promise<void> {
+  await tableDocPending;
+  if (bootstrap?.csv.selected && !csvSelectionValid()) {
+    notifyInvalidCSV();
+  }
+  await syncBuiltinResource();
+}
+
+// ensureTableDoc 在本地表清单不可用时只补这一份清单，不触发整包同步。
+async function ensureTableDoc(): Promise<void> {
+  tableDocReady = true;
+  try {
+    const updated = await call("EnsureTableDoc");
+    if (updated) {
+      log("[资源] 已更新表清单 tables.json");
+      await reloadCSVContext();
+    }
+  } catch (err) {
+    log(`[警告] 表清单同步失败: ${describeError(err)}`, "warn");
+  }
+  // 内置词条随后会走整包同步，这里只处理自定义目录，避免同步前误报缺清单。
+  if (bootstrap?.csv.selected && !csvSelectionValid()) {
+    notifyInvalidCSV();
+  }
 }
 
 function renderRules(): void {
@@ -1055,7 +1080,7 @@ function renderRules(): void {
   if (unavailable.length > 0) {
     const notice = document.createElement("div");
     notice.className = "rule-notice";
-    notice.textContent = `规则数据不可用，已停用：${unavailable.map((rule) => rule.name).join("、")}。请同步资源，或改用完整的离线资源包。`;
+    notice.textContent = `规则数据不可用，已停用：${unavailable.map((rule) => rule.name).join("、")}。请同步资源后重试。`;
     el.rules.append(notice);
   }
 
@@ -1286,8 +1311,756 @@ function toggleTargetLangMenu(open?: boolean): void {
   el.targetLangTrigger.setAttribute("aria-expanded", String(shouldOpen));
 }
 
+// tableList 返回当前词条目录对应的表清单（内置词条为全量表，自定义目录只含其收录的表）。
+function tableList(): TableEntry[] {
+  return bootstrap?.csv?.tableList ?? [];
+}
+
+function csvDirName(path: string): string {
+  const parts = path.split(/[\\/]/).filter((part) => part.length > 0);
+  return parts.length > 0 ? parts[parts.length - 1]! : path;
+}
+
+// csvDisplayName 优先使用用户设置的名词，未设置时退回目录名。
+function csvDisplayName(path: string): string {
+  if (!path) {
+    return "内置词条";
+  }
+  const title = bootstrap?.csv?.dirs.find((dir) => dir.path === path)?.title;
+  return title ? title : csvDirName(path);
+}
+
+function csvSelectionValid(): boolean {
+  const ctx = bootstrap?.csv;
+  if (!ctx || !ctx.selected) {
+    return true;
+  }
+  return ctx.dirs.some((dir) => dir.path === ctx.selected && dir.valid);
+}
+
+// beginCSVBusy 在切换/复制词条目录时给选择器加等待状态，立即生效。
+function beginCSVBusy(text: string): void {
+  csvBusyText = text;
+  el.csvTrigger.disabled = true;
+  el.csvTrigger.classList.remove("is-invalid");
+  el.csvTrigger.classList.add("is-syncing");
+  el.csvSyncBar.classList.add("is-pending");
+  el.csvSyncBar.style.width = "100%";
+  el.csvSummary.textContent = text;
+}
+
+function endCSVBusy(): void {
+  if (!csvBusyText) {
+    return;
+  }
+  csvBusyText = "";
+  el.csvTrigger.disabled = !el.replaceText.checked;
+  el.csvTrigger.classList.remove("is-syncing");
+  el.csvSyncBar.classList.remove("is-pending");
+  el.csvSyncBar.style.width = "0%";
+  renderCSVTrigger();
+}
+
+function renderCSVTrigger(): void {
+  const ctx = bootstrap?.csv;
+  if (!ctx || csvBusyText) {
+    return;
+  }
+  const invalid = !csvSelectionValid();
+  const pending = !ctx.selected && !ctx.resourceReady;
+  const syncFailed = !ctx.selected && builtinSyncFailed;
+  el.csvSummary.textContent = ctx.selected
+    ? `${csvDisplayName(ctx.selected)}${invalid ? "（已失效）" : ""}`
+    : syncFailed
+      ? "内置词条（同步失败）"
+      : pending
+        ? "内置词条（未同步）"
+        : "内置词条";
+  el.csvTrigger.title = ctx.selected
+    ? ctx.selected
+    : syncFailed
+      ? "上次同步内置词条失败：开始汉化时会再试一次，或改用自定义词条目录"
+      : pending
+        ? "内置词条尚未同步完成"
+        : "";
+  el.csvTrigger.classList.toggle("is-invalid", invalid || syncFailed);
+}
+
+function clearCSVSyncState(): void {
+  el.csvTrigger.classList.remove("is-syncing");
+  el.csvSyncBar.classList.remove("is-pending");
+  el.csvSyncBar.style.width = "0%";
+  renderCSVTrigger();
+}
+
+function renderCSVMenu(): void {
+  const ctx = bootstrap?.csv;
+  if (!ctx) {
+    return;
+  }
+  closeCSVDeletePopover();
+  el.csvMenu.replaceChildren();
+
+  const builtinDetail = builtinSyncFailed
+    ? "使用云端资源确保最新，用户无法修改（上次同步失败，开始汉化时会重试）"
+    : "使用云端资源确保最新，用户无法修改";
+  const options: {
+    path: string;
+    label: string;
+    detail: string;
+    title: string;
+    desc: string;
+    updatedAt: string;
+    hash: string;
+    valid: boolean;
+    editable: boolean;
+    removable: boolean;
+    canDeleteFiles: boolean;
+  }[] = [
+    {
+      path: "",
+      label: "内置词条",
+      detail: builtinDetail,
+      title: "",
+      desc: "",
+      updatedAt: ctx.resourceUpdatedAt ?? "",
+      hash: ctx.resourceHash ?? "",
+      valid: true,
+      editable: false,
+      removable: false,
+      canDeleteFiles: false,
+    },
+    ...ctx.dirs.map((dir) => ({
+      path: dir.path,
+      label: dir.title || csvDirName(dir.path),
+      detail: dir.desc || dir.path,
+      title: dir.title ?? "",
+      desc: dir.desc ?? "",
+      updatedAt: dir.updatedAt ?? "",
+      hash: "",
+      valid: dir.valid,
+      editable: true,
+      removable: true,
+      canDeleteFiles: dir.canDeleteFiles === true,
+    })),
+  ];
+
+  for (const opt of options) {
+    const row = document.createElement("div");
+    row.className = "csv-option";
+    if (opt.path === ctx.selected) {
+      row.classList.add("is-active");
+    }
+    if (!opt.valid) {
+      row.classList.add("is-invalid");
+    }
+
+    // 正在编辑的目录行整行换成输入框，名称与描述都在原位改。
+    if (opt.editable && csvEditingPath === opt.path) {
+      row.classList.add("is-editing");
+      row.append(buildCSVMetaEditor(opt.path, opt.title, opt.desc));
+      el.csvMenu.append(row);
+      continue;
+    }
+
+    const main = document.createElement("button");
+    main.type = "button";
+    main.className = "csv-option-main";
+    if (opt.path) {
+      main.title = opt.path;
+    }
+
+    // 名字后跟一小段时间，标明这份词条最后更新的时刻。
+    const head = document.createElement("span");
+    head.className = "csv-option-head";
+    const name = document.createElement("span");
+    name.className = "csv-option-name";
+    name.textContent = opt.valid ? opt.label : `${opt.label}（已失效）`;
+    head.append(name);
+    if (opt.updatedAt) {
+      const time = document.createElement("span");
+      time.className = "csv-option-time";
+      time.textContent = opt.updatedAt;
+      head.append(time);
+    }
+    // 内置词条额外标出资源包短哈希，便于确认副本基于哪份快照。
+    if (opt.hash) {
+      const hash = document.createElement("span");
+      hash.className = "csv-option-hash";
+      hash.textContent = `#${opt.hash.slice(0, 8)}`;
+      hash.title = `内置词条哈希 ${opt.hash}`;
+      head.append(hash);
+    }
+
+    const detail = document.createElement("span");
+    detail.className = "csv-option-path";
+    detail.textContent = opt.valid ? opt.detail : opt.path;
+
+    main.append(head, detail);
+    if (opt.valid) {
+      main.addEventListener("click", () => {
+        void chooseCSV(opt.path);
+      });
+    } else {
+      main.disabled = true;
+      main.title = `${opt.path}（目录已失效，可打开目录检查或删除）`;
+    }
+    row.append(main);
+
+    const actions = document.createElement("div");
+    actions.className = "csv-option-actions";
+    // 内置词条由云端维护，不提供打开本地目录的入口。
+    if (opt.path) {
+      actions.append(
+        csvIconButton(CSV_ICON_FOLDER, "在文件管理器中打开", () => void openCSVDir(opt.path)),
+      );
+    }
+    if (opt.editable) {
+      actions.append(
+        csvIconButton(CSV_ICON_PENCIL, "编辑名称与描述", () => startCSVMetaEdit(opt.path)),
+      );
+    }
+    if (opt.removable) {
+      let trashBtn: HTMLButtonElement | null = null;
+      trashBtn = csvIconButton(
+        CSV_ICON_TRASH,
+        "移除该词条目录",
+        () => {
+          if (trashBtn) {
+            openCSVDeletePopover(opt.path, opt.label, opt.canDeleteFiles, trashBtn);
+          }
+        },
+        true,
+      );
+      actions.append(trashBtn);
+    }
+    row.append(actions);
+
+    el.csvMenu.append(row);
+  }
+
+  el.csvMenu.append(buildCSVCopyPanel());
+}
+
+// buildCSVMetaEditor 把一行换成两个输入框：失焦即保存，Enter 保存，Esc 放弃。
+function buildCSVMetaEditor(path: string, title: string, desc: string): HTMLElement {
+  const wrap = document.createElement("div");
+  wrap.className = "csv-option-editor";
+
+  const titleInput = document.createElement("input");
+  titleInput.type = "text";
+  titleInput.className = "csv-option-input is-title";
+  titleInput.maxLength = 40;
+  titleInput.placeholder = "名称";
+  titleInput.value = title || csvDirName(path);
+
+  const descInput = document.createElement("input");
+  descInput.type = "text";
+  descInput.className = "csv-option-input";
+  descInput.maxLength = 120;
+  descInput.placeholder = "描述（可选）";
+  descInput.value = desc;
+
+  wrap.append(titleInput, descInput);
+
+  let finished = false;
+  const finish = (save: boolean): void => {
+    if (finished) {
+      return;
+    }
+    finished = true;
+    const nextTitle = titleInput.value.trim();
+    const nextDesc = descInput.value.trim();
+    csvEditingPath = null;
+    if (save && (nextTitle !== title || nextDesc !== desc)) {
+      void saveCSVMeta(path, nextTitle, nextDesc);
+      return;
+    }
+    renderCSVMenu();
+  };
+
+  wrap.addEventListener("focusout", (e) => {
+    // 焦点在两个输入框之间移动时不算离开，不触发保存。
+    if (!wrap.contains(e.relatedTarget as Node | null)) {
+      finish(true);
+    }
+  });
+  for (const input of [titleInput, descInput]) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        finish(true);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        finish(false);
+      }
+    });
+  }
+
+  requestAnimationFrame(() => {
+    titleInput.focus();
+    titleInput.select();
+  });
+  return wrap;
+}
+
+const CSV_ICON_FOLDER =
+  '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>';
+const CSV_ICON_PENCIL = '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>';
+const CSV_ICON_TRASH =
+  '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>';
+
+// csvIconButton 生成词条列表行尾的图标按钮。
+function csvIconButton(
+  icon: string,
+  title: string,
+  onClick: () => void,
+  danger = false,
+): HTMLButtonElement {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = danger ? "csv-icon-btn danger" : "csv-icon-btn";
+  btn.title = title;
+  btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg>`;
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    onClick();
+  });
+  return btn;
+}
+
+// openCSVDeletePopover 在删除按钮下方弹出确认气泡：可删文件时会默认勾选
+// 「同时删除目录文件」（后端仅对程序生成的副本放行），否则只能从列表移除。
+function openCSVDeletePopover(
+  path: string,
+  label: string,
+  canDeleteFiles: boolean,
+  anchor: HTMLElement,
+): void {
+  // 再次点同一个删除按钮即收起气泡。
+  if (csvDeletePopover?.anchor === anchor) {
+    closeCSVDeletePopover();
+    return;
+  }
+  closeCSVDeletePopover();
+
+  const bubble = document.createElement("div");
+  bubble.className = "popconfirm";
+  bubble.setAttribute("role", "dialog");
+  bubble.addEventListener("click", (e) => e.stopPropagation());
+
+  const title = document.createElement("div");
+  title.className = "popconfirm-title";
+  title.textContent = `删除词条目录「${label}」？`;
+
+  const hint = document.createElement("div");
+  hint.className = "popconfirm-hint";
+
+  let deleteFiles = canDeleteFiles;
+  const syncHint = (): void => {
+    hint.textContent = deleteFiles
+      ? "目录文件会被永久删除，无法恢复。"
+      : "仅从列表中移除，目录文件保留在磁盘上。";
+  };
+  syncHint();
+
+  bubble.append(title);
+  if (canDeleteFiles) {
+    const checkLabel = document.createElement("label");
+    checkLabel.className = "popconfirm-check";
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = true;
+    check.addEventListener("change", () => {
+      deleteFiles = check.checked;
+      syncHint();
+    });
+    const checkText = document.createElement("span");
+    checkText.textContent = "同时删除目录文件";
+    checkLabel.append(check, checkText);
+    bubble.append(checkLabel);
+  }
+  bubble.append(hint);
+
+  const actions = document.createElement("div");
+  actions.className = "popconfirm-actions";
+  const okBtn = document.createElement("button");
+  okBtn.type = "button";
+  okBtn.className = "btn btn-xs btn-danger";
+  okBtn.textContent = "删除";
+  okBtn.addEventListener("click", () => void removeCSV(path, label, deleteFiles));
+  const cancelBtn = document.createElement("button");
+  cancelBtn.type = "button";
+  cancelBtn.className = "btn btn-xs btn-quiet";
+  cancelBtn.textContent = "取消";
+  cancelBtn.addEventListener("click", () => closeCSVDeletePopover());
+  actions.append(okBtn, cancelBtn);
+  bubble.append(actions);
+
+  document.body.append(bubble);
+  positionPopover(bubble, anchor);
+
+  const onPointerDown = (e: PointerEvent): void => {
+    const target = e.target as Node | null;
+    if (target && (bubble.contains(target) || anchor.contains(target))) {
+      return;
+    }
+    closeCSVDeletePopover();
+  };
+  const onKeyDown = (e: KeyboardEvent): void => {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      closeCSVDeletePopover();
+    }
+  };
+  // 菜单滚动或窗口尺寸变化会让气泡脱离锚点，直接收起。
+  const onViewportChange = (): void => closeCSVDeletePopover();
+
+  document.addEventListener("pointerdown", onPointerDown, true);
+  document.addEventListener("keydown", onKeyDown, true);
+  window.addEventListener("resize", onViewportChange);
+  document.addEventListener("scroll", onViewportChange, true);
+
+  cancelBtn.focus();
+
+  csvDeletePopover = {
+    element: bubble,
+    anchor,
+    dispose: () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("resize", onViewportChange);
+      document.removeEventListener("scroll", onViewportChange, true);
+    },
+  };
+}
+
+function positionPopover(bubble: HTMLElement, anchor: HTMLElement): void {
+  const margin = 8;
+  const rect = anchor.getBoundingClientRect();
+  const width = bubble.offsetWidth;
+  const height = bubble.offsetHeight;
+  const left = Math.min(Math.max(margin, rect.right - width), window.innerWidth - width - margin);
+  let top = rect.bottom + 6;
+  if (top + height > window.innerHeight - margin) {
+    top = Math.max(margin, rect.top - height - 6);
+  }
+  bubble.style.left = `${Math.round(left)}px`;
+  bubble.style.top = `${Math.round(top)}px`;
+}
+
+function closeCSVDeletePopover(): void {
+  const current = csvDeletePopover;
+  if (!current) {
+    return;
+  }
+  csvDeletePopover = null;
+  current.dispose();
+  current.element.remove();
+}
+
+// buildCSVCopyPanel 是菜单底部的副本入口，用卡片样式与目录列表区分层级。
+function buildCSVCopyPanel(): HTMLElement {
+  const panel = document.createElement("div");
+  panel.className = "csv-copy-panel";
+  panel.innerHTML =
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+  const text = document.createElement("div");
+  text.className = "csv-copy-text";
+  const title = document.createElement("span");
+  title.className = "csv-copy-title";
+  title.textContent = "想自己改 CSV？";
+  const desc = document.createElement("span");
+  desc.className = "csv-copy-desc";
+  desc.textContent = "制作一份可自由编辑的内置词条副本";
+  text.append(title, desc);
+
+  // 已有副本时点按钮只会切换过去，转换选项没有意义，直接不显示。
+  const hasCopy = (bootstrap?.csv.dirs ?? []).some((dir) => dir.canDeleteFiles);
+  if (!hasCopy) {
+    const checkLabel = document.createElement("label");
+    checkLabel.className = "csv-copy-check";
+    checkLabel.title = "先按内置的简繁转换规则（OpenCC 台湾正体）改写副本内容";
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    const checkText = document.createElement("span");
+    checkText.textContent = "先套用简繁转换";
+    checkLabel.append(check, checkText);
+    text.append(checkLabel);
+  }
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn btn-quiet btn-xs csv-copy-btn";
+  btn.textContent = "制作副本";
+  btn.addEventListener("click", () => void copyBuiltinCSV());
+
+  panel.append(text, btn);
+  return panel;
+}
+
+// copyBuiltinCSV 制作内置词条副本并切换过去。复制期间列表保持展开，
+// 完成后新目录即为当前项，并直接进入名称与描述的编辑。
+async function copyBuiltinCSV(): Promise<void> {
+  if (busy || syncingResource || csvBusyText) {
+    return;
+  }
+  const copyBtn = el.csvMenu.querySelector<HTMLButtonElement>(".csv-copy-btn");
+  const convert = el.csvMenu.querySelector<HTMLInputElement>(".csv-copy-check input")?.checked ?? false;
+  if (copyBtn) {
+    copyBtn.disabled = true;
+    copyBtn.textContent = convert ? "正在转换…" : "正在制作…";
+  }
+  beginCSVBusy(convert ? "正在转换并制作副本…" : "正在制作副本…");
+  try {
+    const lang = config.language;
+    const ctx = await call("CopyBuiltinCSVDirectory", lang, convert);
+    endCSVBusy();
+    applyCSVContextForLanguage(lang, ctx);
+    // 副本落在列表中并直接进入内联编辑，名字默认是文件夹名 custom-csv。
+    startCSVMetaEdit(ctx.selected);
+  } catch (err) {
+    endCSVBusy();
+    log(`[错误] 制作内置词条副本失败: ${describeError(err)}`, "error");
+    if (copyBtn?.isConnected) {
+      copyBtn.disabled = false;
+      copyBtn.textContent = "制作副本";
+    }
+  }
+}
+
+// openCSVDir 在系统文件管理器中打开指定词条目录，空路径表示内置词条目录。
+async function openCSVDir(path: string): Promise<void> {
+  try {
+    await call("OpenCSVDirectory", config.language, path);
+  } catch (err) {
+    log(`[错误] 打开词条目录失败: ${describeError(err)}`, "error");
+  }
+}
+
+// startCSVMetaEdit 让指定目录行进入内联编辑状态，列表保持展开。
+function startCSVMetaEdit(path: string): void {
+  if (csvBusyText) {
+    return;
+  }
+  csvEditingPath = path;
+  toggleCSVMenu(true);
+  renderCSVMenu();
+}
+
+// saveCSVMeta 保存内联编辑的名称与描述，成功后按后端返回的上下文刷新列表。
+async function saveCSVMeta(path: string, title: string, desc: string): Promise<void> {
+  try {
+    const lang = config.language;
+    const ctx = await call("SetCSVDirectoryMeta", lang, path, title, desc);
+    applyCSVContextForLanguage(lang, ctx);
+    log(`[词条] 已更新词条目录信息：${title || csvDirName(path)}`);
+  } catch (err) {
+    log(`[错误] 更新词条目录信息失败: ${describeError(err)}`, "error");
+    renderCSVMenu();
+  }
+}
+
+function toggleCSVMenu(open?: boolean): void {
+  if (csvBusyText) {
+    return;
+  }
+  const shouldOpen = open !== undefined ? open : el.csvMenu.classList.contains("hidden");
+  if (!shouldOpen) {
+    closeCSVDeletePopover();
+  }
+  el.csvMenu.classList.toggle("hidden", !shouldOpen);
+  el.csvTrigger.setAttribute("aria-expanded", String(shouldOpen));
+}
+
+// applyCSVContext 应用后端返回的词条目录上下文；表清单变化时同步勾选范围。
+function applyCSVContext(ctx: CSVContext, previousKeys?: string): void {
+  applyCSVContextForLanguage(config.language, ctx, previousKeys);
+}
+
+// applyCSVContextForLanguage 按「请求发出时的区服」落盘，
+// 而不是应用时的当前区服：乱序返回时二者可能已经不同。
+function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?: string): void {
+  if (!bootstrap) {
+    return;
+  }
+  const prevKeys = previousKeys ?? tableList().map((entry) => entry.key).join("\n");
+  bootstrap.csv = ctx;
+  bootstrap.resourceReady = ctx.resourceReady;
+
+  if (!config.csvDirs) {
+    config.csvDirs = {};
+  }
+  const labels: Record<string, CSVDirLabel> = {};
+  for (const dir of ctx.dirs) {
+    if (dir.title || dir.desc) {
+      labels[dir.path] = { title: dir.title ?? "", desc: dir.desc ?? "" };
+    }
+  }
+  config.csvDirs[lang] = {
+    dirs: ctx.dirs.map((dir) => dir.path),
+    selected: ctx.selected,
+    labels,
+  };
+
+  renderCSVTrigger();
+  renderCSVMenu();
+  el.extendedSection.classList.toggle("hidden", ctx.custom);
+
+  const nextKeys = ctx.tableList.map((entry) => entry.key).join("\n");
+  if (nextKeys !== prevKeys) {
+    const available = new Set(ctx.tableList.map((entry) => entry.key));
+    for (const key of [...selected]) {
+      if (!available.has(key)) {
+        selected.delete(key);
+      }
+    }
+    if (config.preset === "recommended" || config.preset === "all") {
+      applyPreset(config.preset, false);
+    }
+  }
+  syncPresetWithSelection();
+  renderTables();
+
+  if (bootstrap.csv.tableList.length === 0 || !csvSelectionValid()) {
+    if (tableDocReady) {
+      notifyInvalidCSV();
+    }
+  } else {
+    invalidCSVNotified = "";
+  }
+}
+
+function notifyInvalidCSV(): void {
+  const ctx = bootstrap?.csv;
+  if (!ctx || invalidCSVNotified === ctx.selected) {
+    return;
+  }
+  invalidCSVNotified = ctx.selected;
+  if (ctx.tableList.length === 0) {
+    log("[警告] 本地表清单不可用，联网获取也失败了，请检查网络后重启程序。", "warn");
+    return;
+  }
+  log(`[警告] 词条目录已失效：${ctx.selected}。请重新选择或删除该目录。`, "warn");
+}
+
+// reloadCSVContext 按当前区服拉取词条目录上下文。
+// generation 校验：快速连切区服时丢弃乱序返回的旧响应，
+// 避免旧区服的目录列表被写到当前（新）区服名下并存盘。
+let csvContextGeneration = 0;
+
+async function reloadCSVContext(): Promise<void> {
+  const gen = ++csvContextGeneration;
+  const langAtRequest = config.language;
+  try {
+    const ctx = await call("GetCSVContext", langAtRequest);
+    if (gen !== csvContextGeneration) {
+      return;
+    }
+    applyCSVContextForLanguage(langAtRequest, ctx);
+  } catch (err) {
+    log(`[警告] 读取词条目录配置失败: ${describeError(err)}`, "warn");
+  }
+}
+
+async function chooseCSV(path: string): Promise<void> {
+  if (busy || !bootstrap || csvBusyText) {
+    return;
+  }
+  toggleCSVMenu(false);
+  if (path === bootstrap.csv.selected) {
+    return;
+  }
+  beginCSVBusy("正在切换…");
+  try {
+    const lang = config.language;
+    const ctx = await call("SetCSVSelection", lang, path);
+    endCSVBusy();
+    applyCSVContextForLanguage(lang, ctx);
+    if (path) {
+      log(`[词条] 已切换到自定义词条目录：${csvDisplayName(path)}`);
+    } else {
+      log("[词条] 已切换到内置词条");
+    }
+  } catch (err) {
+    endCSVBusy();
+    log(`[错误] 切换词条目录失败: ${describeError(err)}`, "error");
+    await reloadCSVContext();
+  }
+}
+
+async function removeCSV(path: string, label: string, deleteFiles: boolean): Promise<void> {
+  if (busy || !bootstrap || csvBusyText) {
+    return;
+  }
+  closeCSVDeletePopover();
+  if (csvEditingPath === path) {
+    csvEditingPath = null;
+  }
+  beginCSVBusy(deleteFiles ? "正在删除目录文件…" : "正在移除…");
+  try {
+    const lang = config.language;
+    const ctx = await call("RemoveCSVDirectory", lang, path, deleteFiles);
+    endCSVBusy();
+    applyCSVContextForLanguage(lang, ctx);
+    log(
+      deleteFiles
+        ? `[词条] 已移除词条目录并删除其中的文件：${label}`
+        : `[词条] 已移除词条目录（目录文件保留）：${label}`,
+    );
+  } catch (err) {
+    endCSVBusy();
+    log(`[错误] 移除词条目录失败: ${describeError(err)}`, "error");
+  }
+}
+
+// setResourceSyncing 标记内置词条同步中；期间禁止开始汉化，避免后端的忙碌互斥报错。
+function setResourceSyncing(value: boolean): void {
+  syncingResource = value;
+  if (isPatching) {
+    return;
+  }
+  el.btnPatch.disabled = value || busy;
+  if (el.btnPatchText) {
+    el.btnPatchText.textContent = value ? "同步词条中…" : "开始汉化";
+  }
+}
+
+// syncBuiltinResource 同步并校验内置资源，进度压在选择器上；
+// 当前用的是自定义词条时只在后台进行，不占用选择器文字。
+async function syncBuiltinResource(): Promise<void> {
+  if (busy || syncingResource || csvBusyText) {
+    return;
+  }
+  const showOnPicker = !bootstrap?.csv.selected;
+  setResourceSyncing(true);
+  if (showOnPicker) {
+    beginCSVBusy("内置词条 同步中…");
+  }
+  log("[资源] 正在同步内置词条资源…");
+  try {
+    await call("SyncBuiltinResource");
+    builtinSyncFailed = false;
+    await reloadCSVContext();
+  } catch (err) {
+    builtinSyncFailed = true;
+    log(`[警告] 内置词条同步失败: ${describeError(err)}`, "warn");
+    if (!showOnPicker) {
+      log("[提示] 当前使用自定义词条目录，不受影响；改用内置词条时会在开始汉化前重试", "warn");
+    }
+  } finally {
+    setResourceSyncing(false);
+    if (showOnPicker) {
+      endCSVBusy();
+    }
+    clearCSVSyncState();
+    renderCSVMenu();
+  }
+}
+
 function createClientStatusItem(): HTMLDivElement {
-  const isGlobal = isGlobalLanguage(config.language);
   const item = document.createElement("div");
   item.className = "diag-item diag-item-actionable";
   const k = document.createElement("span");
@@ -1312,26 +2085,18 @@ function createClientStatusItem(): HTMLDivElement {
     let cls = "";
     if (clientStatus.status === "original") {
       cls = "ok";
-    } else if (clientStatus.status === "patched") {
-      cls = "patched";
     } else if (clientStatus.status === "modified" || clientStatus.status === "mismatch") {
       cls = "warn";
     } else if (clientStatus.label === "文件损坏" || clientStatus.label === "文件缺失") {
       cls = "err";
-    } else if (clientStatus.label === "未收录版本") {
+    } else if (clientStatus.status === "unknown") {
       cls = "warn";
-    } else if (clientStatus.status === "unsupported") {
-      cls = "muted";
     }
     v.className = `diag-v ${cls}`.trim();
     v.textContent = clientStatus.label;
     v.title = clientStatus.description;
     btn.textContent = "重测";
-    btn.style.display = clientStatus.status === "unsupported" ? "none" : "";
-  } else if (!isGlobal) {
-    v.className = "diag-v muted";
-    v.textContent = "无法校验";
-    btn.style.display = "none";
+    btn.style.display = "";
   } else {
     v.className = "diag-v";
     v.textContent = "未检测";
@@ -1440,10 +2205,6 @@ function renderGameInfo(): void {
     backupItem,
   ];
 
-  if (gameInfo.resourceTime) {
-    updateResourceBuildMeta(gameInfo.resourceTime, gameInfo.resourceHash);
-  }
-
   el.gameInfo.append(...items);
 }
 
@@ -1475,8 +2236,18 @@ function applyPreset(name: string, rerender = true): void {
   if (!bootstrap) {
     return;
   }
+  // 自定义范围保留当前勾选，只切换预设状态，具体表在详情页里挑。
+  if (name === "custom") {
+    config.preset = "custom";
+    el.preset.value = "custom";
+    updateScopeCount();
+    if (rerender) {
+      renderTables();
+    }
+    return;
+  }
   selected.clear();
-  const all = bootstrap.tableList;
+  const all = tableList();
   if (name === "all") {
     for (const entry of all) {
       selected.add(entry.key);
@@ -1492,20 +2263,33 @@ function applyPreset(name: string, rerender = true): void {
   }
   config.preset = name;
   el.preset.value = name;
-  el.mainPreset.value = name;
   updateScopeCount();
   if (rerender) {
     renderTables();
   }
 }
 
+// renderScopeSummary 让主界面的「选表范围」只呈现当前状态，
+// 进入详情页统一交给旁边的按钮，避免下拉项同时承担导航职责。
+function renderScopeSummary(): void {
+  const label =
+    config.preset === "all"
+      ? "全量汉化（全部数据表）"
+      : config.preset === "custom"
+        ? `自定义（已选 ${selected.size} 张）`
+        : "ACT兼容版（不汉化敌人名称）";
+  el.scopeSummary.textContent = label;
+  el.btnOpenTables.setAttribute("aria-label", `打开数据表清单，当前为${label}`);
+}
+
 function updateScopeCount(): void {
-  const total = bootstrap?.tableList.length ?? 0;
+  const total = tableList().length;
   const selCount = selected.size;
   const unselCount = total - selCount;
 
   el.countUnselected.textContent = String(unselCount);
   el.btnFilterUnselected.classList.toggle("has-alert", unselCount > 0);
+  renderScopeSummary();
 }
 
 function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""): HTMLTableRowElement {
@@ -1523,7 +2307,7 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
     setSelected(entry.key, checkbox.checked);
     tr.classList.toggle("selected", checkbox.checked);
     tr.classList.toggle("unselected", !checkbox.checked);
-    markCustomPreset();
+    syncPresetWithSelection();
     updateScopeCount();
   });
   tdCheck.append(checkbox);
@@ -1553,7 +2337,7 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
     setSelected(entry.key, next);
     tr.classList.toggle("selected", next);
     tr.classList.toggle("unselected", !next);
-    markCustomPreset();
+    syncPresetWithSelection();
     updateScopeCount();
   });
 
@@ -1571,7 +2355,7 @@ function renderTables(): void {
   const folderGroups = new Map<string, TableEntry[]>();
   const rootEntries: TableEntry[] = [];
 
-  for (const entry of bootstrap.tableList) {
+  for (const entry of tableList()) {
     const f = entry.folder ? entry.folder.trim() : "";
     if (!f || f === "root") {
       rootEntries.push(entry);
@@ -1644,7 +2428,7 @@ function renderTables(): void {
       for (const item of allEntriesInFolder) {
         setSelected(item.key, targetState);
       }
-      markCustomPreset();
+      syncPresetWithSelection();
       renderTables();
     });
 
@@ -1707,13 +2491,27 @@ function renderTables(): void {
   updateScopeCount();
 }
 
-function markCustomPreset(): void {
-  if (config.preset !== "custom") {
-    config.preset = "custom";
-    el.preset.value = "custom";
-    el.mainPreset.value = "custom";
-    void persistConfig();
+// syncPresetWithSelection 让预设跟随实际勾选结果：
+// 勾选恰好等于某个预设时归到该预设，否则标记为自定义。
+function syncPresetWithSelection(): void {
+  const all = tableList();
+  if (all.length === 0) {
+    return;
   }
+  const excluded = bootstrap?.excluded || ["BNpcName"];
+  let next = "custom";
+  if (all.every((entry) => selected.has(entry.key))) {
+    next = "all";
+  } else if (all.every((entry) => selected.has(entry.key) === !excluded.includes(entry.key))) {
+    next = "recommended";
+  }
+  if (config.preset === next) {
+    return;
+  }
+  config.preset = next;
+  el.preset.value = next;
+  updateScopeCount();
+  void persistConfig();
 }
 
 function wireEvents(): void {
@@ -1734,8 +2532,6 @@ function wireEvents(): void {
       void checkAppUpdate({ interactive: true });
     }
   });
-  el.btnImportOffline.addEventListener("click", () => void handleImportOfflineResource());
-  el.btnProvisionImportOffline.addEventListener("click", () => void handleImportOfflineResource());
 
   el.btnBrowse.addEventListener("click", async () => {
     if (busy) {
@@ -1805,6 +2601,8 @@ function wireEvents(): void {
     }
 
     void persistConfig();
+    // 词条目录按区服保存，切换区服后同步该区服的目录列表与表清单
+    await reloadCSVContext();
     await refreshGameInfo();
     void checkClientEnvironment();
   });
@@ -1829,15 +2627,10 @@ function wireEvents(): void {
     void persistConfig();
   });
 
-  el.mainPreset.addEventListener("change", () => {
+  el.btnOpenTables.addEventListener("click", () => {
     if (busy) {
       return;
     }
-    applyPreset(el.mainPreset.value, true);
-    void persistConfig();
-  });
-
-  el.btnOpenTables.addEventListener("click", () => {
     switchView("tables");
   });
 
@@ -1853,8 +2646,21 @@ function wireEvents(): void {
     e.stopPropagation();
   });
 
+  el.csvTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (busy) {
+      return;
+    }
+    toggleCSVMenu();
+  });
+
+  el.csvMenu.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
   document.addEventListener("click", () => {
     toggleTargetLangMenu(false);
+    toggleCSVMenu(false);
   });
 
   el.btnBackWorkbench.addEventListener("click", () => {
@@ -1880,7 +2686,7 @@ function wireEvents(): void {
     if (!bootstrap) {
       return;
     }
-    for (const entry of bootstrap.tableList) {
+    for (const entry of tableList()) {
       if (entry.folder && entry.folder !== "root") {
         expandedFolders.add(entry.folder);
       }
@@ -1893,7 +2699,6 @@ function wireEvents(): void {
       return;
     }
     applyPreset("all", true);
-    markCustomPreset();
   });
 
   el.btnSelectNone.addEventListener("click", () => {
@@ -1901,9 +2706,8 @@ function wireEvents(): void {
       return;
     }
     selected.clear();
-    updateScopeCount();
+    syncPresetWithSelection();
     renderTables();
-    markCustomPreset();
   });
 
   el.btnClearLog.addEventListener("click", () => {
@@ -2017,6 +2821,14 @@ function wireEvents(): void {
       log("[错误] 请至少勾选“替换文本”或“替换游戏字体”。", "error");
       return;
     }
+    if (config.replaceText && !csvSelectionValid()) {
+      if ((bootstrap?.csv.tableList.length ?? 0) === 0) {
+        log("[错误] 本地缺少表清单（tables.json），请联网后重试。", "error");
+      } else {
+        log("[错误] 当前词条目录已失效，请重新选择或删除后再开始汉化。", "error");
+      }
+      return;
+    }
     if (config.replaceText && selected.size === 0) {
       log("[错误] 已勾选“替换文本”，但汉化范围中未选择任何数据表。", "error");
       return;
@@ -2057,6 +2869,8 @@ function wireEvents(): void {
       for (const w of resp.warnings ?? []) {
         log(`[警告] ${w}`, "warn");
       }
+      // 之前同步失败过的话，这次开始汉化前已经重试通过。
+      builtinSyncFailed = false;
       el.progressBar.style.width = "100%";
       try {
         clientStatus = await call("CheckClientStatus", currentGameDir(), config.language);
@@ -2064,6 +2878,7 @@ function wireEvents(): void {
         // 忽略静默更新失败
       }
       await refreshGameInfo();
+      await reloadCSVContext();
     } catch (error) {
       log(`汉化失败: ${describeError(error)}`, "error");
     } finally {
@@ -2071,6 +2886,7 @@ function wireEvents(): void {
       isStopping = false;
       el.btnPatch.classList.remove("is-patching", "is-stopping");
       if (el.btnPatchText) el.btnPatchText.textContent = "开始汉化";
+      clearCSVSyncState();
       setBusy(false);
     }
   });
@@ -2081,12 +2897,6 @@ function wireRuntimeEvents(): void {
   if (!on) {
     return;
   }
-
-  on("resource-offline", (offline: unknown, reason?: unknown) => {
-    const isOff = typeof offline === "boolean" ? offline : true;
-    const reasonStr = typeof reason === "string" && reason ? reason : undefined;
-    setOfflineState(isOff, reasonStr);
-  });
 
   // 自更新进度：下载阶段显示百分比，替换与重启阶段只更新提示文案。
   on("app-update-progress", (data: unknown) => {
@@ -2102,30 +2912,50 @@ function wireRuntimeEvents(): void {
     el.busyIndicator.textContent = ev.detail ? `${ev.detail}…` : "正在更新…";
   });
 
+  // 制作副本要逐个创建 7114 个 CSV（约 2.7 秒），进度同样压在选择器上。
+  on("csv-copy-progress", (data: unknown) => {
+    const ev = asProgress(data);
+    if (!csvBusyText || ev.total <= 0) return;
+    const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
+    el.csvSummary.textContent = `${ev.detail || "制作副本"} ${pct.toFixed(0)}%`;
+    el.csvSyncBar.classList.remove("is-pending");
+    el.csvSyncBar.style.width = `${pct.toFixed(1)}%`;
+  });
+
+  // 资源同步的进度直接压在内置词条选择器上；汉化期间的进度同时走顶部进度条。
   let pendingResourceProgress: PatchProgressEvent | null = null;
   let resourceRafId = 0;
   on("resource-progress", (data: unknown) => {
     const ev = asProgress(data);
-    if (ev.stage === "rawexd" || ev.stage === "font" || ev.stage === "meta" || ev.stage === "done") {
-      setOfflineState(false);
-    }
     pendingResourceProgress = ev;
     if (!resourceRafId) {
       resourceRafId = requestAnimationFrame(() => {
         resourceRafId = 0;
-        if (!pendingResourceProgress) return;
         const current = pendingResourceProgress;
-        switchView("provisioning");
-        el.provisionDetail.textContent = current.detail || current.stage || "正在准备汉化资源包…";
+        if (!current) return;
+        if (!isPatching && !syncingResource) return;
+        // 内置词条的同步进度直接压在选择器文字上，文案用后端给的当前阶段。
+        if (!bootstrap?.csv.selected) {
+          el.csvTrigger.classList.add("is-syncing");
+          const detail = current.detail || "同步词条";
+          if (current.total > 0) {
+            const pct = Math.min(100, Math.max(0, (current.done / current.total) * 100));
+            el.csvSummary.textContent = `${detail} ${pct.toFixed(0)}%`;
+            el.csvSyncBar.classList.remove("is-pending");
+            el.csvSyncBar.style.width = `${pct.toFixed(1)}%`;
+          } else {
+            el.csvSummary.textContent = `${detail}…`;
+            el.csvSyncBar.classList.add("is-pending");
+          }
+        }
+        if (!isPatching) return;
         if (current.total > 0) {
           const pct = Math.min(100, Math.max(0, (current.done / current.total) * 100));
-          el.provisionProgressBar.style.width = `${pct.toFixed(1)}%`;
-          const doneMb = (current.done / 1024 / 1024).toFixed(1);
-          const totalMb = (current.total / 1024 / 1024).toFixed(1);
-          el.provisionMeta.textContent = `${doneMb} MB / ${totalMb} MB (${pct.toFixed(0)}%)`;
+          el.progressBar.style.width = `${pct.toFixed(1)}%`;
+          el.busyIndicator.textContent = `同步资源：${current.detail || "请稍候"} ${pct.toFixed(0)}%`;
+          el.actionProgressPercent.textContent = `${pct.toFixed(0)}%`;
         } else {
-          el.provisionProgressBar.style.width = "100%";
-          el.provisionMeta.textContent = "正在处理解压与哈希校验…";
+          el.busyIndicator.textContent = `同步资源：${current.detail || "请稍候…"}`;
         }
       });
     }
@@ -2207,6 +3037,16 @@ function wireRuntimeEvents(): void {
   on("patch-log", (msg: unknown) => {
     if (typeof msg === "string") {
       log(msg);
+    }
+  });
+
+  on("unknown-confirm", async (prompt: unknown) => {
+    const text = typeof prompt === "string" ? prompt : "当前游戏版本在云端尚未收录原版备份，无法保证当前客户端文件是官方原版，继续汉化可能导致异常或封号风险。是否仍要继续汉化？";
+    const ok = await showConfirm("未知版本提示", text, "仍要继续汉化");
+    try {
+      await call("AnswerUnknownConfirm", ok);
+    } catch (error) {
+      log(`确认反馈失败: ${describeError(error)}`, "error");
     }
   });
 

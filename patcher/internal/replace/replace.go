@@ -30,9 +30,11 @@ type Options struct {
 	SkipFiles       string   // 与旧版 conf 一致，使用 | 分隔
 	// IncludeFiles 非空时，只替换其中列出的表（键为小写的 "exd/..." 路径，不含扩展名）。
 	IncludeFiles map[string]bool
-	Rules        *pipeline.Registry
-	Progress     func(done, total int, file string)
-	Log          func(format string, args ...any)
+	// QuietMissingCSV 为真时，CSV 文件缺失不再逐表记录日志，用于用户自选词条目录的场景。
+	QuietMissingCSV bool
+	Rules           *pipeline.Registry
+	Progress        func(done, total int, file string)
+	Log             func(format string, args ...any)
 }
 
 // Stats 记录替换统计。
@@ -145,7 +147,10 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 		csvPath := filepath.Join(opts.CSVResourceDir, filepath.FromSlash(csvRel)+".csv")
 		offsetMap, dataMap, err := loadCSV(csvPath)
 		if err != nil {
-			opts.Log("跳过 %s: %v", exhPath, err)
+			// 自定义词条目录允许只包含部分表，缺文件属于预期情况，不逐表刷日志。
+			if !(opts.QuietMissingCSV && errors.Is(err, os.ErrNotExist)) {
+				opts.Log("跳过 %s: %v", exhPath, err)
+			}
 			continue
 		}
 

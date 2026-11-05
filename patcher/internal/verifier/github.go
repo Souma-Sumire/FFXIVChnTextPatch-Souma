@@ -77,6 +77,11 @@ func (r *Release) AssetSHA256(name string) (string, bool) {
 	if !ok {
 		return "", false
 	}
+	// linkZipAliases 造出的别名指向 .zip 附件：其 digest 是压缩包自身的哈希，
+	// 不等于解压后原文件的哈希，不能拿来当权威哈希比对。
+	if asset.Name != name {
+		return "", false
+	}
 	const prefix = "sha256:"
 	if !strings.HasPrefix(asset.Digest, prefix) {
 		return "", false

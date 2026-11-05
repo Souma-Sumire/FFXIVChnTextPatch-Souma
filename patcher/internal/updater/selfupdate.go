@@ -45,6 +45,10 @@ func PrepareAppUpdate(ctx context.Context, cloud verifier.Cloud, info *AppUpdate
 	if info == nil || info.DownloadURL == "" {
 		return "", errors.New("未找到可用的更新下载地址")
 	}
+	if info.DownloadSHA256 == "" {
+		// 没有发布方哈希时只剩「大小下限 + PE 头」这种弱校验，不足以放行就地替换主程序。
+		return "", errors.New("云端未提供更新包的校验哈希，已中止自动更新以避免替换未经校验的程序；请前往发布页面手动下载")
+	}
 	if target == "" {
 		return "", errors.New("无法定位当前程序所在路径")
 	}

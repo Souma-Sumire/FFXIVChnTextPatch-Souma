@@ -12,29 +12,6 @@
 <body>
   <div id="app" class="app-root">
 
-    <section id="view-provisioning" class="fullscreen-view view-provisioning hidden">
-      <div class="provision-body">
-        <svg class="provision-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="7 10 12 15 17 10" />
-          <line x1="12" y1="15" x2="12" y2="3" />
-        </svg>
-        <h1 class="provision-title">正在准备汉化资源</h1>
-        <p id="provision-detail" class="provision-detail">正在连接资源清单与镜像服务器…</p>
-        <div class="progress-track provision-track">
-          <div id="provision-progress-bar" class="progress-bar"></div>
-        </div>
-        <p id="provision-meta" class="provision-meta">首次启动需下载游戏文本与字体资源，完成后自动进入工作台</p>
-        <div id="provision-offline-wrap" class="provision-actions hidden">
-          <button id="btn-provision-import-offline" class="btn btn-secondary btn-sm" type="button">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>导入离线资源包 (*.zip)</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
     <section id="view-workbench" class="fullscreen-view view-workbench">
       <div class="workbench-body">
         <main class="workbench-main">
@@ -93,25 +70,27 @@
                 <span class="content-toggle-title">文本数据</span>
               </label>
 
+              <div id="csv-picker" class="csv-picker">
+                <span class="csv-picker-label">词条目录</span>
+                <div class="multiselect csv-multiselect">
+                  <button type="button" id="csv-select-trigger" class="select csv-select-trigger" aria-haspopup="listbox"
+                    aria-expanded="false">
+                    <span id="csv-select-summary">内置词条</span>
+                    <span id="csv-sync-bar" class="csv-sync-bar" aria-hidden="true"></span>
+                  </button>
+                  <div id="csv-select-menu" class="multiselect-menu csv-menu hidden" role="listbox"></div>
+                </div>
+              </div>
+
               <div class="row-control scope-control">
-                <select id="main-preset" class="select scope-select">
-                  <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
-                  <option value="all">全量汉化（全部数据表）</option>
-                  <option value="custom">自定义范围</option>
-                </select>
-                <button id="btn-open-tables" class="btn btn-scope-trigger" type="button">
-                  <span>查看详情</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                <span class="scope-label">选表范围</span>
+                <button type="button" id="btn-open-tables" class="scope-open">
+                  <span id="scope-summary" class="scope-open-text">ACT兼容版（不汉化敌人名称）</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
                 </button>
-              </div>
-
-              <div id="resource-build-meta" class="row-meta">
-                <span class="row-meta-label">词条构建时间</span>
-                <span id="resource-build-time" class="meta-tag">--</span>
-                <button id="btn-import-offline" class="btn btn-quiet btn-xs hidden" type="button" title="从本地 ZIP 压缩包或目录导入离线汉化资源包">导入离线包</button>
               </div>
             </div>
 
@@ -131,7 +110,7 @@
             </div>
           </section>
 
-          <section class="form-section">
+          <section class="form-section" id="extended-section">
             <h2 class="section-title">
               <svg class="section-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
               <span>扩展功能</span>
@@ -147,7 +126,7 @@
             <div class="log-head-left">
               <span class="log-title">执行日志</span>
               <button id="version-badge" class="app-version app-version-btn" type="button" title="点击检查主程序更新">v--</button>
-              <button id="btn-app-update" class="btn-app-update hidden" type="button" title="发现新版本，点击查看">
+              <button id="btn-app-update" class="btn-app-update hidden" type="button">
                 <span class="update-dot" aria-hidden="true"></span>
                 <span>新版本</span>
               </button>
@@ -240,7 +219,7 @@
             <select id="preset" class="select preset-select">
               <option value="recommended">ACT兼容版（不汉化敌人名称）</option>
               <option value="all">全量汉化（全部数据表）</option>
-              <option value="custom">自定义范围</option>
+              <option value="custom" hidden>自定义范围</option>
             </select>
           </div>
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"archive/zip"
 	"context"
 	"encoding/json"
 	"os"
@@ -106,17 +105,29 @@ func TestCheckClientStatusOriginalNoBackup(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	textHash, _ := verifier.HashFile(filepath.Join(sqpackDir, "0a0000.win32.index"))
+	fontHash, _ := verifier.HashFile(filepath.Join(sqpackDir, "000000.win32.index"))
+
 	app := NewApp()
 	app.skipProcessCheck = true
-	app.cloudOverride = &mockCloud{}
+	app.cloudOverride = &mockCloud{
+		releases: map[string]*verifier.Release{
+			"2026.10.16.0000.0000": {
+				Tag: "2026.10.16.0000.0000",
+				FileHashes: map[string]string{
+					"0a0000.win32.index": textHash.SHA256,
+					"000000.win32.index": fontHash.SHA256,
+				},
+			},
+		},
+	}
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
-	app.skipProcessCheck = true
 	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
 	if err != nil {
 		t.Fatalf("CheckClientStatus 失败: %v", err)
 	}
 	if status.Status != "original" {
-		t.Fatalf("无本地备份时数据包完整的客户端应判定为 original，实际为 %s (label=%s, desc=%s)",
+		t.Fatalf("云端有收录且哈希一致时应判定为 original，实际为 %s (label=%s, desc=%s)",
 			status.Status, status.Label, status.Description)
 	}
 }
@@ -150,29 +161,24 @@ func TestCheckClientStatusPatched(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	textHash, _ := verifier.HashFile(textIndexPath)
-	fontHash, _ := verifier.HashFile(fontIndexPath)
-	rec := PatchedRecord{
-		GameDir:     gameDir,
-		Version:     "2026.10.16.0000.0000",
-		Language:    "GLOBAL",
-		ReplaceText: true,
-		ReplaceFont: true,
+	meta := verifier.BackupMeta{
+		Region:  "GLOBAL",
+		Version: "2026.10.16.0000.0000",
 		Files: map[string]verifier.FileHash{
-			"0a0000.win32.index": textHash,
-			"000000.win32.index": fontHash,
+			"0a0000.win32.index": {SHA256: "different-hash", Size: 100},
 		},
 	}
-	if err := app.savePatchedRecord(rec); err != nil {
-		t.Fatal(err)
-	}
+	backupDir := filepath.Join(backupRootFor(app.resourceDirOverride), "GLOBAL")
+	_ = os.MkdirAll(backupDir, 0o755)
+	metaData, _ := json.Marshal(meta)
+	_ = os.WriteFile(filepath.Join(backupDir, "meta.json"), metaData, 0o644)
 
 	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
 	if err != nil {
 		t.Fatalf("CheckClientStatus 失败: %v", err)
 	}
-	if status.Status != "patched" {
-		t.Fatalf("匹配汉化记录时应判定为 patched，实际为 %s (%s)", status.Status, status.Label)
+	if status.Status != "modified" {
+		t.Fatalf("与备份不匹配时应判定为 modified，实际为 %s (%s)", status.Status, status.Label)
 	}
 }
 
@@ -234,8 +240,8 @@ func TestCheckClientStatusNonGlobalUnsupported(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s CheckClientStatus 失败: %v", lang, err)
 		}
-		if status.Status != "unsupported" {
-			t.Fatalf("%s 状态应为 unsupported，实际为 %s", lang, status.Status)
+		if status.Status != "unknown" {
+			t.Fatalf("%s 无备份时状态应为 unknown，实际为 %s", lang, status.Status)
 		}
 	}
 }
@@ -260,7 +266,7 @@ func TestRestoreOriginalNonGlobalWithoutCloudDownload(t *testing.T) {
 		if err == nil {
 			t.Fatalf("%s 本地无备份时 RestoreOriginal 应该报错，但返回成功", lang)
 		}
-		if !strings.Contains(err.Error(), "没有本地原文件备份") {
+		if !strings.Contains(err.Error(), "原版备份") {
 			t.Fatalf("%s 错误信息不符合预期: %v", lang, err)
 		}
 	}
@@ -360,33 +366,27 @@ func TestCheckClientStatusNonGlobalPatched(t *testing.T) {
 	if err := os.WriteFile(textIndexPath, sqpack.CreateMockIndex("exd", "addon_0_tc.exd"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	textHash, _ := verifier.HashFile(textIndexPath)
-
 	app := NewApp()
 	app.skipProcessCheck = true
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
-	if err := os.MkdirAll(app.resourceDirOverride, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	rec := PatchedRecord{
-		GameDir:     gameDir,
-		Version:     "2026.10.16.0000.0000",
-		Language:    "TC",
-		ReplaceText: true,
+	meta := verifier.BackupMeta{
+		Region:  "TC",
+		Version: "2026.10.16.0000.0000",
 		Files: map[string]verifier.FileHash{
-			"0a0000.win32.index": textHash,
+			"0a0000.win32.index": {SHA256: "different-hash", Size: 100},
 		},
 	}
-	if err := app.savePatchedRecord(rec); err != nil {
-		t.Fatal(err)
-	}
+	backupDir := filepath.Join(backupRootFor(app.resourceDirOverride), "TC")
+	_ = os.MkdirAll(backupDir, 0o755)
+	metaData, _ := json.Marshal(meta)
+	_ = os.WriteFile(filepath.Join(backupDir, "meta.json"), metaData, 0o644)
 
 	status, err := app.CheckClientStatus(gameDir, "TC")
 	if err != nil {
 		t.Fatalf("CheckClientStatus 失败: %v", err)
 	}
-	if status.Status != "patched" {
-		t.Fatalf("繁中服在已汉化时应判定为 patched，实际为 %s (%s)", status.Status, status.Label)
+	if status.Status != "modified" {
+		t.Fatalf("繁中服与备份不匹配时应判定为 modified，实际为 %s (%s)", status.Status, status.Label)
 	}
 }
 
@@ -599,48 +599,13 @@ func TestCheckClientStatusRegionMismatch(t *testing.T) {
 	}
 }
 
-func TestCheckClientStatusPatchedRecordRegionMismatchIgnored(t *testing.T) {
-	tmpDir := t.TempDir()
-	gameDir := filepath.Join(tmpDir, "game_root")
-	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
-	_ = os.MkdirAll(sqpackDir, 0o755)
-	_ = os.WriteFile(filepath.Join(gameDir, "game", "ffxivgame.ver"), []byte("2026.10.16.0000.0000"), 0o644)
-	_ = createMinimalIndexFile(filepath.Join(sqpackDir, "0a0000.win32.index"))
 
-	textHash, _ := verifier.HashFile(filepath.Join(sqpackDir, "0a0000.win32.index"))
-
-	app := NewApp()
-	app.skipProcessCheck = true
-	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
-	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
-
-	// 记录为 GLOBAL 汉化
-	rec := PatchedRecord{
-		GameDir:     gameDir,
-		Version:     "2026.10.16.0000.0000",
-		Language:    "GLOBAL",
-		ReplaceText: true,
-		Files: map[string]verifier.FileHash{
-			"0a0000.win32.index": textHash,
-		},
-	}
-	_ = app.savePatchedRecord(rec)
-
-	// 切换到 CHS 查看，不应被识别为已汉化
-	status, err := app.CheckClientStatus(gameDir, "CHS")
-	if err != nil {
-		t.Fatalf("CheckClientStatus 失败: %v", err)
-	}
-	if status.Status == "patched" {
-		t.Fatalf("跨区服时不应套用其他区服的汉化记录，但返回了 patched: %+v", status)
-	}
-}
 
 func TestCheckGameNotRunning(t *testing.T) {
 	tmpDir := t.TempDir()
 	app := NewApp()
 	app.skipProcessCheck = true
-	if err := app.checkGameNotRunning(tmpDir); err != nil {
+	if err := app.checkGameNotRunning(context.Background(), tmpDir); err != nil {
 		t.Fatalf("App.checkGameNotRunning 在跳过进程检查时不应报错: %v", err)
 	}
 }
@@ -723,46 +688,6 @@ func TestAppInstallAppUpdateBlockedWhileBusy(t *testing.T) {
 	}
 	if err := app.RestartApp(); err == nil {
 		t.Fatal("任务进行中不应允许重启程序")
-	}
-}
-
-func TestAppImportOfflineResource(t *testing.T) {
-	tmpDir := t.TempDir()
-	zipPath := filepath.Join(tmpDir, "pack.zip")
-	resDir := filepath.Join(tmpDir, "app_res")
-
-	f, err := os.Create(zipPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	w := zip.NewWriter(f)
-	files := map[string]string{
-		"resource/manifest.json":   `{"generatedAt":"2026-11-02T10:00:00Z","rawexd":{"sha256":"1234","size":50}}`,
-		"resource/tables.json":     `{"files":["Item"],"tables":{"Item":"道具"}}`,
-		"resource/rawexd/Item.csv": "key,0,1\n1,测试,1",
-	}
-	for name, content := range files {
-		fw, err := w.Create(name)
-		if err != nil {
-			t.Fatal(err)
-		}
-		_, _ = fw.Write([]byte(content))
-	}
-	_ = w.Close()
-	f.Close()
-
-	app := NewApp()
-	app.resourceDirOverride = resDir
-
-	res, err := app.ImportOfflineResource(zipPath)
-	if err != nil {
-		t.Fatalf("ImportOfflineResource 失败: %v", err)
-	}
-	if !res.Success {
-		t.Fatalf("期望导入成功")
-	}
-	if res.TableCount != 1 {
-		t.Fatalf("期望数据表数量为 1，实际为 %d", res.TableCount)
 	}
 }
 
@@ -869,7 +794,7 @@ func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
 	app := NewApp()
 	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
 
-	backupDir := filepath.Join(tmpDir, "backup", "chs")
+	backupDir := filepath.Join(backupRootFor(app.resourceDirOverride), "chs")
 	if err := os.MkdirAll(backupDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -882,7 +807,7 @@ func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
 		t.Fatal(err)
 	}
 	meta := verifier.BackupMeta{
-		Region:  "chs",
+		Region:  "china",
 		Version: version,
 		Files: map[string]verifier.FileHash{
 			"0a0000.win32.index": textHash,
@@ -901,8 +826,8 @@ func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckClientStatus 失败: %v", err)
 	}
-	if status.Status != "unsupported" {
-		t.Fatalf("非国际服应始终不支持原版检测，实际为 %s (%s)", status.Status, status.Description)
+	if status.Status != "original" {
+		t.Fatalf("非国际服有本地备份且匹配时应为 original，实际为 %s (%s)", status.Status, status.Description)
 	}
 }
 
