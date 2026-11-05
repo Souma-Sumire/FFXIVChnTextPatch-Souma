@@ -43,9 +43,6 @@ type Manifest struct {
 	Rules       BundleInfo          `json:"rules"`
 	Tables      BundleInfo          `json:"tables"`
 	Fonts       map[string]FileInfo `json:"fonts"`
-	// LocalFingerprint 仅在离线包缺少 .zip 包文件时按已解压内容计算，
-	// 只是本地标识，与发布清单里的 bundle 哈希不可比，也不参与云端比对。
-	LocalFingerprint string `json:"localFingerprint,omitempty"`
 }
 
 // DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像，已实测可用）。
@@ -68,7 +65,16 @@ type Updater struct {
 	Nodes         []string
 	preferredNode string
 	mu            sync.RWMutex
+
+	// 同一次启动里表清单与资源同步各请求一次，缓存几十秒可省掉重复的网络往返。
+	manifestMu     sync.Mutex
+	manifestCache  *Manifest
+	manifestCached time.Time
 }
+
+// manifestCacheTTL 是清单缓存的有效期：只用于合并同一次启动内的重复请求，
+// 不做跨启动复用，保证每次运行都会向云端确认真实版本。
+const manifestCacheTTL = 30 * time.Second
 
 // New 创建默认同步器。
 func New() *Updater {
@@ -104,6 +110,22 @@ func (u *Updater) httpClient() *http.Client {
 	return http.DefaultClient
 }
 
+func (u *Updater) cachedManifest() *Manifest {
+	u.manifestMu.Lock()
+	defer u.manifestMu.Unlock()
+	if u.manifestCache == nil || time.Since(u.manifestCached) > manifestCacheTTL {
+		return nil
+	}
+	return u.manifestCache
+}
+
+func (u *Updater) cacheManifest(m *Manifest) {
+	u.manifestMu.Lock()
+	u.manifestCache = m
+	u.manifestCached = time.Now()
+	u.manifestMu.Unlock()
+}
+
 func (u *Updater) nodes() []string {
 	u.mu.RLock()
 	pref := u.preferredNode
@@ -128,7 +150,11 @@ func (u *Updater) nodes() []string {
 }
 
 // FetchManifest 并发向所有节点发起请求，首个成功且合法的清单直接胜出并返回。
+// 同一进程内 30 秒内重复调用会复用上一次的结果。
 func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
+	if m := u.cachedManifest(); m != nil {
+		return m, nil
+	}
 	nodes := u.nodes()
 	if len(nodes) == 0 {
 		return nil, errors.New("没有可用的下载节点")
@@ -190,6 +216,7 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 			if res.manifest != nil {
 				cancel()
 				u.SetPreferredNode(res.node)
+				u.cacheManifest(res.manifest)
 				return res.manifest, nil
 			}
 			lastErr = res.err

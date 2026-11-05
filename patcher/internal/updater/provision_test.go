@@ -118,7 +118,7 @@ func TestProvisionDownloadsFullResource(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Provision 失败: %v", err)
 	}
-	if !status.Updated || status.Offline {
+	if !status.Updated {
 		t.Fatalf("首次应下载资源: %+v", status)
 	}
 	for key, want := range files {
@@ -152,7 +152,7 @@ func TestProvisionSkipsWhenUpToDate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Provision 失败: %v", err)
 	}
-	if status.Updated || status.Offline {
+	if status.Updated {
 		t.Fatalf("资源已是最新时不应更新: %+v", status)
 	}
 	if got := node.hits.Load(); got != before {
@@ -185,7 +185,8 @@ func TestProvisionRepairsMissingFile(t *testing.T) {
 	}
 }
 
-func TestProvisionOfflineWithLocalResource(t *testing.T) {
+// 不支持离线使用：即使本地资源完整，拿不到云端清单也必须报错。
+func TestProvisionOfflineWithLocalResourceFails(t *testing.T) {
 	node, _ := provisionFixture(t)
 	dir := t.TempDir()
 	if _, err := node.updater().Provision(context.Background(), dir, nil); err != nil {
@@ -196,12 +197,8 @@ func TestProvisionOfflineWithLocalResource(t *testing.T) {
 		HTTP:  node.updater().HTTP,
 		Nodes: []string{"http://127.0.0.1:1/resource/"},
 	}
-	status, err := offline.Provision(context.Background(), dir, nil)
-	if err != nil {
-		t.Fatalf("本地资源完整时应进入离线模式: %v", err)
-	}
-	if !status.Offline || status.Updated {
-		t.Fatalf("离线状态不正确: %+v", status)
+	if _, err := offline.Provision(context.Background(), dir, nil); err == nil {
+		t.Fatal("无法获取云端清单时应返回错误，不能继续使用本地资源")
 	}
 }
 
@@ -223,6 +220,14 @@ func TestModulesCompleteDetectsCorruptedFont(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(dir, "rawexd"), 0o755); err != nil {
 		t.Fatal(err)
 	}
+	zipData := buildTestZip(t, map[string]string{"rawexd/A.csv": "csv-a"})
+	zipPath := filepath.Join(dir, "rawexd.zip")
+	if err := os.WriteFile(zipPath, zipData, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := ExtractZip(zipPath, dir); err != nil {
+		t.Fatal(err)
+	}
 	fontPath := filepath.Join(dir, "font", "A.fdt")
 	if err := os.MkdirAll(filepath.Dir(fontPath), 0o755); err != nil {
 		t.Fatal(err)
@@ -234,7 +239,7 @@ func TestModulesCompleteDetectsCorruptedFont(t *testing.T) {
 	goodHash := sha256.Sum256([]byte("good"))
 	mf := &Manifest{
 		GeneratedAt: "2026-11-01T00:00:00Z",
-		RawEXD:      BundleInfo{SHA256: "raw"},
+		RawEXD:      bundleOfBytes(zipData, 1),
 		Font:        BundleInfo{SHA256: "font"},
 		Rules:       BundleInfo{SHA256: "rules"},
 		Tables:      BundleInfo{SHA256: "tables"},
