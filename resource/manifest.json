@@ -1,0 +1,232 @@
+{
+  "generatedAt": "2026-11-06T00:13:25Z",
+  "rootHash": "e81169487788c8a32121f00cf6b16972d1806bf6431cbc9637517448d86ac16f",
+  "rawexd": {
+    "sha256": "fa0ac2307bdab7d6ff0c8d418a81e1383af837ac688c5869b0b991362c98247e",
+    "size": 28331938,
+    "count": 7114
+  },
+  "font": {
+    "sha256": "1360c64ea75e31ec243059581da25482cbee053d57ef27325be6fd05e053bd7b",
+    "size": 26902246,
+    "count": 52
+  },
+  "rules": {
+    "sha256": "b954b300a4ba2ef1ec4a4c5fbe9926dccad6018c7ed96db980c408292ceb283d",
+    "size": 1602
+  },
+  "tables": {
+    "sha256": "8ab57d7b1dc103280094fa1f3e720deab7c5d33ddb035f5253485ab7770f5269",
+    "size": 261191
+  },
+  "fonts": {
+    "font/AXIS_12.fdt": {
+      "sha256": "89843af303462d6ac3d8446924879e83a6268458552d7ac0e124daa5cc43e679",
+      "size": 356976
+    },
+    "font/AXIS_12_lobby.fdt": {
+      "sha256": "03ea190dd4223b3c7db13ba269e2a9636422f43d6e2247474ce86bd5417c2ff6",
+      "size": 196624
+    },
+    "font/AXIS_14.fdt": {
+      "sha256": "f53a1905f9d4eadea060dd65f4a3a7ba811a0639e00e38488208267e9f3796f8",
+      "size": 357024
+    },
+    "font/AXIS_14_lobby.fdt": {
+      "sha256": "2c9a60fc0ec119349a2fdee8d50de52d1b19fdf1d8ed34f5436b28b2b1a7b31d",
+      "size": 196672
+    },
+    "font/AXIS_18.fdt": {
+      "sha256": "d91a5e5b5c6acbf76e0a816b51f5529b38c98af6993967a5798cfb0aee2b161a",
+      "size": 357296
+    },
+    "font/AXIS_18_lobby.fdt": {
+      "sha256": "eed2596d7ae68032ca8b94783adbb8d3a299a06b368d7f4ea76cac8169c788bd",
+      "size": 196944
+    },
+    "font/AXIS_36.fdt": {
+      "sha256": "ad0d418709c3d7984fceb3e1cdfb4c25334379f3d2deddbc323b5c807846247e",
+      "size": 357344
+    },
+    "font/AXIS_36_lobby.fdt": {
+      "sha256": "9776a5a386349113dd78d8e99036bc1c3ee351cc9ae232054199e444ed710e1e",
+      "size": 196992
+    },
+    "font/AXIS_96.fdt": {
+      "sha256": "2bdff70ea67be64b608a01ce44f3f95a6d93e599f3888df38af1066394fa31f2",
+      "size": 356976
+    },
+    "font/Jupiter_16.fdt": {
+      "sha256": "73be0d022b83eafdd3fd552c3f595074779067f81649fa2eb04a2fe8472b1148",
+      "size": 357024
+    },
+    "font/Jupiter_16_lobby.fdt": {
+      "sha256": "144e9d507abdf314041df1f3a87e94327ec6a5229509d1c3dec8da5296522eca",
+      "size": 50032
+    },
+    "font/Jupiter_20.fdt": {
+      "sha256": "241a50b8cf7011dbce56c1869b437fa83fde0b74c397898a4d06f99a09e10549",
+      "size": 357296
+    },
+    "font/Jupiter_20_lobby.fdt": {
+      "sha256": "3daff5fa3f09aaedbe66f5afceebf4ab50d751a8865cbcd493829703e3a09270",
+      "size": 55616
+    },
+    "font/Jupiter_23.fdt": {
+      "sha256": "fdf41727e629b2511af7773f92e906e921bdea50b21cdb91b5df96315209085e",
+      "size": 357296
+    },
+    "font/Jupiter_23_lobby.fdt": {
+      "sha256": "4d3454b3408ed814d631db5e3f62f7ea78647d5e595339994ac842a53c152e80",
+      "size": 55616
+    },
+    "font/Jupiter_45.fdt": {
+      "sha256": "747b52fe42d756729a6807850d5b846ab7b2fa4d22c270bff223b8728caec64c",
+      "size": 357344
+    },
+    "font/Jupiter_45_lobby.fdt": {
+      "sha256": "816bc27c4bcb7719202bc28e179be4133b5aba4e8ef6db5783a235ffef434b18",
+      "size": 33536
+    },
+    "font/Jupiter_46.fdt": {
+      "sha256": "cb593331813ca324685792b05b44257482147a4fbe53e3b3be54ba45ada961e9",
+      "size": 357344
+    },
+    "font/Jupiter_46_lobby.fdt": {
+      "sha256": "3eeed8855d65635a4b1ae76e05d034625fbe0025115a751279f3cdbf59eab7cd",
+      "size": 61520
+    },
+    "font/Jupiter_90.fdt": {
+      "sha256": "a56e410dd0558f392a2efff7dcae417cd454f85d421d62514acfb759bf739ae5",
+      "size": 357344
+    },
+    "font/Jupiter_90_lobby.fdt": {
+      "sha256": "a2d5934434f1e53b5a58a868269b3cccabb3fcb6bf26f3e26f1d51ca1e56360d",
+      "size": 33536
+    },
+    "font/Meidinger_16.fdt": {
+      "sha256": "4ddbc2883a1d72c0d8691a797eea26380b184dab3d3f9af275020dd69cc4d165",
+      "size": 357024
+    },
+    "font/Meidinger_16_lobby.fdt": {
+      "sha256": "401c8cea99a7ca4db5f94fb27c35364d4d7217f55d1200ebb5a9164f0039a1ea",
+      "size": 33216
+    },
+    "font/Meidinger_20.fdt": {
+      "sha256": "89c3319be0e64a1ffa0e8308d0a11db8b896e7d2ea17e703868e338259c96d31",
+      "size": 357296
+    },
+    "font/Meidinger_20_lobby.fdt": {
+      "sha256": "cd16bf741d11ccfecda86ccf8acd03abb1e60bbc5dce99bbfd45a9658451b880",
+      "size": 33488
+    },
+    "font/Meidinger_40.fdt": {
+      "sha256": "7acda651135e591a4330a9070a049d0d7f85771b9f9e57932ab42239e5156e56",
+      "size": 357344
+    },
+    "font/Meidinger_40_lobby.fdt": {
+      "sha256": "eac9debb411a1e1675000e8416edf822c06d63d0218ba0d24cbf35521946ed21",
+      "size": 33536
+    },
+    "font/MiedingerMid_10.fdt": {
+      "sha256": "a406964c46b1619559f93ddb639696be3aec45aaca307b86657709427783f93b",
+      "size": 356976
+    },
+    "font/MiedingerMid_10_lobby.fdt": {
+      "sha256": "097c2d8aee4cae30a819363c5d836bad22ebfed32d74c6ef9493fd0bb53fed47",
+      "size": 43728
+    },
+    "font/MiedingerMid_12.fdt": {
+      "sha256": "d2023d519cf7c967ba304b4ed568aeee36102bf022512509a7bdb628dac02514",
+      "size": 356976
+    },
+    "font/MiedingerMid_12_lobby.fdt": {
+      "sha256": "568d3db400c5f7f85d8fdb1d04694fa1ee0f14e424131ebe6be65d2f61d7130d",
+      "size": 43760
+    },
+    "font/MiedingerMid_14.fdt": {
+      "sha256": "edd1adc3e229327aa17d32cb4dbf73bad80f58129735b25df75597879ce46c45",
+      "size": 357024
+    },
+    "font/MiedingerMid_14_lobby.fdt": {
+      "sha256": "e650ad5106c2223371e39630382f580fc61c291f81b5866e1c9978a594514b9b",
+      "size": 45552
+    },
+    "font/MiedingerMid_18.fdt": {
+      "sha256": "fc38217a868675ab0a8f4ee18dad2c37128c33eec117378c58bcf6927c17b20b",
+      "size": 357296
+    },
+    "font/MiedingerMid_18_lobby.fdt": {
+      "sha256": "4372cf914800641c055655be5f891e86cd818f029378ca20ffe276551a4ccedc",
+      "size": 65424
+    },
+    "font/MiedingerMid_36.fdt": {
+      "sha256": "ad195772f9a66a7fd149b6824f370fe0448f1ecccb85cf75a888e1d4c43e896b",
+      "size": 357344
+    },
+    "font/MiedingerMid_36_lobby.fdt": {
+      "sha256": "c7e8266add5e5211dd736f2ffd0caa256551b1c1de3b0ba45d3a5017ca8ad416",
+      "size": 66768
+    },
+    "font/TrumpGothic_184.fdt": {
+      "sha256": "4cf0b2e5be29962cc491227bac1a08f60ef30cfa28f9e235db55d32093ad9063",
+      "size": 356992
+    },
+    "font/TrumpGothic_184_lobby.fdt": {
+      "sha256": "c6fd91316d6b147296a8c3871a1be1abbbdb1b77ed2ba02c021b6f1be73f199a",
+      "size": 35552
+    },
+    "font/TrumpGothic_23.fdt": {
+      "sha256": "3bb91e6658701f8e0825a62d971fa645fc9ffec55efdb69bcd30cc15ea480ddd",
+      "size": 357040
+    },
+    "font/TrumpGothic_23_lobby.fdt": {
+      "sha256": "b914ed01b5783a454fbe8d2bad81272e3a946a95b88b12fdacdec07609b41b73",
+      "size": 36224
+    },
+    "font/TrumpGothic_34.fdt": {
+      "sha256": "16b244d4ae856fa3cd2cce8722484ca48cc1ccf4f1eb819eb409f25d8da4099c",
+      "size": 357312
+    },
+    "font/TrumpGothic_34_lobby.fdt": {
+      "sha256": "36d5b5c49e6b98974bcd2efd7939f7fd726657e104059f9ef35a046bf3ddb72c",
+      "size": 37920
+    },
+    "font/TrumpGothic_68.fdt": {
+      "sha256": "26c4f81579f8a9c34c9e6d865d376f076cce9b90fe6b570cdb4ef099b6cff05d",
+      "size": 357360
+    },
+    "font/TrumpGothic_68_lobby.fdt": {
+      "sha256": "ebb53ad362bb9ee11e4fe4fdf565d5c654f444e49e1c3bea8a0f21d1ca27e2f8",
+      "size": 40624
+    },
+    "font/font1.tex": {
+      "sha256": "dbd22539f7fe3540a06c985c66d6a9a3cac3aea417247cdef2d1888cf1865a8e",
+      "size": 33554512
+    },
+    "font/font2.tex": {
+      "sha256": "c41c892ff084ad4b62534dbd3bfa89786d21d880a2c8e63477e592985d2a4142",
+      "size": 33554512
+    },
+    "font/font3.tex": {
+      "sha256": "69a08c99ac6914050d50392f4f35dff681e24f8c829acce7914e3d66285b3046",
+      "size": 33554512
+    },
+    "font/font_lobby1.tex": {
+      "sha256": "ae1be13252654ffbecd734bf8afb260512d2a51f7b04805ed091f269e7aad04e",
+      "size": 8388688
+    },
+    "font/font_lobby2.tex": {
+      "sha256": "d21ff58f124fa7b30fa6ce6d176d0815d03bb3b089b7c378805dd1adc7e164f2",
+      "size": 8388688
+    },
+    "font/font_lobby3.tex": {
+      "sha256": "90ebd174ca77ceb5ad21b04de491e5ae949363bc710ba58f0404f869fb456669",
+      "size": 8388688
+    },
+    "font/font_lobby4.tex": {
+      "sha256": "016ceca3ac88683ad614b4124b271f4e49d7a1d5b2db42f06153f764d61cec4b",
+      "size": 8388688
+    }
+  }
+}
