@@ -42,11 +42,33 @@ func NewEngine(customBinPath string) *Engine {
 	}
 }
 
+// isValidCLI 校验路径是否为有效的字体编译组件可执行文件（存在、非目录、体积大于 1MB）。
+func isValidCLI(path string) bool {
+	clean := strings.TrimSpace(path)
+	if clean == "" {
+		return false
+	}
+	st, err := os.Stat(clean)
+	if err != nil {
+		return false
+	}
+	if st.IsDir() {
+		return false
+	}
+	return st.Size() > 1<<20
+}
+
 // SetBinPath 指定编译组件路径（运行时按需下载到资源目录后调用），并清掉解析缓存。
 func (e *Engine) SetBinPath(path string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.customBinPath = strings.TrimSpace(path)
+	clean := strings.TrimSpace(path)
+	if clean != "" {
+		if abs, err := filepath.Abs(clean); err == nil {
+			clean = abs
+		}
+	}
+	e.customBinPath = clean
 	e.cachedBin = ""
 }
 
@@ -66,17 +88,20 @@ func (e *Engine) ResolveBinary() (string, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	if e.cachedBin != "" {
-		if _, err := os.Stat(e.cachedBin); err == nil {
-			return e.cachedBin, nil
+	if e.cachedBin != "" && isValidCLI(e.cachedBin) {
+		if abs, err := filepath.Abs(e.cachedBin); err == nil {
+			return abs, nil
 		}
+		return e.cachedBin, nil
 	}
 
-	if e.customBinPath != "" {
-		if _, err := os.Stat(e.customBinPath); err == nil {
-			e.cachedBin = e.customBinPath
-			return e.cachedBin, nil
+	if e.customBinPath != "" && isValidCLI(e.customBinPath) {
+		if abs, err := filepath.Abs(e.customBinPath); err == nil {
+			e.cachedBin = abs
+			return abs, nil
 		}
+		e.cachedBin = e.customBinPath
+		return e.customBinPath, nil
 	}
 
 	if path, ok := externalCLIExists(""); ok {
@@ -87,11 +112,12 @@ func (e *Engine) ResolveBinary() (string, error) {
 	return "", ErrCliNotFound
 }
 
-// externalCLIExists 查找外置的字体编译组件。只做文件存在性检查，不解压、不执行。
+// externalCLIExists 查找外置的字体编译组件。做文件存在性与有效性检查，不解压、不执行。
+// 必须返回绝对路径，防止触发 Go 1.19+ 相对路径执行安全拦截。
 func externalCLIExists(customBinPath string) (string, bool) {
-	if customBinPath != "" {
-		if _, err := os.Stat(customBinPath); err == nil {
-			return customBinPath, true
+	if customBinPath != "" && isValidCLI(customBinPath) {
+		if abs, err := filepath.Abs(customBinPath); err == nil {
+			return abs, true
 		}
 	}
 	var bases []string
@@ -104,13 +130,19 @@ func externalCLIExists(customBinPath string) (string, bool) {
 	for _, base := range bases {
 		for _, rel := range cliRelativeCandidates {
 			candidate := filepath.Join(base, rel)
-			if _, err := os.Stat(candidate); err == nil {
-				return candidate, true
+			if isValidCLI(candidate) {
+				if abs, err := filepath.Abs(candidate); err == nil {
+					return abs, true
+				}
 			}
 		}
 	}
 	if path, err := exec.LookPath("fontchanger-cli"); err == nil {
-		return path, true
+		if isValidCLI(path) {
+			if abs, err := filepath.Abs(path); err == nil {
+				return abs, true
+			}
+		}
 	}
 	return "", false
 }
@@ -164,7 +196,52 @@ func (e *Engine) RenderPreview(ctx context.Context, configJson string, fontName 
 	return data, nil
 }
 
-func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir string, progressFn func(percent int, msg string)) error {
+// AutoFitPreset 用组件自带的 AutoFit 拟合指定字号里的系统字体图层，
+// 返回该字号拟合后的元素列表 JSON（一个图层覆盖多个脚本时会被拆成多个，数量可能变化）。
+func (e *Engine) AutoFitPreset(ctx context.Context, configJson string, fontName string, elementIndices []int) (string, error) {
+	binPath, err := e.ResolveBinary()
+	if err != nil {
+		return "", err
+	}
+
+	tempDir, err := os.MkdirTemp("", "fc-autofit-*")
+	if err != nil {
+		return "", fmt.Errorf("创建拟合临时目录失败: %w", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	configPath := filepath.Join(tempDir, "config.json")
+	if err := os.WriteFile(configPath, []byte(configJson), 0o644); err != nil {
+		return "", fmt.Errorf("写入临时配置失败: %w", err)
+	}
+
+	outPath := filepath.Join(tempDir, "autofit.json")
+	args := []string{configPath, "--autofit", "--output", outPath}
+	if fontName != "" {
+		args = append(args, "--font", fontName)
+	}
+	for _, index := range elementIndices {
+		args = append(args, "--element", strconv.Itoa(index))
+	}
+	if gd := e.getGameDir(); gd != "" {
+		args = append(args, "--game-path", gd)
+	}
+
+	cmd := exec.CommandContext(ctx, binPath, args...)
+	cmd.Dir = tempDir
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("字体拟合失败 (退出码: %v, 输出: %s)", err, strings.TrimSpace(string(output)))
+	}
+
+	data, err := os.ReadFile(outPath)
+	if err != nil {
+		return "", fmt.Errorf("读取拟合结果失败: %w", err)
+	}
+	return string(data), nil
+}
+
+func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir string, use16Bit bool, progressFn func(percent int, msg string)) error {
 	binPath, err := e.ResolveBinary()
 	if err != nil {
 		return err
@@ -228,6 +305,15 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 			return fmt.Errorf("字体编译异常退出 (%w): %s", err, strings.Join(errLines, "; "))
 		}
 		return fmt.Errorf("字体编译异常退出: %w", err)
+	}
+
+	if use16Bit {
+		if progressFn != nil {
+			progressFn(95, "正在执行 16 位贴图压缩...")
+		}
+		if err := ConvertTexDirTo16Bit(outDir); err != nil {
+			return fmt.Errorf("16 位贴图转换失败: %w", err)
+		}
 	}
 
 	return nil

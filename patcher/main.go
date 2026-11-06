@@ -17,9 +17,9 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:     "FFXIV 汉化器",
 		Width:     900,
-		Height:    760,
+		Height:    640,
 		MinWidth:  760,
-		MinHeight: 620,
+		MinHeight: 520,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

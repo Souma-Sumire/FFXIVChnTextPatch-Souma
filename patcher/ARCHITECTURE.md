@@ -326,7 +326,7 @@ config.json               # 游戏目录、语言、目标语言、开关、规�
 
 工作台勾选「替换字体」后点「自定义字体」进入 `#view-font-editor`，布局对齐 `tools/fontchanger/FontChanger.FontEditor`：菜单栏 + 左侧字体列表框 + 右侧「元素列表 / 预览文本框 / 渲染视口」三段。HTML 保留了原对话框的控件 id（`IDD_FONTELEMENTEDITOR` 四页签），数据模型与 `tools/fontchanger` 的 `Presets/*.json` 同构（`MultiFontSet → FontSet → Faces[].Elements[]`）。
 
-- **命令入口**：菜单栏 51 个 `data-menu` 与两个右键菜单的 13 个条目全部收敛到 `runFontCommand(cmd)`；快捷键（Ctrl+S/O/Shift+S/Q、Ins/Del/Enter、WASDQE、`[`/`]`、1~5、P 等）也调同一函数，菜单、右键、快捷键三条路径行为一致。
+- **命令入口**：菜单栏 53 个 `data-menu` 与两个右键菜单的 13 个条目全部收敛到 `runFontCommand(cmd)`；快捷键（Ctrl+S/O/Shift+S/Q、Ins/Del/Enter、F/Shift+F、WASDQE、`[`/`]`、1~5、P 等）也调同一函数，菜单、右键、快捷键三条路径行为一致。
 - **选择模型**：`selectedElementIndices` 支持 Ctrl/Shift 多选，`activeElementIndex` 只决定详情面板与预览高亮；复制/剪切写内存剪贴板并尽力同步系统剪贴板。
 - **预览**：预览图由字体编译组件渲染（`RenderFontPreview` → `fontchanger-cli --render-text`），与写进客户端的字形走同一套栅格化与排版，所以看到的和游戏内一致；组件不可用时预览区直接显示错误，不用浏览器近似渲染顶替。`--max-width` 对应「自动换行」；缩放 1~5 档、左键拖动平移、滚轮滚动、Ctrl+滚轮换档、双击复位都只是对这张位图做变换，不改变排版。原版的「字距调整」「显示行高信息」依赖它自己的绘制路径，引擎渲染没有对应开关，随本次改造一并移除。三条分割条分别调左栏宽度、元素列表高度、预览文本框高度。
 - **字体数据**：`font_data.ts` 不内联数据——字形合并形状直接 import 上游 `tools/fontchanger/.../data/glyph_merge_shapes.json`（随 `scripts/update_fontchanger.ts` 同步，仓库内不再另存副本）；字体面的家族、子家族、字号取上游 `game_fonts.json`（`GAME_FONT_FACES`），不再按名字里的数字反推（`TrumpGothic_184` 是 18.4px）。`game_font_metrics.json` 仍是近似快照，只用于「新图层默认字号」的兜底与自动适配的基线测量；写进客户端的字体数据由后端 `fontengine` 生成。内置方案的 `previewText` 与上游 `Presets/Default@96.json` 对齐。
@@ -334,7 +334,7 @@ config.json               # 游戏目录、语言、目标语言、开关、规�
 - **方案格式**：内置方案与上游 `Presets/*.json` 同构——顶层是 `MultiFontSet`（四个 `exportMap*` 开关 + `fontSets` 数组），每个 `FontSet` 带 `discardStep`/`sideLength`/`texFilenameFormat`/`faces`。上游 `MultiFontSet::from_json` 同时接受裸 `FontSet`（旧格式），两种都能打开；`fontSets[].texFilenameFormat` 决定这组字面写进哪个贴图。
 - **新建**：复刻 `Menu_File_New`，按 `tools/fontchanger/.../data/game_fonts.json` 的 `fontTypes` 展开所选类型（font / font_lobby / font_chn / font_tc / font_krn）的全部字体面，每面一个游戏字体图层（字号取表里的值、码点全区间，数字字体用 `123,456,789.000!!!`），文档不落盘，Ctrl+S 才另存为方案。
 - **创建空白副本（已移除）**：原版会在字号最前面插入一个 Empty 图层，用当前字号真实合并字体的 `ascent()/line_height()` 决定该字号的行高与基线；浏览器端没有这些度量，只能写近似值，会直接影响游戏内排版，因此暂不提供。
-- **自动适配（已移除）**：浏览器端没有游戏字体的真实度量，按近似表算出来的字号/基线会写进方案、直接影响游戏内效果，因此暂不提供。原版 `FontsFromSystemFont::AutoFit` 用的是游戏字体自身的 line height / ascent / 码点度量 + 系统字体的真实墨迹（DirectWrite/FreeType），要恢复必须由组件提供该能力（新增 `--autofit` 模式调用现成实现），不能在前端重算。
+- **自动适配**：走组件的 `--autofit` 模式（`CommandLineRender.cpp` 里调 `FontsFromSystemFont::AutoFit`），用的就是原版那套算法：游戏字体自身的度量 + 系统字体的真实墨迹 + 每家族常量，可能把跨脚本的图层拆成多个，所以返回的是**整个字号的元素列表**，前端整组替换。`allSizes` 时再按字号比例铺到同系列其它字号并逐个重新拟合。浏览器端不做任何拟合计算。
 - **同系列操作**：字体列表右键的「用当前系列替换其他字号」按原版做法清空目标字号、用当前字号全部图层的缩放副本重建并沿用垂直对齐；「从字体添加到当前系列所有字号」按原版做法先选系统字体，再给该系列每个字号各加一个新图层并适配。
 - **编译组件**：FFXIV-FontChanger 编译出的命令行程序不随主程序分发，也不参与构建；`ensureFontCompiler` 在第一次替换字体时按需下载到数据目录（`fontchanger-cli` 分支，直连 + 镜像，校验 MZ 头），拿不到就报错中止，不回退预编译字体包。**macOS 无法执行这个 Windows 程序**，选「自定义方案」会在开始汉化前直接报错，需要改用「内置字体包」。
 - **限制**：`verticalAlignment` 只存在方案 JSON 里并影响预览基线位置，Go 侧字体数据生成尚未使用该字段；预览字体来自系统已安装字体，游戏内实际栅格化仍由 `fontengine` 完成。

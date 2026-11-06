@@ -35,7 +35,7 @@
             </div>
           </section>
 
-          <section class="form-section">
+          <section class="form-section" id="content-section">
             <h2 class="section-title">
               <span>汉化内容</span>
             </h2>
@@ -65,6 +65,19 @@
                 <span id="scope-summary" class="scope-value hidden">ACT兼容版（不汉化敌人名称）</span>
                 <button type="button" id="btn-open-tables" class="btn scope-action"
                   title="修改汉化范围">修改范围</button>
+              </div>
+
+              <div class="rules-picker hidden" id="rules-picker">
+                <div class="multiselect rules-multiselect">
+                  <button type="button" id="rules-trigger" class="btn rules-trigger"
+                    aria-haspopup="true" aria-expanded="false">
+                    <span id="rules-summary">附加规则(0)</span>
+                    <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div id="rules-menu" class="multiselect-menu rules-menu hidden" role="menu">
+                    <div id="rules" class="rule-list"></div>
+                  </div>
+                </div>
               </div>
 
               <div class="lang-picker" id="target-lang-wrap">
@@ -103,13 +116,6 @@
                   title="编辑字体方案">编辑方案</button>
               </div>
             </div>
-          </section>
-
-          <section class="form-section" id="extended-section">
-            <h2 class="section-title">
-              <span>附加规则</span>
-            </h2>
-            <div id="rules" class="rule-list"></div>
           </section>
 
         </main>
@@ -245,43 +251,19 @@
     </section>
 
     <section id="view-font-editor" class="fullscreen-view view-font-editor hidden">
-      <!-- 顶部标准菜单栏 (1:1 复制 FFXIV-FontChanger IDR_FONTEDITOR) -->
+      <!-- 顶部菜单栏 -->
       <header class="fc-menubar">
         <div class="fc-menubar-left">
           <!-- 菜单: 文件 -->
           <div class="fc-menu-item" id="fc-menu-file">
             <button type="button" class="fc-menu-btn">文件</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-file">
-              <div class="fc-dropdown-submenu-trigger">
-                <span>新建</span>
-                <span class="fc-submenu-arrow">▶</span>
-                <div class="fc-dropdown-menu fc-dropdown-submenu">
-                  <button type="button" class="fc-menu-entry" data-menu="file-new-global">游戏主字体 (Global font.tex)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="file-new-lobby">大厅字体 (font_lobby.tex)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="file-new-chn">中文字体 (ChnAXIS)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="file-new-tc">繁体中文字体 (tcaxis)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="file-new-krn">韩文字体 (KrnAXIS)</button>
-                </div>
-              </div>
-              <button type="button" class="fc-menu-entry" data-menu="file-open">
-                <span>打开…</span>
-                <span class="fc-menu-accel">Ctrl+O</span>
-              </button>
               <button type="button" class="fc-menu-entry" data-menu="file-save">
-                <span>保存为方案</span>
+                <span>保存方案</span>
                 <span class="fc-menu-accel">Ctrl+S</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="file-save-as">
-                <span>另存为 JSON 文件…</span>
-                <span class="fc-menu-accel">Ctrl+Shift+S</span>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="file-reset">
                 <span>放弃修改</span>
-              </button>
-              <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry" data-menu="file-back">
-                <span>退出字体编辑器</span>
-                <span class="fc-menu-accel">Ctrl+Q</span>
               </button>
             </div>
           </div>
@@ -290,104 +272,25 @@
           <div class="fc-menu-item" id="fc-menu-edit">
             <button type="button" class="fc-menu-btn">编辑</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-edit">
-              <button type="button" class="fc-menu-entry" data-menu="edit-add">
-                <span>添加空白字体</span>
-                <span class="fc-menu-accel">Ins</span>
-              </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-add-from-system">
-                <span>从字体添加元素…</span>
+                <span>从系统字体添加图层…</span>
                 <span class="fc-menu-accel">Shift+Ins</span>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-propagate-all-sizes">
-                <span>从字体添加到当前系列所有字号…</span>
+                <span>应用到当前系列所有字号…</span>
+              </button>
+              <div class="fc-menu-divider"></div>
+              <button type="button" class="fc-menu-entry" data-menu="edit-autofit">
+                <span>自动适配当前字号</span>
+                <span class="fc-menu-accel">F</span>
+              </button>
+              <button type="button" class="fc-menu-entry" data-menu="edit-autofit-all">
+                <span>自动适配所有字号</span>
+                <span class="fc-menu-accel">Shift+F</span>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-scale-size">
                 <span>缩放字体字号…</span>
               </button>
-              <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry" data-menu="edit-cut">
-                <span>剪切</span>
-                <span class="fc-menu-accel">Ctrl+X</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-copy">
-                <span>复制</span>
-                <span class="fc-menu-accel">Ctrl+C</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-paste">
-                <span>粘贴</span>
-                <span class="fc-menu-accel">Ctrl+V</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-delete">
-                <span>删除</span>
-                <span class="fc-menu-accel">Del</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-select-all">
-                <span>全选</span>
-                <span class="fc-menu-accel">Ctrl+A</span>
-              </button>
-              <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry" data-menu="edit-details">
-                <span>属性设置…</span>
-                <span class="fc-menu-accel">Enter</span>
-              </button>
-              <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry" data-menu="edit-vo-up">
-                <span>垂直偏移减小 (向上)</span>
-                <span class="fc-menu-accel">W</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-vo-down">
-                <span>垂直偏移增大 (向下)</span>
-                <span class="fc-menu-accel">S</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-ho-left">
-                <span>左移</span>
-                <span class="fc-menu-accel">A</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-ho-right">
-                <span>右移</span>
-                <span class="fc-menu-accel">D</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-ls-dec">
-                <span>缩小字间距</span>
-                <span class="fc-menu-accel">Q</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-ls-inc">
-                <span>增大字间距</span>
-                <span class="fc-menu-accel">E</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-sz-dec-1">
-                <span>缩小字体 1px</span>
-                <span class="fc-menu-accel">[</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-sz-inc-1">
-                <span>放大字体 1px</span>
-                <span class="fc-menu-accel">]</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-toggle-merge">
-                <span>切换合并模式</span>
-                <span class="fc-menu-accel">O</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-move-up">
-                <span>上移</span>
-                <span class="fc-menu-accel">,</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="edit-move-down">
-                <span>下移</span>
-                <span class="fc-menu-accel">.</span>
-              </button>
-              <div class="fc-menu-divider"></div>
-              <div class="fc-dropdown-submenu-trigger">
-                <span>合并字体的垂直对齐</span>
-                <span class="fc-submenu-arrow">▶</span>
-                <div class="fc-dropdown-menu fc-dropdown-submenu">
-                  <button type="button" class="fc-menu-entry" data-menu="valign-baseline">基线 (Baseline)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="valign-top">顶部 (Top)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="valign-middle">居中 (Middle)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="valign-bottom">底部 (Bottom)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="valign-romanBaseline">罗马基线 (BASE 表)</button>
-                  <button type="button" class="fc-menu-entry" data-menu="valign-ideographicCenter">表意字框中心 (BASE 表)</button>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -395,45 +298,10 @@
           <div class="fc-menu-item" id="fc-menu-view">
             <button type="button" class="fc-menu-btn">查看</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-view">
-              <button type="button" class="fc-menu-entry" data-menu="view-prev-font">
-                <span>上一个字体</span>
-                <span class="fc-menu-accel">Ctrl+Shift+Tab</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="view-next-font">
-                <span>下一个字体</span>
-                <span class="fc-menu-accel">Ctrl+Tab</span>
-              </button>
-              <div class="fc-menu-divider"></div>
               <button type="button" class="fc-menu-entry" data-menu="view-toggle-wrap">
                 <span class="fc-menu-check" id="fc-check-wrap">✓</span>
                 <span>自动换行</span>
                 <span class="fc-menu-accel">P</span>
-              </button>
-              <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry" data-menu="view-zoom-100">
-                <span class="fc-menu-check" id="fc-check-zoom-100">✓</span>
-                <span>100%</span>
-                <span class="fc-menu-accel">1</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="view-zoom-200">
-                <span class="fc-menu-check" id="fc-check-zoom-200"></span>
-                <span>200%</span>
-                <span class="fc-menu-accel">2</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="view-zoom-300">
-                <span class="fc-menu-check" id="fc-check-zoom-300"></span>
-                <span>300%</span>
-                <span class="fc-menu-accel">3</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="view-zoom-400">
-                <span class="fc-menu-check" id="fc-check-zoom-400"></span>
-                <span>400%</span>
-                <span class="fc-menu-accel">4</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="view-zoom-500">
-                <span class="fc-menu-check" id="fc-check-zoom-500"></span>
-                <span>500%</span>
-                <span class="fc-menu-accel">5</span>
               </button>
             </div>
           </div>
@@ -448,22 +316,10 @@
               <button type="button" class="fc-menu-entry" data-menu="export-raw">
                 <span>导出原始文件 (fdt/tex)…</span>
               </button>
-              <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry" data-menu="export-map-lobby">
-                <span class="fc-menu-check" id="fc-check-map-lobby"></span>
-                <span>同时替换登录界面字体</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="export-map-chn">
-                <span class="fc-menu-check" id="fc-check-map-chn"></span>
-                <span>同时替换中文字体</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="export-map-tc">
-                <span class="fc-menu-check" id="fc-check-map-tc"></span>
-                <span>同时替换繁体中文字体</span>
-              </button>
-              <button type="button" class="fc-menu-entry" data-menu="export-map-krn">
-                <span class="fc-menu-check" id="fc-check-map-krn"></span>
-                <span>同时替换韩文字体</span>
+              <div class="fc-menu-separator"></div>
+              <button type="button" class="fc-menu-entry" data-menu="export-toggle-16bit" title="默认开启。将贴图体积从 256MB 压缩至 128MB，节省显存与空间；关闭则生成 32 位高清抗锯齿贴图">
+                <span class="fc-menu-check" id="fc-check-16bit">✓</span>
+                <span>16 位贴图压缩 (体积减半)</span>
               </button>
             </div>
           </div>
@@ -472,6 +328,8 @@
         <!-- 顶栏右侧：区服 + 方案选择 + 方案管理 + 保存/返回 -->
         <div class="fc-menubar-right">
           <span id="font-region-badge" class="fc-region-chip">国际服</span>
+          <span id="font-region-warning" class="fc-warn-chip hidden" title="当前区服无法自动验证文件纯净度，请确保当前使用的是未被修改的官方原版文件，否则提取的原版字形可能出现异常或损坏。">⚠ 请使用原版客户端</span>
+          <span id="font-hd-badge" class="fc-hd-chip" title="默认采用 4096 高清贴图尺寸以完整容纳中文字库；汉化器会在打补丁时自动为游戏客户端配置开启高分辨率 UI 材质。">4096 高清 UI (已适配)</span>
           <div class="fc-preset-group">
             <label class="fc-preset-label" for="font-preset-select">方案</label>
             <select id="font-preset-select" class="fc-preset-select" title="选择字体方案"></select>
@@ -568,6 +426,7 @@
       <div class="fc-context-menu hidden" id="fc-fontlist-context-menu">
         <button type="button" class="fc-menu-entry" id="fc-ctx-scale-size">缩放字体…</button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-replace-family">用当前系列替换其他字号…</button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-autofit-family">自动适配所有该系列字体</button>
       </div>
 
       <!-- 右键上下文菜单: 元素列表项 (IDR_CONTEXTMENU_FONTELEMENT) -->
@@ -575,6 +434,14 @@
         <button type="button" class="fc-menu-entry" id="fc-ctx-open">
           <span>打开</span>
           <span class="fc-menu-accel">Enter</span>
+        </button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-autofit">
+          <span>自动适配</span>
+          <span class="fc-menu-accel">F</span>
+        </button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-autofit-all">
+          <span>自动适配所有大小</span>
+          <span class="fc-menu-accel">Shift+F</span>
         </button>
         <div class="fc-menu-divider"></div>
         <button type="button" class="fc-menu-entry" id="fc-ctx-cut">
@@ -605,28 +472,6 @@
           <span>粘贴</span>
           <span class="fc-menu-accel">Ctrl+V</span>
         </button>
-      </div>
-
-      <!-- 隐藏的兼容字段，确保旧逻辑不报 null -->
-      <div class="hidden" aria-hidden="true">
-        <select id="font-vertical-align"><option value="baseline">baseline</option></select>
-        <button id="btn-import-preset"></button>
-        <button id="btn-export-preset"></button>
-        <button id="btn-export-ttmp"></button>
-        <button id="btn-reset-preset"></button>
-        <span id="font-face-count">0</span>
-        <button id="btn-scale-face"></button>
-        <button id="btn-propagate-family"></button>
-        <button id="btn-edit-layer"></button>
-        <button id="btn-add-layer"></button>
-        <button id="btn-clone-layer"></button>
-        <button id="btn-remove-layer"></button>
-        <button id="btn-move-layer-up"></button>
-        <button id="btn-move-layer-down"></button>
-        <span id="active-face-info-tag"></span>
-        <div id="preview-scenario-tabs"></div>
-        <input type="checkbox" id="chk-preview-wrap" checked />
-        <span id="preview-status-text"></span>
       </div>
 
       <div id="font-element-modal" class="modal-overlay elem-modal-overlay hidden">
@@ -863,14 +708,6 @@
                 <div class="chars-right-col">
                   <div class="props-group">
                     <h4 class="props-sub-title">预设文字范围 (支持区间并集添加与差集剔除)</h4>
-                    <div class="props-row hidden">
-                      <select id="prop-codepoint-preset" class="select">
-                        <option value="all">all</option>
-                        <option value="cjk">cjk</option>
-                        <option value="ascii">ascii</option>
-                        <option value="custom">custom</option>
-                      </select>
-                    </div>
                     <div class="cp-preset-table">
                       <div class="cp-preset-row">
                         <span class="cp-preset-name">全部字符 (U+0000 ~ U+10FFFF)</span>
@@ -1003,7 +840,6 @@
       </div>
     </section>
 
-    <input type="file" id="font-file-picker" accept=".ttf,.otf" class="hidden" />
     <input type="file" id="font-preset-import-picker" accept=".json" class="hidden" />
   </div>
 

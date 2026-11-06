@@ -257,6 +257,8 @@ type AppConfig struct {
 	FontPresets     map[string]string `json:"fontPresets,omitempty"`
 	// FontSource 决定换字体时用内置字体包还是现场编译自定义方案：package | compile。
 	FontSource string `json:"fontSource,omitempty"`
+	// FontTexture16Bit 是否开启 16 位贴图压缩（默认开启，减半贴图体积与显存）。
+	FontTexture16Bit *bool `json:"fontTexture16Bit,omitempty"`
 }
 
 // BootstrapInfo 是前端启动所需的全部静态信息。
@@ -442,6 +444,7 @@ func normalizeRegionCode(lang string) string {
 }
 
 func defaultConfig() AppConfig {
+	default16Bit := true
 	return AppConfig{
 		GameDirs:        map[string]string{},
 		Language:        string(region.GLOBAL),
@@ -452,11 +455,12 @@ func defaultConfig() AppConfig {
 		Preset:          "recommended",
 		CSVDirs:         CSVDirsByRegion{},
 		FontPresets: map[string]string{
-			"GLOBAL": "global-source-han-sans-sc",
-			"CHS":    "chs-source-han-sans-sc",
-			"KO":     "ko-source-han-sans-sc",
-			"TC":     "tc-source-han-sans-sc",
+			"GLOBAL": fontengine.BuiltinChnAXISSystemPresetID,
+			"CHS":    fontengine.BuiltinChnPresetID,
+			"KO":     fontengine.BuiltinKrnPresetID,
+			"TC":     fontengine.BuiltinTcPresetID,
 		},
+		FontTexture16Bit: &default16Bit,
 	}
 }
 
@@ -539,8 +543,9 @@ func (a *App) loadConfig(resourceDir string) AppConfig {
 	// 布尔开关仅在配置里确实写了该字段时才覆盖默认值：
 	// 旧版配置缺字段时零值会把默认勾选的「替换文本/字体」悄悄变成不勾选。
 	var boolFields struct {
-		ReplaceText *bool `json:"replaceText"`
-		ReplaceFont *bool `json:"replaceFont"`
+		ReplaceText      *bool `json:"replaceText"`
+		ReplaceFont      *bool `json:"replaceFont"`
+		FontTexture16Bit *bool `json:"fontTexture16Bit"`
 	}
 	if json.Unmarshal(data, &boolFields) == nil {
 		if boolFields.ReplaceText != nil {
@@ -548,6 +553,9 @@ func (a *App) loadConfig(resourceDir string) AppConfig {
 		}
 		if boolFields.ReplaceFont != nil {
 			cfg.ReplaceFont = *boolFields.ReplaceFont
+		}
+		if boolFields.FontTexture16Bit != nil {
+			cfg.FontTexture16Bit = boolFields.FontTexture16Bit
 		}
 	}
 	cfg.Preset = saved.Preset
@@ -1362,11 +1370,6 @@ func (a *App) AnswerUnknownConfirm(ok bool) {
 	}
 }
 
-// AnswerFontConfirm 保留作为向前兼容别名。
-func (a *App) AnswerFontConfirm(ok bool) {
-	a.AnswerUnknownConfirm(ok)
-}
-
 func (a *App) waitUnknownConfirm(ctx context.Context, version string) (bool, error) {
 	if a == nil || a.ctx == nil {
 		return false, nil
@@ -1458,11 +1461,6 @@ func (a *App) CancelPatch() {
 	}
 }
 
-// KillLauncherProcesses 扫描并强制结束当前运行中的冲突启动器进程。
-func (a *App) KillLauncherProcesses(gameDir string) ([]string, error) {
-	return gameproc.KillLauncherProcesses(gameDir)
-}
-
 func (a *App) beginBusy() error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
@@ -1538,12 +1536,18 @@ func revertWrites(undos []*replace.Undo) (int, error) {
 // ensureFontCompiler 确保字体编译组件就绪：已存在就直接用，否则按需下载。
 // 组件单独发布在 fontchanger-cli 分支，不随主程序打包。
 func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error {
+	if goruntime.GOOS != "windows" {
+		return errors.New("字体编译组件仅支持 Windows 平台，当前操作系统暂不支持现场编译与预览")
+	}
 	if _, err := a.fontEngine.ResolveBinary(); err == nil {
 		return nil
 	}
 	dir := dataRootFor(resourceDir)
 	path := filepath.Join(dir, fontengine.CLIBinaryName)
-	if st, err := os.Stat(path); err == nil && st.Size() > 1<<20 {
+	if abs, err := filepath.Abs(path); err == nil {
+		path = abs
+	}
+	if st, err := os.Stat(path); err == nil && st.Size() > 1<<20 && !st.IsDir() {
 		a.fontEngine.SetBinPath(path)
 		return nil
 	}
@@ -1946,7 +1950,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		presetID := a.getActiveFontPreset(regionKey)
 		configJson, err := fontengine.GetPresetContent(presetID, presetsDirFor(resourceDir))
 		if err != nil {
-			defaultID := fontengine.DefaultPresetForRegion(targetReg)
+			defaultID := defaultPresetForRegionWithDirs(targetReg, a.loadConfig(resourceDir).GameDirs)
 			a.emitPatchLog(fmt.Sprintf("[字体] 方案 %s 不可用（%v），改用默认方案 %s", presetID, err, defaultID))
 			configJson, err = fontengine.GetPresetContent(defaultID, "")
 			if err != nil {
@@ -1975,8 +1979,9 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			if err := a.ensureFontCompiler(ctx, resourceDir); err != nil {
 				return fmt.Errorf("字体编译组件不可用：%w", err)
 			}
+			use16Bit := a.fontTexture16Bit(resourceDir)
 			a.emitPatchLog("[字体] 正在用 FFXIV-FontChanger 编译编辑器里的方案...")
-			if err := a.fontEngine.CompileRaw(ctx, configJson, tempFontDir, func(pct int, msg string) {
+			if err := a.fontEngine.CompileRaw(ctx, configJson, tempFontDir, use16Bit, func(pct int, msg string) {
 				a.emitProgress("font", msg, int64(pct), 100)
 			}); err != nil {
 				return fmt.Errorf("字体编译失败：%w", err)
@@ -2399,6 +2404,32 @@ func (a *App) emitAppUpdateProgress(stage, detail string, done, total int64) {
 	runtime.EventsEmit(a.ctx, "app-update-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
+func isGameClientDir(dir string) bool {
+	if dir == "" {
+		return false
+	}
+	st, err := os.Stat(filepath.Join(dir, "game", "ffxiv_dx11.exe"))
+	return err == nil && !st.IsDir()
+}
+
+func defaultPresetForRegionWithDirs(targetReg region.Region, gameDirs map[string]string) string {
+	if targetReg == region.Global {
+		chnDir := ""
+		if gameDirs != nil {
+			chnDir = gameDirs[string(region.CHS)]
+		}
+		if chnDir != "" && isGameClientDir(chnDir) {
+			return fontengine.BuiltinChnAXISPresetID
+		}
+		return fontengine.BuiltinChnAXISSystemPresetID
+	}
+	return fontengine.DefaultPresetForRegion(targetReg)
+}
+
+func defaultPresetForRegionWithConfig(targetReg region.Region, cfg AppConfig) string {
+	return defaultPresetForRegionWithDirs(targetReg, cfg.GameDirs)
+}
+
 // getActiveFontPreset 返回该区服当前选中的方案 id。
 // 配置里记的方案可能已被删除、改名或换过版本，这里只返回确实还能用的 id，
 // 否则就退回该区服的默认方案（方案文件本身缺失才会走到更外层的报错）。
@@ -2411,7 +2442,7 @@ func (a *App) getActiveFontPreset(regionKey string) string {
 
 	parsedLang, _ := region.ParseLanguage(normKey)
 	targetReg := region.Of(parsedLang)
-	fallback := fontengine.DefaultPresetForRegion(targetReg)
+	fallback := defaultPresetForRegionWithConfig(targetReg, cfg)
 
 	stored := ""
 	if cfg.FontPresets != nil {
@@ -2488,7 +2519,7 @@ func (a *App) DeleteFontPreset(language string, presetId string) error {
 	if cfg.FontPresets == nil || cfg.FontPresets[regionKey] != presetId {
 		return nil
 	}
-	cfg.FontPresets[regionKey] = fontengine.DefaultPresetForRegion(targetReg)
+	cfg.FontPresets[regionKey] = defaultPresetForRegionWithConfig(targetReg, cfg)
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return err
@@ -2569,6 +2600,21 @@ func (a *App) GetSystemFonts() ([]string, error) {
 	return fontengine.ListSystemFonts()
 }
 
+// AutoFitFontPreset 用字体编译组件拟合该字号里的系统字体图层，
+// 返回拟合后的元素列表 JSON；组件不可用时直接报错，不在前端用近似算法顶替。
+func (a *App) AutoFitFontPreset(configJson string, fontName string, elementIndices []int) (string, error) {
+	ctx := context.Background()
+	if a.ctx != nil {
+		ctx = a.ctx
+	}
+	_, gameDir := a.resolveLanguageAndGameDir("")
+	a.fontEngine.SetGameDir(gameDir)
+	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
+		return "", fmt.Errorf("字体拟合需要字体编译组件：%w", err)
+	}
+	return a.fontEngine.AutoFitPreset(ctx, configJson, fontName, elementIndices)
+}
+
 // RenderFontPreview 用字体编译组件渲染预览：与写进客户端的字形走同一套栅格化，
 // 所以预览看到的就是游戏里的效果。组件不可用时直接报错，不用浏览器近似渲染顶替。
 func (a *App) RenderFontPreview(configJson string, fontName string, text string, maxWidth int) (string, error) {
@@ -2589,6 +2635,15 @@ func (a *App) RenderFontPreview(configJson string, fontName string, text string,
 	return "data:image/png;base64," + b64, nil
 }
 
+// EnsureFontCompiler 供前端进入字体定制视图或执行字体操作前显式预检/下载字体编译组件。
+func (a *App) EnsureFontCompiler() error {
+	ctx := context.Background()
+	if a.ctx != nil {
+		ctx = a.ctx
+	}
+	return a.ensureFontCompiler(ctx, a.resourceDir())
+}
+
 func (a *App) ExportFontTTMP(configJson string, savePath string) error {
 	ctx := context.Background()
 	if a.ctx != nil {
@@ -2596,11 +2651,51 @@ func (a *App) ExportFontTTMP(configJson string, savePath string) error {
 	}
 	_, gameDir := a.resolveLanguageAndGameDir("")
 	a.fontEngine.SetGameDir(gameDir)
-	return a.fontEngine.CompileTTMP(ctx, configJson, savePath, func(pct int, msg string) {
-		runtime.EventsEmit(a.ctx, "font-export-progress", map[string]any{
-			"percent": pct,
-			"message": msg,
-		})
+	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
+		return fmt.Errorf("导出 TTMP 需要字体编译组件：%w", err)
+	}
+	return a.fontEngine.CompileTTMP(ctx, configJson, savePath, nil)
+}
+
+func (a *App) fontTexture16Bit(resourceDir string) bool {
+	cfg := a.loadConfig(resourceDir)
+	if cfg.FontTexture16Bit == nil {
+		return true
+	}
+	return *cfg.FontTexture16Bit
+}
+
+// GetFontTexture16Bit 获取当前是否开启 16 位贴图压缩
+func (a *App) GetFontTexture16Bit() bool {
+	return a.fontTexture16Bit(a.resourceDir())
+}
+
+// SetFontTexture16Bit 设置是否开启 16 位贴图压缩并持久化
+func (a *App) SetFontTexture16Bit(enable bool) error {
+	cfg := a.loadConfig(a.resourceDir())
+	cfg.FontTexture16Bit = &enable
+	return a.SaveConfig(cfg)
+}
+
+// ExportFontRaw 编译并导出原始字体文件 (.fdt / .tex)
+func (a *App) ExportFontRaw(configJson string, outDir string) error {
+	ctx := context.Background()
+	if a.ctx != nil {
+		ctx = a.ctx
+	}
+	_, gameDir := a.resolveLanguageAndGameDir("")
+	a.fontEngine.SetGameDir(gameDir)
+	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
+		return fmt.Errorf("导出原始文件需要字体编译组件：%w", err)
+	}
+	use16Bit := a.fontTexture16Bit(a.resourceDir())
+	return a.fontEngine.CompileRaw(ctx, configJson, outDir, use16Bit, nil)
+}
+
+// SelectRawExportDir 弹出原生目录选择框供用户指定原始文件导出目录
+func (a *App) SelectRawExportDir() (string, error) {
+	return runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "选择原始字体文件 (fdt/tex) 导出目录",
 	})
 }
 

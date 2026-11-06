@@ -25,7 +25,7 @@ namespace App::FontElementEditorDialogInternal {
 	};
 
 	// Number of the preset checkboxes of the Glyph merging page, whose IDs follow IDC_CHECK_GLYPHMERGING_PRESET_0.
-	inline constexpr size_t GlyphMergingPresetCount = IDC_CHECK_GLYPHMERGING_PRESET_12 - IDC_CHECK_GLYPHMERGING_PRESET_0 + 1;
+	inline constexpr size_t GlyphMergingPresetCount = IDC_CHECK_GLYPHMERGING_PRESET_11 - IDC_CHECK_GLYPHMERGING_PRESET_0 + 1;
 	static_assert(GlyphMergingPresetCount == FontChanger::GlyphMergingPresets::Count, "a checkbox per preset");
 
 	// Whether the source is the font files of a system font, which have features and variations, and can be drawn at

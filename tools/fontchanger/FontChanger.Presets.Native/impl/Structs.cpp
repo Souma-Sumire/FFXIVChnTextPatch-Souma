@@ -478,6 +478,11 @@ void FontChanger::Structs::from_json(const nlohmann::json& json, GlyphMergingStr
 		for (const auto& m : *it) {
 			if (!m.is_object())
 				continue;
+
+			if (const auto shape = m.find("shape"); shape != m.end() && shape->is_string()
+				&& std::ranges::none_of(GlyphMergeShapeNames, [&](const auto& n) { return shape->get_ref<const std::string&>() == n.second; }))
+				continue;
+
 			auto& mapping = params.Mappings.emplace_back();
 			mapping.Codepoints = xivres::util::unicode::convert<std::u32string>(m.value<std::string>("codepoints", ""));
 			if (const auto texts = m.find("texts"); texts != m.end() && texts->is_array()) {

@@ -249,7 +249,7 @@ func (r *KTGCheatRule) ID() string { return "ktg_cheat" }
 func (r *KTGCheatRule) Meta() RuleMeta {
 	return RuleMeta{
 		ID:          r.ID(),
-		Name:        "魔光键影作弊（将字库改为纯数字）",
+		Name:        "魔光键影作弊",
 		Description: "将魔光键影的拼音替换为 1~9 数字循环，便于快速击打",
 		Category:    "文本优化",
 		DefaultOn:   false,

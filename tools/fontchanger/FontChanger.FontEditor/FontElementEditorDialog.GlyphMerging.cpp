@@ -29,7 +29,6 @@ namespace {
 		{glyph_merge_shape::NumberBox, IDS_GLYPHMERGING_SHAPE_NUMBERBOX},
 		{glyph_merge_shape::HollowBox, IDS_GLYPHMERGING_SHAPE_HOLLOWBOX},
 		{glyph_merge_shape::Hexagon, IDS_GLYPHMERGING_SHAPE_HEXAGON},
-		{glyph_merge_shape::Rhombus, IDS_GLYPHMERGING_SHAPE_RHOMBUS},
 		{glyph_merge_shape::Bozja, IDS_GLYPHMERGING_SHAPE_BOZJA},
 		{glyph_merge_shape::Time, IDS_GLYPHMERGING_SHAPE_TIME},
 		{glyph_merge_shape::Star, IDS_GLYPHMERGING_SHAPE_STAR},

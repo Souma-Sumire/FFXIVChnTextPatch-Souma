@@ -10,17 +10,38 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 )
 
-// 内置方案：default 四服通用，chnaxis 只给国际服。
+// 内置方案：各区服独立，只有对应服能用得到的预设。
 func TestBuiltinPresetsPerRegion(t *testing.T) {
 	cases := []struct {
 		reg         region.Region
 		want        []string
 		wantMissing []string
+		wantDefault string
 	}{
-		{reg: region.Global, want: []string{BuiltinDefaultPresetID, BuiltinChnAXISPresetID}},
-		{reg: region.China, want: []string{BuiltinDefaultPresetID}, wantMissing: []string{BuiltinChnAXISPresetID}},
-		{reg: region.Korea, want: []string{BuiltinDefaultPresetID}, wantMissing: []string{BuiltinChnAXISPresetID}},
-		{reg: region.Taiwan, want: []string{BuiltinDefaultPresetID}, wantMissing: []string{BuiltinChnAXISPresetID}},
+		{
+			reg:         region.Global,
+			want:        []string{BuiltinChnAXISPresetID, BuiltinChnAXISSystemPresetID},
+			wantMissing: []string{BuiltinChnPresetID, BuiltinKrnPresetID, BuiltinTcPresetID},
+			wantDefault: BuiltinChnAXISSystemPresetID,
+		},
+		{
+			reg:         region.China,
+			want:        []string{BuiltinChnPresetID},
+			wantMissing: []string{BuiltinChnAXISPresetID, BuiltinChnAXISSystemPresetID, BuiltinKrnPresetID, BuiltinTcPresetID},
+			wantDefault: BuiltinChnPresetID,
+		},
+		{
+			reg:         region.Korea,
+			want:        []string{BuiltinKrnPresetID},
+			wantMissing: []string{BuiltinChnAXISPresetID, BuiltinChnAXISSystemPresetID, BuiltinChnPresetID, BuiltinTcPresetID},
+			wantDefault: BuiltinKrnPresetID,
+		},
+		{
+			reg:         region.Taiwan,
+			want:        []string{BuiltinTcPresetID},
+			wantMissing: []string{BuiltinChnAXISPresetID, BuiltinChnAXISSystemPresetID, BuiltinChnPresetID, BuiltinKrnPresetID},
+			wantDefault: BuiltinTcPresetID,
+		},
 	}
 
 	for _, tc := range cases {
@@ -36,65 +57,68 @@ func TestBuiltinPresetsPerRegion(t *testing.T) {
 		}
 		for _, id := range tc.wantMissing {
 			if ids[id] {
-				t.Errorf("区服 %s 不应出现国际服专用方案 %s", tc.reg, id)
+				t.Errorf("区服 %s 不应出现其它区服方案 %s", tc.reg, id)
 			}
 		}
-		if got := DefaultPresetForRegion(tc.reg); got != BuiltinDefaultPresetID {
-			t.Errorf("区服 %s 的默认方案应为 %s，实际 %s", tc.reg, BuiltinDefaultPresetID, got)
+		if got := DefaultPresetForRegion(tc.reg); got != tc.wantDefault {
+			t.Errorf("区服 %s 的默认方案应为 %s，实际 %s", tc.reg, tc.wantDefault, got)
 		}
 	}
 }
 
 func TestBuiltinPresetContents(t *testing.T) {
-	defaultJSON, err := GetPresetContent(BuiltinDefaultPresetID, "")
-	if err != nil {
-		t.Fatalf("读取默认方案失败: %v", err)
-	}
-	chnaxisJSON, err := GetPresetContent(BuiltinChnAXISPresetID, "")
-	if err != nil {
-		t.Fatalf("读取 ChnAXIS 方案失败: %v", err)
-	}
-	if len(defaultJSON) == 0 || len(chnaxisJSON) == 0 {
-		t.Fatal("内置方案内容不应为空")
-	}
-
-	var defaultSet, chnaxisSet MultiFontSet
-	if err := json.Unmarshal([]byte(defaultJSON), &defaultSet); err != nil {
-		t.Fatalf("默认方案不是合法 JSON: %v", err)
-	}
-	if err := json.Unmarshal([]byte(chnaxisJSON), &chnaxisSet); err != nil {
-		t.Fatalf("ChnAXIS 方案不是合法 JSON: %v", err)
-	}
-	if len(defaultSet.FontSets) == 0 || len(chnaxisSet.FontSets) != 2 {
-		t.Fatalf("内置方案结构不符合预期: defaultSets=%d chnaxisSets=%d", len(defaultSet.FontSets), len(chnaxisSet.FontSets))
-	}
-	// 默认方案的导出映射必须覆盖各区字体槽，否则它不配称为「四服通用」。
-	if !defaultSet.ExportMapChnAxisToFont || !defaultSet.ExportMapKrnAxisToFont || !defaultSet.ExportMapTcAxisToFont {
-		t.Errorf("默认方案应启用各区导出映射: %+v", defaultSet)
-	}
-	// ChnAXIS 方案只写 font/font_lobby。
-	if chnaxisSet.ExportMapChnAxisToFont || chnaxisSet.ExportMapKrnAxisToFont || chnaxisSet.ExportMapTcAxisToFont {
-		t.Errorf("ChnAXIS 方案不应启用跨区导出映射: %+v", chnaxisSet)
+	for _, id := range []string{BuiltinChnAXISPresetID, BuiltinChnAXISSystemPresetID, BuiltinChnPresetID, BuiltinKrnPresetID, BuiltinTcPresetID} {
+		content, err := GetPresetContent(id, "")
+		if err != nil {
+			t.Fatalf("读取内置方案 %s 失败: %v", id, err)
+		}
+		if len(content) == 0 {
+			t.Fatalf("内置方案 %s 内容不应为空", id)
+		}
+		var set MultiFontSet
+		if err := json.Unmarshal([]byte(content), &set); err != nil {
+			t.Fatalf("内置方案 %s 不是合法 JSON: %v", id, err)
+		}
+		if set.ExportMapChnAxisToFont || set.ExportMapKrnAxisToFont || set.ExportMapTcAxisToFont || set.ExportMapFontLobbyToFont {
+			t.Errorf("内置方案 %s 不应启用跨区或大厅导出映射: %+v", id, set)
+		}
 	}
 }
 
-// 默认方案靠导出映射覆盖四服；ChnAXIS 方案只有 AXIS 字体面，只能给国际服用。
+// 方案严格按区服隔离校验。
 func TestValidatePresetForRegion(t *testing.T) {
-	defaultJSON, _ := GetPresetContent(BuiltinDefaultPresetID, "")
 	chnaxisJSON, _ := GetPresetContent(BuiltinChnAXISPresetID, "")
+	chnaxisSystemJSON, _ := GetPresetContent(BuiltinChnAXISSystemPresetID, "")
+	chnJSON, _ := GetPresetContent(BuiltinChnPresetID, "")
+	krnJSON, _ := GetPresetContent(BuiltinKrnPresetID, "")
+	tcJSON, _ := GetPresetContent(BuiltinTcPresetID, "")
 
-	for _, reg := range []region.Region{region.Global, region.China, region.Korea, region.Taiwan} {
-		if err := ValidatePresetForRegion(defaultJSON, reg); err != nil {
-			t.Errorf("默认方案应可用于 %s: %v", reg, err)
+	if err := ValidatePresetForRegion(chnaxisSystemJSON, region.Global); err != nil {
+		t.Errorf("微软雅黑方案应可用于国际服: %v", err)
+	}
+	for _, reg := range []region.Region{region.China, region.Korea, region.Taiwan} {
+		if err := ValidatePresetForRegion(chnaxisSystemJSON, reg); err == nil {
+			t.Errorf("微软雅黑方案不应可用于 %s", reg)
 		}
 	}
+
 	if err := ValidatePresetForRegion(chnaxisJSON, region.Global); err != nil {
 		t.Errorf("ChnAXIS 方案应可用于国际服: %v", err)
 	}
 	for _, reg := range []region.Region{region.China, region.Korea, region.Taiwan} {
 		if err := ValidatePresetForRegion(chnaxisJSON, reg); err == nil {
-			t.Errorf("ChnAXIS 方案不应用于 %s", reg)
+			t.Errorf("ChnAXIS 方案不应可用于 %s", reg)
 		}
+	}
+
+	if err := ValidatePresetForRegion(chnJSON, region.China); err != nil {
+		t.Errorf("国服方案应可用于国服: %v", err)
+	}
+	if err := ValidatePresetForRegion(krnJSON, region.Korea); err != nil {
+		t.Errorf("韩服方案应可用于韩服: %v", err)
+	}
+	if err := ValidatePresetForRegion(tcJSON, region.Taiwan); err != nil {
+		t.Errorf("繁中方案应可用于繁中: %v", err)
 	}
 
 	// 区服专用字体面：没有 AXIS 的国服方案不能用于国际服。
@@ -113,7 +137,7 @@ func TestValidatePresetForRegion(t *testing.T) {
 
 func TestSaveRenameDeleteCustomPreset(t *testing.T) {
 	dir := t.TempDir()
-	content, err := GetPresetContent(BuiltinDefaultPresetID, "")
+	content, err := GetPresetContent(BuiltinChnAXISSystemPresetID, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,10 +181,10 @@ func TestSaveRenameDeleteCustomPreset(t *testing.T) {
 	if _, err := RenameCustomPreset(renamed.ID, "改过的方案", dir); err != nil {
 		t.Errorf("重命名为同名应直接返回成功: %v", err)
 	}
-	if _, err := RenameCustomPreset(BuiltinDefaultPresetID, "x", dir); err == nil {
+	if _, err := RenameCustomPreset(BuiltinChnAXISSystemPresetID, "x", dir); err == nil {
 		t.Error("内置方案不允许重命名")
 	}
-	if err := DeleteCustomPreset(BuiltinDefaultPresetID, dir); err == nil {
+	if err := DeleteCustomPreset(BuiltinChnAXISSystemPresetID, dir); err == nil {
 		t.Error("内置方案不允许删除")
 	}
 	if err := DeleteCustomPreset(renamed.ID, dir); err != nil {
@@ -173,7 +197,7 @@ func TestSaveRenameDeleteCustomPreset(t *testing.T) {
 
 func TestCustomPresetNameValidation(t *testing.T) {
 	dir := t.TempDir()
-	content, _ := GetPresetContent(BuiltinDefaultPresetID, "")
+	content, _ := GetPresetContent(BuiltinChnAXISSystemPresetID, "")
 	for _, bad := range []string{"", "   ", "../escape", `a\b`, "a/b", "a:b", "a*b"} {
 		if _, err := SaveCustomPreset(bad, content, dir, region.Global); err == nil {
 			t.Errorf("非法方案名 %q 应被拒绝", bad)

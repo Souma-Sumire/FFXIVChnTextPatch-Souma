@@ -1,5 +1,5 @@
 import "./style.css";
-import { DEFAULT_PREVIEW_TEXT, GAME_FONT_FACES, GAME_FONT_METRICS, GAME_FONT_TYPES } from "./font_data";
+import { GAME_FONT_FACES, GAME_FONT_METRICS } from "./font_data";
 
 interface RuleMeta {
   id: string;
@@ -326,18 +326,9 @@ interface GoApp {
   StartPatch(req: PatchRequest): Promise<PatchResponse>;
   CancelPatch(): Promise<void>;
   AnswerUnknownConfirm(ok: boolean): Promise<void>;
-  AnswerFontConfirm(ok: boolean): Promise<void>;
   AnswerLauncherConfirm(ok: boolean): Promise<void>;
   CopyBuiltinCSVDirectory(language: string, convert: boolean): Promise<CSVContext>;
-  KillLauncherProcesses(gameDir: string): Promise<string[]>;
   RestoreOriginal(gameDir: string, language: string, restoreText: boolean, restoreFont: boolean): Promise<RestoreResponse>;
-  EnsureHighResolutionUiAsset(): Promise<{
-    configPath: string;
-    backupPath: string;
-    modified: boolean;
-    previous: number;
-    current: number;
-  }>;
   OpenLink(url: string): Promise<void>;
   GetFontPresets(language: string): Promise<PresetSummary[]>;
   GetFontPreset(presetId: string): Promise<string>;
@@ -346,8 +337,14 @@ interface GoApp {
   RenameFontPreset(language: string, presetId: string, newName: string): Promise<PresetSummary>;
   DeleteFontPreset(language: string, presetId: string): Promise<void>;
   GetSystemFonts(): Promise<string[]>;
+  EnsureFontCompiler(): Promise<void>;
   RenderFontPreview(configJson: string, fontName: string, text: string, maxWidth: number): Promise<string>;
+  AutoFitFontPreset(configJson: string, fontName: string, elementIndices: number[]): Promise<string>;
   ExportFontTTMP(configJson: string, savePath: string): Promise<void>;
+  ExportFontRaw(configJson: string, outDir: string): Promise<void>;
+  SelectRawExportDir(): Promise<string>;
+  GetFontTexture16Bit(): Promise<boolean>;
+  SetFontTexture16Bit(enable: boolean): Promise<void>;
   SelectFontFile(): Promise<string>;
   SelectFontJsonFile(): Promise<string>;
   SelectFontJsonSavePath(defaultName: string): Promise<string>;
@@ -481,7 +478,11 @@ const el = {
   csvSummary: byId("csv-select-summary"),
   csvSyncBar: byId("csv-sync-bar"),
   csvMenu: byId("csv-select-menu"),
-  extendedSection: byId("extended-section"),
+  contentSection: byId("content-section"),
+  rulesPicker: byId("rules-picker"),
+  rulesTrigger: byId<HTMLButtonElement>("rules-trigger"),
+  rulesSummary: byId("rules-summary"),
+  rulesMenu: byId("rules-menu"),
   rules: byId("rules"),
 
   btnOpenTables: byId<HTMLButtonElement>("btn-open-tables"),
@@ -521,34 +522,18 @@ const el = {
   btnBackWorkbenchFont: byId<HTMLButtonElement>("btn-back-workbench-font"),
   fontPresetSelect: byId<HTMLSelectElement>("font-preset-select"),
   fontRegionBadge: byId("font-region-badge"),
-  fontVerticalAlign: byId<HTMLSelectElement>("font-vertical-align"),
-  btnImportPreset: byId<HTMLButtonElement>("btn-import-preset"),
-  btnExportPreset: byId<HTMLButtonElement>("btn-export-preset"),
-  btnExportTtmp: byId<HTMLButtonElement>("btn-export-ttmp"),
+  fontRegionWarning: byId("font-region-warning"),
+  fcCheck16bit: byId("fc-check-16bit"),
   btnSaveAsCustom: byId<HTMLButtonElement>("btn-save-as-custom"),
-  btnResetPreset: byId<HTMLButtonElement>("btn-reset-preset"),
-  fontFaceCount: byId("font-face-count"),
   fontFaceTabs: byId("font-face-tabs"),
-  btnScaleFace: byId<HTMLButtonElement>("btn-scale-face"),
-  btnPropagateFamily: byId<HTMLButtonElement>("btn-propagate-family"),
   elementsTableViewport: byId("elements-table-viewport"),
   fontElementList: byId("font-element-list"),
-  btnEditLayer: byId<HTMLButtonElement>("btn-edit-layer"),
-  btnAddLayer: byId<HTMLButtonElement>("btn-add-layer"),
-  btnCloneLayer: byId<HTMLButtonElement>("btn-clone-layer"),
-  btnRemoveLayer: byId<HTMLButtonElement>("btn-remove-layer"),
-  btnMoveLayerUp: byId<HTMLButtonElement>("btn-move-layer-up"),
-  btnMoveLayerDown: byId<HTMLButtonElement>("btn-move-layer-down"),
-  activeFaceInfoTag: byId("active-face-info-tag"),
-  previewScenarioTabs: byId("preview-scenario-tabs"),
   previewCustomText: byId<HTMLTextAreaElement>("preview-custom-text"),
-  chkPreviewWrap: byId<HTMLInputElement>("chk-preview-wrap"),
   previewCanvasBox: byId("preview-canvas-box"),
   previewStage: byId("fc-preview-stage"),
   previewImage: byId<HTMLImageElement>("fc-preview-image"),
   previewHint: byId("fc-preview-hint"),
   previewLoadingOverlay: byId("preview-loading-overlay"),
-  previewStatusText: byId("preview-status-text"),
   fontPresetImportPicker: byId<HTMLInputElement>("font-preset-import-picker"),
   btnManagePresets: byId<HTMLButtonElement>("btn-manage-presets"),
   presetModal: byId("preset-modal"),
@@ -607,8 +592,6 @@ const el = {
   cpTotalSummary: byId("cp-total-summary"),
   btnCpClear: byId<HTMLButtonElement>("btn-cp-clear"),
   cpIntervalsBox: byId("cp-intervals-box"),
-  propCodepointPreset: byId<HTMLSelectElement>("prop-codepoint-preset"),
-  customCodepointWrap: byId("custom-codepoint-wrap"),
   propCodepointsText: byId<HTMLInputElement>("prop-codepoints-text"),
   cpCustomInput: byId<HTMLInputElement>("cp-custom-input"),
   btnCpCustomAdd: byId<HTMLButtonElement>("btn-cp-custom-add"),
@@ -721,15 +704,19 @@ async function copyLogs(): Promise<void> {
 }
 
 const STORAGE_KEY_LOG_HEIGHT = "ffxiv_patcher_log_height_v2";
-const DEFAULT_LOG_HEIGHT = 148;
+const DEFAULT_LOG_HEIGHT = 168;
 const MIN_LOG_HEIGHT = 70;
+const MAX_LOG_HEIGHT_HARD = 240;
 const COLLAPSE_THRESHOLD = 50;
 
 let currentLogHeight = DEFAULT_LOG_HEIGHT;
 
 function getMaxLogHeight(): number {
   const bodyHeight = el.workbenchBody?.clientHeight || 0;
-  return bodyHeight > 220 ? Math.floor(bodyHeight - 120) : 600;
+  if (bodyHeight > 300) {
+    return Math.min(MAX_LOG_HEIGHT_HARD, Math.floor(bodyHeight * 0.38));
+  }
+  return 168;
 }
 
 function applyLogHeight(height: number, save = false): void {
@@ -757,9 +744,13 @@ function initLogResizer(): void {
     const saved = localStorage.getItem(STORAGE_KEY_LOG_HEIGHT);
     if (saved) {
       const parsed = parseInt(saved, 10);
-      if (!Number.isNaN(parsed) && parsed >= MIN_LOG_HEIGHT) {
+      if (!Number.isNaN(parsed) && parsed >= MIN_LOG_HEIGHT && parsed <= MAX_LOG_HEIGHT_HARD) {
         applyLogHeight(parsed, false);
+      } else {
+        applyLogHeight(DEFAULT_LOG_HEIGHT, true);
       }
+    } else {
+      applyLogHeight(DEFAULT_LOG_HEIGHT, false);
     }
   } catch {
     // 存储读取兼容防御
@@ -871,6 +862,7 @@ function updateTextScopeState(): void {
   el.csvTrigger.disabled = disabled;
   el.btnOpenTables.closest(".scope-control")?.classList.toggle("disabled", disabled);
   el.csvPicker?.classList.toggle("disabled", disabled);
+  updateWorkbenchState();
 }
 
 function updateRestoreButtonState(): void {
@@ -1248,6 +1240,7 @@ async function bootstrapApp(): Promise<void> {
 
     await loadBootstrap();
     switchView("workbench");
+    updateWorkbenchState();
     void checkAppUpdate({ prompt: true });
     void syncBuiltinOnStart();
 
@@ -1349,6 +1342,65 @@ async function ensureTableDoc(): Promise<void> {
   }
 }
 
+function updateRulesSummary(): void {
+  if (!bootstrap?.rules) {
+    el.rulesSummary.textContent = "附加规则(0)";
+    return;
+  }
+  let activeCount = 0;
+  for (const rule of bootstrap.rules) {
+    if (rule.status === "unavailable") continue;
+    const isChecked = config.rules[rule.id] ?? rule.defaultOn;
+    if (isChecked) {
+      activeCount++;
+    }
+  }
+  el.rulesSummary.textContent = `附加规则(${activeCount})`;
+}
+
+function toggleRulesMenu(open?: boolean): void {
+  if (busy || Boolean(csvBusyText)) {
+    return;
+  }
+  const shouldOpen = open !== undefined ? open : el.rulesMenu.classList.contains("hidden");
+  if (shouldOpen) {
+    const rect = el.rulesTrigger.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const dropUp = spaceBelow < 140 && spaceAbove > spaceBelow;
+    el.rulesMenu.classList.toggle("dropup", dropUp);
+  }
+  el.rulesMenu.classList.toggle("hidden", !shouldOpen);
+  el.rulesTrigger.setAttribute("aria-expanded", String(shouldOpen));
+}
+
+function hasClientDir(): boolean {
+  if (gameInfo && (gameInfo.version || gameInfo.clientVersion)) {
+    return true;
+  }
+  const inputVal = (el.gamePath?.value || "").trim();
+  if (inputVal) {
+    return true;
+  }
+  const dir = currentGameDir();
+  return Boolean(dir && dir.trim());
+}
+
+function updateWorkbenchState(): void {
+  const hasClient = hasClientDir();
+  el.contentSection.classList.toggle("hidden", !hasClient);
+
+  const isBuiltinCSV = !bootstrap?.csv?.selected;
+  const showRules = hasClient && el.replaceText.checked && isBuiltinCSV;
+  el.rulesPicker.classList.toggle("hidden", !showRules);
+  if (!showRules) {
+    toggleRulesMenu(false);
+  }
+
+  el.rulesTrigger.disabled = busy || Boolean(csvBusyText);
+  updateRulesSummary();
+}
+
 function renderRules(): void {
   if (!bootstrap) {
     return;
@@ -1359,7 +1411,8 @@ function renderRules(): void {
   if (unavailable.length > 0) {
     const notice = document.createElement("div");
     notice.className = "rule-notice";
-    notice.textContent = `规则数据不可用，已停用：${unavailable.map((rule) => rule.name).join("、")}。请同步资源后重试。`;
+    notice.textContent = `不可用规则：${unavailable.map((rule) => rule.name).join("、")}`;
+    notice.title = "请同步资源后重试";
     el.rules.append(notice);
   }
 
@@ -1367,13 +1420,25 @@ function renderRules(): void {
     const blocked = rule.status === "unavailable";
 
     const label = document.createElement("label");
-    label.className = "form-row rule-row";
+    label.className = "rule-row";
     if (blocked) {
       label.classList.add("disabled");
     }
+    const tooltip = blocked && rule.statusDetail ? rule.statusDetail : rule.description;
+    if (tooltip) {
+      label.title = tooltip;
+    }
 
-    const wrap = document.createElement("span");
-    wrap.className = "rule-text";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.className = "rule-check";
+    input.disabled = blocked;
+    input.checked = blocked ? false : (config.rules[rule.id] ?? rule.defaultOn);
+    input.addEventListener("change", () => {
+      config.rules[rule.id] = input.checked;
+      updateRulesSummary();
+      void persistConfig();
+    });
 
     const title = document.createElement("span");
     title.className = "rule-name";
@@ -1385,33 +1450,10 @@ function renderRules(): void {
       title.append(badge);
     }
 
-    const desc = document.createElement("span");
-    desc.className = "rule-desc";
-    desc.textContent = blocked && rule.statusDetail ? rule.statusDetail : rule.description;
-    if (blocked) {
-      desc.classList.add("rule-desc-blocked");
-    }
-
-    // 附加规则用复选框，不用开关：上面那两行是"整条流水线开不开"，
-    // 这里是"从若干条附加处理里勾哪几条"，复选框更像选项列表。
-    const box = document.createElement("span");
-    box.className = "rule-check-box";
-
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.className = "rule-check";
-    input.disabled = blocked;
-    input.checked = blocked ? false : (config.rules[rule.id] ?? rule.defaultOn);
-    input.addEventListener("change", () => {
-      config.rules[rule.id] = input.checked;
-      void persistConfig();
-    });
-
-    box.append(input);
-    wrap.append(title, desc);
-    label.append(box, wrap);
+    label.append(input, title);
     el.rules.append(label);
   }
+  updateRulesSummary();
 }
 
 function renderLanguages(): void {
@@ -1433,7 +1475,19 @@ function renderLanguages(): void {
 
 // currentGameDir 返回当前选中区服的客户端目录；配置只按区服保存，切换语言即切换目录。
 function currentGameDir(): string {
-  return config.gameDirs?.[config.language] ?? "";
+  if (!config.gameDirs) {
+    return "";
+  }
+  if (config.gameDirs[config.language]) {
+    return config.gameDirs[config.language];
+  }
+  const targetKey = (config.language || "").toLowerCase();
+  for (const [key, val] of Object.entries(config.gameDirs)) {
+    if (key.toLowerCase() === targetKey && val) {
+      return val;
+    }
+  }
+  return "";
 }
 
 function setGameDir(dir: string): void {
@@ -1443,6 +1497,7 @@ function setGameDir(dir: string): void {
   config.gameDirs[config.language] = dir;
   el.gamePath.value = dir;
   clientStatus = null;
+  updateWorkbenchState();
   void persistConfig();
 }
 
@@ -2208,7 +2263,7 @@ function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?
 
   renderCSVTrigger();
   renderCSVMenu();
-  el.extendedSection.classList.toggle("hidden", ctx.custom);
+  updateWorkbenchState();
 
   const nextKeys = ctx.tableList.map((entry) => entry.key).join("\n");
   if (nextKeys !== prevKeys) {
@@ -2452,9 +2507,11 @@ function fontSourceMode(): "package" | "compile" {
 
 function updateFontUiAssetState(): void {
   const isEnabled = el.replaceFont.checked && !busy;
-  // 内置字体包模式下，编辑器里的方案不会被使用，相关入口一并禁用。
-  const presetEnabled = isEnabled && fontSourceMode() === "compile";
+  const hasGameDir = Boolean(currentGameDir());
+  // 内置字体包模式下，编辑器里的方案不会被使用，相关入口一并禁用；且必须有游戏安装目录。
+  const presetEnabled = isEnabled && fontSourceMode() === "compile" && hasGameDir;
   el.btnOpenFontEditor.disabled = !presetEnabled;
+  el.btnOpenFontEditor.title = !hasGameDir ? "请先选择当前区服有效的游戏安装目录" : "";
   el.btnOpenFontEditor.closest(".font-preset-control")?.classList.toggle("disabled", !isEnabled || !presetEnabled);
   el.fontSource.disabled = !isEnabled;
   // 字体来源的标签跟下拉一起变灰，和上面的「词条目录」保持同一种禁用外观。
@@ -2596,7 +2653,7 @@ let currentMultiFont: MultiFontSet | null = null;
 let activeFaceName = "";
 let activeElementIndex = 0;
 let systemFontsList: string[] = [];
-let currentScenario: "default" | "chat" | "dialogue" | "battle" | "custom" = "default";
+let previewWrapEnabled = true;
 let previewDebounceTimer: number | null = null;
 let previewRenderToken = 0;
 let currentZoom = 1.0;
@@ -2612,11 +2669,7 @@ let isCurrentElementDeactivated = false;
 function hideAllContextMenus(): void {
   el.fcFontListContextMenu?.classList.add("hidden");
   el.fcElementContextMenu?.classList.add("hidden");
-  document.querySelectorAll(".fc-dropdown-menu").forEach((m) => {
-    if (!m.classList.contains("fc-dropdown-submenu")) {
-      m.classList.add("hidden");
-    }
-  });
+  document.querySelectorAll(".fc-dropdown-menu").forEach((m) => m.classList.add("hidden"));
   document.querySelectorAll(".fc-menu-item").forEach((it) => it.classList.remove("open"));
 }
 
@@ -2639,23 +2692,17 @@ function showElementContextMenu(x: number, y: number): void {
 // ---------- 菜单栏 / 右键菜单 / 快捷键 (复刻 FFXIV-FontChanger IDR_FONTEDITOR) ----------
 
 let openFontMenuItemId: string | null = null;
+let fontTexture16BitEnabled = true;
 
 function setMenuCheck(id: string, checked: boolean): void {
   const node = document.getElementById(id);
   if (node) node.textContent = checked ? "✓" : "";
 }
 
-// 把预览开关、缩放档位与导出映射的当前值写回菜单的勾选标记。
+// 把预览与导出开关的当前值写回菜单的勾选标记。
 function syncFontMenuChecks(): void {
-  setMenuCheck("fc-check-wrap", el.chkPreviewWrap.checked);
-  const zoomPct = Math.round(currentZoom * 100);
-  for (const pct of [100, 200, 300, 400, 500]) {
-    setMenuCheck(`fc-check-zoom-${pct}`, zoomPct === pct);
-  }
-  setMenuCheck("fc-check-map-lobby", currentMultiFont?.exportMapFontLobbyToFont === true);
-  setMenuCheck("fc-check-map-chn", currentMultiFont?.exportMapChnAxisToFont === true);
-  setMenuCheck("fc-check-map-tc", currentMultiFont?.exportMapTcAxisToFont === true);
-  setMenuCheck("fc-check-map-krn", currentMultiFont?.exportMapKrnAxisToFont === true);
+  setMenuCheck("fc-check-wrap", previewWrapEnabled);
+  setMenuCheck("fc-check-16bit", fontTexture16BitEnabled);
 }
 
 function closeFontMenus(): void {
@@ -2948,6 +2995,46 @@ function sameFamilyFaces(faceName: string): FontFace[] {
   );
 }
 
+// autoFitFace 调组件的 AutoFit 拟合一个字号；indices 为空表示拟合该字号全部图层。
+// 拟合结果由组件返回（元素可能因脚本拆分而增减），前端整组替换，不在这里做任何近似计算。
+async function autoFitFace(faceName: string, indices: number[] | null): Promise<boolean> {
+  if (!currentMultiFont) return false;
+  const face = getFacesList(currentMultiFont).find((f) => f.name === faceName);
+  if (!face) return false;
+  try {
+    const json = await call("AutoFitFontPreset", JSON.stringify(currentMultiFont), faceName, indices ?? []);
+    const elements = JSON.parse(json) as FontElement[];
+    if (!Array.isArray(elements) || elements.length === 0) throw new Error("组件没有返回拟合结果");
+    face.elements = elements;
+    return true;
+  } catch (err) {
+    log(`[字体] ${faceName} 自动适配失败: ${describeError(err)}`, "warn");
+    return false;
+  }
+}
+
+// autoFit 复刻原版 Menu_Edit_AutoFit：useSelection 为真时只拟合选中的图层，否则整面；
+// allSizes 为真时再把结果按字号比例铺到同系列其它字号，逐个重新拟合。
+async function autoFit(allSizes: boolean, useSelection: boolean): Promise<void> {
+  const face = getCurrentFace();
+  if (!face || !currentMultiFont) return;
+  const selection = useSelection ? getSelectedElementIndices() : [];
+  const ok = await autoFitFace(face.name, selection.length > 0 ? selection : null);
+  if (!ok) return;
+
+  if (allSizes) {
+    const srcSize = parseFaceNominalSize(face.name);
+    for (const sibling of sameFamilyFaces(face.name)) {
+      const ratio = srcSize > 0 ? parseFaceNominalSize(sibling.name) / srcSize : 1;
+      sibling.elements = face.elements.map((elem) => scaleElementCopy(elem, ratio));
+      sibling.verticalAlignment = face.verticalAlignment;
+      if (!(await autoFitFace(sibling.name, null))) return;
+    }
+  }
+  refreshAfterElementChange();
+  log(`[字体] 已自动适配 ${face.name}${allSizes ? "（含同系列其它字号）" : ""}`, "ok");
+}
+
 // addSystemFontToFamily 复刻原版「从字体添加…(F)」：
 // 选一个系统字体，把它作为新图层加到该系列每一个字号上，并按各自的游戏字号自动适配。
 async function addSystemFontToFamily(): Promise<void> {
@@ -2977,6 +3064,7 @@ async function addSystemFontToFamily(): Promise<void> {
     face.elements.push(elem);
     added++;
   }
+  for (const face of targets) await autoFitFace(face.name, null);
   refreshAfterElementChange();
   log(`[字体] 已把系统字体「${family}」添加到 ${added} 个字号`, "ok");
 }
@@ -3010,7 +3098,7 @@ function navigateFace(direction: -1 | 1): void {
 
 
 function togglePreviewOption(): void {
-  el.chkPreviewWrap.checked = !el.chkPreviewWrap.checked;
+  previewWrapEnabled = !previewWrapEnabled;
   syncFontMenuChecks();
   schedulePreviewRender();
 }
@@ -3026,116 +3114,9 @@ function updatePreviewTransform(): void {
   el.previewImage.style.transform = `translate(${previewPanX}px, ${previewPanY}px) scale(${currentZoom})`;
 }
 
-function toggleExportMapping(kind: "lobby" | "chn" | "tc" | "krn"): void {
-  if (!currentMultiFont) return;
-  const labels: Record<"lobby" | "chn" | "tc" | "krn", string> = {
-    lobby: "大厅字体",
-    chn: "中文字体",
-    tc: "繁体中文字体",
-    krn: "韩文字体",
-  };
-  let enabled = false;
-  switch (kind) {
-    case "lobby":
-      currentMultiFont.exportMapFontLobbyToFont = currentMultiFont.exportMapFontLobbyToFont !== true;
-      enabled = currentMultiFont.exportMapFontLobbyToFont;
-      break;
-    case "chn":
-      currentMultiFont.exportMapChnAxisToFont = currentMultiFont.exportMapChnAxisToFont !== true;
-      enabled = currentMultiFont.exportMapChnAxisToFont;
-      break;
-    case "tc":
-      currentMultiFont.exportMapTcAxisToFont = currentMultiFont.exportMapTcAxisToFont !== true;
-      enabled = currentMultiFont.exportMapTcAxisToFont;
-      break;
-    case "krn":
-      currentMultiFont.exportMapKrnAxisToFont = currentMultiFont.exportMapKrnAxisToFont !== true;
-      enabled = currentMultiFont.exportMapKrnAxisToFont;
-      break;
-  }
-  syncFontMenuChecks();
-  log(`[导出] 导出时将${enabled ? "同时映射" : "不再映射"}${labels[kind]}`, "info");
-}
-
 // ---------- 文件 / 导出命令 ----------
 
-// 复刻上游 Menu_File_New：按 game_fonts.json 的字体类型展开字体面，
-// 每个面只放一个游戏字体图层（FontSet::NewFromTemplateFont 的等价物）。
-const FONT_TYPE_OF_DOCUMENT: Record<"global" | "lobby" | "chn" | "tc" | "krn", string> = {
-  global: "font",
-  lobby: "font_lobby",
-  chn: "chn_axis",
-  tc: "tc_axis",
-  krn: "krn_axis",
-};
-
-const DOCUMENT_TYPE_LABEL: Record<"global" | "lobby" | "chn" | "tc" | "krn", string> = {
-  global: "游戏主字体",
-  lobby: "大厅字体",
-  chn: "中文字体",
-  tc: "繁体中文字体",
-  krn: "韩文字体",
-};
-
-function buildFontTemplateDocument(kind: "global" | "lobby" | "chn" | "tc" | "krn"): MultiFontSet {
-  const typeKey = FONT_TYPE_OF_DOCUMENT[kind];
-  const definition = GAME_FONT_TYPES[typeKey];
-  if (!definition) {
-    throw new Error(`game_fonts.json 里没有字体类型 ${typeKey}`);
-  }
-  const texFilenameFormat = definition.textures.split("/").pop() || "font{}.tex";
-
-  const faces: FontFace[] = definition.fonts.map((entry) => {
-    const [name, family, size] = entry;
-    // 数字字体的预览文本与码点范围与上游 NewFromTemplateFont 一致。
-    const numeric = family === "JupiterN";
-    const previewText = numeric ? "123,456,789.000!!!" : family === "Meidinger" ? "0123456789?!%+-./" : DEFAULT_PREVIEW_TEXT;
-    const codepoints = numeric
-      ? [
-          [0x30, 0x39],
-          [0x21, 0x21],
-          [0x2e, 0x2e],
-          [0x2c, 0x2c],
-        ]
-      : [[0, 0x10ffff]];
-
-    const element: FontElement = {
-      size: Number(size),
-      gamma: 1,
-      renderer: 1,
-      mergeMode: 0,
-      lookup: { name: family, familyName: family, stretch: 5, style: 0, weight: 400 },
-      wrapModifiers: {
-        baselineShift: 0,
-        verticalOffset: 0,
-        horizontalOffset: 0,
-        letterSpacing: 0,
-        codepoints,
-      },
-      renderSpecific: {
-        directwrite: { gridFitMode: 2, measureMode: 2, renderMode: 4 },
-        freetype: { forceAutohint: false, noAutohint: false, noBitmap: false, noHinting: false, renderMode: 0 },
-        empty: { ascent: 0, lineHeight: 0 },
-      },
-    };
-
-    return { name, previewText, elements: [element] };
-  });
-
-  return {
-    fontSets: [
-      {
-        discardStep: 1,
-        expectedTexCount: definition.textureCount,
-        sideLength: 4096,
-        texFilenameFormat,
-        faces,
-      },
-    ],
-  };
-}
-
-// 文档来自新建或打开的 JSON 时，方案下拉里没有对应项；插一个占位项说明"未保存"。
+// 文档来自打开的 JSON 时，方案下拉里没有对应项；插一个占位项说明"未保存"。
 function setPresetSelectPlaceholder(label: string): void {
   const select = el.fontPresetSelect;
   let placeholder = select.querySelector<HTMLOptionElement>('option[data-placeholder="1"]');
@@ -3147,46 +3128,6 @@ function setPresetSelectPlaceholder(label: string): void {
   }
   placeholder.textContent = label;
   select.value = "";
-}
-
-function newFontDocument(kind: "global" | "lobby" | "chn" | "tc" | "krn"): void {
-  const document = buildFontTemplateDocument(kind);
-  const faces = getFacesList(document);
-  if (faces.length === 0) {
-    throw new Error("该字体类型在 game_fonts.json 里没有字体面");
-  }
-  currentMultiFont = document;
-  // 新文档还没有对应的方案文件，Ctrl+S 会提示另存为。
-  activePresetId = "";
-  setPresetSelectPlaceholder(`新建文档（${DOCUMENT_TYPE_LABEL[kind]}，未保存）`);
-  activeFaceName = faces[0].name;
-  activeElementIndex = 0;
-  setElementSelection([0]);
-  syncActiveFaceToUI();
-  renderFaceTabs();
-  renderElementList();
-  renderPropsPanel();
-  schedulePreviewRender();
-  syncFontMenuChecks();
-  // 后端按区服校验方案来源，跨区的字体类型只能编辑/导出，存不成方案。
-  const ownerRegion: Record<"global" | "lobby" | "chn" | "tc" | "krn", string> = {
-    global: "GLOBAL",
-    lobby: "GLOBAL",
-    chn: "CHS",
-    tc: "TC",
-    krn: "KO",
-  };
-  const currentRegion = getCurrentFontRegion();
-  if (currentRegion !== ownerRegion[kind]) {
-    log(
-      `[提示] 当前区服是 ${currentRegion}，这种字体类型属于 ${ownerRegion[kind]}；编辑和导出不受影响，但保存为方案时会被区服校验拒绝`,
-      "warn",
-    );
-  }
-  log(
-    `[方案] 已新建「${DOCUMENT_TYPE_LABEL[kind]}」文档（${faces.length} 个字体面，${document.fontSets?.[0]?.texFilenameFormat ?? ""}），按 Ctrl+S 保存为方案`,
-    "ok",
-  );
 }
 
 async function openFontJsonFile(): Promise<void> {
@@ -3469,26 +3410,87 @@ async function deletePreset(preset: PresetSummary): Promise<void> {
   }
 }
 
+async function scaleCurrentFace(): Promise<void> {
+  const face = getCurrentFace();
+  if (!face || face.elements.length === 0) return;
+  const curNominal = parseFaceNominalSize(face.name);
+  const inputStr = await promptModalInput(
+    `缩放字体字号 (${face.name})`,
+    `请输入目标基准字号（当前基准为 ${curNominal}px，将按比例缩放此字体的所有元素字号、行高与偏移）：`,
+    String(curNominal),
+  );
+  if (!inputStr) return;
+  const targetSize = parseFloat(inputStr);
+  if (isNaN(targetSize) || targetSize <= 0) return;
+  const ratio = targetSize / curNominal;
+  for (const elem of face.elements) {
+    if (elem.size) elem.size = Number((elem.size * ratio).toFixed(2));
+    if (elem.wrapModifiers) {
+      if (elem.wrapModifiers.baselineShift) elem.wrapModifiers.baselineShift = Math.round(elem.wrapModifiers.baselineShift * ratio);
+      if (elem.wrapModifiers.verticalOffset) elem.wrapModifiers.verticalOffset = Math.round(elem.wrapModifiers.verticalOffset * ratio);
+      if (elem.wrapModifiers.horizontalOffset) elem.wrapModifiers.horizontalOffset = Math.round(elem.wrapModifiers.horizontalOffset * ratio);
+      if (elem.wrapModifiers.letterSpacing) elem.wrapModifiers.letterSpacing = Math.round(elem.wrapModifiers.letterSpacing * ratio);
+    }
+    if (elem.renderSpecific?.empty) {
+      if (elem.renderSpecific.empty.ascent) elem.renderSpecific.empty.ascent = Math.round(elem.renderSpecific.empty.ascent * ratio);
+      if (elem.renderSpecific.empty.lineHeight) elem.renderSpecific.empty.lineHeight = Math.round(elem.renderSpecific.empty.lineHeight * ratio);
+    }
+  }
+  renderElementList();
+  renderPropsPanel();
+  schedulePreviewRender();
+  log(`[字体] 已将 ${face.name} 按比例 (${ratio.toFixed(2)}x) 缩放至 ${targetSize}px`, "ok");
+}
+
+// 复刻原版「将 X 的其他尺寸替换为 Y 的缩放副本」：确认后清空目标字号，
+// 用当前字号的全部图层按比例重建，并沿用当前字号的垂直对齐。
+async function propagateCurrentFamily(): Promise<void> {
+  const srcFace = getCurrentFace();
+  if (!srcFace || !currentMultiFont) return;
+  const family = getFaceFamilyPrefix(srcFace.name);
+  const siblings = sameFamilyFaces(srcFace.name);
+  if (siblings.length === 0) {
+    log(`[提示] 未找到与 ${srcFace.name} 同系列（${family}）的其他字号`, "warn");
+    return;
+  }
+  const srcSize = parseFaceNominalSize(srcFace.name);
+  const listing = siblings.map((f) => `${f.name}（${parseFaceNominalSize(f.name)}px）`).join("、");
+  const ok = await showConfirm(
+    `把 ${family} 的其他字号替换为 ${srcFace.name} 的缩放副本`,
+    `目标：${listing}\n这些字号原有的图层会被覆盖。`,
+    "替换",
+  );
+  if (!ok) return;
+
+  for (const target of siblings) {
+    const targetSize = parseFaceNominalSize(target.name);
+    const ratio = srcSize > 0 ? targetSize / srcSize : 1;
+    target.elements = srcFace.elements.map((elem) => scaleElementCopy(elem, ratio));
+    target.verticalAlignment = srcFace.verticalAlignment;
+  }
+  refreshAfterElementChange();
+  log(`[字体] 已用 ${srcFace.name} 的缩放副本替换 ${siblings.length} 个同系列字号`, "ok");
+}
+
+async function exportFontTtmp(): Promise<void> {
+  if (!currentMultiFont) return;
+  try {
+    const savePath = await call("SelectTTMPSavePath");
+    if (!savePath) return;
+    const configJson = JSON.stringify(currentMultiFont);
+    await call("ExportFontTTMP", configJson, savePath);
+    log(`[完成] 已成功导出 Penumbra TTMP2 模组包：${savePath}`, "ok");
+    await showConfirm("导出成功", `已成功生成模组包：\n${savePath}\n可在 Penumbra 中直接导入使用！`, "好的");
+  } catch (err) {
+    log(`[错误] 导出 Mod 包失败: ${describeError(err)}`, "error");
+  }
+}
+
 // 菜单命令总入口：菜单项与右键菜单都走这里，保证两条路径行为一致。
 async function runFontCommand(command: string): Promise<void> {
   try {
     switch (command) {
       // 文件
-      case "file-new-global":
-        newFontDocument("global");
-        return;
-      case "file-new-lobby":
-        newFontDocument("lobby");
-        return;
-      case "file-new-chn":
-        newFontDocument("chn");
-        return;
-      case "file-new-tc":
-        newFontDocument("tc");
-        return;
-      case "file-new-krn":
-        newFontDocument("krn");
-        return;
       case "file-open":
         await openFontJsonFile();
         return;
@@ -3515,8 +3517,14 @@ async function runFontCommand(command: string): Promise<void> {
       case "edit-propagate-all-sizes":
         await addSystemFontToFamily();
         return;
+      case "edit-autofit":
+        await autoFit(false, true);
+        return;
+      case "edit-autofit-all":
+        await autoFit(true, true);
+        return;
       case "edit-scale-size":
-        el.btnScaleFace.click();
+        await scaleCurrentFace();
         return;
       case "edit-cut":
         cutSelectedFontElements();
@@ -3596,60 +3604,37 @@ async function runFontCommand(command: string): Promise<void> {
         setPreviewZoomLevel(500);
         return;
 
-      // 垂直对齐（单选组，写在当前字体面上）
-      case "valign-baseline":
-        setFaceVerticalAlignment("baseline");
-        return;
-      case "valign-top":
-        setFaceVerticalAlignment("top");
-        return;
-      case "valign-middle":
-        setFaceVerticalAlignment("middle");
-        return;
-      case "valign-bottom":
-        setFaceVerticalAlignment("bottom");
-        return;
-      case "valign-romanBaseline":
-        setFaceVerticalAlignment("romanBaseline");
-        return;
-      case "valign-ideographicCenter":
-        setFaceVerticalAlignment("ideographicCenter");
-        return;
-
       // 导出
       case "export-ttmp":
-        el.btnExportTtmp.click();
+        await exportFontTtmp();
         return;
-      case "export-raw":
-        await exportFontJsonFile();
+      case "export-raw": {
+        if (!currentMultiFont) return;
+        try {
+          const outDir = await call("SelectRawExportDir");
+          if (!outDir) return;
+          const configJson = JSON.stringify(currentMultiFont);
+          await call("ExportFontRaw", configJson, outDir);
+          log(`[字体] 已成功导出原始字体文件至：${outDir}`, "ok");
+          await showConfirm("导出成功", `原始文件 (.fdt / .tex) 已成功导出到：\n${outDir}`, "好的");
+        } catch (err) {
+          log(`[字体] 导出原始文件失败: ${describeError(err)}`, "error");
+        }
         return;
-      case "export-map-lobby":
-        toggleExportMapping("lobby");
+      }
+      case "export-toggle-16bit": {
+        fontTexture16BitEnabled = !fontTexture16BitEnabled;
+        await call("SetFontTexture16Bit", fontTexture16BitEnabled).catch(() => {});
+        syncFontMenuChecks();
+        log(`[字体] ${fontTexture16BitEnabled ? "已开启 16 位贴图压缩（单张 32MB，节省显存与空间）" : "已关闭 16 位压缩（将生成 32 位高清贴图，单张 64MB）"}`, "info");
         return;
-      case "export-map-chn":
-        toggleExportMapping("chn");
-        return;
-      case "export-map-tc":
-        toggleExportMapping("tc");
-        return;
-      case "export-map-krn":
-        toggleExportMapping("krn");
-        return;
+      }
       default:
         return;
     }
   } catch (err) {
     log(`[错误] 执行菜单命令失败: ${describeError(err)}`, "error");
   }
-}
-
-// 垂直对齐在菜单里是一组单选项，直接写回当前字体面。
-function setFaceVerticalAlignment(alignment: string): void {
-  const face = getCurrentFace();
-  if (!face) return;
-  face.verticalAlignment = alignment;
-  el.fontVerticalAlign.value = alignment;
-  schedulePreviewRender();
 }
 
 // 拖动分割条改相邻面板的尺寸；预览区尺寸变化后重画一次，避免画布被拉伸变形。
@@ -3713,6 +3698,9 @@ function wireFontMenuInteractions(): void {
   });
 
   const contextCommands: Array<[string, () => void | Promise<void>]> = [
+    ["fc-ctx-autofit", () => void autoFit(false, true)],
+    ["fc-ctx-autofit-all", () => void autoFit(true, true)],
+    ["fc-ctx-autofit-family", () => void autoFit(true, false)],
     ["fc-ctx-open", () => openElementEditorModal()],
     ["fc-ctx-cut", () => cutSelectedFontElements()],
     ["fc-ctx-copy", () => copySelectedFontElements()],
@@ -3721,8 +3709,8 @@ function wireFontMenuInteractions(): void {
     ["fc-ctx-add", () => addEmptyFontElement(true)],
     ["fc-ctx-add-system", () => addFontElementFromSystemFont()],
     ["fc-ctx-paste", () => pasteFontElements()],
-    ["fc-ctx-scale-size", () => el.btnScaleFace.click()],
-    ["fc-ctx-replace-family", () => el.btnPropagateFamily.click()],
+    ["fc-ctx-scale-size", () => scaleCurrentFace()],
+    ["fc-ctx-replace-family", () => propagateCurrentFamily()],
   ];
   for (const [id, action] of contextCommands) {
     document.getElementById(id)?.addEventListener("click", () => {
@@ -3803,6 +3791,7 @@ function wireFontMenuInteractions(): void {
         break;
     }
 
+    if (key === "f") return run(ev.shiftKey ? "edit-autofit-all" : "edit-autofit");
     if (key === "p") return run("view-toggle-wrap");
     if (key === "w") return run("edit-vo-up");
     if (key === "s") return run("edit-vo-down");
@@ -4124,6 +4113,7 @@ async function ensureSystemFonts(): Promise<void> {
 async function loadFontPresetsForCurrentRegion(): Promise<void> {
   const reg = getCurrentFontRegion();
   el.fontRegionBadge.textContent = getRegionShortName(reg);
+  el.fontRegionWarning.classList.toggle("hidden", reg === "GLOBAL");
   try {
     availableFontPresets = await call("GetFontPresets", reg);
   } catch (err) {
@@ -4194,17 +4184,7 @@ function syncActiveFaceToUI(): void {
   const face = getCurrentFace();
   if (!face) return;
   setElementSelection([activeElementIndex]);
-  const desc = getFaceFamilyLine(face.name);
-  el.activeFaceInfoTag.textContent = desc ? `${face.name} · ${desc}` : face.name;
-  el.fontVerticalAlign.value = face.verticalAlignment || "baseline";
-  if (currentScenario === "default") {
-    // 与原版一致：优先用字体面自带的 previewText，缺省时才回落到内置示例文本。
-    el.previewCustomText.value = face.previewText || getDefaultPreviewTextForFace(face);
-  } else if (currentScenario !== "custom") {
-    el.previewCustomText.value = getScenarioText();
-  } else if (!el.previewCustomText.value.trim()) {
-    el.previewCustomText.value = face.previewText || getDefaultPreviewTextForFace(face);
-  }
+  el.previewCustomText.value = face.previewText || getDefaultPreviewTextForFace(face);
 }
 
 function fontSetForFace(faceName: string): FontSet | undefined {
@@ -4248,14 +4228,6 @@ async function loadFontPreset(presetId: string): Promise<void> {
   }
 }
 
-// 字体面的身份描述只取上游 game_fonts.json 的字段（家族 · 子家族），
-// 不按字体面名字去推断「名牌/技能/聊天」这类用途——那类说法没有数据来源。
-function getFaceFamilyLine(faceName: string): string {
-  const info = GAME_FONT_FACES[faceName];
-  if (!info) return "";
-  return info.subfamily ? `${info.family} · ${info.subfamily}` : info.family;
-}
-
 function parseFaceNominalSize(faceName: string): number {
   // 权威来源：上游 game_fonts.json 的字号列（AXIS_96=9.6、TrumpGothic_184=18.4……）。
   const known = GAME_FONT_FACES[faceName]?.size;
@@ -4281,7 +4253,6 @@ function getFaceFamilyPrefix(faceName: string): string {
 function renderFaceTabs(): void {
   el.fontFaceTabs.replaceChildren();
   const faces = getFacesList(currentMultiFont);
-  el.fontFaceCount.textContent = String(faces.length);
   if (faces.length === 0) return;
 
   for (const face of faces) {
@@ -4760,23 +4731,6 @@ function schedulePreviewRender(): void {
   }, 280);
 }
 
-function getScenarioText(): string {
-  const face = getCurrentFace();
-  switch (currentScenario) {
-    case "chat":
-      return "【队伍】<光之战士> 各位辛苦了！今晚八点绝欧米茄准时进本开荒，记得带好爆发药与食物。\n[FC] <Tataru> 欢迎新豆芽加入部队！有问题随时在频道里问大家~";
-    case "dialogue":
-      return "阿尔菲诺：“即便前路布满荆棘，我们也绝不能停下脚步。\n晓月的终焉，将由我们亲手揭开！”";
-    case "battle":
-      return "Direct Hit! 128,490 暴击！！\n+9,850 HP (全大赦)   MISS   INVULNERABLE";
-    case "custom":
-      return el.previewCustomText.value || (face ? getDefaultPreviewTextForFace(face) : "");
-    case "default":
-    default:
-      return el.previewCustomText.value || (face ? getDefaultPreviewTextForFace(face) : "");
-  }
-}
-
 // 预览交给字体编译组件渲染：同一套栅格化与排版代码，出来的就是写进客户端的字形。
 // 组件不可用时只报错，不退回浏览器近似渲染——近似出来的东西和游戏不一致，没有参考价值。
 async function doPreviewRender(): Promise<void> {
@@ -4785,7 +4739,7 @@ async function doPreviewRender(): Promise<void> {
   if (!face) return;
 
   const text = el.previewCustomText.value || getDefaultPreviewTextForFace(face);
-  const maxWidth = el.chkPreviewWrap.checked ? Math.max(64, Math.round(el.previewStage.clientWidth || 800)) : 0;
+  const maxWidth = previewWrapEnabled ? Math.max(64, Math.round(el.previewStage.clientWidth || 800)) : 0;
   const token = ++previewRenderToken;
   el.previewLoadingOverlay.classList.remove("hidden");
 
@@ -4811,6 +4765,7 @@ async function doPreviewRender(): Promise<void> {
 function renderGameInfo(): void {
   updateRestoreButtonState();
   updateFontUiAssetState();
+  updateWorkbenchState();
   el.gameInfo.replaceChildren();
   if (!currentGameDir()) {
     el.gameInfo.append(createDiagItem("状态", "未选择游戏目录", "warn"));
@@ -5201,6 +5156,21 @@ function wireEvents(): void {
     }
   });
 
+  el.gamePath.addEventListener("input", () => {
+    updateWorkbenchState();
+  });
+
+  el.gamePath.addEventListener("change", async () => {
+    const val = el.gamePath.value.trim();
+    if (val && val !== currentGameDir()) {
+      setGameDir(val);
+      await refreshGameInfo();
+      void checkClientEnvironment();
+    } else {
+      updateWorkbenchState();
+    }
+  });
+
   el.btnDetect.addEventListener("click", () => {
     if (isDetecting) {
       detectCanceled = true;
@@ -5313,9 +5283,22 @@ function wireEvents(): void {
     e.stopPropagation();
   });
 
+  el.rulesTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (busy) {
+      return;
+    }
+    toggleRulesMenu();
+  });
+
+  el.rulesMenu.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
   document.addEventListener("click", () => {
     toggleTargetLangMenu(false);
     toggleCSVMenu(false);
+    toggleRulesMenu(false);
   });
 
   el.btnBackWorkbench.addEventListener("click", () => {
@@ -5553,11 +5536,39 @@ function wireEvents(): void {
   wireFontMenuInteractions();
 
   el.btnOpenFontEditor.addEventListener("click", async () => {
-    if (busy) return;
-    switchView("font-editor");
-    await ensureSystemFonts();
-    await loadFontPresetsForCurrentRegion();
-    schedulePreviewRender();
+    if (busy || el.btnOpenFontEditor.disabled) return;
+    const gameDir = currentGameDir();
+    if (!gameDir) {
+      log("[字体] 无法打开字体定制：请先选择当前区服有效的游戏安装目录", "warn");
+      return;
+    }
+    const originalText = el.btnOpenFontEditor.textContent || "自定义字体";
+    el.btnOpenFontEditor.disabled = true;
+    el.btnOpenFontEditor.textContent = "准备组件中...";
+    try {
+      if (isGlobalLanguage(config.language)) {
+        const status = await call("CheckClientStatus", gameDir, config.language);
+        if (status.status !== "original") {
+          log("[字体] 国际服客户端文件已被修改，无法打开字体定制。为了防止提取出损坏或异常的字形，请先在主界面点击「还原」恢复为官方原版后再进行定制。", "error");
+          return;
+        }
+      } else {
+        log("[字体] 提示：当前区服无法自动验证文件纯净度，请确保当前使用的是未被修改的官方原版文件，否则提取的原版字形可能出现异常或损坏。", "warn");
+      }
+
+      await call("EnsureFontCompiler");
+      switchView("font-editor");
+      await ensureSystemFonts();
+      fontTexture16BitEnabled = await call("GetFontTexture16Bit").catch(() => true);
+      syncFontMenuChecks();
+      await loadFontPresetsForCurrentRegion();
+      schedulePreviewRender();
+    } catch (err) {
+      log(`[字体] 无法打开字体定制: ${describeError(err)}`, "error");
+    } finally {
+      el.btnOpenFontEditor.disabled = false;
+      el.btnOpenFontEditor.textContent = originalText;
+    }
   });
 
   el.btnBackWorkbenchFont.addEventListener("click", () => {
@@ -5588,133 +5599,24 @@ function wireEvents(): void {
   el.presetModal.addEventListener("mousedown", (ev) => {
     if (ev.target === el.presetModal) closePresetManager();
   });
-  el.btnPresetImport.addEventListener("click", () => el.btnImportPreset.click());
-  el.btnPresetSaveCurrent.addEventListener("click", () => void saveFontPresetAsNew());
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape" && !el.presetModal.classList.contains("hidden")) {
-      ev.preventDefault();
-      closePresetManager();
-    }
-  });
-
-  el.fontVerticalAlign.addEventListener("change", () => {
-    const face = getCurrentFace();
-    if (!face) return;
-    face.verticalAlignment = el.fontVerticalAlign.value || "baseline";
-    schedulePreviewRender();
-  });
-
-  el.btnScaleFace.addEventListener("click", async () => {
-    const face = getCurrentFace();
-    if (!face || face.elements.length === 0) return;
-    const curNominal = parseFaceNominalSize(face.name);
-    const inputStr = await promptModalInput(
-      `缩放字体字号 (${face.name})`,
-      `请输入目标基准字号（当前基准为 ${curNominal}px，将按比例缩放此字体的所有元素字号、行高与偏移）：`,
-      String(curNominal),
-    );
-    if (!inputStr) return;
-    const targetSize = parseFloat(inputStr);
-    if (isNaN(targetSize) || targetSize <= 0) return;
-    const ratio = targetSize / curNominal;
-    for (const elem of face.elements) {
-      if (elem.size) elem.size = Number((elem.size * ratio).toFixed(2));
-      if (elem.wrapModifiers) {
-        if (elem.wrapModifiers.baselineShift) elem.wrapModifiers.baselineShift = Math.round(elem.wrapModifiers.baselineShift * ratio);
-        if (elem.wrapModifiers.verticalOffset) elem.wrapModifiers.verticalOffset = Math.round(elem.wrapModifiers.verticalOffset * ratio);
-        if (elem.wrapModifiers.horizontalOffset) elem.wrapModifiers.horizontalOffset = Math.round(elem.wrapModifiers.horizontalOffset * ratio);
-        if (elem.wrapModifiers.letterSpacing) elem.wrapModifiers.letterSpacing = Math.round(elem.wrapModifiers.letterSpacing * ratio);
-      }
-      if (elem.renderSpecific?.empty) {
-        if (elem.renderSpecific.empty.ascent) elem.renderSpecific.empty.ascent = Math.round(elem.renderSpecific.empty.ascent * ratio);
-        if (elem.renderSpecific.empty.lineHeight) elem.renderSpecific.empty.lineHeight = Math.round(elem.renderSpecific.empty.lineHeight * ratio);
-      }
-    }
-    renderElementList();
-    renderPropsPanel();
-    schedulePreviewRender();
-    log(`[字体] 已将 ${face.name} 按比例 (${ratio.toFixed(2)}x) 缩放至 ${targetSize}px`, "ok");
-  });
-
-  // 复刻原版「将 X 的其他尺寸替换为 Y 的缩放副本」：确认后清空目标字号，
-  // 用当前字号的**全部**图层按比例重建，并沿用当前字号的垂直对齐。
-  el.btnPropagateFamily.addEventListener("click", async () => {
-    const srcFace = getCurrentFace();
-    if (!srcFace || !currentMultiFont) return;
-    const family = getFaceFamilyPrefix(srcFace.name);
-    const siblings = sameFamilyFaces(srcFace.name);
-    if (siblings.length === 0) {
-      log(`[提示] 未找到与 ${srcFace.name} 同系列（${family}）的其他字号`, "warn");
-      return;
-    }
-    const srcSize = parseFaceNominalSize(srcFace.name);
-    const listing = siblings.map((f) => `${f.name}（${parseFaceNominalSize(f.name)}px）`).join("、");
-    const ok = await showConfirm(
-      `把 ${family} 的其他字号替换为 ${srcFace.name} 的缩放副本`,
-      `目标：${listing}
-这些字号原有的图层会被覆盖。`,
-      "替换",
-    );
-    if (!ok) return;
-
-    for (const target of siblings) {
-      const targetSize = parseFaceNominalSize(target.name);
-      const ratio = srcSize > 0 ? targetSize / srcSize : 1;
-      target.elements = srcFace.elements.map((elem) => scaleElementCopy(elem, ratio));
-      target.verticalAlignment = srcFace.verticalAlignment;
-    }
-    refreshAfterElementChange();
-    log(`[字体] 已用 ${srcFace.name} 的缩放副本替换 ${siblings.length} 个同系列字号`, "ok");
-  });
-
-  el.btnResetPreset.addEventListener("click", async () => {
-    if (!activePresetId) return;
-    const ok = await showConfirm("重置方案", "确定将当前方案的所有图层和排版恢复为初始配置吗？未保存的修改将被放弃。", "确认重置");
-    if (ok) {
-      await loadFontPreset(activePresetId);
-    }
-  });
-
-  el.btnSaveAsCustom.addEventListener("click", async () => {
-    if (!currentMultiFont) return;
-    const reg = getCurrentFontRegion();
-    const defaultName = `自定义字体方案_${reg}`;
-    const name = await promptModalInput("另存为自定义方案", "请输入新字体方案的名称：", defaultName);
-    if (!name || !name.trim()) return;
-    try {
-      const saved = await call("SaveFontPreset", reg, name.trim(), JSON.stringify(currentMultiFont, null, "\t"));
-      if (!config.fontPresets) config.fontPresets = {};
-      config.fontPresets[reg] = saved.id;
-      log(`[方案] 已保存并选用自定义字体方案：${saved.name}`, "ok");
-      await loadFontPresetsForCurrentRegion();
-      el.fontPresetSelect.value = saved.id;
-      await loadFontPreset(saved.id);
-    } catch (err) {
-      log(`[错误] 保存方案失败: ${describeError(err)}`, "error");
-    }
-  });
-
-  el.btnExportPreset.addEventListener("click", () => {
-    if (!currentMultiFont) return;
-    try {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentMultiFont, null, "\t"));
-      const downloadAnchor = document.createElement("a");
-      downloadAnchor.setAttribute("href", dataStr);
-      const reg = getCurrentFontRegion().toLowerCase();
-      downloadAnchor.setAttribute("download", `ffxiv_font_${reg}_${Date.now()}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      log("[方案] 方案配置 JSON 已导出", "ok");
-    } catch (err) {
-      log(`[错误] 导出方案失败: ${describeError(err)}`, "error");
-    }
-  });
-
-  el.btnImportPreset.addEventListener("click", () => {
+  el.btnPresetImport.addEventListener("click", () => {
     el.fontPresetImportPicker.value = "";
     el.fontPresetImportPicker.click();
   });
+  el.btnPresetSaveCurrent.addEventListener("click", () => void saveFontPresetAsNew());
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") {
+      if (!el.rulesMenu.classList.contains("hidden")) {
+        ev.preventDefault();
+        toggleRulesMenu(false);
+      } else if (!el.presetModal.classList.contains("hidden")) {
+        ev.preventDefault();
+        closePresetManager();
+      }
+    }
+  });
+
+  el.btnSaveAsCustom.addEventListener("click", () => void saveFontPresetAsNew());
 
   el.fontPresetImportPicker.addEventListener("change", async () => {
     const file = el.fontPresetImportPicker.files?.[0];
@@ -5740,128 +5642,13 @@ function wireEvents(): void {
     }
   });
 
-  el.btnExportTtmp.addEventListener("click", async () => {
-    if (!currentMultiFont) return;
-    try {
-      const savePath = await call("SelectTTMPSavePath");
-      if (!savePath) return;
-      el.previewStatusText.textContent = "正在编译并导出 TTMP2…";
-      const configJson = JSON.stringify(currentMultiFont);
-      await call("ExportFontTTMP", configJson, savePath);
-      el.previewStatusText.textContent = "导出完成";
-      log(`[完成] 已成功导出 Penumbra TTMP2 模组包：${savePath}`, "ok");
-      await showConfirm("导出成功", `已成功生成模组包：\n${savePath}\n可在 Penumbra 中直接导入使用！`, "好的");
-    } catch (err) {
-      el.previewStatusText.textContent = "导出失败";
-      log(`[错误] 导出 Mod 包失败: ${describeError(err)}`, "error");
-    }
-  });
-
-  // 图层增删、克隆、编辑与微调
-  el.btnEditLayer.addEventListener("click", () => {
-    openElementEditorModal();
-  });
-
-  el.btnAddLayer.addEventListener("click", () => {
-    const face = getCurrentFace();
-    if (!face) return;
-    const baseSize = parseFaceNominalSize(face.name);
-    const newElem: FontElement = {
-      size: baseSize,
-      gamma: 1.4,
-      renderer: 2,
-      source: 2,
-      mergeMode: 1,
-      lookup: { name: "Source Han Sans SC", familyName: "Source Han Sans SC", stretch: 5, style: 0, weight: 400 },
-      transform: { rotation: 0, scaleX: 1.0, scaleY: 1.0, skew: 0 },
-      transformationMatrix: [1, 0, 0, 1],
-      wrapModifiers: {
-        baselineShift: 0,
-        verticalOffset: 0,
-        horizontalOffset: 0,
-        letterSpacing: 0,
-        codepoints: JSON.parse(JSON.stringify(CJK_DEFAULT_RANGES)),
-      },
-      renderSpecific: {
-        directwrite: { gridFitMode: 2, measureMode: 2, renderMode: 5 },
-        freetype: { forceAutohint: false, noAutohint: false, noBitmap: false, noHinting: false, renderMode: 0 },
-        empty: { ascent: Math.round(baseSize * 0.85), lineHeight: Math.round(baseSize * 1.3) },
-      },
-    };
-    ensureElementDefaults(newElem, baseSize);
-    face.elements.push(newElem);
-    activeElementIndex = face.elements.length - 1;
-    renderElementList();
-    renderPropsPanel();
-    schedulePreviewRender();
-    openElementEditorModal();
-  });
-
-  el.btnCloneLayer.addEventListener("click", () => {
-    const face = getCurrentFace();
-    const curElem = face?.elements[activeElementIndex];
-    if (!face || !curElem) return;
-    const cloned = JSON.parse(JSON.stringify(curElem)) as FontElement;
-    face.elements.splice(activeElementIndex + 1, 0, cloned);
-    activeElementIndex++;
-    renderElementList();
-    renderPropsPanel();
-    schedulePreviewRender();
-  });
-
-  el.btnRemoveLayer.addEventListener("click", () => {
-    const face = getCurrentFace();
-    if (!face || face.elements.length <= 1) {
-      log("[提示] 每个字体面至少保留一个元素图层", "warn");
-      return;
-    }
-    face.elements.splice(activeElementIndex, 1);
-    if (activeElementIndex >= face.elements.length) {
-      activeElementIndex = face.elements.length - 1;
-    }
-    renderElementList();
-    renderPropsPanel();
-    schedulePreviewRender();
-  });
-
-  el.btnMoveLayerUp.addEventListener("click", () => {
-    const face = getCurrentFace();
-    if (!face || activeElementIndex <= 0) return;
-    const temp = face.elements[activeElementIndex];
-    face.elements[activeElementIndex] = face.elements[activeElementIndex - 1];
-    face.elements[activeElementIndex - 1] = temp;
-    activeElementIndex--;
-    renderElementList();
-    renderPropsPanel();
-    schedulePreviewRender();
-  });
-
-  el.btnMoveLayerDown.addEventListener("click", () => {
-    const face = getCurrentFace();
-    if (!face || activeElementIndex >= face.elements.length - 1) return;
-    const temp = face.elements[activeElementIndex];
-    face.elements[activeElementIndex] = face.elements[activeElementIndex + 1];
-    face.elements[activeElementIndex + 1] = temp;
-    activeElementIndex++;
-    renderElementList();
-    renderPropsPanel();
-    schedulePreviewRender();
-  });
-
-  document.querySelectorAll<HTMLButtonElement>(".quick-step-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const step = btn.dataset.step;
-      if (step) applyQuickStep(step);
-    });
-  });
-
   el.elementsTableViewport.addEventListener("keydown", (ev) => {
     const face = getCurrentFace();
     if (!face || face.elements.length === 0) return;
     if (ev.key === "ArrowUp") {
       ev.preventDefault();
       if (activeElementIndex > 0) {
-        activeElementIndex--;
+        setElementSelection([activeElementIndex - 1]);
         renderElementList();
         renderPropsPanel();
       }
@@ -5870,60 +5657,10 @@ function wireEvents(): void {
     if (ev.key === "ArrowDown") {
       ev.preventDefault();
       if (activeElementIndex < face.elements.length - 1) {
-        activeElementIndex++;
+        setElementSelection([activeElementIndex + 1]);
         renderElementList();
         renderPropsPanel();
       }
-      return;
-    }
-    if (ev.key === "Enter") {
-      ev.preventDefault();
-      openElementEditorModal();
-      return;
-    }
-    if (ev.key === "Delete") {
-      ev.preventDefault();
-      el.btnRemoveLayer.click();
-      return;
-    }
-    if (ev.key === ",") {
-      ev.preventDefault();
-      el.btnMoveLayerUp.click();
-      return;
-    }
-    if (ev.key === ".") {
-      ev.preventDefault();
-      el.btnMoveLayerDown.click();
-      return;
-    }
-    const lower = ev.key.toLowerCase();
-    if (lower === "w") {
-      ev.preventDefault();
-      applyQuickStep("vo-up");
-    } else if (lower === "s") {
-      ev.preventDefault();
-      applyQuickStep("vo-down");
-    } else if (lower === "a") {
-      ev.preventDefault();
-      applyQuickStep("ho-left");
-    } else if (lower === "d") {
-      ev.preventDefault();
-      applyQuickStep("ho-right");
-    } else if (lower === "q") {
-      ev.preventDefault();
-      applyQuickStep("ls-dec");
-    } else if (lower === "e") {
-      ev.preventDefault();
-      applyQuickStep("ls-inc");
-    } else if (ev.key === "[") {
-      ev.preventDefault();
-      applyQuickStep("sz-dec");
-    } else if (ev.key === "]") {
-      ev.preventDefault();
-      applyQuickStep("sz-inc");
-    } else if (lower === "o") {
-      ev.preventDefault();
-      applyQuickStep("merge-cycle");
     }
   });
 
@@ -6357,25 +6094,7 @@ function wireEvents(): void {
     schedulePreviewRender();
   });
 
-  // 场景与预览控制
-  el.previewScenarioTabs.querySelectorAll<HTMLButtonElement>(".scenario-tab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      el.previewScenarioTabs.querySelectorAll(".scenario-tab").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentScenario = (btn.dataset.scenario || "default") as "default" | "chat" | "dialogue" | "battle" | "custom";
-      const face = getCurrentFace();
-      if (currentScenario === "default" && face) {
-        el.previewCustomText.value = getDefaultPreviewTextForFace(face);
-      } else if (currentScenario !== "custom") {
-        el.previewCustomText.value = getScenarioText();
-      }
-      if (face) {
-        face.previewText = el.previewCustomText.value;
-      }
-      schedulePreviewRender();
-    });
-  });
-
+  // 预览控制
   el.previewCustomText.addEventListener("input", () => {
     const face = getCurrentFace();
     if (face) {
@@ -6383,8 +6102,6 @@ function wireEvents(): void {
     }
     schedulePreviewRender();
   });
-
-  el.chkPreviewWrap.addEventListener("change", () => schedulePreviewRender());
 
   // 预览视口交互（复刻原生 FontChanger）：左键拖动平移、滚轮上下滚动、Ctrl+滚轮缩放、双击复位。
   let panState: { startX: number; startY: number; originX: number; originY: number } | null = null;
@@ -6432,14 +6149,6 @@ function wireRuntimeEvents(): void {
   if (!on) {
     return;
   }
-
-  on("font-export-progress", (data: unknown) => {
-    if (isRecord(data)) {
-      const msg = typeof data.message === "string" ? data.message : "正在编译…";
-      const pct = typeof data.percent === "number" ? data.percent : 0;
-      el.previewStatusText.textContent = `${msg} (${pct}%)`;
-    }
-  });
 
   // 自更新进度：下载阶段显示百分比，替换与重启阶段只更新提示文案。
   on("app-update-progress", (data: unknown) => {
@@ -6588,16 +6297,6 @@ function wireRuntimeEvents(): void {
     const ok = await showConfirm("未知版本提示", text, "仍要继续汉化");
     try {
       await call("AnswerUnknownConfirm", ok);
-    } catch (error) {
-      log(`确认反馈失败: ${describeError(error)}`, "error");
-    }
-  });
-
-  on("font-confirm", async (prompt: unknown) => {
-    const text = typeof prompt === "string" ? prompt : "当前字体是官方原版，需要替换字体才能显示中文。是否继续？";
-    const ok = await showConfirm("字体替换提示", text, "继续汉化（不替换字体）");
-    try {
-      await call("AnswerFontConfirm", ok);
     } catch (error) {
       log(`确认反馈失败: ${describeError(error)}`, "error");
     }

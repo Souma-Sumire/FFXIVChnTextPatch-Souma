@@ -21,3 +21,4 @@ resource/*.zip
 patcher/internal/golden/testdata/golden_source/
 tools/fontchanger/build/
 tools/fontchanger/bin/
+fontchanger-cli.exe

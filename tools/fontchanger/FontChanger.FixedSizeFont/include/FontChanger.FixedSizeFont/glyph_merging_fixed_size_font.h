@@ -22,7 +22,6 @@ namespace FontChanger::FixedSizeFont {
 
 		HollowBox,
 		Hexagon,
-		Rhombus,
 		Bozja,
 		Time,
 		Star,
@@ -57,7 +56,6 @@ namespace FontChanger::FixedSizeFont {
 		{glyph_merge_shape::NumberBox, "numberBox"},
 		{glyph_merge_shape::HollowBox, "hollowBox"},
 		{glyph_merge_shape::Hexagon, "hexagon"},
-		{glyph_merge_shape::Rhombus, "rhombus"},
 		{glyph_merge_shape::Bozja, "bozja"},
 		{glyph_merge_shape::Time, "time"},
 		{glyph_merge_shape::Star, "star"},

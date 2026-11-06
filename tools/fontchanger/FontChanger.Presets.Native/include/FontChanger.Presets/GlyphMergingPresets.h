@@ -12,7 +12,7 @@ namespace FontChanger::GlyphMergingPresets {
 		std::u32string Codepoints;
 	};
 
-	inline constexpr size_t Count = 13;
+	inline constexpr size_t Count = 12;
 
 	// The groups of FontChanger.FixedSizeFont's data/glyph_merge_shapes.json, as the font editor offers them; texts
 	// beginning with "_" are of the underlined IME indicator boxes.

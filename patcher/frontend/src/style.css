@@ -334,8 +334,8 @@ svg {
 .switch {
   position: relative;
   display: inline-flex;
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 18px;
   flex-shrink: 0;
 }
 
@@ -351,36 +351,31 @@ svg {
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid var(--line-strong);
-  border-radius: 3px;
-  background-color: var(--bg-sunken);
+  border-radius: 9px;
+  background-color: #3a3b41;
   pointer-events: none;
-  transition: background-color 0.12s var(--ease), border-color 0.12s var(--ease);
+  transition: background-color 0.15s var(--ease);
 }
 
-/* 勾用两条边框拼出来，不额外引图标资源。 */
 .switch-track::after {
   content: "";
   position: absolute;
-  left: 4px;
-  top: 0;
-  width: 4px;
-  height: 8px;
-  border: solid #ffffff;
-  border-width: 0 2px 2px 0;
-  opacity: 0;
-  transform: rotate(45deg) scale(0.7);
-  transition: opacity 0.12s var(--ease), transform 0.12s var(--ease);
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #f2f3f5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s var(--ease);
 }
 
 .switch input:checked + .switch-track {
   background-color: var(--accent);
-  border-color: var(--accent);
 }
 
 .switch input:checked + .switch-track::after {
-  opacity: 1;
-  transform: rotate(45deg) scale(1);
+  transform: translateX(14px);
 }
 
 .switch input:disabled {
@@ -510,6 +505,23 @@ svg {
   overflow-y: auto;
 }
 
+.workbench-main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workbench-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workbench-main::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 3px;
+}
+
+.workbench-main::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
 /* 三块分组，用分组间距断开，不用发丝线连成一张长表。
    行结构保持：表头带子 + 40px 行 + 发丝线。 */
 .form-section {
@@ -525,8 +537,7 @@ svg {
 
 /* 章节标题就是面板的表头行：与下面的行同高、同左边缘，靠一条发丝线分开。
    表头行比正文行浅一档，读起来是一条带子，而不是又多了一行字。 */
-.form-section > .section-title,
-.section-header {
+.form-section > .section-title {
   height: 44px;
   margin: 0;
   padding: 0 20px;
@@ -534,59 +545,7 @@ svg {
   align-items: center;
   background-color: rgba(233, 238, 246, 0.03);
   border-bottom: 1px solid var(--line);
-}
-
-/* 表头里的「区服 / 语言」不再靠右，而是落到和下面各行的控件同一列：
-   标题占掉左边的标签列（112），gap 16 之后正好是 172。 */
-.section-header {
-  justify-content: flex-start;
-  gap: 16px;
-}
-
-/* 表头带子要跟着面板圆角走，否则方角会顶出边框。 */
-.form-section > .section-title,
-.form-section > .section-header {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.section-header .section-title {
-  width: var(--row-label-w);
-  flex: 0 0 auto;
-  margin-right: 0;
-}
-
-.section-header-action {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-.section-header-action + .section-header-action {
-  margin-left: 0;
-}
-
-.header-action-label {
-  font-size: var(--fs-label);
-  color: var(--text-2);
-  font-weight: 400;
-  user-select: none;
-}
-
-.header-select {
-  height: 28px;
-  min-width: 100px;
-  padding: 0 24px 0 8px;
-  font-size: var(--fs-label);
-  background-color: var(--bg-sunken);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  color: var(--text);
-}
-
-.header-select:hover {
-  background-color: var(--bg-control);
-  border-color: var(--line-strong);
 }
 
 /* 区服旁的汉化语言多选框 */
@@ -1084,24 +1043,6 @@ svg {
   white-space: nowrap;
 }
 
-.meta-tag.ok {
-  color: var(--ok);
-  border-color: rgba(76, 195, 138, 0.32);
-  background-color: var(--ok-soft);
-}
-
-.meta-tag.warn {
-  color: var(--warn);
-  border-color: rgba(216, 169, 76, 0.32);
-  background-color: var(--warn-soft);
-}
-
-.meta-tag.muted {
-  color: var(--text-3);
-  border-color: var(--line);
-  background-color: transparent;
-}
-
 /* 面板表头里的标题：靠字号和颜色分层，不加字距，也不比正文更白。 */
 .section-title {
   margin-bottom: 0;
@@ -1114,8 +1055,8 @@ svg {
 }
 
 .form-row {
-  min-height: 44px;
-  padding: 0 20px;
+  min-height: 46px;
+  padding: 0 22px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1156,14 +1097,6 @@ svg {
 .path-control .input {
   flex: 1;
   min-width: 0;
-}
-
-.row-desc {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  color: var(--text-2);
 }
 
 /* 客户端信息条：三列读数，用竖直发丝线分开，不再给每格套一个盒子。 */
@@ -1225,18 +1158,6 @@ svg {
   color: var(--err);
 }
 
-.diag-v.muted {
-  color: var(--text-3);
-  font-weight: 400;
-}
-
-.diag-v-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
 /* 重测按钮比 .btn-xs 更小；底色/描边交给 .btn-chip（淡底、无边框）。 */
 .diag-check-btn {
   height: 20px;
@@ -1288,38 +1209,20 @@ svg {
   gap: 16px;
 }
 
-.font-ui-asset-meta.disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.row-desc-text {
-  font-size: var(--fs-label);
-  color: var(--text-3);
-}
-
 /* 两块都从同一条竖线起：汉化范围只有「标签 + 按钮」，字体方案是「标签 + 数值 + 按钮」。 */
 .scope-control,
 .font-preset-inline {
   display: grid;
   align-items: center;
   gap: 8px;
-  margin-left: 16px;
+  margin-left: 0;
   flex: 0 0 auto;
   min-width: 0;
+  grid-template-columns: 72px;
 }
 
 .scope-control {
-  grid-template-columns: 72px;
-  /* 贴着「词条目录」下拉，只隔一个行间距 */
-  margin-left: 0;
   transition: opacity 0.15s var(--ease);
-}
-
-.font-preset-inline {
-  grid-template-columns: 72px;
-  /* 和「修改范围」一致：只隔一个行间距，两行的按钮才对得上 */
-  margin-left: 0;
 }
 
 .scope-label {
@@ -1331,26 +1234,6 @@ svg {
 .scope-control.disabled {
   opacity: 0.45;
   cursor: not-allowed;
-}
-
-.row-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-  flex-shrink: 0;
-  user-select: none;
-  transition: opacity 0.15s var(--ease);
-}
-
-.row-meta.disabled {
-  opacity: 0.45;
-}
-
-.row-meta-label {
-  font-size: var(--fs-label);
-  color: var(--text-2);
-  font-weight: 400;
 }
 
 /* 选表范围 / 字体方案：两行都是「标签 + 当前值 + 操作按钮」，
@@ -1374,92 +1257,189 @@ svg {
   padding: 0;
 }
 
-
-
-.rule-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  padding: 16px 20px 20px;
-}
-
-/* 附加规则是次要功能：两列、48px 行，只占一小块。
-   用横竖两条发丝线把它切成 2×2 的表格，不靠卡片边框也能看出分隔。 */
-.rule-list {
+/* 附加规则：作为“修改范围”旁的下拉浮层展示 */
+.rules-picker {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  padding: 0;
-}
-
-/* 中缝：一条竖线，不受条目数量影响。 */
-.rule-list::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background-color: var(--line);
-  pointer-events: none;
-}
-
-.rule-row {
-  cursor: pointer;
-  min-height: unset !important;
-  height: 48px;
-  padding: 0 20px !important;
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background-color 0.12s var(--ease);
-}
-
-/* 最后一行不画底线，交给面板自己的下边框。 */
-.rule-row:nth-last-child(-n+2) {
-  border-bottom: none;
-}
-
-/* 附加规则的复选框：占和开关一样宽的槽位，文字和上面两行仍在同一条竖线上。 */
-.rule-check-box {
-  width: 32px;
-  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
 }
 
-.rule-check {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--accent);
+.rules-multiselect {
+  position: relative;
+}
+
+.rules-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--text);
+  background-color: var(--bg-control);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  outline: none;
+  transition: all 0.12s var(--ease);
 }
 
-.rule-row.disabled {
-  opacity: 0.7;
+.rules-trigger:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+  border-color: var(--text-muted);
+  color: var(--text-bright);
+}
+
+.rules-trigger,
+.rules-trigger:focus,
+.rules-trigger:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.rules-trigger:focus-visible {
+  border-color: var(--accent) !important;
+}
+
+.rules-trigger[aria-expanded="true"] {
+  border-color: var(--accent);
+  background-color: var(--bg-hover);
+  color: var(--text-bright);
+}
+
+.rules-trigger:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.rule-notice {
-  grid-column: 1 / -1;
-  margin: 8px 20px;
-  padding: 8px 12px;
-  font-size: var(--fs-label);
-  line-height: 1.45;
+.rules-trigger .chevron-icon {
+  transition: transform 0.15s var(--ease);
+  opacity: 0.6;
+}
+
+.rules-trigger[aria-expanded="true"] .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.rules-menu {
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 0;
+  right: auto;
+  z-index: 100;
+  min-width: 128px;
+  width: max-content;
+  max-width: 180px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 3px;
+  background-color: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rules-menu.dropup {
+  top: auto;
+  bottom: calc(100% + 3px);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.rules-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.rules-menu::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 2px;
+}
+
+.rules-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.rules-menu .rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0;
+}
+
+.rules-menu .rule-list::before {
+  display: none;
+}
+
+.rules-menu .rule-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: unset !important;
+  height: 22px;
+  padding: 0 6px !important;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.1s var(--ease);
+}
+
+.rules-menu .rule-row:hover:not(.disabled) {
+  background-color: var(--bg-hover);
+}
+
+.rules-menu .rule-row.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rules-menu .rule-check {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rules-menu .rule-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-bright);
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1;
+}
+
+.rules-menu .rule-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 3px;
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--err);
+  border: 1px solid rgba(224, 102, 95, 0.4);
+  border-radius: 2px;
+}
+
+.rules-menu .rule-notice {
+  margin: 2px 4px;
+  padding: 3px 5px;
+  font-size: 10px;
+  line-height: 1.3;
   color: var(--warn);
   background-color: var(--warn-soft);
   border: 1px solid rgba(216, 169, 76, 0.3);
-  border-radius: var(--radius-sm);
+  border-radius: 2px;
 }
 
-.rule-badge {
+.rules-menu .rule-badge {
   display: inline-block;
   margin-left: 6px;
   padding: 0 5px;
@@ -1510,8 +1490,8 @@ svg {
    日志用页面底色，不再挖一块更黑的凹槽——那块黑曾经是全屏最重的色块。 */
 .log-pane {
   position: relative;
-  flex: 0 0 148px;
-  height: 148px;
+  flex: 0 0 156px;
+  height: 156px;
   min-height: 32px;
   display: flex;
   flex-direction: column;
@@ -2090,12 +2070,12 @@ body.is-resizing-log * {
 }
 
 .modal-window {
-  width: 400px;
+  width: 440px;
   max-width: 90vw;
   padding: 20px 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   background-color: var(--bg-raised);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
@@ -2106,8 +2086,9 @@ body.is-resizing-log * {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--fs-body);
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .modal-head svg {
@@ -2115,33 +2096,20 @@ body.is-resizing-log * {
 }
 
 .modal-body {
+  font-size: var(--fs-body);
   color: var(--text-2);
-  line-height: 1.6;
+  line-height: 1.65;
   user-select: text;
   white-space: pre-wrap;
 }
 
 .modal-foot {
-  margin-top: 10px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-}
-
-/* ---------- 字体方案控制组件 ---------- */
-
-/* 字体方案的位置由 .font-preset-inline 的 grid 决定，这里不再插手。 */
-
-.font-region-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 6px;
-  font-size: var(--fs-meta);
-  font-weight: 400;
-  border-radius: var(--radius-sm);
-  background-color: transparent;
-  color: var(--text-3);
-  border: 1px solid var(--line);
 }
 
 /* ---------- 字体编辑器视图（深色工坊：安静的外壳 + 一块字体样本板） ---------- */
@@ -2214,40 +2182,6 @@ body.is-resizing-log * {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.48);
 }
 
-.fc-dropdown-submenu-trigger {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 28px;
-  padding: 0 10px;
-  font-size: var(--fs-body);
-  color: var(--text-2);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.fc-dropdown-submenu-trigger:hover {
-  background-color: var(--bg-hover);
-  color: var(--text);
-}
-
-.fc-dropdown-submenu-trigger:hover .fc-dropdown-submenu {
-  display: flex !important;
-}
-
-.fc-dropdown-submenu {
-  top: -4px;
-  left: 100%;
-  display: none;
-}
-
-.fc-submenu-arrow {
-  margin-left: 8px;
-  font-size: 10px;
-  color: var(--text-3);
-}
-
 .fc-menu-entry {
   display: flex;
   align-items: center;
@@ -2314,6 +2248,34 @@ body.is-resizing-log * {
   color: var(--text-3);
   background-color: transparent;
   border: 0;
+  white-space: nowrap;
+}
+
+.fc-warn-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 11px;
+  color: #d97706;
+  background-color: rgba(217, 119, 6, 0.1);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  border-radius: 4px;
+  cursor: help;
+  white-space: nowrap;
+}
+
+.fc-hd-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 11px;
+  color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.1);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  border-radius: 4px;
+  cursor: help;
   white-space: nowrap;
 }
 
@@ -2751,8 +2713,8 @@ body.row-resizing * {
 }
 
 .elem-modal-window {
-  width: min(860px, 94vw);
-  height: min(620px, 90vh);
+  width: min(960px, 94vw);
+  height: min(680px, 90vh);
   display: flex;
   flex-direction: column;
   background-color: var(--bg-raised);
@@ -2766,11 +2728,11 @@ body.row-resizing * {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 0;
+  padding: 16px 20px 0;
   background-color: var(--bg);
   border-bottom: 1px solid var(--line-strong);
   flex-shrink: 0;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -2782,8 +2744,8 @@ body.row-resizing * {
 }
 
 .elem-modal-title {
-  font-size: var(--fs-body);
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -2794,10 +2756,11 @@ body.row-resizing * {
 }
 
 .elem-tab-btn {
-  padding: 6px 12px;
+  height: 32px;
+  padding: 0 14px;
   font-size: var(--fs-label);
   font-weight: 400;
-  color: var(--text-2);
+  color: var(--text-3);
   background: transparent;
   border: 1px solid transparent;
   border-bottom: 2px solid transparent;
@@ -2812,17 +2775,17 @@ body.row-resizing * {
 }
 
 .elem-tab-btn.active {
-  color: var(--accent-text);
+  color: var(--text);
   background-color: var(--bg-raised);
   border-color: var(--line-strong);
-  border-bottom-color: var(--accent);
+  border-bottom: 2px solid var(--accent);
 }
 
 .elem-modal-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 14px 16px;
+  padding: 16px 20px 20px;
   background-color: var(--bg-raised);
 }
 
@@ -2841,8 +2804,8 @@ body.row-resizing * {
 .props-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px;
+  gap: 12px;
+  padding: 16px;
   background-color: var(--bg);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -2850,8 +2813,8 @@ body.row-resizing * {
 
 .props-sub-title {
   font-size: var(--fs-label);
-  font-weight: 500;
-  color: var(--text-2);
+  font-weight: 600;
+  color: var(--text);
   margin-bottom: 2px;
 }
 
@@ -3015,10 +2978,20 @@ body.row-resizing * {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 12px 20px;
   background-color: var(--bg);
   border-top: 1px solid var(--line-strong);
   flex-shrink: 0;
+}
+
+.elem-modal-window input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.elem-modal-window .input,
+.elem-modal-window .select,
+.elem-modal-window textarea {
+  background-color: var(--bg-control);
 }
 
 .elem-modal-actions {
@@ -3337,103 +3310,4 @@ body.row-resizing * {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
-}
-
-/* ---------- 弹窗统一外观（主提示框 / 字体元素编辑器） ---------- */
-
-.modal-window {
-  width: 440px;
-  padding: 20px 20px 16px;
-  gap: 12px;
-  border-radius: var(--radius-lg);
-}
-
-.modal-head {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
-.modal-head svg {
-  color: var(--text-3);
-}
-
-.modal-body {
-  font-size: var(--fs-body);
-  line-height: 1.65;
-  color: var(--text-2);
-}
-
-.modal-foot {
-  margin-top: 4px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
-
-
-.elem-modal-window {
-  width: min(960px, 94vw);
-  height: min(680px, 90vh);
-}
-
-.elem-modal-header {
-  padding: 16px 20px 0;
-  gap: 16px;
-}
-
-.elem-modal-title-wrap {
-  padding-bottom: 10px;
-}
-
-.elem-modal-title {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.elem-tab-btn {
-  height: 32px;
-  padding: 0 14px;
-  font-size: var(--fs-label);
-  color: var(--text-3);
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-}
-
-.elem-tab-btn:hover {
-  color: var(--text);
-  background-color: var(--bg-hover);
-}
-
-.elem-tab-btn.active {
-  color: var(--text);
-  background-color: var(--bg-raised);
-  border-bottom: 2px solid var(--accent);
-}
-
-.elem-modal-body {
-  padding: 16px 20px 20px;
-}
-
-.props-group {
-  padding: 16px;
-  gap: 12px;
-  border-radius: var(--radius);
-}
-
-.props-sub-title {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.elem-modal-footer {
-  padding: 12px 20px;
-}
-
-.elem-modal-window input[type="checkbox"] {
-  accent-color: var(--accent);
-}
-
-.elem-modal-window .input,
-.elem-modal-window .select,
-.elem-modal-window textarea {
-  background-color: var(--bg-control);
 }

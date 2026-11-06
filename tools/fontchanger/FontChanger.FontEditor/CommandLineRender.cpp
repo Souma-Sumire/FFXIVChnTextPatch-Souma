@@ -5,14 +5,16 @@
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Modified by Souma-Sumire for FFXIVChnTextPatch-Souma:
-// Added --export-raw, --export-ttmp, and headless progress reporting.
+// Added --export-raw, --export-ttmp, --autofit, --game-path, and headless progress reporting.
 
 #include "pch.h"
+#include "MainWindow.h"
 #include "GlyphFileTools.h"
 #include "WicImage.h"
 #include "CommandLineRender.h"
 #include "FontChanger.Presets/GlyphFiles.h"
 #include "FontChanger.Presets/ElementFonts.h"
+#include "FontChanger.Presets/FontsFromSystemFont.h"
 #include "xivres/textools.h"
 
 namespace {
@@ -226,7 +228,8 @@ namespace {
 		std::optional<std::wstring> text, output, fontName, exportFolder, exportRawDir, exportTtmpPath, gamePath;
 		std::optional<int> maxWidth;
 		std::optional<size_t> elementIndex;
-		auto withAdjustments = false, exportSvg = true, exportPng = true;
+		std::vector<size_t> elementIndices;
+		auto withAdjustments = false, exportSvg = true, exportPng = true, autofitMode = false;
 		for (size_t i = 2; i < args.size(); i++) {
 			const auto takeValue = [&]() -> const std::wstring& {
 				if (i + 1 >= args.size())
@@ -249,8 +252,13 @@ namespace {
 				exportTtmpPath = takeValue();
 			else if (args[i] == L"--game-path")
 				gamePath = takeValue();
-			else if (args[i] == L"--element")
-				elementIndex = std::stoul(takeValue());
+			else if (args[i] == L"--element") {
+				const auto index = std::stoul(takeValue());
+				elementIndices.push_back(index);
+				if (!elementIndex)
+					elementIndex = index;
+			} else if (args[i] == L"--autofit")
+				autofitMode = true;
 			else if (args[i] == L"--with-adjustments")
 				withAdjustments = true;
 			else if (args[i] == L"--no-svg")
@@ -287,9 +295,9 @@ namespace {
 			return 0;
 		}
 
-		const App::Structs::Font* presetFont = nullptr;
-		const App::Structs::Font* prefixFont = nullptr;
-		const App::Structs::Font* firstFont = nullptr;
+		App::Structs::Font* presetFont = nullptr;
+		App::Structs::Font* prefixFont = nullptr;
+		App::Structs::Font* firstFont = nullptr;
 		const auto targetFontUtf8 = fontName ? xivres::util::unicode::convert<std::string>(*fontName) : std::string{};
 		for (const auto& fontSet : multiFontSet.FontSets) {
 			for (const auto& f : fontSet->Fonts) {
@@ -305,6 +313,34 @@ namespace {
 			presetFont = prefixFont ? prefixFont : firstFont;
 		if (!presetFont) {
 			throw std::invalid_argument("The configuration has no font.");
+		}
+
+		if (autofitMode) {
+			// --autofit：用组件自带的 AutoFit 拟合系统字体图层，输出该字号拟合后的元素列表。
+			if (!output)
+				throw std::invalid_argument("--output is required for --autofit.");
+			std::vector<App::Structs::FontElement*> targets;
+			if (elementIndices.empty()) {
+				for (const auto& element : presetFont->Elements)
+					targets.push_back(element.get());
+			} else {
+				for (const auto index : elementIndices) {
+					if (index >= presetFont->Elements.size())
+						throw std::invalid_argument(std::format("The font has {} elements.", presetFont->Elements.size()));
+					targets.push_back(presetFont->Elements[index].get());
+				}
+			}
+			const auto fitted = FontChanger::FontsFromSystemFont::AutoFit(*presetFont, targets);
+			if (!fitted)
+				throw std::runtime_error(std::format("{} is not one of the game's fonts.", presetFont->Name));
+			nlohmann::json elements = nlohmann::json::array();
+			for (const auto& element : presetFont->Elements)
+				elements.push_back(*element);
+			std::ofstream out(*output, std::ios::binary);
+			out << elements.dump(2);
+			if (!out)
+				throw std::runtime_error(std::format("Failed to write {}.", xivres::util::unicode::convert<std::string>(*output)));
+			return 0;
 		}
 
 		if (exportFolder) {
@@ -346,7 +382,8 @@ std::optional<int> App::RunCommandLineRender(const std::vector<std::wstring>& ar
 	if (std::ranges::find(args, L"--render-text") == args.end() &&
 		std::ranges::find(args, L"--export-glyphs") == args.end() &&
 		std::ranges::find(args, L"--export-raw") == args.end() &&
-		std::ranges::find(args, L"--export-ttmp") == args.end())
+		std::ranges::find(args, L"--export-ttmp") == args.end() &&
+		std::ranges::find(args, L"--autofit") == args.end())
 		return std::nullopt;
 
 	App::ElementFonts::SetGameFontErrorHandler(nullptr);

@@ -14,53 +14,99 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 )
 
-// 内置方案：
-//   - default：上游 FFXIV-FontChanger 的默认方案（Presets/Default@96.json），
-//     四个区服的字体槽都覆盖，所以每个区服都提供。
-//   - chnaxis：只写 font/font_lobby 的国际服中文方案（与内置字体包同一套字形），
-//     只在国际服提供。
+// 内置方案：按区服提供原生/专属预设，彻底切断跨服强行覆盖。
+//   - chnaxis: 国际服中文方案（从国服客户端提取官方字形，需国服客户端）
+//   - chnaxis_system: 国际服中文方案（使用微软雅黑系统字体，无需国服客户端）
+//   - chn: 国服原生方案（ChnAXIS 系列）
+//   - krn: 韩服原生方案（KrnAXIS 系列）
+//   - tc: 繁中原生方案（tcaxis 系列）
 //
-// 方案文件必须在包目录内才能 embed；源文件分别是
-// tools/fontchanger/Presets/Default@96.json 与 preset/ChnAXIS.json。
-//
-//go:embed presets/default.json
-var defaultPresetJSON string
-
 //go:embed presets/chnaxis.json
 var chnaxisPresetJSON string
 
+//go:embed presets/chnaxis_system.json
+var chnaxisSystemPresetJSON string
+
+//go:embed presets/chn.json
+var chnPresetJSON string
+
+//go:embed presets/krn.json
+var krnPresetJSON string
+
+//go:embed presets/tc.json
+var tcPresetJSON string
+
 const (
-	BuiltinDefaultPresetID = "default"
-	BuiltinChnAXISPresetID = "chnaxis"
+	BuiltinChnAXISPresetID       = "chnaxis"
+	BuiltinChnAXISSystemPresetID = "chnaxis_system"
+	BuiltinChnPresetID           = "chn"
+	BuiltinKrnPresetID           = "krn"
+	BuiltinTcPresetID            = "tc"
 )
 
 var BuiltinPresetMap = map[string]PresetSummary{
-	BuiltinDefaultPresetID: {
-		ID:          BuiltinDefaultPresetID,
-		Name:        "FFXIV-FontChanger 默认方案",
-		Description: "上游默认方案，导出映射覆盖各区字体槽，四个区服通用",
-		Builtin:     true,
-	},
 	BuiltinChnAXISPresetID: {
 		ID:          BuiltinChnAXISPresetID,
-		Name:        "ChnAXIS 中文方案",
-		Description: "国际服 font/font_lobby 字形，与内置字体包同一套",
+		Name:        "国际服 ChnAXIS 方案 (国服原版字形)",
+		Description: "从国服客户端提取官方 ChnAXIS 字形，需在电脑上安装国服",
+		Builtin:     true,
+	},
+	BuiltinChnAXISSystemPresetID: {
+		ID:          BuiltinChnAXISSystemPresetID,
+		Name:        "国际服 微软雅黑 方案 (系统字体)",
+		Description: "使用 Windows 自带的微软雅黑渲染中文字形，仅需国际服客户端",
+		Builtin:     true,
+	},
+	BuiltinChnPresetID: {
+		ID:          BuiltinChnPresetID,
+		Name:        "国服默认方案",
+		Description: "国服原生字体方案（ChnAXIS 系列）",
+		Builtin:     true,
+	},
+	BuiltinKrnPresetID: {
+		ID:          BuiltinKrnPresetID,
+		Name:        "韩服默认方案",
+		Description: "韩服原生字体方案（KrnAXIS 系列）",
+		Builtin:     true,
+	},
+	BuiltinTcPresetID: {
+		ID:          BuiltinTcPresetID,
+		Name:        "繁中默认方案",
+		Description: "繁体中文原生字体方案（tcaxis 系列）",
 		Builtin:     true,
 	},
 }
 
 // builtinPresetIDsForRegion 返回该区服可用的内置方案 id。
-// ChnAXIS 方案不含 ChnAXIS/KrnAXIS/tcaxis 字体面，只有国际服能用。
 func builtinPresetIDsForRegion(r region.Region) []string {
-	if r == region.Global {
-		return []string{BuiltinDefaultPresetID, BuiltinChnAXISPresetID}
+	switch r {
+	case region.Global:
+		return []string{BuiltinChnAXISPresetID, BuiltinChnAXISSystemPresetID}
+	case region.China:
+		return []string{BuiltinChnPresetID}
+	case region.Korea:
+		return []string{BuiltinKrnPresetID}
+	case region.Taiwan:
+		return []string{BuiltinTcPresetID}
+	default:
+		return []string{BuiltinChnAXISSystemPresetID}
 	}
-	return []string{BuiltinDefaultPresetID}
 }
 
 // DefaultPresetForRegion 返回新建配置时各区服默认选中的方案。
 func DefaultPresetForRegion(r region.Region) string {
-	return BuiltinDefaultPresetID
+	switch r {
+	case region.Global:
+		return BuiltinChnAXISSystemPresetID
+	case region.China:
+		return BuiltinChnPresetID
+	case region.Korea:
+		return BuiltinKrnPresetID
+	case region.Taiwan:
+		return BuiltinTcPresetID
+	default:
+		return BuiltinChnAXISSystemPresetID
+	}
 }
 
 // GetPresetsForRegion 返回该区服可用的方案：内置方案在前，自定义方案按名称排序在后。
@@ -120,10 +166,16 @@ func customPresetID(name string) string {
 // GetPresetContent 返回方案 JSON 内容；内置方案直接返回内嵌内容。
 func GetPresetContent(id string, customPresetsDir string) (string, error) {
 	switch id {
-	case BuiltinDefaultPresetID:
-		return defaultPresetJSON, nil
 	case BuiltinChnAXISPresetID:
 		return chnaxisPresetJSON, nil
+	case BuiltinChnAXISSystemPresetID:
+		return chnaxisSystemPresetJSON, nil
+	case BuiltinChnPresetID:
+		return chnPresetJSON, nil
+	case BuiltinKrnPresetID:
+		return krnPresetJSON, nil
+	case BuiltinTcPresetID:
+		return tcPresetJSON, nil
 	}
 
 	if name, ok := customPresetName(id); ok && customPresetsDir != "" {
