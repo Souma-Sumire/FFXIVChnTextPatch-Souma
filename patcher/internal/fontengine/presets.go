@@ -295,7 +295,11 @@ func customPresetName(id string) (string, bool) {
 	if !ok || strings.TrimSpace(trimmed) == "" {
 		return "", false
 	}
-	return strings.TrimSpace(trimmed), true
+	safe, err := sanitizePresetName(trimmed)
+	if err != nil {
+		return "", false
+	}
+	return safe, true
 }
 
 func customPresetPath(dir, name string) string {

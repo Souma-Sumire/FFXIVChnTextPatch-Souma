@@ -101,7 +101,7 @@ func BuildBinaryBlock(data []byte) ([]byte, error) {
 
 // BuildTexBlock 构建 Type 4 纹理块（font*.tex）。
 func BuildTexBlock(data []byte) ([]byte, error) {
-	if len(data) < 28 {
+	if len(data) < 32 {
 		return nil, fmt.Errorf("纹理数据过短: %d", len(data))
 	}
 	mipOffsetIndex := int(int32(binary.LittleEndian.Uint32(data[28:])))

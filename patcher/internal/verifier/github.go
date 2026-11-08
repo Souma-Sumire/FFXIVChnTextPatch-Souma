@@ -2,6 +2,7 @@ package verifier
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -434,12 +435,48 @@ func (c *GitHubClient) getJSON(ctx context.Context, path string, out any) error 
 		return json.Unmarshal(body, out)
 	}
 
-	body, source, err := raceGet(ctx, client, raw, c.mirrorCandidates(raw), c.apiHeaders(), apiBodyLimit, json.Valid)
+	body, source, err := raceGet(ctx, client, raw, c.mirrorCandidates(raw), c.apiHeaders(), apiBodyLimit, isValidReleaseJSON)
 	if err != nil {
 		return err
 	}
 	c.rememberNode(source)
 	return json.Unmarshal(body, out)
+}
+
+// isValidReleaseJSON 判断响应是否真的是 Release 数据，而不只是语法合法的 JSON。
+// 限流或镜像错误页常返回 200 + {"message":...}；空对象、null、空数组同样没有信息量。
+// 这类内容一旦被当作首个成功响应，会把错误固化成「云端未收录该版本」。
+// 列表与对象必须分别校验：拿对象 probe 去解析数组会直接反序列化失败，
+// 从而把合法的 Release 列表全部拒掉。
+func isValidReleaseJSON(b []byte) bool {
+	if !json.Valid(b) {
+		return false
+	}
+	trimmed := bytes.TrimSpace(b)
+	if len(trimmed) == 0 {
+		return false
+	}
+	switch trimmed[0] {
+	case '[':
+		var list []struct {
+			TagName string `json:"tag_name"`
+		}
+		if err := json.Unmarshal(trimmed, &list); err != nil {
+			return false
+		}
+		return len(list) > 0 && list[0].TagName != ""
+	case '{':
+		var obj struct {
+			Message string `json:"message"`
+			TagName string `json:"tag_name"`
+		}
+		if err := json.Unmarshal(trimmed, &obj); err != nil {
+			return false
+		}
+		return obj.Message == "" && obj.TagName != ""
+	default:
+		return false
+	}
 }
 
 func toRelease(in githubRelease) *Release {
@@ -696,6 +733,10 @@ func putIOBuffer(b *[]byte) {
 	}
 }
 
+// maxExtractBytes 是单个压缩包条目解压后的上限。超出时宁可报错，
+// 也不能静默截断后把不完整文件 rename 成目标文件。
+const maxExtractBytes = 4 << 30
+
 func extractZipFile(zipPath, dstPath string) error {
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
@@ -710,13 +751,24 @@ func extractZipFile(zipPath, dstPath string) error {
 	targetBase := filepath.Base(dstPath)
 	var targetFile *zip.File
 	for _, f := range r.File {
-		if filepath.Base(f.Name) == targetBase {
+		if !f.FileInfo().IsDir() && filepath.Base(f.Name) == targetBase {
 			targetFile = f
 			break
 		}
 	}
 	if targetFile == nil {
-		targetFile = r.File[0]
+		for _, f := range r.File {
+			if !f.FileInfo().IsDir() {
+				targetFile = f
+				break
+			}
+		}
+	}
+	if targetFile == nil {
+		return errors.New("压缩包内无有效文件")
+	}
+	if targetFile.UncompressedSize64 > maxExtractBytes {
+		return fmt.Errorf("压缩包内文件解压后过大: %d 字节", targetFile.UncompressedSize64)
 	}
 
 	rc, err := targetFile.Open()
@@ -734,10 +786,16 @@ func extractZipFile(zipPath, dstPath string) error {
 
 	bufPtr := getIOBuffer()
 	defer putIOBuffer(bufPtr)
-	if _, err := io.CopyBuffer(out, rc, *bufPtr); err != nil {
+	written, err := io.CopyBuffer(out, io.LimitReader(rc, maxExtractBytes+1), *bufPtr)
+	if err != nil {
 		_ = out.Close()
 		_ = os.Remove(tmpDst)
 		return fmt.Errorf("解压写入失败: %w", err)
+	}
+	if written > maxExtractBytes {
+		_ = out.Close()
+		_ = os.Remove(tmpDst)
+		return fmt.Errorf("解压后文件超过上限 %d 字节", int64(maxExtractBytes))
 	}
 	if err := out.Close(); err != nil {
 		_ = os.Remove(tmpDst)
@@ -765,22 +823,25 @@ func (c *GitHubClient) Download(ctx context.Context, rawURL, dst string, progres
 		c.notifyNode(cand.mirror)
 		start := time.Now()
 		written, err := c.downloadCandidate(ctx, cand.url, downloadDst, progress)
-		if err == nil {
-			if cand.mirror == "direct" {
-				c.rememberDirectSpeed(written, time.Since(start))
-			} else {
-				c.SetPreferredNode(cand.mirror)
-				c.setDirectFast(false)
-			}
-			if isZipArchive {
-				if err := extractZipFile(downloadDst, dst); err != nil {
-					_ = os.Remove(dst)
-					return fmt.Errorf("解压下载文件失败 (%s): %w", rawURL, err)
-				}
-			}
-			return nil
+		if err != nil {
+			lastErr = err
+			continue
 		}
-		lastErr = err
+		if isZipArchive {
+			if err := extractZipFile(downloadDst, dst); err != nil {
+				_ = os.Remove(dst)
+				lastErr = fmt.Errorf("解压下载文件失败 (%s): %w", rawURL, err)
+				continue
+			}
+		}
+		// 只有下载与解压都成功才把节点记为可用，避免把返回损坏数据的镜像固化成首选。
+		if cand.mirror == "direct" {
+			c.rememberDirectSpeed(written, time.Since(start))
+		} else {
+			c.SetPreferredNode(cand.mirror)
+			c.setDirectFast(false)
+		}
+		return nil
 	}
 	if lastErr == nil {
 		lastErr = errors.New("无可用下载节点")

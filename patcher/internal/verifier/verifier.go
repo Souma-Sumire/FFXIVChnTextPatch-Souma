@@ -127,7 +127,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 
 	if hasBackup {
 		cfg.log("[备份] 本地已存在版本 %s 的可信原版备份", version)
-		result.RestoredText, result.RestoredFont, err = restoreOriginals(&cfg, backupDir, sqpackDir, meta)
+		result.RestoredText, result.RestoredFont, err = restoreOriginals(ctx, &cfg, backupDir, sqpackDir, meta)
 		if err != nil {
 			return result, err
 		}
@@ -149,7 +149,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			}
 			meta = downloadedMeta
 
-			result.RestoredText, result.RestoredFont, err = restoreOriginals(&cfg, backupDir, sqpackDir, meta)
+			result.RestoredText, result.RestoredFont, err = restoreOriginals(ctx, &cfg, backupDir, sqpackDir, meta)
 			if err != nil {
 				return result, err
 			}
@@ -170,7 +170,12 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 				result.Cancelled = true
 				return result, nil
 			}
-			cfg.log("[提示] 用户已确认在未知版本状态下继续汉化，本次不进行文件备份")
+			cfg.log("[提示] 用户已确认在未知版本状态下继续汉化，正在从当前客户端提取文件建立还原基线备份...")
+			createdMeta, backupErr := createLocalBackupFromGameDir(ctx, cfg, sqpackDir, backupDir, version, string(reg))
+			if backupErr != nil {
+				return result, fmt.Errorf("建立本地原版备份失败: %w", backupErr)
+			}
+			meta = createdMeta
 		}
 	}
 
@@ -194,32 +199,75 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	return result, nil
 }
 
+func createLocalBackupFromGameDir(ctx context.Context, cfg Config, sqpackDir, backupDir, version, regionName string) (*BackupMeta, error) {
+	if err := os.MkdirAll(backupDir, 0o755); err != nil {
+		return nil, fmt.Errorf("创建备份目录失败: %w", err)
+	}
+	meta := &BackupMeta{
+		Region:  regionName,
+		Version: version,
+		Files:   make(map[string]FileHash),
+	}
+	for i, name := range AllFiles {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		src := filepath.Join(sqpackDir, name)
+		dst := filepath.Join(backupDir, name)
+		if _, err := os.Stat(src); err != nil {
+			return nil, fmt.Errorf("客户端缺失文件 %s: %w", name, err)
+		}
+		cfg.event("backup", fmt.Sprintf("正在备份原版文件 (%d/%d): %s", i+1, len(AllFiles), name), 0, 0)
+		cfg.log("[备份] 正在提取 %s...", name)
+		got, err := copyFile(ctx, src, dst, "")
+		if err != nil {
+			return nil, fmt.Errorf("提取 %s 到备份目录失败: %w", name, err)
+		}
+		meta.Files[name] = got
+	}
+	if err := writeBackupMeta(backupDir, meta); err != nil {
+		return nil, fmt.Errorf("保存备份清单失败: %w", err)
+	}
+	cfg.log("[备份] 已成功为当前版本 %s 建立本地原版基准备份", version)
+	return meta, nil
+}
+
 // restoreOriginals 在汉化前把本次要处理的文件组还原为官方原版。
 // 返回值表示该组是否真的覆盖过客户端文件——本来就是原版时一个字节都不会写。
-func restoreOriginals(cfg *Config, backupDir, sqpackDir string, meta *BackupMeta) (textRestored, fontRestored bool, err error) {
+func restoreOriginals(ctx context.Context, cfg *Config, backupDir, sqpackDir string, meta *BackupMeta) (textRestored, fontRestored bool, err error) {
 	if cfg.ReplaceText {
-		textRestored, err = restoreGroup(cfg, backupDir, sqpackDir, TextFiles, meta, "文本")
+		textRestored, err = restoreGroup(ctx, cfg, backupDir, sqpackDir, TextFiles, meta, "文本")
 		if err != nil {
-			return textRestored, fontRestored, fmt.Errorf("从本地备份还原文本原文件失败: %w", err)
+			return textRestored, fontRestored, restoreFailure("文本", textRestored, err)
 		}
 	}
 	if cfg.ReplaceFont {
-		fontRestored, err = restoreGroup(cfg, backupDir, sqpackDir, FontFiles, meta, "字体")
+		fontRestored, err = restoreGroup(ctx, cfg, backupDir, sqpackDir, FontFiles, meta, "字体")
 		if err != nil {
-			return textRestored, fontRestored, fmt.Errorf("从本地备份还原字体原文件失败: %w", err)
+			return textRestored, fontRestored, restoreFailure("字体", fontRestored, err)
 		}
 	}
 	return textRestored, fontRestored, nil
 }
 
+// restoreFailure 如实描述还原中断时客户端的状态：已经覆盖过的文件不会因为报错而消失。
+func restoreFailure(label string, restored bool, err error) error {
+	state := "客户端文件未被修改"
+	if restored {
+		state = "部分文件已还原，客户端可能处于原版与汉化混合状态"
+	}
+	return fmt.Errorf("从本地备份还原%s原文件失败（%s）: %w", label, state, err)
+}
+
 // restoreGroup 还原一组文件，并且只说实际发生的事：
 // 客户端已是原版时提示无需还原，真的覆盖了文件才逐条提示正在还原。
-func restoreGroup(cfg *Config, backupDir, sqpackDir string, files []string, meta *BackupMeta, label string) (bool, error) {
-	restored, err := RestoreFiles(backupDir, sqpackDir, files, meta, func(name string) {
+func restoreGroup(ctx context.Context, cfg *Config, backupDir, sqpackDir string, files []string, meta *BackupMeta, label string) (bool, error) {
+	restored, err := RestoreFiles(ctx, backupDir, sqpackDir, files, meta, func(name string) {
 		cfg.log("[%s] %s 不是官方原版，正在从本地备份还原...", label, name)
 	})
 	if err != nil {
-		return false, err
+		// 已经覆盖过的文件不能对外声称「未修改」：调用方据此判断客户端是否处于半还原状态。
+		return len(restored) > 0, err
 	}
 	if len(restored) == 0 {
 		cfg.log("[%s] 客户端%s已是官方原版，无需还原", label, label)
@@ -356,10 +404,13 @@ func restoreSequence(files []string) []string {
 
 // RestoreFiles 把 files 中与备份哈希不一致的文件从备份覆盖回客户端，返回实际写入的文件名。
 // 已经和备份一致的文件直接跳过、不产生写入；onRestore 在每次真正开始覆盖前回调（可为 nil）。
-func RestoreFiles(backupDir, sqpackDir string, files []string, meta *BackupMeta, onRestore func(name string)) ([]string, error) {
+func RestoreFiles(ctx context.Context, backupDir, sqpackDir string, files []string, meta *BackupMeta, onRestore func(name string)) ([]string, error) {
 	seq := restoreSequence(files)
 	restored := make([]string, 0, len(seq))
 	for _, name := range seq {
+		if err := ctx.Err(); err != nil {
+			return restored, err
+		}
 		src := filepath.Join(backupDir, name)
 		dst := filepath.Join(sqpackDir, name)
 		if _, err := os.Stat(src); err != nil {
@@ -380,7 +431,7 @@ func RestoreFiles(backupDir, sqpackDir string, files []string, meta *BackupMeta,
 		if onRestore != nil {
 			onRestore(name)
 		}
-		if _, err := copyFile(src, dst, want); err != nil {
+		if _, err := copyFile(ctx, src, dst, want); err != nil {
 			return restored, fmt.Errorf("还原 %s 失败: %w", name, err)
 		}
 		restored = append(restored, name)
@@ -388,7 +439,10 @@ func RestoreFiles(backupDir, sqpackDir string, files []string, meta *BackupMeta,
 	return restored, nil
 }
 
-func copyFile(src, dst, wantSHA string) (FileHash, error) {
+func copyFile(ctx context.Context, src, dst, wantSHA string) (FileHash, error) {
+	if err := ctx.Err(); err != nil {
+		return FileHash{}, err
+	}
 	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
 		return FileHash{}, err
 	}
@@ -404,11 +458,44 @@ func copyFile(src, dst, wantSHA string) (FileHash, error) {
 		return FileHash{}, err
 	}
 	h := sha256.New()
-	size, err := io.Copy(io.MultiWriter(out, h), in)
-	if err != nil {
-		_ = out.Close()
-		_ = os.Remove(tmp)
-		return FileHash{}, err
+	buf := make([]byte, 1024*1024)
+	var size int64
+	for {
+		if err := ctx.Err(); err != nil {
+			_ = out.Close()
+			_ = os.Remove(tmp)
+			return FileHash{}, err
+		}
+		nr, er := in.Read(buf)
+		if nr > 0 {
+			nw, ew := out.Write(buf[0:nr])
+			if nw < 0 || nr < nw {
+				nw = 0
+				if ew == nil {
+					ew = errors.New("写入异常")
+				}
+			}
+			h.Write(buf[0:nw])
+			size += int64(nw)
+			if ew != nil {
+				_ = out.Close()
+				_ = os.Remove(tmp)
+				return FileHash{}, ew
+			}
+			if nr != nw {
+				_ = out.Close()
+				_ = os.Remove(tmp)
+				return FileHash{}, io.ErrShortWrite
+			}
+		}
+		if er != nil {
+			if er != io.EOF {
+				_ = out.Close()
+				_ = os.Remove(tmp)
+				return FileHash{}, er
+			}
+			break
+		}
 	}
 	if err := out.Sync(); err != nil {
 		_ = out.Close()
@@ -561,7 +648,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 	}
 
 	// 逐文件比对，只覆盖真正被改动的文件；客户端本来就是原版时返回空列表。
-	restored, err := RestoreFiles(backupDir, sqpackDir, files, meta, func(name string) {
+	restored, err := RestoreFiles(ctx, backupDir, sqpackDir, files, meta, func(name string) {
 		cfg.log("[还原] %s 已被改动，正在覆盖为官方原版...", name)
 	})
 	if err != nil {

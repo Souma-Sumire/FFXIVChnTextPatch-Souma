@@ -138,6 +138,13 @@ func (f *Folder) readFiles(data []byte, isIndex2 bool) error {
 	if pos < 0 || f.NumFiles < 0 {
 		return fmt.Errorf("index 文件表头非法: offset=%d files=%d", f.FileIndexOffset, f.NumFiles)
 	}
+	entrySize := 16
+	if isIndex2 {
+		entrySize = 8
+	}
+	if maxFiles := (len(data) - pos) / entrySize; int(f.NumFiles) > maxFiles {
+		return fmt.Errorf("index 文件表头 entry 数量超出数据长度: files=%d max=%d", f.NumFiles, maxFiles)
+	}
 	f.Files = make(map[int32]*IndexFile, f.NumFiles)
 	for i := int32(0); i < f.NumFiles; i++ {
 		if isIndex2 {

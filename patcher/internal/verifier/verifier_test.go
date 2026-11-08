@@ -338,11 +338,10 @@ func TestRun_UnknownVersion_ConfirmYes(t *testing.T) {
 		t.Fatalf("用户确认继续后应执行汉化写入")
 	}
 
-	// 核心验证：绝对不可备份不可信的文件！
 	backupDir := filepath.Join(env.backupRoot, "global")
 	meta, _ := readBackupMeta(backupDir)
-	if meta != nil && len(meta.Files) > 0 {
-		t.Fatalf("未知版本继续汉化时不应创建本地备份，但发现了备份: %+v", meta)
+	if meta == nil || len(meta.Files) != len(AllFiles) {
+		t.Fatalf("未知版本继续汉化时应创建本地还原基线备份，实际备份清单: %+v", meta)
 	}
 }
 
@@ -594,5 +593,28 @@ func TestRun_WriteFailureReportsRestoredOriginals(t *testing.T) {
 	}
 	if string(content) != orig["0a0000.win32.index"] {
 		t.Fatal("先回原版后的文本索引应等于备份内容")
+	}
+}
+
+func TestIsValidReleaseJSON(t *testing.T) {
+	cases := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{"release list", `[{"tag_name":"patcher-v2.1.0"}]`, true},
+		{"release object", `{"tag_name":"patcher-v2.1.0"}`, true},
+		{"api error", `{"message":"API rate limit exceeded"}`, false},
+		{"empty object", `{}`, false},
+		{"empty list", `[]`, false},
+		{"null", `null`, false},
+		{"html error page", `<html>not found</html>`, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isValidReleaseJSON([]byte(tc.input)); got != tc.want {
+				t.Fatalf("isValidReleaseJSON(%s) = %v, want %v", tc.input, got, tc.want)
+			}
+		})
 	}
 }

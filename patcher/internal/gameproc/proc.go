@@ -207,7 +207,7 @@ func KillLauncherProcesses(gameDir string) ([]string, error) {
 func InspectConflicts(gameDir string) ([]ProcessInfo, []ProcessInfo, error) {
 	procs, err := procLister()
 	if err != nil {
-		return nil, nil, nil
+		return nil, nil, fmt.Errorf("枚举系统进程失败: %w", err)
 	}
 	conflicts := filterConflicting(procs, gameDir)
 	var gameConflicts []ProcessInfo

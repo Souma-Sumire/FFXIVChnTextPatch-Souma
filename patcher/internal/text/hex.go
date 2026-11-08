@@ -50,6 +50,9 @@ func ParseTargetString(s string) ([]byte, error) {
 
 func decodeHex(s string) ([]byte, error) {
 	s = strings.ReplaceAll(s, " ", "")
+	if len(s) == 0 {
+		return nil, fmt.Errorf("十六进制标签载荷不能为空")
+	}
 	if len(s)%2 != 0 {
 		return nil, fmt.Errorf("十六进制字符串长度为奇数")
 	}

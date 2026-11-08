@@ -487,6 +487,12 @@ func loadRules(resourceDir string) ([]pipeline.Rule, error) {
 }
 
 func (a *App) loadConfig(resourceDir string) AppConfig {
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+	return a.loadConfigLocked(resourceDir)
+}
+
+func (a *App) loadConfigLocked(resourceDir string) AppConfig {
 	cfg := defaultConfig()
 	cfgPath := configPathFor(resourceDir)
 	data, err := os.ReadFile(cfgPath)
@@ -989,7 +995,32 @@ func (a *App) DetectGamePaths(language string) []string {
 			targetReg = region.Of(parsed)
 		}
 	}
+	return a.detectRegionPaths(ctx, targetReg)
+}
 
+func detectLauncherGamePaths() []string {
+	appData, err := os.UserConfigDir()
+	if err != nil || appData == "" {
+		return nil
+	}
+	var out []string
+	for _, dirName := range []string{"XIVLauncher", "XIVLauncherCN"} {
+		cfgPath := filepath.Join(appData, dirName, "launcherConfigV3.json")
+		raw, err := os.ReadFile(cfgPath)
+		if err != nil || len(raw) == 0 {
+			continue
+		}
+		var doc struct {
+			GamePath string `json:"GamePath"`
+		}
+		if json.Unmarshal(raw, &doc) == nil && strings.TrimSpace(doc.GamePath) != "" {
+			out = append(out, strings.TrimSpace(doc.GamePath))
+		}
+	}
+	return out
+}
+
+func (a *App) detectRegionPaths(ctx context.Context, targetReg region.Region) []string {
 	seen := map[string]bool{}
 	candidates := make([]string, 0, 8)
 	add := func(p string) {
@@ -1001,6 +1032,10 @@ func (a *App) DetectGamePaths(language string) []string {
 			seen[p] = true
 			candidates = append(candidates, p)
 		}
+	}
+
+	for _, p := range detectLauncherGamePaths() {
+		add(p)
 	}
 
 	if targetReg == "" || targetReg == region.Global {
@@ -1016,37 +1051,36 @@ func (a *App) DetectGamePaths(language string) []string {
 		}
 	}
 
+	chinaSuffixes := []string{
+		filepath.Join("Program Files (x86)", "盛趣游戏", "最终幻想XIV"),
+		filepath.Join("Program Files", "盛趣游戏", "最终幻想XIV"),
+		filepath.Join("Program Files (x86)", "盛大游戏", "最终幻想XIV"),
+		filepath.Join("Program Files (x86)", "上海数龙科技有限公司", "最终幻想XIV"),
+		filepath.Join("Program Files (x86)", "SNDA", "FFXIV"),
+		filepath.Join("WeGameApps", "rail_apps", "最终幻想14(2000340)"),
+		filepath.Join("WeGame", "rail_apps", "最终幻想14(2000340)"),
+		filepath.Join("Games", "FFXIV"),
+		filepath.Join("Games", "最终幻想XIV"),
+		"FFXIV",
+		"最终幻想XIV",
+	}
+	globalSuffixes := []string{
+		filepath.Join("Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+		filepath.Join("Program Files", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
+		filepath.Join("Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+		filepath.Join("Program Files (x86)", "Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
+	}
+
 	var suffixes []string
 	switch targetReg {
 	case region.China:
-		suffixes = []string{
-			filepath.Join("Program Files (x86)", "盛趣游戏", "最终幻想XIV"),
-			filepath.Join("Program Files", "盛趣游戏", "最终幻想XIV"),
-			filepath.Join("Program Files (x86)", "盛大游戏", "最终幻想XIV"),
-			filepath.Join("WeGameApps", "rail_apps", "最终幻想14(2000340)"),
-			filepath.Join("WeGame", "rail_apps", "最终幻想14(2000340)"),
-		}
+		suffixes = chinaSuffixes
 	case region.Global:
-		suffixes = []string{
-			filepath.Join("Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-			filepath.Join("Program Files", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-			filepath.Join("Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
-			filepath.Join("Program Files (x86)", "Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
-		}
+		suffixes = globalSuffixes
 	case region.Korea, region.Taiwan:
 		suffixes = nil
 	default:
-		suffixes = []string{
-			filepath.Join("Program Files (x86)", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-			filepath.Join("Program Files", "SquareEnix", "FINAL FANTASY XIV - A Realm Reborn"),
-			filepath.Join("Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
-			filepath.Join("Program Files (x86)", "Steam", "steamapps", "common", "FINAL FANTASY XIV Online"),
-			filepath.Join("Program Files (x86)", "盛趣游戏", "最终幻想XIV"),
-			filepath.Join("Program Files", "盛趣游戏", "最终幻想XIV"),
-			filepath.Join("Program Files (x86)", "盛大游戏", "最终幻想XIV"),
-			filepath.Join("WeGameApps", "rail_apps", "最终幻想14(2000340)"),
-			filepath.Join("WeGame", "rail_apps", "最终幻想14(2000340)"),
-		}
+		suffixes = append(append([]string{}, globalSuffixes...), chinaSuffixes...)
 	}
 
 	for _, root := range getScanDriveRoots() {
@@ -1055,31 +1089,34 @@ func (a *App) DetectGamePaths(language string) []string {
 		}
 	}
 
-	// 常见位置未命中时，用磁盘 3 层扫描的结果兜底。
-	if len(candidates) == 0 && (targetReg == "" || targetReg == region.Global) {
+	filterByRegion := func(list []string) []string {
+		if targetReg == "" {
+			return list
+		}
+		out := make([]string, 0, len(list))
+		for _, p := range list {
+			if actualReg, err := verifier.DetectClientRegion(p); err == nil {
+				if actualReg == targetReg {
+					out = append(out, p)
+				}
+			} else {
+				out = append(out, p)
+			}
+		}
+		return out
+	}
+
+	matched := filterByRegion(candidates)
+	if len(matched) == 0 {
 		for _, p := range a.scanGlobalDirs(ctx) {
 			add(p)
 		}
-	}
-
-	if targetReg == "" {
-		return candidates
-	}
-
-	matched := make([]string, 0, len(candidates))
-	for _, p := range candidates {
-		if actualReg, err := verifier.DetectClientRegion(p); err == nil {
-			if actualReg == targetReg {
-				matched = append(matched, p)
-			}
-		} else {
-			matched = append(matched, p)
-		}
+		matched = filterByRegion(candidates)
 	}
 	return matched
 }
 
-// scanGlobalDirs 在各磁盘根目录 3 层以内查找国际服客户端目录。
+// scanGlobalDirs 在各磁盘根目录 4 层以内查找客户端目录（通过 boot 与 game/ffxiv_dx11.exe 特征判定，不限文件夹名）。
 // 命中结果在进程内复用；已有扫描在进行时复用同一轮结果，ctx 取消则立即返回 nil。
 func (a *App) scanGlobalDirs(ctx context.Context) []string {
 	a.scanMu.Lock()
@@ -1105,7 +1142,7 @@ func (a *App) scanGlobalDirs(ctx context.Context) []string {
 	a.scanMu.Unlock()
 
 	roots := getScanDriveRoots()
-	dirs := gamescan.Find(ctx, roots, gamecfg.SubFolder, gamescan.DefaultMaxDepth, isGlobalClientDir)
+	dirs := gamescan.FindClients(ctx, roots, gamescan.DefaultMaxDepth, isGlobalClientDir)
 
 	a.scanMu.Lock()
 	// 只有完整跑完的扫描才缓存，避免把被中止的部分结果当成最终结论。
@@ -1379,7 +1416,7 @@ func (a *App) waitUnknownConfirm(ctx context.Context, version string) (bool, err
 	a.confirmCh = ch
 	a.confirmMu.Unlock()
 
-	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("当前游戏版本（%s）在云端尚未收录原版备份，无法保证当前客户端文件是官方原版，继续汉化可能导致异常或封号风险。是否仍要继续汉化？", version))
+	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("当前游戏版本（%s）在云端尚未收录原版备份，无法保证当前客户端文件是官方原版。继续后会以当前客户端文件作为还原基线备份；如果它此前已被其他汉化补丁改过，还原时也只能回到现在的状态。建议先用官方启动器修复客户端，再继续汉化。是否仍要继续？", version))
 	select {
 	case ok := <-ch:
 		return ok, nil
@@ -1539,15 +1576,35 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 	if goruntime.GOOS != "windows" {
 		return errors.New("字体编译组件仅支持 Windows 平台，当前操作系统暂不支持现场编译与预览")
 	}
-	if _, err := a.fontEngine.ResolveBinary(); err == nil {
-		return nil
-	}
-	dir := dataRootFor(resourceDir)
+	// 组件和它自己读写的 config.json 必须留在独立目录：CLI 会写同目录的 config.json，
+	// 与主程序配置同目录时会互相覆盖。因此优先使用隔离目录，并把旧的同目录组件迁进来；
+	// 程序目录/PATH 里的旧组件不再直接复用。
+	dir := filepath.Join(dataRootFor(resourceDir), "fontchanger")
 	path := filepath.Join(dir, fontengine.CLIBinaryName)
 	if abs, err := filepath.Abs(path); err == nil {
 		path = abs
+		dir = filepath.Dir(path)
 	}
+	legacyPath := filepath.Join(filepath.Dir(dir), fontengine.CLIBinaryName)
+
 	if st, err := os.Stat(path); err == nil && st.Size() > 1<<20 && !st.IsDir() {
+		a.fontEngine.SetBinPath(path)
+		return nil
+	}
+	if st, err := os.Stat(legacyPath); err == nil && st.Size() > 1<<20 && !st.IsDir() {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return fmt.Errorf("创建字体组件目录失败: %w", err)
+		}
+		if err := os.Rename(legacyPath, path); err != nil {
+			data, readErr := os.ReadFile(legacyPath)
+			if readErr != nil {
+				return fmt.Errorf("迁移字体编译组件失败: %w", readErr)
+			}
+			if writeErr := os.WriteFile(path, data, 0o755); writeErr != nil {
+				return fmt.Errorf("迁移字体编译组件失败: %w", writeErr)
+			}
+			_ = os.Remove(legacyPath)
+		}
 		a.fontEngine.SetBinPath(path)
 		return nil
 	}
@@ -1610,6 +1667,17 @@ func verifyExecutable(path string) error {
 	return nil
 }
 
+func (a *App) syncFontEngineDirs(_ context.Context, resourceDir, primaryGameDir string) {
+	cfg := a.loadConfig(resourceDir)
+	dirs := make(map[string]string, len(cfg.GameDirs))
+	for k, v := range cfg.GameDirs {
+		if clean := strings.TrimSpace(v); clean != "" && isGameClientDir(clean) {
+			dirs[normalizeRegionCode(k)] = clean
+		}
+	}
+	a.fontEngine.SetGameDirs(primaryGameDir, dirs)
+}
+
 // checkFontSource 在写入任何客户端文件之前确认本次字体来源可用。
 // 选了「自定义方案」就必须能拿到编译组件：拿不到直接报错中止，
 // 不再等文本汉化跑完再悄悄换成内置字体包。
@@ -1620,7 +1688,7 @@ func (a *App) checkFontSource(ctx context.Context, resourceDir, gameDir string) 
 	if goruntime.GOOS != "windows" {
 		return errors.New("「自定义方案」需要 Windows 版字体编译组件，当前平台无法现场编译字体；请把字体来源改为「内置字体包」")
 	}
-	a.fontEngine.SetGameDir(gameDir)
+	a.syncFontEngineDirs(ctx, resourceDir, gameDir)
 	if err := a.ensureFontCompiler(ctx, resourceDir); err != nil {
 		return fmt.Errorf("字体来源是「自定义方案」，但字体编译组件不可用：%w；可改用「内置字体包」", err)
 	}
@@ -1968,7 +2036,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		}
 		defer os.RemoveAll(tempFontDir)
 
-		a.fontEngine.SetGameDir(req.GameDir)
+		a.syncFontEngineDirs(ctx, resourceDir, req.GameDir)
 		fontDir := ""
 		// 字体来源由界面选择，两条路互斥：选哪条就用哪条，任何一步失败都直接中止，
 		// 不会自动换成另一种来源，否则用户无法判断最终生效的到底是哪一套字体。
@@ -2430,6 +2498,28 @@ func defaultPresetForRegionWithConfig(targetReg region.Region, cfg AppConfig) st
 	return defaultPresetForRegionWithDirs(targetReg, cfg.GameDirs)
 }
 
+func availablePresetsForRegionWithDirs(targetReg region.Region, customPresetsDir string, gameDirs map[string]string) []fontengine.PresetSummary {
+	all := fontengine.GetPresetsForRegion(targetReg, customPresetsDir)
+	if targetReg != region.Global {
+		return all
+	}
+	chnDir := ""
+	if gameDirs != nil {
+		chnDir = gameDirs[string(region.CHS)]
+	}
+	if isGameClientDir(chnDir) {
+		return all
+	}
+	filtered := make([]fontengine.PresetSummary, 0, len(all))
+	for _, p := range all {
+		if p.ID == fontengine.BuiltinChnAXISPresetID {
+			continue
+		}
+		filtered = append(filtered, p)
+	}
+	return filtered
+}
+
 // getActiveFontPreset 返回该区服当前选中的方案 id。
 // 配置里记的方案可能已被删除、改名或换过版本，这里只返回确实还能用的 id，
 // 否则就退回该区服的默认方案（方案文件本身缺失才会走到更外层的报错）。
@@ -2438,7 +2528,7 @@ func (a *App) getActiveFontPreset(regionKey string) string {
 	defer a.cfgMu.Unlock()
 	normKey := normalizeRegionCode(regionKey)
 	resourceDir := a.resourceDir()
-	cfg := a.loadConfig(resourceDir)
+	cfg := a.loadConfigLocked(resourceDir)
 
 	parsedLang, _ := region.ParseLanguage(normKey)
 	targetReg := region.Of(parsedLang)
@@ -2451,7 +2541,7 @@ func (a *App) getActiveFontPreset(regionKey string) string {
 	if stored == "" || stored == fallback {
 		return fallback
 	}
-	for _, preset := range fontengine.GetPresetsForRegion(targetReg, presetsDirFor(resourceDir)) {
+	for _, preset := range availablePresetsForRegionWithDirs(targetReg, presetsDirFor(resourceDir), cfg.GameDirs) {
 		if preset.ID == stored {
 			return stored
 		}
@@ -2461,7 +2551,7 @@ func (a *App) getActiveFontPreset(regionKey string) string {
 
 func (a *App) resolveLanguageAndGameDir(language string) (region.Language, string) {
 	a.cfgMu.Lock()
-	cfg := a.loadConfig(a.resourceDir())
+	cfg := a.loadConfigLocked(a.resourceDir())
 	a.cfgMu.Unlock()
 
 	langStr := strings.TrimSpace(language)
@@ -2483,7 +2573,11 @@ func (a *App) resolveLanguageAndGameDir(language string) (region.Language, strin
 func (a *App) GetFontPresets(language string) ([]fontengine.PresetSummary, error) {
 	parsedLang, _ := a.resolveLanguageAndGameDir(language)
 	targetReg := region.Of(parsedLang)
-	return fontengine.GetPresetsForRegion(targetReg, presetsDirFor(a.resourceDir())), nil
+	resourceDir := a.resourceDir()
+	a.cfgMu.Lock()
+	cfg := a.loadConfigLocked(resourceDir)
+	a.cfgMu.Unlock()
+	return availablePresetsForRegionWithDirs(targetReg, presetsDirFor(resourceDir), cfg.GameDirs), nil
 }
 
 func (a *App) GetFontPreset(id string) (string, error) {
@@ -2515,7 +2609,7 @@ func (a *App) DeleteFontPreset(language string, presetId string) error {
 
 	a.cfgMu.Lock()
 	defer a.cfgMu.Unlock()
-	cfg := a.loadConfig(resourceDir)
+	cfg := a.loadConfigLocked(resourceDir)
 	if cfg.FontPresets == nil || cfg.FontPresets[regionKey] != presetId {
 		return nil
 	}
@@ -2539,7 +2633,7 @@ func (a *App) RenameFontPreset(language string, presetId string, newName string)
 
 	a.cfgMu.Lock()
 	defer a.cfgMu.Unlock()
-	cfg := a.loadConfig(resourceDir)
+	cfg := a.loadConfigLocked(resourceDir)
 	if cfg.FontPresets == nil || cfg.FontPresets[regionKey] != presetId {
 		return summary, nil
 	}
@@ -2558,16 +2652,20 @@ func (a *App) RenameFontPreset(language string, presetId string, newName string)
 // 免得配置里留下一个后来会因为区服不匹配而编译失败的 id。
 func (a *App) SelectFontPreset(language string, presetId string) error {
 	resourceDir := a.resourceDir()
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+
+	cfg := a.loadConfigLocked(resourceDir)
 	langStr := strings.TrimSpace(language)
 	if langStr == "" {
-		langStr = a.loadConfig(resourceDir).Language
+		langStr = cfg.Language
 	}
 	parsedLang, err := region.ParseLanguage(langStr)
 	if err != nil {
 		return err
 	}
 	targetReg := region.Of(parsedLang)
-	available := fontengine.GetPresetsForRegion(targetReg, presetsDirFor(resourceDir))
+	available := availablePresetsForRegionWithDirs(targetReg, presetsDirFor(resourceDir), cfg.GameDirs)
 	usable := false
 	for _, preset := range available {
 		if preset.ID == presetId {
@@ -2579,10 +2677,6 @@ func (a *App) SelectFontPreset(language string, presetId string) error {
 		return fmt.Errorf("字体方案不可用于当前区服：%s", presetId)
 	}
 
-	a.cfgMu.Lock()
-	defer a.cfgMu.Unlock()
-
-	cfg := a.loadConfig(resourceDir)
 	regionKey := normalizeRegionCode(langStr)
 	if cfg.FontPresets == nil {
 		cfg.FontPresets = map[string]string{}
@@ -2608,7 +2702,7 @@ func (a *App) AutoFitFontPreset(configJson string, fontName string, elementIndic
 		ctx = a.ctx
 	}
 	_, gameDir := a.resolveLanguageAndGameDir("")
-	a.fontEngine.SetGameDir(gameDir)
+	a.syncFontEngineDirs(ctx, a.resourceDir(), gameDir)
 	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
 		return "", fmt.Errorf("字体拟合需要字体编译组件：%w", err)
 	}
@@ -2623,7 +2717,7 @@ func (a *App) RenderFontPreview(configJson string, fontName string, text string,
 		ctx = a.ctx
 	}
 	_, gameDir := a.resolveLanguageAndGameDir("")
-	a.fontEngine.SetGameDir(gameDir)
+	a.syncFontEngineDirs(ctx, a.resourceDir(), gameDir)
 	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
 		return "", fmt.Errorf("预览需要字体编译组件：%w", err)
 	}
@@ -2650,7 +2744,7 @@ func (a *App) ExportFontTTMP(configJson string, savePath string) error {
 		ctx = a.ctx
 	}
 	_, gameDir := a.resolveLanguageAndGameDir("")
-	a.fontEngine.SetGameDir(gameDir)
+	a.syncFontEngineDirs(ctx, a.resourceDir(), gameDir)
 	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
 		return fmt.Errorf("导出 TTMP 需要字体编译组件：%w", err)
 	}
@@ -2684,7 +2778,7 @@ func (a *App) ExportFontRaw(configJson string, outDir string) error {
 		ctx = a.ctx
 	}
 	_, gameDir := a.resolveLanguageAndGameDir("")
-	a.fontEngine.SetGameDir(gameDir)
+	a.syncFontEngineDirs(ctx, a.resourceDir(), gameDir)
 	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
 		return fmt.Errorf("导出原始文件需要字体编译组件：%w", err)
 	}
@@ -2755,8 +2849,10 @@ func (a *App) ReadTextFile(filePath string) (string, error) {
 	return string(bytes), nil
 }
 
-// WriteTextFile 将文本内容写入指定文件
+// WriteTextFile 将文本内容原子写入指定文件
 func (a *App) WriteTextFile(filePath string, content string) error {
-	return os.WriteFile(filePath, []byte(content), 0644)
+	if strings.TrimSpace(filePath) == "" {
+		return errors.New("文件路径不能为空")
+	}
+	return writeFileAtomic(filepath.Clean(filePath), []byte(content))
 }
-

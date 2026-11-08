@@ -49,10 +49,10 @@ type Manifest struct {
 
 // DefaultNodes 返回默认的下载节点（直连 + 国内加速镜像，已实测可用）。
 //
-// 资源分支从 assets 换成了 assets-v2：旧版汉化器仍然从 assets 分支下载带字体包的
-// 清单，那条分支保持原样不再改动，换掉分支名就等于把新旧两代资源彻底隔离。
+// 资源统一发布在 assets 分支：新版与旧版汉化器共用同一份快照，字体包也已确认向下兼容，
+// 因此不再单独维护第二条资源分支。
 func DefaultNodes() []string {
-	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets-v2/resource/"
+	const raw = "https://raw.githubusercontent.com/Souma-Sumire/FFXIVChnTextPatch-Souma/assets/resource/"
 	return []string{
 		raw,
 		"https://gh-proxy.com/" + raw,

@@ -40,7 +40,7 @@ type Face struct {
 type FontElement struct {
 	Size             float64           `json:"size"`
 	Gamma            float64           `json:"gamma"`
-	Renderer         int               `json:"renderer"` // 1: DirectWrite, 2: FreeType
+	Renderer         int               `json:"renderer"` // 0: Empty, 1: Game, 2: DirectWrite, 3: FreeType, 4: GlyphImages
 	MergeMode        int               `json:"mergeMode"` // 0: Default, 1: Fallback, etc.
 	Lookup           Lookup            `json:"lookup"`
 	Transform        Transform         `json:"transform"`

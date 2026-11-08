@@ -48,6 +48,20 @@ func TestParseFile(t *testing.T) {
 		t.Fatalf("ParseFile() = %#v, want %#v", rows, want)
 	}
 
+	unclosedInput := []byte("1, \"unclosed\n2, val2\n3, val3\n")
+	unclosedRows := Parse(unclosedInput)
+	if len(unclosedRows) < 2 {
+		t.Fatalf("未闭合引号不应吞掉后续行，实际解析出 %d 行", len(unclosedRows))
+	}
+
+	unclosedPath := filepath.Join(tmpDir, "unclosed.csv")
+	if err := os.WriteFile(unclosedPath, unclosedInput, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ParseFile(unclosedPath); err == nil {
+		t.Fatal("未闭合引号应返回 error，实际为 nil")
+	}
+
 	_, err = ParseFile(filepath.Join(tmpDir, "non_existent.csv"))
 	if err == nil {
 		t.Fatal("期望读取不存在文件返回 error，实际为 nil")

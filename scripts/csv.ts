@@ -1,8 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { createHash } from "node:crypto";
-import { deflateRawSync } from "node:zlib";
 import { csvName, folderName } from "./names.ts";
+import { generateManifestAndSnapshot, listRelativeFiles } from "./manifest.ts";
 import {
   cnColShift,
   materiaMap,
@@ -21,8 +20,6 @@ const CSV_PATHS = {
 } as const;
 const OUTPUT_PATH = path.resolve(import.meta.dirname, "../resource/rawexd");
 const RESOURCE_PATH = path.resolve(import.meta.dirname, "../resource");
-const MANIFEST_PATH = path.join(RESOURCE_PATH, "manifest.json");
-const ZIP_PATH = path.join(RESOURCE_PATH, "rawexd.zip");
 const RULES_PATH = path.join(RESOURCE_PATH, "rules.json");
 const TABLES_PATH = path.join(RESOURCE_PATH, "tables.json");
 
@@ -562,63 +559,6 @@ function detectNewCsvTables(): void {
   }
 }
 
-const CRC32_TABLE: Uint32Array = (() => {
-  const table = new Uint32Array(256);
-  for (let i = 0; i < 256; i++) {
-    let c = i;
-    for (let k = 0; k < 8; k++) {
-      c = (c & 1) !== 0 ? (0xedb88320 ^ (c >>> 1)) >>> 0 : c >>> 1;
-    }
-    table[i] = c >>> 0;
-  }
-  return table;
-})();
-
-function crc32(buf: Buffer): number {
-  let c = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) {
-    c = (c >>> 8) ^ CRC32_TABLE[(c ^ buf[i]!) & 0xff]!;
-  }
-  return (c ^ 0xffffffff) >>> 0;
-}
-
-// 固定 ZIP 内时间戳为 1980-01-01，保证相同内容生成完全相同的快照包。
-const ZIP_DOS_TIME = 0;
-const ZIP_DOS_DATE = 33;
-
-function sha256File(filePath: string): { sha256: string; size: number } {
-  const hash = createHash("sha256");
-  const fd = fs.openSync(filePath, "r");
-  try {
-    const buf = Buffer.allocUnsafe(1024 * 1024);
-    let read = 0;
-    while ((read = fs.readSync(fd, buf, 0, buf.length, null)) > 0) {
-      hash.update(buf.subarray(0, read));
-    }
-  } finally {
-    fs.closeSync(fd);
-  }
-  return { sha256: hash.digest("hex"), size: fs.statSync(filePath).size };
-}
-
-function listRelativeFiles(root: string, prefix: string): string[] {
-  const out: string[] = [];
-  const walk = (dir: string, rel: string): void => {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const childRel = rel === "" ? entry.name : `${rel}/${entry.name}`;
-      if (entry.isDirectory()) {
-        walk(path.join(dir, entry.name), childRel);
-      } else if (entry.isFile()) {
-        out.push(prefix === "" ? childRel : `${prefix}/${childRel}`);
-      }
-    }
-  };
-  if (fs.existsSync(root)) {
-    walk(root, "");
-  }
-  return out.sort();
-}
-
 function writeRulesFile(): void {
   const rules = {
     specialWord,
@@ -641,104 +581,6 @@ function writeTablesFile(): void {
   console.log(`已生成表名索引: ${path.relative(RESOURCE_PATH, TABLES_PATH)}（${Object.keys(csvName).length} 个根表，${files.length} 个文件）`);
 }
 
-interface ZipEntry {
-  name: string;
-  absPath: string;
-}
-
-function buildZip(entries: ZipEntry[]): Buffer {
-  const localChunks: Buffer[] = [];
-  const centralChunks: Buffer[] = [];
-  let localOffset = 0;
-
-  for (const entry of entries) {
-    const raw = fs.readFileSync(entry.absPath);
-    const compressed = deflateRawSync(raw, { level: 9 });
-    const checksum = crc32(raw);
-    const nameBuf = Buffer.from(entry.name, "utf8");
-    const time = ZIP_DOS_TIME;
-    const date = ZIP_DOS_DATE;
-
-    const local = Buffer.alloc(30);
-    local.writeUInt32LE(0x04034b50, 0);
-    local.writeUInt16LE(20, 4);
-    local.writeUInt16LE(0x0800, 6);
-    local.writeUInt16LE(8, 8);
-    local.writeUInt16LE(time, 10);
-    local.writeUInt16LE(date, 12);
-    local.writeUInt32LE(checksum, 14);
-    local.writeUInt32LE(compressed.length, 18);
-    local.writeUInt32LE(raw.length, 22);
-    local.writeUInt16LE(nameBuf.length, 26);
-    local.writeUInt16LE(0, 28);
-
-    const central = Buffer.alloc(46);
-    central.writeUInt32LE(0x02014b50, 0);
-    central.writeUInt16LE(20, 4);
-    central.writeUInt16LE(20, 6);
-    central.writeUInt16LE(0x0800, 8);
-    central.writeUInt16LE(8, 10);
-    central.writeUInt16LE(time, 12);
-    central.writeUInt16LE(date, 14);
-    central.writeUInt32LE(checksum, 16);
-    central.writeUInt32LE(compressed.length, 20);
-    central.writeUInt32LE(raw.length, 24);
-    central.writeUInt16LE(nameBuf.length, 28);
-    central.writeUInt16LE(0, 30);
-    central.writeUInt16LE(0, 32);
-    central.writeUInt16LE(0, 34);
-    central.writeUInt16LE(0, 36);
-    central.writeUInt32LE(0, 38);
-    central.writeUInt32LE(localOffset, 42);
-
-    localChunks.push(local, nameBuf, compressed);
-    centralChunks.push(central, nameBuf);
-    localOffset += local.length + nameBuf.length + compressed.length;
-  }
-
-  const centralBuf = Buffer.concat(centralChunks);
-  const eocd = Buffer.alloc(22);
-  eocd.writeUInt32LE(0x06054b50, 0);
-  eocd.writeUInt16LE(0, 4);
-  eocd.writeUInt16LE(0, 6);
-  eocd.writeUInt16LE(entries.length, 8);
-  eocd.writeUInt16LE(entries.length, 10);
-  eocd.writeUInt32LE(centralBuf.length, 12);
-  eocd.writeUInt32LE(localOffset, 16);
-  eocd.writeUInt16LE(0, 20);
-
-  return Buffer.concat([...localChunks, centralBuf, eocd]);
-}
-
-function generateManifestAndSnapshot(): void {
-  const zipEntries: ZipEntry[] = listRelativeFiles(OUTPUT_PATH, "rawexd").map((rel) => ({
-    name: rel,
-    absPath: path.join(RESOURCE_PATH, rel),
-  }));
-  const zipData = buildZip(zipEntries);
-  fs.writeFileSync(ZIP_PATH, zipData);
-  const zipInfo = { sha256: createHash("sha256").update(zipData).digest("hex"), size: zipData.length, count: zipEntries.length };
-
-  const rulesInfo = sha256File(RULES_PATH);
-  const tablesInfo = sha256File(TABLES_PATH);
-
-  const rootHash = createHash("sha256");
-  rootHash.update(`rawexd.zip:${zipInfo.sha256}\n`);
-  rootHash.update(`rules.json:${rulesInfo.sha256}\n`);
-  rootHash.update(`tables.json:${tablesInfo.sha256}\n`);
-
-  // 字体不再随资源包分发：汉化时由主程序内置的 FFXIV-FontChanger 按方案编译。
-  const manifest = {
-    generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
-    rootHash: rootHash.digest("hex"),
-    rawexd: zipInfo,
-    rules: { sha256: rulesInfo.sha256, size: rulesInfo.size },
-    tables: { sha256: tablesInfo.sha256, size: tablesInfo.size },
-  };
-  fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-  console.log(`已生成同步清单: ${path.relative(RESOURCE_PATH, MANIFEST_PATH)}`);
-  console.log(`已生成全量快照包: ${path.relative(RESOURCE_PATH, ZIP_PATH)}（${zipEntries.length} 个文件，${(zipInfo.size / 1024 / 1024).toFixed(2)} MB）`);
-}
 
 function main(): void {
   const args = new Set(process.argv.slice(2));
@@ -759,8 +601,9 @@ function main(): void {
     return;
   }
 
-  const runRoot = args.size === 0 || args.has("--root");
-  const runFolder = args.size === 0 || args.has("--folder");
+  const runRoot = !args.has("--folder");
+  const runFolder = !args.has("--root");
+
 
   if (runRoot) {
     detectNewCsvTables();

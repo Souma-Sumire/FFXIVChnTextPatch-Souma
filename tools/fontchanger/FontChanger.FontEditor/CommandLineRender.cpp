@@ -9,6 +9,7 @@
 
 #include "pch.h"
 #include "MainWindow.h"
+#include "FontGeneratorConfig.h"
 #include "GlyphFileTools.h"
 #include "WicImage.h"
 #include "CommandLineRender.h"
@@ -273,8 +274,11 @@ namespace {
 
 		if (gamePath && !gamePath->empty()) {
 			const std::filesystem::path gp(*gamePath);
-			App::ElementFonts::SetGameInstallationPathsProvider([gp](xivres::font_type) {
-				return std::vector<std::filesystem::path>{ gp / L"game", gp };
+			App::ElementFonts::SetGameInstallationPathsProvider([gp](xivres::font_type fontType) {
+				std::vector<std::filesystem::path> paths{ gp / L"game", gp };
+				auto fallback = g_config.GetGamePaths(fontType);
+				paths.insert(paths.end(), std::make_move_iterator(fallback.begin()), std::make_move_iterator(fallback.end()));
+				return paths;
 			});
 		}
 

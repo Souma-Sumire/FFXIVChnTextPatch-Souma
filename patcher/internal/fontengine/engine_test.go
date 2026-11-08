@@ -44,3 +44,25 @@ func TestResolveBinaryInvalidOrSmallFilesIgnored(t *testing.T) {
 		t.Fatalf("解析结果必须是绝对路径，实际为: %s", resolved)
 	}
 }
+
+func TestPromoteToFontchangerDir(t *testing.T) {
+	base := t.TempDir()
+	src := filepath.Join(base, CLIBinaryName)
+	if err := os.WriteFile(src, make([]byte, 1<<20+100), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	want := filepath.Join(base, "fontchanger", CLIBinaryName)
+	if got := promoteToFontchangerDir(base, src); got != want {
+		t.Fatalf("promoteToFontchangerDir() = %s, want %s", got, want)
+	}
+	if _, err := os.Stat(want); err != nil {
+		t.Fatalf("组件未迁入隔离目录: %v", err)
+	}
+	if _, err := os.Stat(src); !os.IsNotExist(err) {
+		t.Fatalf("旧位置的组件应已移走，实际状态: %v", err)
+	}
+	if got := promoteToFontchangerDir(base, want); got != want {
+		t.Fatalf("重复调用应保持幂等，实际: %s", got)
+	}
+}

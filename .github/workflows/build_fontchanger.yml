@@ -11,6 +11,10 @@ on:
       - "tools/fontchanger/**"
       - ".github/workflows/build_fontchanger.yml"
 
+concurrency:
+  group: build-fontchanger
+  cancel-in-progress: true
+
 env:
   VCPKG_COMMIT_ID: "5f96cd15fd745122cf27e0524606d6c1efc5fd07"
 

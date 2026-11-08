@@ -54,6 +54,12 @@ func TestParseTargetStringRejectsNestedTag(t *testing.T) {
 }
 
 func TestParseTargetStringRejectsBadHex(t *testing.T) {
+	if _, err := ParseTargetString("<hex:>"); err == nil {
+		t.Fatal("空载荷十六进制标签应返回错误")
+	}
+	if _, err := ParseTargetString("<hex:   >"); err == nil {
+		t.Fatal("空白十六进制标签应返回错误")
+	}
 	if _, err := ParseTargetString("<hex:zz>"); err == nil {
 		t.Fatal("非法十六进制内容应返回错误")
 	}

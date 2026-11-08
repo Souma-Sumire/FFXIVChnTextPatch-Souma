@@ -82,6 +82,32 @@ func TestBuiltinPresetContents(t *testing.T) {
 		if set.ExportMapChnAxisToFont || set.ExportMapKrnAxisToFont || set.ExportMapTcAxisToFont || set.ExportMapFontLobbyToFont {
 			t.Errorf("内置方案 %s 不应启用跨区或大厅导出映射: %+v", id, set)
 		}
+		if id == BuiltinChnAXISSystemPresetID {
+			for _, fs := range set.FontSets {
+				for _, face := range fs.Faces {
+					if len(face.Elements) < 2 {
+						t.Fatalf("微软雅黑方案 %s 应包含至少 2 个图层", face.Name)
+					}
+					if face.Elements[1].Lookup.Name != "Microsoft YaHei" || face.Elements[1].Renderer != 2 {
+						t.Errorf("微软雅黑方案 %s 第二层应为 DirectWrite(2) Microsoft YaHei，实际 name=%q renderer=%d",
+							face.Name, face.Elements[1].Lookup.Name, face.Elements[1].Renderer)
+					}
+				}
+			}
+		}
+		if id == BuiltinChnAXISPresetID {
+			for _, fs := range set.FontSets {
+				for _, face := range fs.Faces {
+					if len(face.Elements) < 2 {
+						t.Fatalf("ChnAXIS 方案 %s 应包含至少 2 个图层", face.Name)
+					}
+					if face.Elements[1].Lookup.Name != "ChnAXIS" || face.Elements[1].Renderer != 1 {
+						t.Errorf("ChnAXIS 方案 %s 第二层应为 Game(1) ChnAXIS，实际 name=%q renderer=%d",
+							face.Name, face.Elements[1].Lookup.Name, face.Elements[1].Renderer)
+					}
+				}
+			}
+		}
 	}
 }
 

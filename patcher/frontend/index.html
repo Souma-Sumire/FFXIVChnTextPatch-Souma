@@ -63,8 +63,7 @@
 
               <div class="row-control scope-control">
                 <span id="scope-summary" class="scope-value hidden">ACT兼容版（不汉化敌人名称）</span>
-                <button type="button" id="btn-open-tables" class="btn scope-action"
-                  title="修改汉化范围">修改范围</button>
+                <button type="button" id="btn-open-tables" class="btn scope-action">修改范围</button>
               </div>
 
               <div class="rules-picker hidden" id="rules-picker">
@@ -112,8 +111,7 @@
 
               <div class="font-preset-inline font-preset-control">
                 <span id="font-preset-summary" class="scope-value hidden">思源黑体（高清中文字体）</span>
-                <button type="button" id="btn-open-font-editor" class="btn scope-action"
-                  title="编辑字体方案">编辑方案</button>
+                <button type="button" id="btn-open-font-editor" class="btn scope-action">编辑方案</button>
               </div>
             </div>
           </section>
@@ -254,16 +252,48 @@
       <!-- 顶部菜单栏 -->
       <header class="fc-menubar">
         <div class="fc-menubar-left">
+          <button id="btn-back-workbench-font" class="btn btn-quiet back-btn fc-back-btn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            <span>返回</span>
+          </button>
+
+          <span class="bar-sep" aria-hidden="true"></span>
+
           <!-- 菜单: 文件 -->
           <div class="fc-menu-item" id="fc-menu-file">
             <button type="button" class="fc-menu-btn">文件</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-file">
-              <button type="button" class="fc-menu-entry" data-menu="file-save">
-                <span>保存方案</span>
-                <span class="fc-menu-accel">Ctrl+S</span>
+              <button type="button" class="fc-menu-entry" data-menu="file-new-empty-axis">
+                <span class="fc-menu-label">新建空 AXIS 方案…</span>
               </button>
+              <button type="button" class="fc-menu-entry" data-menu="file-duplicate-current">
+                <span class="fc-menu-label">基于当前方案新建副本…</span>
+              </button>
+              <div class="fc-menu-divider"></div>
+              <button type="button" class="fc-menu-entry" data-menu="file-import-json">
+                <span class="fc-menu-label">导入 JSON 方案…</span>
+                <kbd class="fc-menu-accel">Ctrl+O</kbd>
+              </button>
+              <button type="button" class="fc-menu-entry" data-menu="file-save">
+                <span class="fc-menu-label">保存方案</span>
+                <kbd class="fc-menu-accel">Ctrl+S</kbd>
+              </button>
+              <button type="button" class="fc-menu-entry" data-menu="file-save-as-preset">
+                <span class="fc-menu-label">另存为新方案…</span>
+              </button>
+              <button type="button" class="fc-menu-entry" data-menu="file-export-json">
+                <span class="fc-menu-label">导出方案 JSON…</span>
+              </button>
+              <div class="fc-menu-divider"></div>
+              <button type="button" class="fc-menu-entry" data-menu="file-manage-presets">
+                <span class="fc-menu-label">方案库管理…</span>
+              </button>
+              <div class="fc-menu-divider"></div>
               <button type="button" class="fc-menu-entry" data-menu="file-reset">
-                <span>放弃修改</span>
+                <span class="fc-menu-label">放弃未保存修改</span>
               </button>
             </div>
           </div>
@@ -273,23 +303,23 @@
             <button type="button" class="fc-menu-btn">编辑</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-edit">
               <button type="button" class="fc-menu-entry" data-menu="edit-add-from-system">
-                <span>从系统字体添加图层…</span>
-                <span class="fc-menu-accel">Shift+Ins</span>
+                <span class="fc-menu-label">从系统字体添加图层…</span>
+                <kbd class="fc-menu-accel">Shift+Ins</kbd>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-propagate-all-sizes">
-                <span>应用到当前系列所有字号…</span>
+                <span class="fc-menu-label">同步到同系列其他字号…</span>
               </button>
               <div class="fc-menu-divider"></div>
               <button type="button" class="fc-menu-entry" data-menu="edit-autofit">
-                <span>自动适配当前字号</span>
-                <span class="fc-menu-accel">F</span>
+                <span class="fc-menu-label">自动适配当前字号</span>
+                <kbd class="fc-menu-accel">F</kbd>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-autofit-all">
-                <span>自动适配所有字号</span>
-                <span class="fc-menu-accel">Shift+F</span>
+                <span class="fc-menu-label">自动适配所有字号</span>
+                <kbd class="fc-menu-accel">Shift+F</kbd>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-scale-size">
-                <span>缩放字体字号…</span>
+                <span class="fc-menu-label">缩放当前字号…</span>
               </button>
             </div>
           </div>
@@ -298,10 +328,10 @@
           <div class="fc-menu-item" id="fc-menu-view">
             <button type="button" class="fc-menu-btn">查看</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-view">
-              <button type="button" class="fc-menu-entry" data-menu="view-toggle-wrap">
-                <span class="fc-menu-check" id="fc-check-wrap">✓</span>
-                <span>自动换行</span>
-                <span class="fc-menu-accel">P</span>
+              <button type="button" class="fc-menu-entry has-check" data-menu="view-toggle-wrap">
+                <span class="fc-menu-check" id="fc-check-wrap" aria-hidden="true"></span>
+                <span class="fc-menu-label">自动换行</span>
+                <kbd class="fc-menu-accel">P</kbd>
               </button>
             </div>
           </div>
@@ -311,86 +341,63 @@
             <button type="button" class="fc-menu-btn">导出</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-export">
               <button type="button" class="fc-menu-entry" data-menu="export-ttmp">
-                <span>导出模组 (Penumbra TTMP2)…</span>
+                <span class="fc-menu-label">导出 Penumbra 模组 (.ttmp2)…</span>
               </button>
               <button type="button" class="fc-menu-entry" data-menu="export-raw">
-                <span>导出原始文件 (fdt/tex)…</span>
+                <span class="fc-menu-label">导出原始字库文件 (fdt / tex)…</span>
               </button>
-              <div class="fc-menu-separator"></div>
-              <button type="button" class="fc-menu-entry" data-menu="export-toggle-16bit" title="默认开启。将贴图体积从 256MB 压缩至 128MB，节省显存与空间；关闭则生成 32 位高清抗锯齿贴图">
-                <span class="fc-menu-check" id="fc-check-16bit">✓</span>
-                <span>16 位贴图压缩 (体积减半)</span>
+              <div class="fc-menu-divider"></div>
+              <button type="button" class="fc-menu-entry has-check" data-menu="export-toggle-16bit" title="默认开启。将贴图体积减半以节省显存；关闭则生成 32 位贴图">
+                <span class="fc-menu-check" id="fc-check-16bit" aria-hidden="true"></span>
+                <span class="fc-menu-label">16 位贴图压缩</span>
               </button>
             </div>
           </div>
+
+          <span class="bar-sep" aria-hidden="true"></span>
+
+          <!-- 方案下拉切换选择器 -->
+          <div class="fc-preset-picker">
+            <label class="fc-preset-picker-label" for="fc-preset-select">方案</label>
+            <select id="fc-preset-select" class="fc-preset-select" aria-label="选择字体方案"></select>
+          </div>
         </div>
 
-        <!-- 顶栏右侧：区服 + 方案选择 + 方案管理 + 保存/返回 -->
+        <!-- 顶栏右侧：仅保留区服状态芯片 -->
         <div class="fc-menubar-right">
-          <span id="font-region-badge" class="fc-region-chip">国际服</span>
-          <span id="font-region-warning" class="fc-warn-chip hidden" title="当前区服无法自动验证文件纯净度，请确保当前使用的是未被修改的官方原版文件，否则提取的原版字形可能出现异常或损坏。">⚠ 请使用原版客户端</span>
-          <span id="font-hd-badge" class="fc-hd-chip" title="默认采用 4096 高清贴图尺寸以完整容纳中文字库；汉化器会在打补丁时自动为游戏客户端配置开启高分辨率 UI 材质。">4096 高清 UI (已适配)</span>
-          <div class="fc-preset-group">
-            <label class="fc-preset-label" for="font-preset-select">方案</label>
-            <select id="font-preset-select" class="fc-preset-select" title="选择字体方案"></select>
-            <button id="btn-manage-presets" class="fc-icon-btn" type="button" title="管理字体方案（新建 / 重命名 / 删除 / 导入导出）"
-              aria-label="管理字体方案">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="21" y1="4" x2="14" y2="4" />
-                <line x1="10" y1="4" x2="3" y2="4" />
-                <line x1="21" y1="12" x2="12" y2="12" />
-                <line x1="8" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="20" x2="16" y2="20" />
-                <line x1="12" y1="20" x2="3" y2="20" />
-                <line x1="14" y1="2" x2="14" y2="6" />
-                <line x1="8" y1="10" x2="8" y2="14" />
-                <line x1="16" y1="18" x2="16" y2="22" />
-              </svg>
-            </button>
-          </div>
-          <button id="btn-save-as-custom" class="fc-ghost-btn" type="button" title="把当前编辑内容保存为新方案">保存为方案</button>
-          <button id="btn-back-workbench-font" class="fc-primary-btn" type="button" title="返回汉化器">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            <span>返回汉化器</span>
-          </button>
+          <span id="font-region-warning" class="fc-warn-chip hidden" title="当前区服无法自动校验客户端文件，请确认客户端为官方原版后再定制字体">需使用原版客户端</span>
+          <span id="font-region-badge" class="hidden" aria-hidden="true"></span>
         </div>
       </header>
 
-      <!-- 主工作区：左侧 180px 字体列表框 + 右侧三段式纵向拆分 -->
+      <!-- 主工作区：左侧字体列表 + 右侧三段式纵向拆分 -->
       <div class="fc-client-area">
-        <!-- 左侧：标准 Win32 列表框 (m_hFontsListBox, 无截断、无多余角标) -->
         <aside class="fc-font-listbox-container" id="fc-font-list-container">
-          <div class="fc-font-listbox" id="font-face-tabs" role="listbox" aria-label="游戏目标字体列表" tabindex="0"></div>
+          <div class="fc-font-listbox" id="font-face-tabs" role="listbox" aria-label="游戏字体列表" tabindex="0"></div>
         </aside>
 
-        <!-- 纵向水平拖动分割条 (Left ListBox <-> Right Client Area) -->
-        <div class="fc-splitter-v" id="fc-splitter-v" title="调整宽度"></div>
+        <div class="fc-splitter-v" id="fc-splitter-v"></div>
 
-        <!-- 右侧：上中下三段纵向布局 (ListView + PreviewEdit + PreviewCanvas) -->
         <main class="fc-right-pane" id="fc-right-pane">
-          <!-- 1. 顶部：13列标准字体元素列表框 (m_hFontElementsListView, 无任何工具栏干扰) -->
+          <!-- 1. 顶部：图层列表 -->
           <div class="fc-elements-section" id="fc-elements-section">
             <div class="fc-elements-table-wrap" id="elements-table-viewport" tabindex="0">
               <table class="fc-elements-table">
                 <thead>
                   <tr>
-                    <th class="col-fc-family" style="width: 120px;">字体系列</th>
-                    <th class="col-fc-subfamily" style="width: 80px;">字体子系列</th>
-                    <th class="col-fc-size" style="width: 60px;">字号</th>
-                    <th class="col-fc-lineheight" style="width: 60px;">行间距</th>
-                    <th class="col-fc-ascent" style="width: 70px;">基线高度</th>
-                    <th class="col-fc-hoffset" style="width: 70px;">水平偏移</th>
-                    <th class="col-fc-letterspacing" style="width: 70px;">字符间距</th>
-                    <th class="col-fc-gamma" style="width: 60px;">伽马值</th>
-                    <th class="col-fc-codepoints" style="width: 140px;">字符码点</th>
-                    <th class="col-fc-glyphs" style="width: 70px;">字形数量</th>
-                    <th class="col-fc-mergemode" style="width: 90px;">覆盖模式</th>
-                    <th class="col-fc-source" style="width: 180px;">渲染引擎</th>
-                    <th class="col-fc-lookup" style="min-width: 220px;">查找方式</th>
+                    <th class="col-fc-family" style="width: 112px;">字体系列</th>
+                    <th class="col-fc-subfamily" style="width: 72px;">字重样式</th>
+                    <th class="col-fc-size is-num" style="width: 56px;">字号</th>
+                    <th class="col-fc-lineheight is-num" style="width: 60px;">行高</th>
+                    <th class="col-fc-ascent is-num" style="width: 68px;">基线</th>
+                    <th class="col-fc-hoffset is-num" style="width: 60px;">水平偏移</th>
+                    <th class="col-fc-letterspacing is-num" style="width: 60px;">字距</th>
+                    <th class="col-fc-gamma is-num" style="width: 52px;">伽马</th>
+                    <th class="col-fc-codepoints" style="width: 132px;">字符码点</th>
+                    <th class="col-fc-glyphs is-num" style="width: 68px;">字形数</th>
+                    <th class="col-fc-mergemode" style="width: 84px;">覆盖模式</th>
+                    <th class="col-fc-source" style="width: 128px;">渲染引擎</th>
+                    <th class="col-fc-lookup" style="min-width: 140px;">查找参数</th>
                   </tr>
                 </thead>
                 <tbody id="font-element-list"></tbody>
@@ -398,79 +405,84 @@
             </div>
           </div>
 
-          <!-- 拖动分割条 1: ListView <-> PreviewEdit (m_splitterListEdit) -->
-          <div class="fc-splitter-h" id="fc-splitter-1" title="调整高度"></div>
+          <div class="fc-splitter-h" id="fc-splitter-1"></div>
 
-          <!-- 2. 中部：多行预览编辑框 (m_hEdit, 纯文本框，零工具栏) -->
+          <!-- 2. 中部：测试文本输入区 -->
           <div class="fc-preview-edit-wrap" id="fc-preview-edit-wrap">
-            <textarea id="preview-custom-text" class="fc-preview-edit" spellcheck="false" placeholder="在此输入测试文本…"></textarea>
+            <textarea id="preview-custom-text" class="fc-preview-edit" spellcheck="false" placeholder="输入预览文本"></textarea>
           </div>
 
-          <!-- 拖动分割条 2: PreviewEdit <-> PreviewViewport (m_splitterEditPreview) -->
-          <div class="fc-splitter-h" id="fc-splitter-2" title="调整高度"></div>
+          <div class="fc-splitter-h" id="fc-splitter-2"></div>
 
-          <!-- 3. 底部：实时预览（由字体编译组件渲染，与游戏内字形一致） -->
+          <!-- 3. 底部：1:1 游戏像素实时预览 -->
           <div class="fc-preview-viewport" id="preview-canvas-box" tabindex="0">
             <div class="fc-preview-stage" id="fc-preview-stage">
               <img id="fc-preview-image" class="fc-preview-image" alt="字体预览" draggable="false" />
               <div class="fc-preview-hint hidden" id="fc-preview-hint"></div>
               <div class="fc-preview-loading hidden" id="preview-loading-overlay">
-                <span>渲染中…</span>
+                <span class="preview-spinner" aria-hidden="true"></span>
+                <span>正在渲染</span>
               </div>
             </div>
           </div>
         </main>
       </div>
 
-      <!-- 右键上下文菜单: 字体列表项 (FontListBox Context Menu) -->
+      <!-- 右键菜单: 左侧字体列表 -->
       <div class="fc-context-menu hidden" id="fc-fontlist-context-menu">
-        <button type="button" class="fc-menu-entry" id="fc-ctx-scale-size">缩放字体…</button>
-        <button type="button" class="fc-menu-entry" id="fc-ctx-replace-family">用当前系列替换其他字号…</button>
-        <button type="button" class="fc-menu-entry" id="fc-ctx-autofit-family">自动适配所有该系列字体</button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-scale-size">
+          <span class="fc-menu-label">缩放当前字号…</span>
+        </button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-replace-family">
+          <span class="fc-menu-label">同步到同系列其他字号…</span>
+        </button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-autofit-family">
+          <span class="fc-menu-label">自动适配该系列所有字号</span>
+        </button>
       </div>
 
-      <!-- 右键上下文菜单: 元素列表项 (IDR_CONTEXTMENU_FONTELEMENT) -->
+      <!-- 右键菜单: 图层列表 -->
       <div class="fc-context-menu hidden" id="fc-element-context-menu">
         <button type="button" class="fc-menu-entry" id="fc-ctx-open">
-          <span>打开</span>
-          <span class="fc-menu-accel">Enter</span>
+          <span class="fc-menu-label">编辑图层…</span>
+          <kbd class="fc-menu-accel">Enter</kbd>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-autofit">
-          <span>自动适配</span>
-          <span class="fc-menu-accel">F</span>
+          <span class="fc-menu-label">自动适配当前字号</span>
+          <kbd class="fc-menu-accel">F</kbd>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-autofit-all">
-          <span>自动适配所有大小</span>
-          <span class="fc-menu-accel">Shift+F</span>
+          <span class="fc-menu-label">自动适配所有字号</span>
+          <kbd class="fc-menu-accel">Shift+F</kbd>
         </button>
         <div class="fc-menu-divider"></div>
         <button type="button" class="fc-menu-entry" id="fc-ctx-cut">
-          <span>剪切</span>
-          <span class="fc-menu-accel">Ctrl+X</span>
+          <span class="fc-menu-label">剪切</span>
+          <kbd class="fc-menu-accel">Ctrl+X</kbd>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-copy">
-          <span>复制</span>
-          <span class="fc-menu-accel">Ctrl+C</span>
+          <span class="fc-menu-label">复制</span>
+          <kbd class="fc-menu-accel">Ctrl+C</kbd>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-clone">
-          <span>克隆</span>
+          <span class="fc-menu-label">克隆图层</span>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-delete">
-          <span>删除</span>
-          <span class="fc-menu-accel">Del</span>
+          <span class="fc-menu-label">删除</span>
+          <kbd class="fc-menu-accel">Del</kbd>
         </button>
         <div class="fc-menu-divider"></div>
         <button type="button" class="fc-menu-entry" id="fc-ctx-add">
-          <span>添加字体</span>
-          <span class="fc-menu-accel">Ins</span>
+          <span class="fc-menu-label">新增默认图层</span>
+          <kbd class="fc-menu-accel">Ins</kbd>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-add-system">
-          <span>从字体添加元素…</span>
-          <span class="fc-menu-accel">Shift+Ins</span>
+          <span class="fc-menu-label">从系统字体添加图层…</span>
+          <kbd class="fc-menu-accel">Shift+Ins</kbd>
         </button>
         <button type="button" class="fc-menu-entry" id="fc-ctx-paste">
-          <span>粘贴</span>
-          <span class="fc-menu-accel">Ctrl+V</span>
+          <span class="fc-menu-label">粘贴</span>
+          <kbd class="fc-menu-accel">Ctrl+V</kbd>
         </button>
       </div>
 
@@ -478,44 +490,44 @@
         <div class="elem-modal-window" role="dialog" aria-modal="true" aria-labelledby="elem-modal-title">
           <div class="elem-modal-header">
             <div class="elem-modal-title-wrap">
-              <span id="elem-modal-title" class="elem-modal-title">字体元素编辑器</span>
+              <span id="elem-modal-title" class="elem-modal-title">编辑字体图层</span>
               <span id="elem-modal-subtitle" class="meta-tag">AXIS_18 · 图层 #1</span>
             </div>
             <div class="elem-modal-tabs" role="tablist">
-              <button type="button" class="elem-tab-btn active" data-elem-tab="font" role="tab">字体设置 (Font)</button>
-              <button type="button" class="elem-tab-btn" data-elem-tab="chars" role="tab">字符范围 (Characters)</button>
-              <button type="button" class="elem-tab-btn" data-elem-tab="typo" role="tab">排版特性 (Typography)</button>
-              <button type="button" class="elem-tab-btn" data-elem-tab="merge" role="tab">字形合并 (Glyph Merging)</button>
+              <button type="button" class="elem-tab-btn active" data-elem-tab="font" role="tab">字体与排版</button>
+              <button type="button" class="elem-tab-btn" data-elem-tab="chars" role="tab">字符范围</button>
+              <button type="button" class="elem-tab-btn" data-elem-tab="typo" role="tab">OpenType 特性</button>
+              <button type="button" class="elem-tab-btn" data-elem-tab="merge" role="tab">字符替换</button>
             </div>
           </div>
 
           <div class="elem-modal-body" id="font-props-panel">
-            <!-- Tab 1: 字体设置 (IDD_FONTELEMENTEDITOR_FONT) -->
+            <!-- Tab 1: 字体设置 -->
             <div class="elem-tab-pane" id="elem-tab-font">
               <div class="elem-form-grid">
                 <div class="props-group">
-                  <h4 class="props-sub-title">字体与来源设置</h4>
+                  <h4 class="props-sub-title">字体来源</h4>
                   <div class="props-row">
-                    <label class="props-label" for="prop-renderer">渲染来源 (Source)</label>
+                    <label class="props-label" for="prop-renderer">渲染引擎</label>
                     <select id="prop-renderer" class="select">
-                      <option value="2">DirectWrite (Windows 原生渲染，推荐)</option>
-                      <option value="3">FreeType (开源跨平台光栅化器)</option>
-                      <option value="1">游戏预渲染字库 (Game Font)</option>
-                      <option value="0">空白字体 (Empty - 仅定义行距与基线)</option>
+                      <option value="2">DirectWrite（Windows 原生渲染，推荐）</option>
+                      <option value="3">FreeType（跨平台开源光栅化）</option>
+                      <option value="1">游戏字库（从客户端提取预渲染字形）</option>
+                      <option value="0">空白字体（仅占位定义行高与基线）</option>
                     </select>
                   </div>
 
                   <div class="props-row">
-                    <label class="props-label" for="prop-font-family">系统字体列表</label>
+                    <label class="props-label" for="prop-font-family">系统已安装字体</label>
                     <div class="file-pick-row">
                       <select id="prop-font-family" class="select flex-1"></select>
                     </div>
                   </div>
 
                   <div class="props-row">
-                    <label class="props-label" for="prop-font-file">字体系列名称 / 本地文件</label>
+                    <label class="props-label" for="prop-font-file">字体家族名称或本地字体文件</label>
                     <div class="file-pick-row">
-                      <input id="prop-font-file" class="input input-mono flex-1" placeholder="输入字体名称（如 Source Han Sans SC）或浏览本地 TTF/OTF" />
+                      <input id="prop-font-file" class="input input-mono flex-1" placeholder="输入字体名（如 Microsoft YaHei）或浏览本地 TTF / OTF" />
                       <button id="btn-browse-font-file" class="btn btn-xs" type="button">浏览文件…</button>
                     </div>
                   </div>
@@ -526,22 +538,22 @@
                       <input type="number" step="0.2" id="prop-size" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-weight">字重 (Weight)</label>
+                      <label for="prop-weight">字重</label>
                       <select id="prop-weight" class="select">
-                        <option value="100">100 - Thin</option>
-                        <option value="200">200 - ExtraLight</option>
-                        <option value="300">300 - Light</option>
-                        <option value="350">350 - SemiLight</option>
-                        <option value="400">400 - Regular</option>
-                        <option value="500">500 - Medium</option>
-                        <option value="600">600 - SemiBold</option>
-                        <option value="700">700 - Bold</option>
-                        <option value="800">800 - ExtraBold</option>
-                        <option value="900">900 - Black</option>
+                        <option value="100">100 · Thin</option>
+                        <option value="200">200 · ExtraLight</option>
+                        <option value="300">300 · Light</option>
+                        <option value="350">350 · SemiLight</option>
+                        <option value="400">400 · Regular</option>
+                        <option value="500">500 · Medium</option>
+                        <option value="600">600 · SemiBold</option>
+                        <option value="700">700 · Bold</option>
+                        <option value="800">800 · ExtraBold</option>
+                        <option value="900">900 · Black</option>
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-style">字体样式 (Style)</label>
+                      <label for="prop-style">样式</label>
                       <select id="prop-style" class="select">
                         <option value="0">标准 (Normal)</option>
                         <option value="1">倾斜 (Oblique)</option>
@@ -549,68 +561,68 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-stretch">字宽 (Stretch)</label>
+                      <label for="prop-stretch">字宽</label>
                       <select id="prop-stretch" class="select">
-                        <option value="1">1 - 超窄 (UltraCondensed)</option>
-                        <option value="2">2 - 极窄 (ExtraCondensed)</option>
-                        <option value="3">3 - 窄体 (Condensed)</option>
-                        <option value="4">4 - 半窄 (SemiCondensed)</option>
-                        <option value="5">5 - 标准 (Normal)</option>
-                        <option value="6">6 - 半宽 (SemiExpanded)</option>
-                        <option value="7">7 - 宽体 (Expanded)</option>
-                        <option value="8">8 - 极宽 (ExtraExpanded)</option>
-                        <option value="9">9 - 超宽 (UltraExpanded)</option>
+                        <option value="1">1 · 超窄</option>
+                        <option value="2">2 · 极窄</option>
+                        <option value="3">3 · 窄体</option>
+                        <option value="4">4 · 半窄</option>
+                        <option value="5">5 · 标准</option>
+                        <option value="6">6 · 半宽</option>
+                        <option value="7">7 · 宽体</option>
+                        <option value="8">8 · 极宽</option>
+                        <option value="9">9 · 超宽</option>
                       </select>
                     </div>
                   </div>
                 </div>
 
                 <div class="props-group">
-                  <h4 class="props-sub-title">字体调整与几何变换</h4>
+                  <h4 class="props-sub-title">位置微调与几何变换</h4>
                   <div class="props-grid-4">
                     <div class="props-field">
-                      <label for="prop-baseline-shift">垂直偏移 (OffsetY)</label>
+                      <label for="prop-baseline-shift">垂直偏移 (px)</label>
                       <input type="number" step="0.5" id="prop-baseline-shift" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-horizontal-offset">水平偏移 (OffsetX)</label>
+                      <label for="prop-horizontal-offset">水平偏移 (px)</label>
                       <input type="number" step="0.5" id="prop-horizontal-offset" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-letter-spacing">字符间距 (Spacing)</label>
+                      <label for="prop-letter-spacing">字符间距 (px)</label>
                       <input type="number" step="0.5" id="prop-letter-spacing" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-gamma">伽马值 (Gamma)</label>
+                      <label for="prop-gamma">伽马值</label>
                       <input type="number" step="0.05" id="prop-gamma" class="input" />
                     </div>
                   </div>
 
                   <div class="props-grid-4">
                     <div class="props-field">
-                      <label for="prop-scale-x">水平缩放 (ScaleX)</label>
+                      <label for="prop-scale-x">水平缩放</label>
                       <input type="number" step="0.05" id="prop-scale-x" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-scale-y">垂直缩放 (ScaleY)</label>
+                      <label for="prop-scale-y">垂直缩放</label>
                       <input type="number" step="0.05" id="prop-scale-y" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-skew">倾斜角度 (Skew °)</label>
+                      <label for="prop-skew">倾斜角度 (°)</label>
                       <input type="number" step="0.5" id="prop-skew" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-rotation">旋转角度 (Rotate °)</label>
+                      <label for="prop-rotation">旋转角度 (°)</label>
                       <input type="number" step="0.5" id="prop-rotation" class="input" />
                     </div>
                   </div>
                 </div>
 
                 <div class="props-group" id="props-directwrite-group">
-                  <h4 class="props-sub-title">DirectWrite 渲染参数</h4>
+                  <h4 class="props-sub-title">DirectWrite 栅格化参数</h4>
                   <div class="props-grid-3">
                     <div class="props-field">
-                      <label for="prop-dw-render">渲染模式 (RenderMode)</label>
+                      <label for="prop-dw-render">渲染模式</label>
                       <select id="prop-dw-render" class="select">
                         <option value="0">默认 (Default)</option>
                         <option value="1">无抗锯齿 (Aliased)</option>
@@ -622,7 +634,7 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-dw-measure">测量模式 (MeasureMode)</label>
+                      <label for="prop-dw-measure">测量模式</label>
                       <select id="prop-dw-measure" class="select">
                         <option value="0">自然 (Natural)</option>
                         <option value="1">GDI 传统 (GDI Classic)</option>
@@ -630,7 +642,7 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-dw-gridfit">网格对齐 (GridFit)</label>
+                      <label for="prop-dw-gridfit">像素网格对齐</label>
                       <select id="prop-dw-gridfit" class="select">
                         <option value="0">默认 (Default)</option>
                         <option value="1">停用 (Disabled)</option>
@@ -641,7 +653,7 @@
                 </div>
 
                 <div class="props-group hidden" id="props-freetype-group">
-                  <h4 class="props-sub-title">FreeType 渲染参数</h4>
+                  <h4 class="props-sub-title">FreeType 栅格化参数</h4>
                   <div class="props-grid-4">
                     <div class="props-field">
                       <label for="prop-ft-render">渲染模式</label>
@@ -664,14 +676,14 @@
                 </div>
 
                 <div class="props-group hidden" id="props-empty-group">
-                  <h4 class="props-sub-title">空白字体度量设置 (Empty Font Metrics)</h4>
+                  <h4 class="props-sub-title">空白字体度量</h4>
                   <div class="props-grid-2">
                     <div class="props-field">
-                      <label for="prop-empty-ascent">基线高度 (Ascent px)</label>
+                      <label for="prop-empty-ascent">基线高度 (px)</label>
                       <input type="number" step="1" id="prop-empty-ascent" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-empty-lineheight">行间距 (LineHeight px)</label>
+                      <label for="prop-empty-lineheight">行高 (px)</label>
                       <input type="number" step="1" id="prop-empty-lineheight" class="input" />
                     </div>
                   </div>
@@ -679,35 +691,35 @@
               </div>
             </div>
 
-            <!-- Tab 2: 字符范围 (IDD_FONTELEMENTEDITOR_CHARACTERS) -->
+            <!-- Tab 2: 字符范围 -->
             <div class="elem-tab-pane hidden" id="elem-tab-chars">
               <div class="chars-tab-layout">
                 <div class="chars-left-col">
                   <div class="props-row">
-                    <label class="props-label" for="prop-merge-mode">覆盖模式 (Overwrite / Merge Mode)</label>
+                    <label class="props-label" for="prop-merge-mode">覆盖模式</label>
                     <select id="prop-merge-mode" class="select">
-                      <option value="0">仅添加新字符 (AddNew - 不覆盖上层已有字形)</option>
-                      <option value="1">添加全部字符 (AddAll - 覆盖已有并添加新字形)</option>
-                      <option value="2">替换已有字符 (Replace - 仅替换上层已存在字形)</option>
+                      <option value="0">仅添加新字符（不覆盖上层已有字形）</option>
+                      <option value="1">添加全部字符（覆盖上层已有字形）</option>
+                      <option value="2">仅替换已有字符（不添加上层没有的字形）</option>
                     </select>
                   </div>
 
                   <div class="chars-list-header">
-                    <span class="props-label">当前已选字符码点区间 (<span id="cp-total-summary">0 段</span>)</span>
+                    <span class="props-label">已选码点区间（<span id="cp-total-summary">0 段</span>）</span>
                     <button type="button" id="btn-cp-clear" class="btn btn-quiet btn-xs">清空全部</button>
                   </div>
 
                   <div class="cp-intervals-box" id="cp-intervals-box"></div>
 
                   <div class="props-row" id="custom-codepoint-wrap">
-                    <label class="props-label" for="prop-codepoints-text">原始十进制区间表达式 (兼容编辑)</label>
-                    <input id="prop-codepoints-text" class="input input-mono" placeholder="如 0-127, 19968-40959" />
+                    <label class="props-label" for="prop-codepoints-text">十进制区间表达式</label>
+                    <input id="prop-codepoints-text" class="input input-mono" placeholder="0-127, 19968-40959" />
                   </div>
                 </div>
 
                 <div class="chars-right-col">
                   <div class="props-group">
-                    <h4 class="props-sub-title">预设文字范围 (支持区间并集添加与差集剔除)</h4>
+                    <h4 class="props-sub-title">常用字符集快速增减</h4>
                     <div class="cp-preset-table">
                       <div class="cp-preset-row">
                         <span class="cp-preset-name">全部字符 (U+0000 ~ U+10FFFF)</span>
@@ -717,7 +729,7 @@
                         </div>
                       </div>
                       <div class="cp-preset-row">
-                        <span class="cp-preset-name">汉字 (CJK Unified Ideographs 常用及扩展区)</span>
+                        <span class="cp-preset-name">中日韩统一表意文字（常用及扩展区汉字）</span>
                         <div class="cp-preset-actions">
                           <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="cjk">设为</button>
                           <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="cjk">+添加</button>
@@ -725,7 +737,7 @@
                         </div>
                       </div>
                       <div class="cp-preset-row">
-                        <span class="cp-preset-name">非中日韩字符 (Non-CJK: 拉丁/数字/西文符号)</span>
+                        <span class="cp-preset-name">非中日韩字符（拉丁字母、数字、西文符号）</span>
                         <div class="cp-preset-actions">
                           <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="noncjk">设为</button>
                           <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="noncjk">+添加</button>
@@ -733,14 +745,14 @@
                         </div>
                       </div>
                       <div class="cp-preset-row">
-                        <span class="cp-preset-name">日文假名 (Kana: 平假名/片假名/半角假名)</span>
+                        <span class="cp-preset-name">日文假名（平假名、片假名、半角假名）</span>
                         <div class="cp-preset-actions">
                           <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="kana">+添加</button>
                           <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="kana">−减去</button>
                         </div>
                       </div>
                       <div class="cp-preset-row">
-                        <span class="cp-preset-name">韩文谚文 (Hangul 音节与字母)</span>
+                        <span class="cp-preset-name">韩文谚文（音节与字母）</span>
                         <div class="cp-preset-actions">
                           <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="hangul">+添加</button>
                           <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="hangul">−减去</button>
@@ -755,14 +767,14 @@
                         </div>
                       </div>
                       <div class="cp-preset-row">
-                        <span class="cp-preset-name">中日韩标点符号与全角ASCII (U+3000~303F, FF00~FFEF)</span>
+                        <span class="cp-preset-name">全角标点与全角 ASCII (U+3000~303F, FF00~FFEF)</span>
                         <div class="cp-preset-actions">
                           <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="cjksym">+添加</button>
                           <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="cjksym">−减去</button>
                         </div>
                       </div>
                       <div class="cp-preset-row">
-                        <span class="cp-preset-name">FFXIV 私用区特殊图标 (PUA: U+E000 ~ U+F8FF)</span>
+                        <span class="cp-preset-name">FFXIV 私用区特殊图标 (U+E000 ~ U+F8FF)</span>
                         <div class="cp-preset-actions">
                           <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="pua">+添加</button>
                           <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="pua">−减去</button>
@@ -772,11 +784,11 @@
                   </div>
 
                   <div class="props-group">
-                    <h4 class="props-sub-title">自定义字符或十六进制区间</h4>
+                    <h4 class="props-sub-title">按字符或十六进制码点增减</h4>
                     <div class="props-row">
-                      <label class="props-label" for="cp-custom-input">输入字符或码点范围 (支持如 U+4E00-9FFF 或直接粘贴字符)</label>
+                      <label class="props-label" for="cp-custom-input">输入字符或码点区间（如 U+4E00-9FFF 或直接粘贴文字）</label>
                       <div class="file-pick-row">
-                        <input id="cp-custom-input" class="input input-mono flex-1" placeholder="例如: U+4E00-9FFF, U+3000-303F 或 0123456789" />
+                        <input id="cp-custom-input" class="input input-mono flex-1" placeholder="U+4E00-9FFF 或直接输入字符" />
                         <button type="button" id="btn-cp-custom-add" class="btn btn-xs">+添加</button>
                         <button type="button" id="btn-cp-custom-sub" class="btn btn-xs">−减去</button>
                       </div>
@@ -786,51 +798,47 @@
               </div>
             </div>
 
-            <!-- Tab 3: 排版特性 (IDD_FONTELEMENTEDITOR_TYPOGRAPHY) -->
+            <!-- Tab 3: OpenType 特性 -->
             <div class="elem-tab-pane hidden" id="elem-tab-typo">
               <div class="props-group">
-                <h4 class="props-sub-title">OpenType 字体特性 (Font Features)</h4>
+                <h4 class="props-sub-title">OpenType 排版特性</h4>
                 <div class="ot-features-grid" id="ot-features-grid">
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="kern" /><span>kern — 标准字距调整 (Kerning)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="liga" /><span>liga — 标准连字 (Standard Ligatures)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="calt" /><span>calt — 上下文替代 (Contextual Alternates)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="tnum" /><span>tnum — 等宽表格数字 (Tabular Figures)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="pnum" /><span>pnum — 比例数字 (Proportional Figures)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="zero" /><span>zero — 斜线零 (Slashed Zero)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="pwid" /><span>pwid — 比例字宽 (Proportional Widths)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="fwid" /><span>fwid — 全角字宽 (Full Widths)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="halt" /><span>halt — 半角标点挤压 (Alternate Half Widths)</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="chws" /><span>chws — 上下文半角间距 (Contextual Half-width Spacing)</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="kern" /><span>kern · 标准字距调整</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="liga" /><span>liga · 标准连字</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="calt" /><span>calt · 上下文替代</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="tnum" /><span>tnum · 等宽表格数字</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="pnum" /><span>pnum · 比例宽度数字</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="zero" /><span>zero · 斜线零</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="pwid" /><span>pwid · 比例字宽</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="fwid" /><span>fwid · 全角字宽</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="halt" /><span>halt · 半角标点挤压</span></label>
+                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="chws" /><span>chws · 上下文半角标点间距</span></label>
                 </div>
-                <div class="props-row" style="margin-top: 10px;">
-                  <label class="props-label" for="prop-ot-custom">启用特性标签列表 (逗号分隔，如 kern, tnum, ss01)</label>
-                  <input id="prop-ot-custom" class="input input-mono" placeholder="如 kern, liga, tnum" />
+                <div class="props-row" style="margin-top: 8px;">
+                  <label class="props-label" for="prop-ot-custom">自定义特性标签（逗号分隔）</label>
+                  <input id="prop-ot-custom" class="input input-mono" placeholder="kern, liga, tnum" />
                 </div>
               </div>
             </div>
 
-            <!-- Tab 4: 字形合并 (IDD_FONTELEMENTEDITOR_GLYPHMERGING) -->
+            <!-- Tab 4: 字符替换 -->
             <div class="elem-tab-pane hidden" id="elem-tab-merge">
               <div class="props-group">
-                <h4 class="props-sub-title">FFXIV 特殊符号与字符替换映射 (Codepoint Replacements)</h4>
+                <h4 class="props-sub-title">特殊符号与字符映射</h4>
                 <div class="merge-preset-bar">
-                  <button type="button" class="btn btn-xs" id="btn-merge-preset-chs-time">填充中文时间标示 (本/服/艾)</button>
-                  <button type="button" class="btn btn-xs" id="btn-merge-preset-en-time">填充英文时间标示 (LT/ST/ET)</button>
+                  <button type="button" class="btn btn-xs" id="btn-merge-preset-chs-time">填充中文时间标示（本 / 服 / 艾）</button>
+                  <button type="button" class="btn btn-xs" id="btn-merge-preset-en-time">填充英文时间标示（LT / ST / ET）</button>
                   <button type="button" class="btn btn-quiet btn-xs" id="btn-merge-clear">清空映射</button>
                 </div>
                 <div class="props-row" style="margin-top: 8px;">
-                  <label class="props-label" for="prop-replacements-json">字符替换规则 (每行一条：源字符或U+XXXX = 目标字符)</label>
-                  <textarea id="prop-replacements-json" class="input input-mono" rows="6" style="height: auto; padding: 8px;" placeholder="例如:&#10;U+E0B1 = 1&#10;U+E0B2 = 2"></textarea>
+                  <label class="props-label" for="prop-replacements-json">映射规则（每行一条：源字符或 U+XXXX = 目标字符）</label>
+                  <textarea id="prop-replacements-json" class="input input-mono" rows="6" style="height: auto; padding: 8px;" placeholder="U+E0B0 = 艾&#10;U+E0B1 = 本&#10;U+E0B2 = 服"></textarea>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="elem-modal-footer">
-            <label class="checkbox-inline">
-              <input type="checkbox" id="chk-deactivate-element" />
-              <span>此窗口打开期间暂时停用该图层 (便于实时对比预览)</span>
-            </label>
             <div class="elem-modal-actions">
               <button type="button" id="btn-elem-modal-cancel" class="btn">取消</button>
               <button type="button" id="btn-elem-modal-ok" class="btn btn-primary">确定</button>
@@ -848,9 +856,9 @@
       <header class="preset-manager-head">
         <div class="preset-manager-title-wrap">
           <h2 id="preset-modal-title" class="preset-manager-title">字体方案</h2>
-          <span id="preset-modal-region" class="preset-manager-region">国际服</span>
+          <span id="preset-modal-region" class="preset-manager-region hidden" aria-hidden="true"></span>
         </div>
-        <button id="btn-preset-close" class="btn btn-quiet btn-icon-only" type="button" title="关闭" aria-label="关闭">
+        <button id="btn-preset-close" class="btn btn-quiet btn-icon-only" type="button" aria-label="关闭">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -860,10 +868,12 @@
       </header>
       <div id="preset-manager-list" class="preset-manager-list" role="list"></div>
       <footer class="preset-manager-foot">
-        <span class="preset-manager-hint">内置方案只读，复制后可编辑</span>
+        <div class="preset-manager-foot-left">
+          <button id="btn-preset-new-empty" class="btn btn-quiet btn-xs" type="button">新建空 AXIS 方案…</button>
+        </div>
         <div class="preset-manager-actions">
-          <button id="btn-preset-import" class="btn" type="button">导入 JSON…</button>
-          <button id="btn-preset-save-current" class="btn btn-primary" type="button">保存为方案</button>
+          <button id="btn-preset-import" class="btn btn-xs" type="button">导入 JSON…</button>
+          <button id="btn-preset-close-foot" class="btn btn-xs btn-done" type="button">完成</button>
         </div>
       </footer>
     </div>

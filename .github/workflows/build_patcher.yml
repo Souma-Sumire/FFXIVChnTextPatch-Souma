@@ -6,6 +6,10 @@ on:
     tags:
       - "patcher-v*"
 
+concurrency:
+  group: build-patcher-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-windows:
     runs-on: windows-latest
