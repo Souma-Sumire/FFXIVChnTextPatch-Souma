@@ -69,11 +69,17 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 
 	datFile, err := os.OpenFile(dat0Path, os.O_RDWR, 0)
 	if err != nil {
+		if os.IsPermission(err) {
+			return stats, fmt.Errorf("打开 dat0 (%s) 失败: %w（权限不足，若游戏在系统受保护目录请以管理员身份运行）", dat0Path, err)
+		}
 		return stats, fmt.Errorf("打开 dat0 (%s) 失败: %w", dat0Path, err)
 	}
 	defer datFile.Close()
 	indexFile, err := os.OpenFile(opts.TextIndexPath, os.O_RDWR, 0)
 	if err != nil {
+		if os.IsPermission(err) {
+			return stats, fmt.Errorf("打开 index (%s) 失败: %w（权限不足，若游戏在系统受保护目录请以管理员身份运行）", opts.TextIndexPath, err)
+		}
 		return stats, fmt.Errorf("打开 index (%s) 失败: %w", opts.TextIndexPath, err)
 	}
 	defer indexFile.Close()
