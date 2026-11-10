@@ -1,6 +1,18 @@
+import { Call, Events, Window as WailsWindow } from "@wailsio/runtime";
 import "./style.css";
+import {
+  applyReplacementRowEdit,
+  formatReplacementKeyHex,
+  formatReplacementsToText,
+  nextReplacementKey,
+  parseReplacementKey,
+  parseTextToReplacements,
+} from "./codepoint_replacements";
 import { GAME_FONT_FACES, GAME_FONT_METRICS } from "./font_data";
 import { initTooltips, setTip } from "./tooltip";
+
+const IS_ELEMENT_EDITOR_SUBWINDOW = new URLSearchParams(window.location.search).get("window") === "element-editor";
+const WAILS_APP_SERVICE = "main.App";
 
 interface RuleMeta {
   id: string;
@@ -199,6 +211,7 @@ interface BootstrapInfo {
   excluded?: string[];
   resourceTime?: string;
   resourceHash?: string;
+  fontCompilerReady?: boolean;
 }
 
 interface FileStatus {
@@ -318,6 +331,7 @@ interface FontBuildInfo {
 
 interface GoApp {
   GetAppVersion(): Promise<string>;
+  GetDiagnostics(): Promise<string[]>;
   CheckAppUpdate(): Promise<AppUpdateInfo>;
   InstallAppUpdate(): Promise<void>;
   RestartApp(): Promise<void>;
@@ -331,6 +345,7 @@ interface GoApp {
   RemoveCSVDirectory(language: string, path: string, deleteFiles: boolean): Promise<CSVContext>;
   SetCSVDirectoryMeta(language: string, path: string, title: string, desc: string): Promise<CSVContext>;
   OpenCSVDirectory(language: string, path: string): Promise<void>;
+  OpenBackupDirectory(language: string): Promise<void>;
   DetectGamePaths(language: string): Promise<string[]>;
   CancelDetect(): Promise<void>;
   SelectGameDirectory(language: string): Promise<string>;
@@ -366,32 +381,37 @@ interface GoApp {
   SelectTTMPSavePath(): Promise<string>;
   ReadTextFile(filePath: string): Promise<string>;
   WriteTextFile(filePath: string, content: string): Promise<void>;
+  OpenElementEditorWindow(title: string, stateJson: string): Promise<void>;
+  SyncElementEditorWindow(title: string, stateJson: string): Promise<void>;
+  HideElementEditorWindow(): Promise<void>;
+  GetElementEditorState(): Promise<string>;
 }
 
-declare global {
-  interface Window {
-    go?: { main?: { App?: Partial<GoApp> } };
-    runtime?: {
-      EventsOn?: (name: string, callback: (...data: unknown[]) => void) => void;
-      WindowSetTitle?: (title: string) => void;
-      WindowGetSize?: () => Promise<{ w: number; h: number }>;
-      WindowSetSize?: (width: number, height: number) => void;
-      WindowIsMaximised?: () => Promise<boolean>;
-      WindowIsFullscreen?: () => Promise<boolean>;
-      WindowCenter?: () => void;
-    };
-  }
-}
+// 启动握手会在后端就绪前反复失败，逐次记录只会刷屏；最终结果由 waitForBackend 抛出。
+const quietCallFailures = new Set<string>(["GetAppVersion"]);
 
 async function call<K extends keyof GoApp>(
   name: K,
   ...args: Parameters<GoApp[K]>
 ): Promise<Awaited<ReturnType<GoApp[K]>>> {
-  const fn = window.go?.main?.App?.[name] as ((...a: unknown[]) => Promise<unknown>) | undefined;
-  if (!fn) {
-    throw new Error("后端服务未就绪，请稍后重试");
+  try {
+    return (await Call.ByName(`${WAILS_APP_SERVICE}.${String(name)}`, ...args)) as Awaited<ReturnType<GoApp[K]>>;
+  } catch (error) {
+    if (!quietCallFailures.has(String(name))) {
+      log(`${DIAG_PREFIX}调用 ${String(name)} 失败：${describeError(error)}；参数=${summarizeCallArgs(args)}`, "diag");
+    }
+    throw error;
   }
-  return (await fn(...args)) as Awaited<ReturnType<GoApp[K]>>;
+}
+
+function summarizeCallArgs(args: unknown[]): string {
+  try {
+    const text = JSON.stringify(args);
+    if (text.length <= 2000) return text;
+    return `${text.slice(0, 2000)}…（共 ${text.length} 字符）`;
+  } catch {
+    return "无法序列化";
+  }
 }
 
 function byId<T extends HTMLElement>(id: string): T {
@@ -402,10 +422,17 @@ function byId<T extends HTMLElement>(id: string): T {
   return node as T;
 }
 
+type LogLevel = "info" | "ok" | "warn" | "error" | "diag";
+
+// 与后端 verifier.DiagPrefix 一致，改一处要同步另一处。
+const DIAG_PREFIX = "[诊断] ";
+
 interface LogEntry {
   id: number;
+  // 面板显示用（时:分:秒）；stamp 带日期，只在复制时使用。
   time: string;
-  level: "info" | "ok" | "warn" | "error";
+  stamp: string;
+  level: LogLevel;
   tag?: string;
   message: string;
 }
@@ -454,6 +481,10 @@ let csvDeletePopover: { element: HTMLElement; anchor: HTMLElement; dispose: () =
 // 内置词条开始汉化时后端会再试一次，不通过就中止。
 let builtinSyncFailed = false;
 
+// 会话头不参与裁剪，复制日志时始终带上；DOM 只保留有限行以免拖慢界面。
+const LOG_DOM_LIMIT = 500;
+const LOG_HISTORY_LIMIT = 10000;
+const headerEntries: LogEntry[] = [];
 let logEntries: LogEntry[] = [];
 let nextLogId = 1;
 
@@ -491,6 +522,8 @@ const el = {
   replaceText: byId<HTMLInputElement>("replace-text"),
   replaceFont: byId<HTMLInputElement>("replace-font"),
   btnOpenFontEditor: byId<HTMLButtonElement>("btn-open-font-editor"),
+  btnOpenFontEditorText: byId("btn-open-font-editor-text"),
+  fontCompilerBar: byId("font-compiler-bar"),
   btnCompileFont: byId<HTMLButtonElement>("btn-compile-font"),
   fontBuildProgress: byId("font-build-progress"),
   fontBuildBar: byId("font-build-bar"),
@@ -581,10 +614,14 @@ const el = {
   // 字体元素编辑器模态框节点 (IDD_FONTELEMENTEDITOR)
   fontElementModal: byId("font-element-modal"),
   elemModalSubtitle: byId("elem-modal-subtitle"),
+  btnElemModalClose: byId<HTMLButtonElement>("btn-elem-modal-close"),
   elemTabFont: byId("elem-tab-font"),
   elemTabChars: byId("elem-tab-chars"),
   elemTabTypo: byId("elem-tab-typo"),
   elemTabMerge: byId("elem-tab-merge"),
+  propsGameFontNotice: byId("props-game-font-notice"),
+  propsEmptyFontNotice: byId("props-empty-font-notice"),
+  propsExternalFontWrap: byId("props-external-font-wrap"),
   propFontFamily: byId<HTMLSelectElement>("prop-font-family"),
   propFontFile: byId<HTMLInputElement>("prop-font-file"),
   btnBrowseFontFile: byId<HTMLButtonElement>("btn-browse-font-file"),
@@ -626,7 +663,13 @@ const el = {
   btnMergePresetChsTime: byId<HTMLButtonElement>("btn-merge-preset-chs-time"),
   btnMergePresetEnTime: byId<HTMLButtonElement>("btn-merge-preset-en-time"),
   btnMergeClear: byId<HTMLButtonElement>("btn-merge-clear"),
+  mergeReplacementsList: byId("merge-replacements-list"),
+  btnMergeAddRule: byId<HTMLButtonElement>("btn-merge-add-rule"),
+  btnMergeToggleRaw: byId<HTMLButtonElement>("btn-merge-toggle-raw"),
+  mergeRawContainer: byId("merge-raw-container"),
   propReplacementsJson: byId<HTMLTextAreaElement>("prop-replacements-json"),
+  btnLeverBypass: byId<HTMLButtonElement>("btn-lever-bypass"),
+  btnLeverCompare: byId<HTMLButtonElement>("btn-lever-compare"),
   btnElemModalCancel: byId<HTMLButtonElement>("btn-elem-modal-cancel"),
   btnElemModalOk: byId<HTMLButtonElement>("btn-elem-modal-ok"),
 
@@ -646,38 +689,35 @@ const FONT_EDITOR_MIN_HEIGHT = 760;
 let savedWorkbenchWindowSize: { w: number; h: number } | null = null;
 
 async function adjustWindowForView(view: "workbench" | "tables" | "font-editor"): Promise<void> {
-  const rt = window.runtime;
-  if (!rt?.WindowGetSize || !rt?.WindowSetSize) return;
   try {
-    const isMax = (await rt.WindowIsMaximised?.()) ?? false;
-    const isFull = (await rt.WindowIsFullscreen?.()) ?? false;
+    const [isMax, isFull] = await Promise.all([WailsWindow.IsMaximised(), WailsWindow.IsFullscreen()]);
     if (isMax || isFull) return;
 
     if (view === "font-editor") {
-      const cur = await rt.WindowGetSize();
+      const cur = await WailsWindow.Size();
       const availW = window.screen?.availWidth ? Math.max(900, window.screen.availWidth - 40) : FONT_EDITOR_MIN_WIDTH;
       const availH = window.screen?.availHeight ? Math.max(640, window.screen.availHeight - 48) : FONT_EDITOR_MIN_HEIGHT;
       const targetW = Math.min(FONT_EDITOR_MIN_WIDTH, availW);
       const targetH = Math.min(FONT_EDITOR_MIN_HEIGHT, availH);
-      if (cur.w < targetW || cur.h < targetH) {
+      if (cur.width < targetW || cur.height < targetH) {
         if (!savedWorkbenchWindowSize) {
-          savedWorkbenchWindowSize = { w: cur.w, h: cur.h };
+          savedWorkbenchWindowSize = { w: cur.width, h: cur.height };
         }
-        const nextW = Math.max(cur.w, targetW);
-        const nextH = Math.max(cur.h, targetH);
-        rt.WindowSetSize(nextW, nextH);
+        const nextW = Math.max(cur.width, targetW);
+        const nextH = Math.max(cur.height, targetH);
+        await WailsWindow.SetSize(nextW, nextH);
         if (
           window.screen?.availWidth &&
           window.screen?.availHeight &&
           (window.screenX + nextW > window.screen.availWidth || window.screenY + nextH > window.screen.availHeight)
         ) {
-          rt.WindowCenter?.();
+          await WailsWindow.Center();
         }
       }
     } else if (view === "workbench" && savedWorkbenchWindowSize) {
       const prev = savedWorkbenchWindowSize;
       savedWorkbenchWindowSize = null;
-      rt.WindowSetSize(prev.w, prev.h);
+      await WailsWindow.SetSize(prev.w, prev.h);
     }
   } catch {
     // 忽略窗口尺寸调整异常
@@ -691,7 +731,10 @@ function switchView(view: "workbench" | "tables" | "font-editor"): void {
   void adjustWindowForView(view);
 }
 
-function parseLogKind(message: string, explicitKind?: "info" | "ok" | "warn" | "error"): "info" | "ok" | "warn" | "error" {
+function parseLogKind(message: string, explicitKind?: LogLevel): LogLevel {
+  if (message.startsWith(DIAG_PREFIX)) {
+    return "diag";
+  }
   if (explicitKind && explicitKind !== "info") {
     return explicitKind;
   }
@@ -708,67 +751,195 @@ function parseLogKind(message: string, explicitKind?: "info" | "ok" | "warn" | "
   return "info";
 }
 
+// 面板只显示时分秒：日期会把宽约 90px 的时间列占掉，正文跟着变窄；
+// 复制时用带日期的 logStamp，贴出去还能对时。
+function logClock(date = new Date()): string {
+  return date.toLocaleTimeString("zh-CN", { hour12: false });
+}
 
-function log(message: string, kind?: "info" | "ok" | "warn" | "error"): void {
-  const actualKind = parseLogKind(message, kind);
-  const timeStr = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+function logStamp(date = new Date()): string {
+  return date.toLocaleString("zh-CN", {
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+  });
+}
 
-  const entry: LogEntry = {
+function makeLogEntry(message: string, kind?: LogLevel): LogEntry {
+  const now = new Date();
+  return {
     id: nextLogId++,
-    time: timeStr,
-    level: actualKind,
+    time: logClock(now),
+    stamp: logStamp(now),
+    level: parseLogKind(message, kind),
     tag: "",
-    message: message,
+    message,
   };
-  logEntries.push(entry);
-  if (logEntries.length > 500) {
-    logEntries.shift();
-  }
+}
 
+function appendLogLine(entry: LogEntry): void {
   const line = document.createElement("div");
-  line.className = `log-line ${actualKind === "info" ? "" : actualKind}`.trim();
-  line.dataset.level = actualKind;
+  line.className = `log-line ${entry.level === "info" ? "" : entry.level}`.trim();
+  line.dataset.level = entry.level;
 
   const timeEl = document.createElement("span");
   timeEl.className = "time";
-  timeEl.textContent = timeStr;
+  timeEl.textContent = entry.time;
   line.append(timeEl);
 
   const textEl = document.createElement("span");
   textEl.className = "log-text";
-  textEl.textContent = message;
+  textEl.textContent = entry.message;
   line.append(textEl);
 
   el.log.append(line);
-  while (el.log.childElementCount > 500) {
+  while (el.log.childElementCount > LOG_DOM_LIMIT) {
     el.log.firstElementChild?.remove();
   }
   el.log.scrollTop = el.log.scrollHeight;
 }
 
-async function copyLogs(): Promise<void> {
-  if (logEntries.length === 0) return;
-  const text = logEntries
-    .map((e) => `[${e.time}] [${e.level.toUpperCase()}] ${e.tag ? `[${e.tag}] ` : ""}${e.message}`)
-    .join("\n");
+function log(message: string, kind?: LogLevel): void {
+  const entry = makeLogEntry(message, kind);
+  logEntries.push(entry);
+  if (logEntries.length > LOG_HISTORY_LIMIT) {
+    logEntries.splice(0, logEntries.length - LOG_HISTORY_LIMIT);
+  }
+  // 诊断行只进复制内容，平时不占日志窗口。
+  if (entry.level !== "diag") {
+    appendLogLine(entry);
+  }
+}
+
+// 会话快照只进复制内容：面板上不显示，否则启动就把日志窗口填满。
+function logHeader(lines: string[]): void {
+  for (const line of lines) {
+    headerEntries.push(makeLogEntry(line, "diag"));
+  }
+}
+
+const APPENDIX_TABLE_SAMPLE = 8;
+
+// 后端已把路径里的用户名换成占位符，这里兜底界面日志：用户选的目录、
+// 探测到的路径都不经过后端。两种写法各处理一次，已替换过的不会再命中。
+function redactText(text: string): string {
+  return text
+    .replace(/[a-z]:[\\/]+(?:users|documents and settings)[\\/]+[^\\/\s"',|]+/gi, "%USERPROFILE%")
+    .replace(/(^|[\s"'(=])\/(?:home|users)\/[^/\s"',|]+/gi, "$1~");
+}
+
+// 反馈页地址：模板里第一栏写现象，第二栏粘调试信息。
+const FEEDBACK_ISSUE_URL = "https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/issues/new?template=bug_report.yml";
+
+function partStatusText(part?: ClientPartStatus): string {
+  if (!part) return "无";
+  return `${part.label}（${part.status}）`;
+}
+
+// 界面状态只附在复制文本末尾。表清单可能有上千条，只留数量和前几项示例，
+// 否则整段日志最扎眼的就是一行几万个表名。
+function diagnosticAppendix(): string[] {
+  const tables = Array.from(selected).sort();
+  const tablePart = tables.length === 0
+    ? "已选数据表 0 项"
+    : `已选数据表 ${tables.length} 项（前 ${Math.min(tables.length, APPENDIX_TABLE_SAMPLE)} 项：${tables.slice(0, APPENDIX_TABLE_SAMPLE).join("、")}）`;
+  const clientPart = clientStatus
+    ? `客户端状态=${clientStatus.label}（${clientStatus.status}）｜文本=${partStatusText(clientStatus.text)}｜字体=${partStatusText(clientStatus.font)}｜说明=${clientStatus.description || "无"}`
+    : "客户端状态=本次会话尚未检查";
+  // 具体路径在会话快照的「客户端」一行里，这里只报有没有设置。
+  const gameDirPart = Object.entries(config.gameDirs ?? {})
+    .map(([key, dir]) => `${key}=${dir ? "已设置" : "未设置"}`)
+    .join("、");
+  return [
+    "=== 复制时的界面状态 ===",
+    `区服=${config.language}，词条目录=${bootstrap?.csv?.selected || "内置"}，预设=${config.preset}，字体来源=${config.fontSource || "package"}，16 位贴图=${fontTexture16BitEnabled}，目标语言=${targetLangs.join(",")}`,
+    `规则开关=${JSON.stringify(config.rules)}，字体方案=${JSON.stringify(config.fontPresets ?? {})}，游戏目录=${gameDirPart || "未设置"}`,
+    clientPart,
+    tablePart,
+  ];
+}
+
+function formatLogEntry(entry: LogEntry): string {
+  // 级别标签已经标明是诊断行，正文里的前缀去掉，免得一行出现两个 [诊断]。
+  const message = entry.level === "diag" && entry.message.startsWith(DIAG_PREFIX)
+    ? entry.message.slice(DIAG_PREFIX.length)
+    : entry.message;
+  return `[${entry.stamp}] [${entry.level.toUpperCase()}] ${entry.tag ? `[${entry.tag}] ` : ""}${message}`;
+}
+
+function buildLogText(): string {
+  const lines = [...headerEntries, ...logEntries].map((entry) => redactText(formatLogEntry(entry)));
+  const stamp = logStamp();
+  // 用户名已经换成占位符，剩下的信息仍值得用户扫一眼再外发。
+  lines.unshift(`${stamp} [DIAG] 以下内容中的用户名与代理地址已隐去，粘贴前请再确认没有其他个人信息。`);
+  for (const line of diagnosticAppendix()) {
+    lines.push(`${stamp} [DIAG] ${redactText(line)}`);
+  }
+  return lines.join("\n");
+}
+
+function flashCopyButton(text: string): void {
+  const target = el.btnCopyLogText ?? el.btnCopyLog;
+  const orig = target.textContent;
+  target.textContent = text;
+  setTimeout(() => {
+    target.textContent = orig;
+  }, 1500);
+}
+
+// 复制完顺手把用户送到反馈页：只给剪贴板不给去向，多数人还是会来问「贴哪」。
+async function promptFeedback(): Promise<void> {
+  const choice = openModal(
+    "调试信息已复制",
+    "已复制本次会话的完整信息：系统环境、配置、客户端状态与全部日志。"
+      + "路径中的用户名已隐去。\n\n"
+      + "打开反馈页后，先写清问题现象，再把剪贴板内容粘贴到「调试信息」一栏。",
+    "打开反馈页",
+    "",
+  );
+  el.modalCancel.textContent = "关闭";
+  if ((await choice) !== "ok") return;
+  try {
+    await call("OpenLink", FEEDBACK_ISSUE_URL);
+  } catch (error) {
+    log(`[错误] 打开反馈页失败: ${describeError(error)}；可手动访问 ${FEEDBACK_ISSUE_URL}`, "error");
+  }
+}
+
+async function copyDiagnostics(): Promise<void> {
+  let text = "";
+  try {
+    text = buildLogText();
+  } catch (error) {
+    log(`[错误] 生成调试信息失败: ${describeError(error)}`, "error");
+    return;
+  }
   try {
     await navigator.clipboard.writeText(text);
-    const orig = el.btnCopyLogText ? el.btnCopyLogText.textContent : el.btnCopyLog.textContent;
-    if (el.btnCopyLogText) {
-      el.btnCopyLogText.textContent = "已复制";
-    } else {
-      el.btnCopyLog.textContent = "已复制";
-    }
-    setTimeout(() => {
-      if (el.btnCopyLogText) {
-        el.btnCopyLogText.textContent = orig;
-      } else {
-        el.btnCopyLog.textContent = orig;
-      }
-    }, 1500);
   } catch {
-    // 忽略剪贴板写入异常
+    log("[错误] 复制调试信息失败：剪贴板不可用", "error");
+    return;
   }
+  flashCopyButton("已复制");
+  await promptFeedback();
+}
+
+function wireErrorCapture(): void {
+  window.addEventListener("error", (event) => {
+    log(`${DIAG_PREFIX}界面异常：${event.message}（${event.filename}:${event.lineno}:${event.colno}）`, "diag");
+  });
+  window.addEventListener("unhandledrejection", (event) => {
+    log(`${DIAG_PREFIX}未处理的异步异常：${describeError(event.reason)}`, "diag");
+  });
+}
+
+function frontendDiagnostics(): string[] {
+  const offset = -new Date().getTimezoneOffset();
+  const sign = offset >= 0 ? "+" : "-";
+  const tz = `${Intl.DateTimeFormat().resolvedOptions().timeZone} (UTC${sign}${Math.floor(Math.abs(offset) / 60)}:${String(Math.abs(offset) % 60).padStart(2, "0")})`;
+  return [
+    `${DIAG_PREFIX}界面环境：${navigator.userAgent}｜平台=${navigator.platform || "未知"}｜语言=${navigator.language}｜时区=${tz}`,
+    `${DIAG_PREFIX}显示：窗口=${window.innerWidth}×${window.innerHeight}｜屏幕=${screen.width}×${screen.height}｜缩放=${window.devicePixelRatio}`,
+  ];
 }
 
 const STORAGE_KEY_LOG_HEIGHT = "ffxiv_patcher_log_height_v2";
@@ -1042,11 +1213,9 @@ function setBusy(value: boolean, label = ""): void {
 function setWindowTitle(): void {
   const title = "FFXIV 汉化器";
   document.title = title;
-  try {
-    window.runtime?.WindowSetTitle?.(title);
-  } catch {
+  void WailsWindow.SetTitle(title).catch(() => {
     // 忽略非桌面环境下的调用失败
-  }
+  });
 }
 
 function showConfirm(title: string, text: string, okText = "确定继续"): Promise<boolean> {
@@ -1080,6 +1249,8 @@ function openModal(
       el.modalAlt.classList.add("hidden");
     }
     el.modalCancel.classList.toggle("hidden", hideCancel);
+    // 个别流程（如复制调试信息后引导反馈）需要换个说法，先复位成本义再让它覆盖。
+    el.modalCancel.textContent = "取消";
     if (showOptions) {
       el.restoreTextCheck.checked = true;
       el.restoreFontCheck.checked = true;
@@ -1108,11 +1279,19 @@ el.modalAlt.addEventListener("click", () => closeModal("alt"));
 
 async function waitForBackend(timeoutMs: number): Promise<void> {
   const start = Date.now();
-  while (!window.go?.main?.App?.GetBootstrap) {
-    if (Date.now() - start > timeoutMs) {
-      throw new Error("后端服务连接超时，请检查客户端启动状态");
+  let lastError: unknown;
+  while (true) {
+    try {
+      await call("GetAppVersion");
+      return;
+    } catch (error) {
+      lastError = error;
+      if (Date.now() - start > timeoutMs) {
+        const reason = lastError ? ` (${describeError(lastError)})` : "";
+        throw new Error(`后端服务连接超时，请检查客户端启动状态${reason}`);
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 80));
     }
-    await new Promise((resolve) => window.setTimeout(resolve, 100));
   }
 }
 
@@ -1291,6 +1470,10 @@ async function detectChsGameDirForFontInBackground(): Promise<void> {
     if (list.length > 0 && list[0] && !config.gameDirs?.["CHS"]) {
       if (!config.gameDirs) config.gameDirs = {};
       config.gameDirs["CHS"] = list[0];
+      if (!config.fontPresets?.["GLOBAL"] || config.fontPresets["GLOBAL"] === "builtin:global:chnaxis_system") {
+        if (!config.fontPresets) config.fontPresets = {};
+        config.fontPresets["GLOBAL"] = "builtin:global:chnaxis";
+      }
       await persistConfig();
       log(`[配置] 已自动探测到国服客户端目录：${list[0]}`);
       if (isGlobalLanguage(config.language)) {
@@ -1302,11 +1485,88 @@ async function detectChsGameDirForFontInBackground(): Promise<void> {
   }
 }
 
+async function bootstrapElementEditorSubWindow(): Promise<void> {
+  document.body.style.margin = "0";
+  document.body.style.padding = "0";
+  document.body.style.backgroundColor = "#16171a";
+  document.body.style.color = "#f0f2f5";
+  document.body.style.height = "100vh";
+  document.body.style.width = "100vw";
+  document.body.style.display = "flex";
+  document.body.style.flexDirection = "column";
+  document.body.style.overflow = "hidden";
+
+  const winEl = document.querySelector<HTMLElement>(".elem-modal-window");
+  const appEl = document.getElementById("app");
+  if (winEl) {
+    winEl.classList.add("subwindow-mode");
+    document.body.appendChild(winEl);
+  }
+  if (appEl) {
+    appEl.style.display = "none";
+  }
+  document.getElementById("preset-modal")?.classList.add("hidden");
+  document.getElementById("modal")?.classList.add("hidden");
+
+  const applyPayload = (rawJson: unknown, resetTab: boolean) => {
+    if (typeof rawJson !== "string" || !rawJson) return;
+    try {
+      const payload = JSON.parse(rawJson) as SubEditorStatePayload;
+      releaseSubEditorLevers(false);
+      activeSubEditorSessionId = payload.sessionId;
+      subEditorFaceName = payload.faceName;
+      subEditorElementIndex = payload.elementIndex;
+      systemFontsList = Array.isArray(payload.systemFonts) ? payload.systemFonts : [];
+      currentMultiFont = {
+        fontSets: [{ name: "sub", faces: [{ name: payload.faceName, elements: [payload.element] }] }],
+      };
+      activeFaceName = payload.faceName;
+      activeElementIndex = 0;
+      document.title = `字体图层属性 - ${payload.faceName} · 图层 #${payload.elementIndex + 1}`;
+      el.elemModalSubtitle.textContent = `${payload.faceName} · 图层 #${payload.elementIndex + 1}`;
+      renderPropsPanel();
+      if (resetTab) {
+        switchElementModalTab("font");
+      }
+    } catch {
+      // 忽略无效状态数据
+    }
+  };
+
+  Events.On("elem-editor:open", (event) => applyPayload(event.data, true));
+  Events.On("elem-editor:sync", (event) => applyPayload(event.data, false));
+
+  wireElementEditorEvents();
+
+  try {
+    await waitForBackend(8000);
+    const initialJson = await call("GetElementEditorState");
+    if (initialJson) {
+      applyPayload(initialJson, true);
+    }
+  } catch (err) {
+    console.error("初始化图层属性子窗口失败:", err);
+  }
+}
+
 async function bootstrapApp(): Promise<void> {
+  wireErrorCapture();
+  if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+    await bootstrapElementEditorSubWindow();
+    return;
+  }
   try {
     await waitForBackend(8000);
     wireRuntimeEvents();
     wireEvents();
+
+    try {
+      const diagnostics = await call("GetDiagnostics");
+      logHeader([`${DIAG_PREFIX}=== 会话开始 ===`, ...diagnostics, ...frontendDiagnostics()]);
+    } catch (error) {
+      log(`[警告] 读取诊断信息失败: ${describeError(error)}`, "warn");
+      logHeader(frontendDiagnostics());
+    }
 
     try {
       const ver = await call("GetAppVersion");
@@ -1366,6 +1626,7 @@ async function bootstrapApp(): Promise<void> {
 async function loadBootstrap(): Promise<void> {
   const info = await call("GetBootstrap");
   bootstrap = info;
+  fontCompilerReady = Boolean(info.fontCompilerReady);
   config = { ...info.config };
   if (!config.rules) {
     config.rules = {};
@@ -1613,7 +1874,7 @@ function setGameDir(dir: string): void {
   void persistConfig();
 }
 
-function createDiagItem(label: string, value: string, cls = ""): HTMLDivElement {
+function createDiagItem(label: string, value: string, cls = "", action?: HTMLElement): HTMLDivElement {
   const item = document.createElement("div");
   item.className = "diag-item";
   const k = document.createElement("span");
@@ -1622,7 +1883,14 @@ function createDiagItem(label: string, value: string, cls = ""): HTMLDivElement 
   const v = document.createElement("span");
   v.className = `diag-v ${cls}`.trim();
   v.textContent = value;
-  item.append(k, v);
+  if (action) {
+    const row = document.createElement("div");
+    row.className = "diag-value-row";
+    row.append(v, action);
+    item.append(k, row);
+  } else {
+    item.append(k, v);
+  }
   return item;
 }
 
@@ -2558,7 +2826,7 @@ function createClientStatusItem(): HTMLDivElement {
   k.textContent = "客户端状态";
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = "btn btn-quiet btn-xs btn-chip diag-check-btn";
+  btn.className = "btn btn-quiet btn-xs btn-chip diag-mini-btn diag-check-btn";
   btn.textContent = checkingClient ? "校验中" : clientStatus ? "重测" : "检测";
   btn.disabled = checkingClient;
   setTip(btn, clientStatus?.description || "");
@@ -2616,6 +2884,7 @@ async function checkClientEnvironment(): Promise<void> {
       return;
     }
     clientStatus = status;
+    log(`${DIAG_PREFIX}客户端校验：状态=${status.status}/${status.label}，文本=${status.text?.status ?? "无"}/${status.text?.label ?? "无"}，字体=${status.font?.status ?? "无"}/${status.font?.label ?? "无"}，说明=${status.description || "无"}`, "diag");
     let logKind: "ok" | "warn" | "error" | "info" = "info";
     if (clientStatus.status === "original") {
       logKind = "ok";
@@ -2627,8 +2896,9 @@ async function checkClientEnvironment(): Promise<void> {
     const textLabel = clientStatus.text?.label ?? clientStatus.label;
     const fontLabel = clientStatus.font?.label ?? clientStatus.label;
     if (clientStatus.status === "unknown") {
+      const label = textLabel === fontLabel ? `【${textLabel}】` : `文本【${textLabel}】、字体【${fontLabel}】`;
       const desc = clientStatus.description ? `（${clientStatus.description}）` : "";
-      log(`[警告] 客户端状态：文本【${textLabel}】、字体【${fontLabel}】${desc}`, "warn");
+      log(`[警告] 客户端状态：${label}${desc}`, "warn");
     } else {
       log(`[状态] 文本：${textLabel}；字体：${fontLabel}`, logKind);
     }
@@ -2655,22 +2925,33 @@ function fontSourceMode(): "package" | "compile" {
 
 let fontBuild: FontBuildInfo | null = null;
 let fontCompiling = false;
+let fontCompilerReady = false;
+let openingFontEditor = false;
 let fontEditorHint = "";
+
+function resetFontCompilerButtonState(text = "编辑方案"): void {
+  el.btnOpenFontEditor.classList.remove("is-syncing");
+  el.fontCompilerBar.classList.remove("is-pending");
+  el.fontCompilerBar.style.width = "0%";
+  el.btnOpenFontEditorText.textContent = text;
+  updateFontUiAssetState();
+}
 
 // 按钮点不了的原因统一摆在这一行下面，悬停提示只作为补充。
 function renderFontAlert(): void {
   const reasons: string[] = [];
   if (fontSourceMode() === "compile") {
     if (fontEditorHint) reasons.push(fontEditorHint);
-    if (!busy && !fontCompiling && fontBuildNeeded() && !fontBuildReady() && fontBuild?.reason) {
-      reasons.push(`当前方案无法用于汉化：${fontBuild.reason}。请先执行「编译」生成字体贴图。`);
+    if (fontCompilerReady && !busy && !fontCompiling && fontBuildNeeded() && !fontBuildReady() && fontBuild?.reason) {
+      reasons.push(`${fontBuild.reason}，请先执行「编译」生成字体贴图。`);
     }
   }
-  const text = reasons.join("\n");
+  const text = reasons.join("；");
   if (el.fontEditorAlertText.textContent !== text) {
     el.fontEditorAlertText.textContent = text;
   }
-  el.fontEditorAlert.classList.toggle("hidden", !text);
+  el.fontEditorAlert.title = text;
+  el.fontEditorAlert.classList.toggle("hidden", !text || !fontCompilerReady);
 }
 
 function fontBuildNeeded(): boolean {
@@ -2698,6 +2979,7 @@ async function refreshFontBuild(): Promise<void> {
 function renderFontBuildState(): void {
   const ready = fontBuildReady();
   el.btnCompileFont.textContent = fontCompiling ? "编译中…" : ready ? "重新编译" : "编译";
+  el.btnCompileFont.classList.toggle("hidden", !fontCompilerReady);
   el.fontBuildProgress.classList.toggle("hidden", !fontCompiling);
   if (!fontCompiling) {
     el.fontBuildBar.style.width = "0%";
@@ -2706,7 +2988,7 @@ function renderFontBuildState(): void {
   if (fontCompiling) {
     tip = "正在编译字体贴图";
   } else if (fontBuildNeeded() && !ready && fontBuild?.reason) {
-    tip = `当前方案无法用于汉化：${fontBuild.reason}`;
+    tip = `${fontBuild.reason}，请先执行「编译」生成字体贴图`;
   }
   setTip(el.btnCompileFont, tip);
   renderFontAlert();
@@ -2719,10 +3001,17 @@ function refreshPatchButtonGate(): void {
   if (isPatching) {
     return;
   }
-  if (fontBuildNeeded() && !fontBuildReady()) {
-    el.btnPatch.disabled = true;
-    setTip(el.btnPatch, busy ? null : "自定义方案尚未编译，请在字体来源处执行「编译」");
-    return;
+  if (fontBuildNeeded()) {
+    if (!fontCompilerReady) {
+      el.btnPatch.disabled = true;
+      setTip(el.btnPatch, busy ? null : "自定义方案组件未就绪，请先进入「编辑方案」准备组件");
+      return;
+    }
+    if (!fontBuildReady()) {
+      el.btnPatch.disabled = true;
+      setTip(el.btnPatch, busy ? null : "自定义方案尚未编译，请在字体来源处执行「编译」");
+      return;
+    }
   }
   setTip(el.btnPatch, null);
   if (!busy && !syncingResource && !fontCompiling) {
@@ -2924,8 +3213,7 @@ let elementModalSnapshot: string | null = null;
 function hideAllContextMenus(): void {
   el.fcFontListContextMenu?.classList.add("hidden");
   el.fcElementContextMenu?.classList.add("hidden");
-  document.querySelectorAll(".fc-dropdown-menu").forEach((m) => m.classList.add("hidden"));
-  document.querySelectorAll(".fc-menu-item").forEach((it) => it.classList.remove("open"));
+  closeFontMenus();
 }
 
 function showFontListContextMenu(x: number, y: number): void {
@@ -3004,6 +3292,7 @@ function setElementSelection(indices: number[], active?: number): void {
 function refreshAfterElementChange(): void {
   renderElementList();
   renderPropsPanel();
+  syncOpenSubEditorToSelection();
   schedulePreviewRender();
 }
 
@@ -3328,21 +3617,28 @@ async function addSystemFontToFamily(): Promise<void> {
 
 // ---------- 字体面导航与预览开关 ----------
 
+let fontGroupGameCollapsed = false;
+let fontGroupLobbyCollapsed = false;
+
+function expandFaceGroup(faceName: string): void {
+  if (!faceName) return;
+  if (/_lobby$/i.test(faceName)) {
+    fontGroupLobbyCollapsed = false;
+  } else {
+    fontGroupGameCollapsed = false;
+  }
+}
+
 function selectFace(faceName: string): void {
   if (!faceName) return;
   activeFaceName = faceName;
-  const nextFace = getCurrentFace();
-  if (nextFace && nextFace.elements.length > 1) {
-    const nonGameIdx = nextFace.elements.findIndex((e) => getElementRenderer(e) !== 1 && getElementRenderer(e) !== 0);
-    activeElementIndex = nonGameIdx >= 0 ? nonGameIdx : 0;
-  } else {
-    activeElementIndex = 0;
-  }
-  setElementSelection([activeElementIndex]);
+  expandFaceGroup(faceName);
+  activeElementIndex = 0;
   syncActiveFaceToUI();
   renderFaceTabs();
   renderElementList();
   renderPropsPanel();
+  syncOpenSubEditorToSelection();
   schedulePreviewRender(true);
 }
 
@@ -3366,8 +3662,37 @@ function setPreviewZoomLevel(percent: number): void {
   updatePreviewTransform();
 }
 
+function clampPreviewPan(): void {
+  if (!el.previewCanvasBox || !el.previewImage) return;
+  const viewportW = el.previewCanvasBox.clientWidth;
+  const viewportH = el.previewCanvasBox.clientHeight;
+  const naturalW = el.previewImage.naturalWidth || el.previewImage.width || 0;
+  const naturalH = el.previewImage.naturalHeight || el.previewImage.height || 0;
+  if (!viewportW || !viewportH || !naturalW || !naturalH) {
+    previewPanX = Math.min(0, previewPanX);
+    previewPanY = Math.min(0, previewPanY);
+    return;
+  }
+
+  const scaledW = naturalW * currentZoom;
+  const scaledH = naturalH * currentZoom;
+
+  if (scaledW > viewportW) {
+    previewPanX = Math.min(0, Math.max(viewportW - scaledW, previewPanX));
+  } else {
+    previewPanX = 0;
+  }
+
+  if (scaledH > viewportH) {
+    previewPanY = Math.min(0, Math.max(viewportH - scaledH, previewPanY));
+  } else {
+    previewPanY = 0;
+  }
+}
+
 // 预览图由字体编译组件按游戏内 1:1 像素渲染；缩放/平移只是对这张图做变换，不改变排版。
 function updatePreviewTransform(): void {
+  clampPreviewPan();
   el.previewImage.style.transform = `translate(${previewPanX}px, ${previewPanY}px) scale(${currentZoom})`;
 }
 
@@ -3421,6 +3746,7 @@ async function openFontJsonFile(): Promise<void> {
   if (!faces.some((f) => f.name === activeFaceName)) {
     activeFaceName = pickDefaultFaceName(faces);
   }
+  expandFaceGroup(activeFaceName);
   activeElementIndex = 0;
   setElementSelection([0]);
   syncActiveFaceToUI();
@@ -4100,11 +4426,22 @@ function wireFontMenuInteractions(): void {
   }
 
   // 点击菜单之外的区域关闭菜单；菜单与右键菜单内部的点击由各自的处理器负责。
-  document.addEventListener("mousedown", (ev) => {
-    if (!el.viewFontEditor.contains(ev.target as Node)) return;
-    const target = ev.target as HTMLElement;
-    if (target.closest(".fc-menubar, .fc-context-menu")) return;
-    closeFontMenus();
+  document.addEventListener("pointerdown", (ev) => {
+    if (el.viewFontEditor.classList.contains("hidden")) return;
+    const target = ev.target as HTMLElement | null;
+    if (target?.closest(".fc-menubar, .fc-context-menu")) return;
+    hideAllContextMenus();
+  });
+
+  // 全局接管右键上下文菜单：非文本输入框禁止浏览器默认右键，并关闭已打开菜单。
+  // 列表项自身会 stopPropagation 并弹出对应的上下文菜单。
+  window.addEventListener("contextmenu", (ev) => {
+    const target = ev.target as HTMLElement | null;
+    if (target?.closest("input, textarea")) {
+      hideAllContextMenus();
+      return;
+    }
+    ev.preventDefault();
     hideAllContextMenus();
   });
 
@@ -4493,9 +4830,17 @@ async function loadFontPresetsForCurrentRegion(): Promise<void> {
   }
   availableFontPresets = presets;
 
+  const chnAxisPreset = availableFontPresets.find((p) => p.id === "builtin:global:chnaxis");
   const savedId = config.fontPresets?.[reg] || config.fontPresets?.[reg.toLowerCase()];
-  const matched = availableFontPresets.find((p) => p.id === savedId);
-  const targetId = matched ? matched.id : availableFontPresets[0]?.id || "";
+  let targetId = "";
+  if (chnAxisPreset && (!savedId || savedId === "builtin:global:chnaxis_system")) {
+    targetId = chnAxisPreset.id;
+    if (!config.fontPresets) config.fontPresets = {};
+    config.fontPresets[reg] = targetId;
+  } else {
+    const matched = availableFontPresets.find((p) => p.id === savedId);
+    targetId = matched ? matched.id : availableFontPresets[0]?.id || "";
+  }
 
   activePresetId = targetId;
   updateCurrentPresetBadge();
@@ -4555,19 +4900,16 @@ function adjustElementsSectionHeight(): void {
   const rowCount = face ? face.elements.length : 1;
   const headerHeight = 28;
   const rowHeight = 28;
-  // 恰好装下所有系列 + 3行空行
-  const totalRows = rowCount + 3;
-  const targetHeight = headerHeight + totalRows * rowHeight + 2;
+  const scrollbarHeight = 16;
+  // 预留至少 3 行空间避免横向滚动条遮挡，最多自适应到 5 行
+  const rows = Math.min(5, Math.max(3, rowCount));
+  const targetHeight = Math.max(140, headerHeight + rows * rowHeight + scrollbarHeight + 6);
   el.fcElementsSection.style.height = `${targetHeight}px`;
 }
 
 function adjustPreviewTextHeight(): void {
-  const text = el.previewCustomText.value || "";
-  const lines = text.split("\n").length || 1;
-  const lineHeight = 19;
-  // 恰好装下所有文字 + 1行空行
-  const textareaH = (lines + 1) * lineHeight + 14;
-  el.fcPreviewEditWrap.style.height = `${textareaH + 12}px`;
+  // 精确匹配 8 个完整整数行（单行 20px，8 行 160px，加 padding/border 26px = 186px），绝不显示半截文字
+  el.fcPreviewEditWrap.style.height = "186px";
 }
 
 function syncActiveFaceToUI(): void {
@@ -4601,14 +4943,9 @@ async function loadFontPreset(presetId: string): Promise<void> {
     if (!faces.some((f) => f.name === activeFaceName)) {
       activeFaceName = pickDefaultFaceName(faces);
     }
+    expandFaceGroup(activeFaceName);
 
-    const face = getCurrentFace();
-    if (face && face.elements.length > 1) {
-      const nonGameIdx = face.elements.findIndex((e) => getElementRenderer(e) !== 1 && getElementRenderer(e) !== 0);
-      activeElementIndex = nonGameIdx >= 0 ? nonGameIdx : 0;
-    } else {
-      activeElementIndex = 0;
-    }
+    activeElementIndex = 0;
 
     syncActiveFaceToUI();
     renderFaceTabs();
@@ -4616,6 +4953,7 @@ async function loadFontPreset(presetId: string): Promise<void> {
     renderPropsPanel();
     syncFontMenuChecks();
     if (!el.viewFontEditor.classList.contains("hidden")) {
+      syncOpenSubEditorToSelection();
       schedulePreviewRender();
     }
   } catch (err) {
@@ -4649,36 +4987,8 @@ function getFaceFamilyPrefix(faceName: string): string {
 function renderFaceItemLabel(faceName: string): HTMLElement {
   const container = document.createElement("span");
   container.className = "fc-font-item-name";
+  container.textContent = faceName;
   setTip(container, faceName);
-
-  const isLobby = /_lobby$/i.test(faceName);
-  const cleanName = isLobby ? faceName.replace(/_lobby$/i, "") : faceName;
-  const match = cleanName.match(/^([a-zA-Z]+_)(.+)$/);
-
-  if (match) {
-    const prefixEl = document.createElement("span");
-    prefixEl.className = "fc-face-prefix";
-    prefixEl.textContent = match[1];
-
-    const specEl = document.createElement("span");
-    specEl.className = "fc-face-spec";
-    specEl.textContent = match[2];
-
-    container.append(prefixEl, specEl);
-  } else {
-    const nameEl = document.createElement("span");
-    nameEl.className = "fc-face-spec";
-    nameEl.textContent = cleanName;
-    container.append(nameEl);
-  }
-
-  if (isLobby) {
-    const lobbyEl = document.createElement("span");
-    lobbyEl.className = "fc-face-lobby";
-    lobbyEl.textContent = "lobby";
-    container.append(lobbyEl);
-  }
-
   return container;
 }
 
@@ -4687,35 +4997,94 @@ function renderFaceTabs(): void {
   const faces = getFacesList(currentMultiFont);
   if (faces.length === 0) return;
 
-  for (const face of faces) {
-    const faceName = face.name;
-    const div = document.createElement("div");
-    div.className = `fc-font-item ${faceName === activeFaceName ? "active" : ""}`;
+  const gameFaces = faces.filter((f) => !/_lobby$/i.test(f.name));
+  const lobbyFaces = faces.filter((f) => /_lobby$/i.test(f.name));
 
-    const nameEl = renderFaceItemLabel(faceName);
+  const createGroup = (
+    title: string,
+    groupFaces: FontFace[],
+    isCollapsed: boolean,
+    onToggle: () => void,
+  ) => {
+    if (groupFaces.length === 0) return;
 
-    const sizeSpan = document.createElement("span");
-    sizeSpan.className = "fc-font-item-size";
-    sizeSpan.textContent = `${parseFaceNominalSize(faceName)}px`;
+    const groupEl = document.createElement("div");
+    groupEl.className = `fc-font-group ${isCollapsed ? "is-collapsed" : ""}`;
 
-    div.append(nameEl, sizeSpan);
+    const header = document.createElement("div");
+    header.className = "fc-font-group-header";
+    header.setAttribute("role", "button");
+    header.setAttribute("aria-expanded", String(!isCollapsed));
+    header.title = `${title}（共 ${groupFaces.length} 项）`;
 
-    div.addEventListener("click", () => {
-      if (activeFaceName === faceName) return;
-      selectFace(faceName);
+    const titleWrap = document.createElement("div");
+    titleWrap.className = "fc-group-title";
+
+    const arrow = document.createElement("span");
+    arrow.className = "fc-group-arrow";
+    arrow.textContent = "▶";
+
+    const label = document.createElement("span");
+    label.className = "fc-group-label";
+    label.textContent = title;
+
+    titleWrap.append(arrow, label);
+
+    const count = document.createElement("span");
+    count.className = "fc-group-count";
+    count.textContent = String(groupFaces.length);
+
+    header.append(titleWrap, count);
+
+    header.addEventListener("click", () => {
+      onToggle();
+      renderFaceTabs();
     });
 
-    div.addEventListener("contextmenu", (ev) => {
-      ev.preventDefault();
-      // 右键也切换当前字体，避免后续命令作用在上一个字体的下标上。
-      if (activeFaceName !== faceName) {
+    const itemsContainer = document.createElement("div");
+    itemsContainer.className = "fc-font-group-items";
+
+    for (const face of groupFaces) {
+      const faceName = face.name;
+      const div = document.createElement("div");
+      div.className = `fc-font-item ${faceName === activeFaceName ? "active" : ""}`;
+
+      const nameEl = renderFaceItemLabel(faceName);
+
+      const sizeSpan = document.createElement("span");
+      sizeSpan.className = "fc-font-item-size";
+      sizeSpan.textContent = `${parseFaceNominalSize(faceName)}px`;
+
+      div.append(nameEl, sizeSpan);
+
+      div.addEventListener("click", () => {
+        if (activeFaceName === faceName) return;
         selectFace(faceName);
-      }
-      showFontListContextMenu(ev.clientX, ev.clientY);
-    });
+      });
 
-    el.fontFaceTabs.append(div);
-  }
+      div.addEventListener("contextmenu", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (activeFaceName !== faceName) {
+          selectFace(faceName);
+        }
+        showFontListContextMenu(ev.clientX, ev.clientY);
+      });
+
+      itemsContainer.append(div);
+    }
+
+    groupEl.append(header, itemsContainer);
+    el.fontFaceTabs.append(groupEl);
+  };
+
+  createGroup("游戏内字体", gameFaces, fontGroupGameCollapsed, () => {
+    fontGroupGameCollapsed = !fontGroupGameCollapsed;
+  });
+
+  createGroup("大厅字体", lobbyFaces, fontGroupLobbyCollapsed, () => {
+    fontGroupLobbyCollapsed = !fontGroupLobbyCollapsed;
+  });
 }
 
 function getCurrentFace(): FontFace | null {
@@ -4827,6 +5196,7 @@ function formatLookupLabel(elem: FontElement): { text: string; title: string } {
 }
 
 function renderElementList(): void {
+  if (IS_ELEMENT_EDITOR_SUBWINDOW) return;
   el.fontElementList.replaceChildren();
   const face = getCurrentFace();
   if (!face || !face.elements || face.elements.length === 0) {
@@ -4947,6 +5317,7 @@ function renderElementList(): void {
       activeElementIndex = index;
       renderElementList();
       renderPropsPanel();
+      syncOpenSubEditorToSelection();
     });
 
     tr.addEventListener("dblclick", () => {
@@ -4959,6 +5330,7 @@ function renderElementList(): void {
 
     tr.addEventListener("contextmenu", (ev) => {
       ev.preventDefault();
+      ev.stopPropagation();
       if (!selectedElementIndices.has(index)) {
         selectedElementIndices.clear();
         selectedElementIndices.add(index);
@@ -4973,24 +5345,220 @@ function renderElementList(): void {
   adjustElementsSectionHeight();
 }
 
+interface SubEditorStatePayload {
+  sessionId: number;
+  faceName: string;
+  elementIndex: number;
+  element: FontElement;
+  systemFonts: string[];
+}
+
+let subEditorOpen = false;
+let activeSubEditorSessionId = 0;
+let subEditorFaceName = "";
+let subEditorElementIndex = -1;
+
+let isBypassActive = false;
+let bypassSavedEnabled = true;
+let bypassTarget: { faceName: string; index: number } | null = null;
+let isCompareActive = false;
+let compareEditingBackup: string | null = null;
+let compareTarget: { faceName: string; index: number } | null = null;
+
+function findFaceElement(faceName?: string, elementIndex?: number): { face: FontFace; index: number; elem: FontElement } | null {
+  const faces = getFacesList(currentMultiFont);
+  const face = (faceName ? faces.find((f) => f.name === faceName) : undefined) || getCurrentFace();
+  if (!face) return null;
+  const idx = elementIndex !== undefined && elementIndex >= 0 ? elementIndex : activeElementIndex;
+  const elem = face.elements[idx];
+  if (!elem) return null;
+  return { face, index: idx, elem };
+}
+
+function buildSubEditorPayload(
+  sessionId: number,
+  faceName: string,
+  elementIndex: number,
+  elem: FontElement,
+): SubEditorStatePayload {
+  return {
+    sessionId,
+    faceName,
+    elementIndex,
+    element: JSON.parse(JSON.stringify(elem)) as FontElement,
+    systemFonts: systemFontsList,
+  };
+}
+
+function switchElementModalTab(targetTab = "font"): void {
+  document.querySelectorAll<HTMLButtonElement>(".elem-modal-window .elem-tab-btn").forEach((b) => {
+    const tab = b.dataset.elemTab || "font";
+    b.classList.toggle("active", tab === targetTab);
+  });
+
+  el.elemTabFont.classList.toggle("hidden", targetTab !== "font");
+  el.elemTabChars.classList.toggle("hidden", targetTab !== "chars");
+  el.elemTabTypo.classList.toggle("hidden", targetTab !== "typo");
+  el.elemTabMerge.classList.toggle("hidden", targetTab !== "merge");
+
+  const bodyEl = document.querySelector<HTMLElement>(".elem-modal-body");
+  if (bodyEl) bodyEl.scrollTop = 0;
+}
+
+function activateBypass(faceName?: string, elementIndex?: number): void {
+  if (isBypassActive) return;
+  const hit = findFaceElement(faceName, elementIndex);
+  if (!hit) return;
+  isBypassActive = true;
+  bypassTarget = { faceName: hit.face.name, index: hit.index };
+  el.btnLeverBypass?.classList.add("active");
+  bypassSavedEnabled = hit.elem.enabled !== false;
+  hit.elem.enabled = false;
+  renderElementList();
+  schedulePreviewRender(true);
+}
+
+function deactivateBypass(): void {
+  if (!isBypassActive) return;
+  const target = bypassTarget;
+  bypassTarget = null;
+  isBypassActive = false;
+  el.btnLeverBypass?.classList.remove("active");
+  const hit = findFaceElement(target?.faceName, target?.index);
+  if (hit) {
+    hit.elem.enabled = bypassSavedEnabled;
+    renderElementList();
+    schedulePreviewRender(true);
+  }
+}
+
+function activateCompare(faceName?: string, elementIndex?: number): void {
+  if (isCompareActive || !elementModalSnapshot) return;
+  const hit = findFaceElement(faceName, elementIndex);
+  if (!hit) return;
+  isCompareActive = true;
+  compareTarget = { faceName: hit.face.name, index: hit.index };
+  el.btnLeverCompare?.classList.add("active");
+  compareEditingBackup = JSON.stringify(hit.elem);
+  hit.face.elements[hit.index] = JSON.parse(elementModalSnapshot) as FontElement;
+  renderElementList();
+  schedulePreviewRender(true);
+}
+
+function deactivateCompare(): void {
+  if (!isCompareActive || !compareEditingBackup) return;
+  const target = compareTarget;
+  compareTarget = null;
+  const backup = compareEditingBackup;
+  compareEditingBackup = null;
+  isCompareActive = false;
+  el.btnLeverCompare?.classList.remove("active");
+  const hit = findFaceElement(target?.faceName, target?.index);
+  if (hit) {
+    hit.face.elements[hit.index] = JSON.parse(backup) as FontElement;
+    renderElementList();
+    schedulePreviewRender(true);
+  }
+}
+
+function emitSubEditorUpdate(): void {
+  if (!IS_ELEMENT_EDITOR_SUBWINDOW || activeSubEditorSessionId <= 0) return;
+  const elem = getCurrentFace()?.elements[activeElementIndex];
+  if (!elem) return;
+  void Events.Emit("elem-editor:update", {
+    sessionId: activeSubEditorSessionId,
+    faceName: subEditorFaceName,
+    elementIndex: subEditorElementIndex,
+    element: elem,
+  }).catch(() => {});
+}
+
+function releaseSubEditorLevers(emitEvent = true): void {
+  if (!IS_ELEMENT_EDITOR_SUBWINDOW) return;
+  if (isBypassActive) {
+    isBypassActive = false;
+    el.btnLeverBypass?.classList.remove("active");
+    if (emitEvent && activeSubEditorSessionId > 0) {
+      void Events.Emit("elem-editor:bypass", { sessionId: activeSubEditorSessionId, active: false }).catch(() => {});
+    }
+  }
+  if (isCompareActive) {
+    isCompareActive = false;
+    el.btnLeverCompare?.classList.remove("active");
+    if (emitEvent && activeSubEditorSessionId > 0) {
+      void Events.Emit("elem-editor:compare", { sessionId: activeSubEditorSessionId, active: false }).catch(() => {});
+    }
+  }
+}
+
+function syncOpenSubEditorToSelection(): void {
+  if (IS_ELEMENT_EDITOR_SUBWINDOW || !subEditorOpen) return;
+  const face = getCurrentFace();
+  const elem = face?.elements[activeElementIndex];
+  if (!face || !elem) {
+    closeElementEditorModal(true);
+    return;
+  }
+
+  const targetChanged = face.name !== subEditorFaceName || activeElementIndex !== subEditorElementIndex;
+  if (targetChanged) {
+    deactivateBypass();
+    deactivateCompare();
+    activeSubEditorSessionId++;
+    subEditorFaceName = face.name;
+    subEditorElementIndex = activeElementIndex;
+    elementModalSnapshot = JSON.stringify(elem);
+  }
+
+  const title = `字体图层属性 - ${face.name} · 图层 #${activeElementIndex + 1}`;
+  const payloadJson = JSON.stringify(
+    buildSubEditorPayload(activeSubEditorSessionId, face.name, activeElementIndex, elem),
+  );
+  void call("SyncElementEditorWindow", title, payloadJson).catch(() => {});
+}
+
 function openElementEditorModal(): void {
   const face = getCurrentFace();
   const elem = face?.elements[activeElementIndex];
   if (!face || !elem) return;
+
+  deactivateBypass();
+  deactivateCompare();
+
+  const sessionId = ++activeSubEditorSessionId;
+  subEditorOpen = true;
+  subEditorFaceName = face.name;
+  subEditorElementIndex = activeElementIndex;
   elementModalSnapshot = JSON.stringify(elem);
-  el.elemModalSubtitle.textContent = `${face.name} · 图层 #${activeElementIndex + 1}`;
-  renderPropsPanel();
-  el.fontElementModal.classList.remove("hidden");
+
+  const title = `字体图层属性 - ${face.name} · 图层 #${activeElementIndex + 1}`;
+  const payloadJson = JSON.stringify(buildSubEditorPayload(sessionId, face.name, activeElementIndex, elem));
+  void call("OpenElementEditorWindow", title, payloadJson).catch((err) => {
+    subEditorOpen = false;
+    subEditorFaceName = "";
+    subEditorElementIndex = -1;
+    log(`[错误] 打开图层属性窗口失败: ${describeError(err)}`, "error");
+  });
 }
 
-function closeElementEditorModal(commit: boolean): void {
-  const face = getCurrentFace();
-  if (!commit && elementModalSnapshot && face && face.elements[activeElementIndex]) {
-    face.elements[activeElementIndex] = JSON.parse(elementModalSnapshot) as FontElement;
+function closeElementEditorModal(commit: boolean, hideWindow = true): void {
+  deactivateBypass();
+  deactivateCompare();
+  const hit = findFaceElement(subEditorFaceName, subEditorElementIndex);
+  if (!commit && elementModalSnapshot && hit) {
+    hit.face.elements[hit.index] = JSON.parse(elementModalSnapshot) as FontElement;
   }
   elementModalSnapshot = null;
+  subEditorOpen = false;
+  subEditorFaceName = "";
+  subEditorElementIndex = -1;
+
   el.fontElementModal.classList.add("hidden");
+  if (hideWindow && !IS_ELEMENT_EDITOR_SUBWINDOW) {
+    void call("HideElementEditorWindow").catch(() => {});
+  }
   renderElementList();
+  renderPropsPanel();
   schedulePreviewRender(true);
 }
 
@@ -5057,33 +5625,112 @@ function renderCodepointIntervalsList(elem: FontElement): void {
   });
 }
 
-function formatReplacementsToText(rep: Record<string, string> | undefined): string {
-  if (!rep) return "";
-  return Object.entries(rep)
-    .map(([k, v]) => `${k} = ${v}`)
-    .join("\n");
-}
+function renderReplacementsVisualList(elem: FontElement): void {
+  if (!el.mergeReplacementsList) return;
+  el.mergeReplacementsList.replaceChildren();
+  const rep = elem.wrapModifiers?.codepointReplacements || {};
+  const entries = Object.entries(rep);
 
-function parseTextToReplacements(text: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  const lines = text.split(/\r?\n/);
-  for (const line of lines) {
-    const idx = line.indexOf("=");
-    if (idx <= 0) continue;
-    let key = line.slice(0, idx).trim();
-    const val = line.slice(idx + 1).trim();
-    if (!key || !val) continue;
-    const hexMatch = key.match(/^(?:U\+|0x)([0-9A-Fa-f]+)$/i);
-    if (hexMatch) {
-      try {
-        key = String.fromCodePoint(parseInt(hexMatch[1], 16));
-      } catch {
-        // 保留原始文本
-      }
-    }
-    result[key] = val;
+  if (entries.length === 0) {
+    const empty = document.createElement("div");
+    empty.style.padding = "14px";
+    empty.style.textAlign = "center";
+    empty.style.color = "var(--text-3)";
+    empty.style.fontSize = "11.5px";
+    empty.textContent = "暂无字符替换规则，可点击下方「添加」或从上方填入预设。";
+    el.mergeReplacementsList.append(empty);
+    return;
   }
-  return result;
+
+  entries.forEach(([origKey, origVal]) => {
+    const row = document.createElement("div");
+    row.className = "rep-row-item";
+
+    const srcBox = document.createElement("div");
+    srcBox.className = "rep-src-box";
+
+    const previewChar = document.createElement("span");
+    previewChar.className = "rep-char-preview";
+    previewChar.textContent = origKey || " ";
+
+    const srcInput = document.createElement("input");
+    srcInput.className = "input input-mono flex-1";
+    srcInput.value = formatReplacementKeyHex(origKey);
+    srcInput.placeholder = "源字符或 U+XXXX";
+
+    srcBox.append(previewChar, srcInput);
+
+    const arrow = document.createElement("span");
+    arrow.className = "rep-arrow-icon";
+    arrow.textContent = "→";
+
+    const dstBox = document.createElement("div");
+    dstBox.className = "rep-dst-box";
+    const dstInput = document.createElement("input");
+    dstInput.className = "input flex-1";
+    dstInput.value = origVal;
+    dstInput.placeholder = "目标替换文本";
+    dstBox.append(dstInput);
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "btn btn-quiet btn-xs";
+    delBtn.textContent = "删除";
+
+    let curKey = origKey;
+    const syncRow = (normalizeSrcInput: boolean) => {
+      const res = applyReplacementRowEdit(
+        elem.wrapModifiers?.codepointReplacements,
+        curKey,
+        srcInput.value,
+        dstInput.value,
+      );
+      curKey = res.nextKey;
+      previewChar.textContent = curKey || " ";
+      if (normalizeSrcInput && curKey) {
+        srcInput.value = formatReplacementKeyHex(curKey);
+      }
+
+      if (res.dict) {
+        elem.wrapModifiers!.codepointReplacements = res.dict;
+      } else {
+        delete elem.wrapModifiers!.codepointReplacements;
+      }
+      el.propReplacementsJson.value = formatReplacementsToText(res.dict);
+      if (res.needsRerender) {
+        renderReplacementsVisualList(elem);
+      }
+      schedulePreviewRender();
+    };
+
+    srcInput.addEventListener("input", () => {
+      previewChar.textContent = parseReplacementKey(srcInput.value) || " ";
+    });
+    srcInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        srcInput.blur();
+      }
+    });
+    srcInput.addEventListener("change", () => syncRow(true));
+    dstInput.addEventListener("input", () => syncRow(false));
+
+    delBtn.addEventListener("click", () => {
+      const dict = elem.wrapModifiers?.codepointReplacements || {};
+      delete dict[curKey];
+      if (Object.keys(dict).length === 0) {
+        delete elem.wrapModifiers!.codepointReplacements;
+      } else {
+        elem.wrapModifiers!.codepointReplacements = dict;
+      }
+      el.propReplacementsJson.value = formatReplacementsToText(elem.wrapModifiers?.codepointReplacements);
+      renderReplacementsVisualList(elem);
+      schedulePreviewRender();
+    });
+
+    row.append(srcBox, arrow, dstBox, delBtn);
+    el.mergeReplacementsList.append(row);
+  });
 }
 
 function renderPropsPanel(): void {
@@ -5140,6 +5787,9 @@ function renderPropsPanel(): void {
   el.propsDirectwriteGroup.classList.toggle("hidden", rendererVal !== 2);
   el.propsFreetypeGroup.classList.toggle("hidden", rendererVal !== 3);
   el.propsEmptyGroup.classList.toggle("hidden", rendererVal !== 0);
+  el.propsGameFontNotice.classList.toggle("hidden", rendererVal !== 1);
+  el.propsEmptyFontNotice.classList.toggle("hidden", rendererVal !== 0);
+  el.propsExternalFontWrap.classList.toggle("hidden", rendererVal === 1 || rendererVal === 0);
 
   const dw = elem.renderSpecific?.directwrite;
   el.propDwGridfit.value = String(dw?.gridFitMode ?? 2);
@@ -5166,6 +5816,7 @@ function renderPropsPanel(): void {
   el.propOtCustom.value = features.join(", ");
 
   el.propReplacementsJson.value = formatReplacementsToText(elem.wrapModifiers?.codepointReplacements);
+  renderReplacementsVisualList(elem);
 }
 
 const previewCache = new Map<string, string>();
@@ -5175,6 +5826,10 @@ function invalidatePreviewCache(): void {
 }
 
 function schedulePreviewRender(immediate = false): void {
+  if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+    emitSubEditorUpdate();
+    return;
+  }
   if (previewDebounceTimer) {
     window.clearTimeout(previewDebounceTimer);
     previewDebounceTimer = null;
@@ -5243,6 +5898,27 @@ async function doPreviewRender(): Promise<void> {
   }
 }
 
+function createOpenBackupButton(): HTMLButtonElement {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn btn-quiet btn-xs btn-chip diag-mini-btn";
+  btn.textContent = "打开目录";
+  setTip(btn, "在文件管理器中打开原版备份目录");
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    void openBackupDir();
+  });
+  return btn;
+}
+
+async function openBackupDir(): Promise<void> {
+  try {
+    await call("OpenBackupDirectory", config.language);
+  } catch (err) {
+    log(`[错误] 打开备份目录失败: ${describeError(err)}`, "error");
+  }
+}
+
 function renderGameInfo(): void {
   updateRestoreButtonState();
   updateFontUiAssetState();
@@ -5264,19 +5940,15 @@ function renderGameInfo(): void {
     gameInfo.version !== gameInfo.backupVersion
   );
 
+  const backupReady = gameInfo.backupExists && (isGlobal || !versionMismatch);
   let backupText = "未备份";
   let backupCls = "";
   if (gameInfo.backupExists) {
-    if (!isGlobal && versionMismatch) {
-      backupText = "已失效";
-      backupCls = "warn";
-    } else {
-      backupText = "已就绪";
-      backupCls = "ok";
-    }
+    backupText = backupReady ? "已就绪" : "已失效";
+    backupCls = backupReady ? "ok" : "warn";
   }
 
-  const backupItem = createDiagItem("本地备份", backupText, backupCls);
+  const backupItem = createDiagItem("本地备份", backupText, backupCls, backupReady ? createOpenBackupButton() : undefined);
 
   const items = [
     createDiagItem("客户端版本", gameInfo.version || "未知", ""),
@@ -5882,8 +6554,10 @@ function wireEvents(): void {
     logEntries = [];
   });
 
-  el.btnCopyLog.addEventListener("click", () => {
-    void copyLogs();
+  el.btnCopyLog.addEventListener("click", (e) => {
+    // 折叠时日志头本身是「展开」的点击区，别让复制顺带把面板拉起来。
+    e.stopPropagation();
+    void copyDiagnostics();
   });
 
   initLogResizer();
@@ -6091,15 +6765,19 @@ function wireEvents(): void {
   });
 
   el.btnOpenFontEditor.addEventListener("click", async () => {
-    if (busy || el.btnOpenFontEditor.disabled) return;
+    if (busy || el.btnOpenFontEditor.disabled || openingFontEditor) return;
     const gameDir = currentGameDir();
     if (!gameDir) {
       log("[字体] 无法打开字体定制：请先选择当前区服有效的游戏安装目录", "warn");
       return;
     }
-    const originalText = el.btnOpenFontEditor.textContent || "编辑方案";
+    const originalText = "编辑方案";
+    openingFontEditor = true;
     el.btnOpenFontEditor.disabled = true;
-    el.btnOpenFontEditor.textContent = "准备组件中...";
+    el.btnOpenFontEditor.classList.add("is-syncing");
+    el.fontCompilerBar.classList.add("is-pending");
+    el.fontCompilerBar.style.width = "100%";
+    el.btnOpenFontEditorText.textContent = "准备组件中...";
     try {
       if (isGlobalLanguage(config.language)) {
         const status = await call("CheckClientStatus", gameDir, config.language);
@@ -6116,6 +6794,7 @@ function wireEvents(): void {
       }
 
       await call("EnsureFontCompiler");
+      fontCompilerReady = true;
       switchView("font-editor");
       await ensureSystemFonts();
       fontTexture16BitEnabled = await call("GetFontTexture16Bit").catch(() => true);
@@ -6125,13 +6804,13 @@ function wireEvents(): void {
     } catch (err) {
       log(`[字体] 无法打开字体定制: ${describeError(err)}`, "error");
     } finally {
-      el.btnOpenFontEditor.textContent = originalText;
-      updateFontUiAssetState();
+      openingFontEditor = false;
+      resetFontCompilerButtonState(originalText);
     }
   });
 
   el.btnBackWorkbenchFont.addEventListener("click", () => {
-    if (!el.fontElementModal.classList.contains("hidden")) {
+    if (subEditorOpen || !el.fontElementModal.classList.contains("hidden")) {
       closeElementEditorModal(true);
     }
     switchView("workbench");
@@ -6170,6 +6849,9 @@ function wireEvents(): void {
       if (!el.rulesMenu.classList.contains("hidden")) {
         ev.preventDefault();
         toggleRulesMenu(false);
+      } else if (subEditorOpen || !el.fontElementModal.classList.contains("hidden")) {
+        ev.preventDefault();
+        closeElementEditorModal(false);
       } else if (!el.presetModal.classList.contains("hidden")) {
         ev.preventDefault();
         closePresetManager();
@@ -6209,6 +6891,7 @@ function wireEvents(): void {
         setElementSelection([activeElementIndex - 1]);
         renderElementList();
         renderPropsPanel();
+        syncOpenSubEditorToSelection();
       }
       return;
     }
@@ -6218,30 +6901,186 @@ function wireEvents(): void {
         setElementSelection([activeElementIndex + 1]);
         renderElementList();
         renderPropsPanel();
+        syncOpenSubEditorToSelection();
       }
     }
   });
 
+  wireElementEditorEvents();
+
+  // 预览控制
+  el.previewCustomText.addEventListener("input", () => {
+    const face = getCurrentFace();
+    if (face) {
+      face.previewText = el.previewCustomText.value;
+    }
+    adjustPreviewTextHeight();
+    schedulePreviewRender();
+  });
+
+  // 预览视口交互（复刻原生 FontChanger）：左键拖动平移、滚轮上下滚动、Ctrl+滚轮缩放、双击复位。
+  let panState: { startX: number; startY: number; originX: number; originY: number } | null = null;
+  el.previewCanvasBox.addEventListener("mousedown", (ev) => {
+    if (ev.button !== 0) return;
+    ev.preventDefault();
+    panState = { startX: ev.clientX, startY: ev.clientY, originX: previewPanX, originY: previewPanY };
+  });
+  window.addEventListener("mousemove", (ev) => {
+    if (!panState) return;
+    previewPanX = panState.originX + (ev.clientX - panState.startX);
+    previewPanY = panState.originY + (ev.clientY - panState.startY);
+    updatePreviewTransform();
+    panState.originX = previewPanX;
+    panState.startX = ev.clientX;
+    panState.originY = previewPanY;
+    panState.startY = ev.clientY;
+  });
+  window.addEventListener("mouseup", () => {
+    panState = null;
+  });
+  el.previewCanvasBox.addEventListener(
+    "wheel",
+    (ev) => {
+      ev.preventDefault();
+      if (ev.ctrlKey || ev.metaKey) {
+        const steps = [100, 200, 300, 400, 500];
+        const current = Math.round(currentZoom * 100);
+        const index = Math.max(0, steps.indexOf(current));
+        const next = Math.min(steps.length - 1, Math.max(0, index + (ev.deltaY < 0 ? 1 : -1)));
+        setPreviewZoomLevel(steps[next]);
+        return;
+      }
+      previewPanY -= ev.deltaY;
+      updatePreviewTransform();
+    },
+    { passive: false },
+  );
+  el.previewCanvasBox.addEventListener("dblclick", () => {
+    previewPanX = 0;
+    previewPanY = 0;
+    setPreviewZoomLevel(100);
+  });
+  el.previewImage.addEventListener("load", () => updatePreviewTransform());
+}
+
+function wireElementEditorEvents(): void {
   // 模态框四页签切换与底部控制
-  el.fontElementModal.querySelectorAll<HTMLButtonElement>(".elem-tab-btn").forEach((btn) => {
+  document.querySelectorAll<HTMLButtonElement>(".elem-modal-window .elem-tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetTab = btn.dataset.elemTab || "font";
-      el.fontElementModal.querySelectorAll(".elem-tab-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      el.elemTabFont.classList.toggle("hidden", targetTab !== "font");
-      el.elemTabChars.classList.toggle("hidden", targetTab !== "chars");
-      el.elemTabTypo.classList.toggle("hidden", targetTab !== "typo");
-      el.elemTabMerge.classList.toggle("hidden", targetTab !== "merge");
+      switchElementModalTab(targetTab);
     });
   });
 
+  const commitSubEditor = async () => {
+    releaseSubEditorLevers(false);
+    await Events.Emit("elem-editor:commit", {
+      sessionId: activeSubEditorSessionId,
+      faceName: subEditorFaceName,
+      elementIndex: subEditorElementIndex,
+      element: getCurrentFace()?.elements[0],
+    }).catch(() => {});
+    void call("HideElementEditorWindow").catch(() => {});
+  };
+
+  const cancelSubEditor = async () => {
+    releaseSubEditorLevers(false);
+    await Events.Emit("elem-editor:cancel", { sessionId: activeSubEditorSessionId }).catch(() => {});
+    void call("HideElementEditorWindow").catch(() => {});
+  };
+
   el.btnElemModalOk.addEventListener("click", () => {
-    closeElementEditorModal(true);
+    const active = document.activeElement;
+    if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) {
+      active.blur();
+    }
+    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+      void commitSubEditor();
+    } else {
+      closeElementEditorModal(true);
+    }
   });
 
   el.btnElemModalCancel.addEventListener("click", () => {
-    closeElementEditorModal(false);
+    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+      void cancelSubEditor();
+    } else {
+      closeElementEditorModal(false);
+    }
   });
+
+  el.btnElemModalClose.addEventListener("click", () => {
+    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+      void cancelSubEditor();
+    } else {
+      closeElementEditorModal(false);
+    }
+  });
+
+  // 底部对比与旁通推杆
+  const releaseAllLevers = () => {
+    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+      releaseSubEditorLevers(true);
+      return;
+    }
+    if (isBypassActive) deactivateBypass();
+    if (isCompareActive) deactivateCompare();
+  };
+
+  el.btnLeverBypass?.addEventListener("pointerdown", (ev) => {
+    ev.preventDefault();
+    try {
+      el.btnLeverBypass.setPointerCapture(ev.pointerId);
+    } catch {
+      // 忽略
+    }
+    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+      if (isBypassActive || activeSubEditorSessionId <= 0) return;
+      isBypassActive = true;
+      el.btnLeverBypass.classList.add("active");
+      void Events.Emit("elem-editor:bypass", { sessionId: activeSubEditorSessionId, active: true }).catch(() => {});
+    } else {
+      activateBypass();
+    }
+  });
+  el.btnLeverBypass?.addEventListener("pointerup", releaseAllLevers);
+  el.btnLeverBypass?.addEventListener("pointercancel", releaseAllLevers);
+
+  el.btnLeverCompare?.addEventListener("pointerdown", (ev) => {
+    ev.preventDefault();
+    try {
+      el.btnLeverCompare.setPointerCapture(ev.pointerId);
+    } catch {
+      // 忽略
+    }
+    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+      if (isCompareActive || activeSubEditorSessionId <= 0) return;
+      isCompareActive = true;
+      el.btnLeverCompare.classList.add("active");
+      void Events.Emit("elem-editor:compare", { sessionId: activeSubEditorSessionId, active: true }).catch(() => {});
+    } else {
+      activateCompare();
+    }
+  });
+  el.btnLeverCompare?.addEventListener("pointerup", releaseAllLevers);
+  el.btnLeverCompare?.addEventListener("pointercancel", releaseAllLevers);
+
+  window.addEventListener("pointerup", releaseAllLevers);
+  window.addEventListener("pointercancel", releaseAllLevers);
+  window.addEventListener("blur", releaseAllLevers);
+  window.addEventListener("pagehide", releaseAllLevers);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) releaseAllLevers();
+  });
+
+  if (IS_ELEMENT_EDITOR_SUBWINDOW) {
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        void cancelSubEditor();
+      }
+    });
+  }
 
   // Tab 1: 字体属性面板交互
   el.propFontFamily.addEventListener("change", () => {
@@ -6256,7 +7095,6 @@ function wireEvents(): void {
     renderElementList();
     schedulePreviewRender();
   });
-
 
   el.btnBrowseFontFile.addEventListener("click", async () => {
     try {
@@ -6275,7 +7113,9 @@ function wireEvents(): void {
       renderPropsPanel();
       schedulePreviewRender();
     } catch (err) {
-      log(`[错误] 选择字体文件失败: ${describeError(err)}`, "error");
+      if (!IS_ELEMENT_EDITOR_SUBWINDOW) {
+        log(`[错误] 选择字体文件失败: ${describeError(err)}`, "error");
+      }
     }
   });
 
@@ -6299,6 +7139,9 @@ function wireEvents(): void {
     el.propsDirectwriteGroup.classList.toggle("hidden", actual !== 2);
     el.propsFreetypeGroup.classList.toggle("hidden", actual !== 3);
     el.propsEmptyGroup.classList.toggle("hidden", actual !== 0);
+    el.propsGameFontNotice.classList.toggle("hidden", actual !== 1);
+    el.propsEmptyFontNotice.classList.toggle("hidden", actual !== 0);
+    el.propsExternalFontWrap.classList.toggle("hidden", actual === 1 || actual === 0);
     renderElementList();
     schedulePreviewRender();
   });
@@ -6612,6 +7455,7 @@ function wireEvents(): void {
       "\uE0B2": "服",
     };
     el.propReplacementsJson.value = formatReplacementsToText(elem.wrapModifiers!.codepointReplacements);
+    renderReplacementsVisualList(elem);
     schedulePreviewRender();
   });
 
@@ -6626,6 +7470,7 @@ function wireEvents(): void {
       "\uE0B2": "ST",
     };
     el.propReplacementsJson.value = formatReplacementsToText(elem.wrapModifiers!.codepointReplacements);
+    renderReplacementsVisualList(elem);
     schedulePreviewRender();
   });
 
@@ -6635,6 +7480,7 @@ function wireEvents(): void {
     ensureElementDefaults(elem);
     delete elem.wrapModifiers!.codepointReplacements;
     el.propReplacementsJson.value = "";
+    renderReplacementsVisualList(elem);
     schedulePreviewRender();
   });
 
@@ -6643,69 +7489,38 @@ function wireEvents(): void {
     if (!elem) return;
     ensureElementDefaults(elem);
     elem.wrapModifiers!.codepointReplacements = parseTextToReplacements(el.propReplacementsJson.value);
+    renderReplacementsVisualList(elem);
     schedulePreviewRender();
   });
 
-  // 预览控制
-  el.previewCustomText.addEventListener("input", () => {
-    const face = getCurrentFace();
-    if (face) {
-      face.previewText = el.previewCustomText.value;
+  el.btnMergeToggleRaw.addEventListener("click", () => {
+    const isHidden = el.mergeRawContainer.classList.toggle("hidden");
+    el.btnMergeToggleRaw.textContent = isHidden ? "展开批量纯文本编辑" : "收起批量纯文本编辑";
+  });
+
+  el.btnMergeAddRule.addEventListener("click", () => {
+    const elem = getCurrentFace()?.elements[activeElementIndex];
+    if (!elem) return;
+    ensureElementDefaults(elem);
+    if (!elem.wrapModifiers!.codepointReplacements) {
+      elem.wrapModifiers!.codepointReplacements = {};
     }
-    adjustPreviewTextHeight();
-    schedulePreviewRender();
+    const defaultKey = nextReplacementKey(elem.wrapModifiers!.codepointReplacements);
+    elem.wrapModifiers!.codepointReplacements[defaultKey] = "";
+    el.propReplacementsJson.value = formatReplacementsToText(elem.wrapModifiers!.codepointReplacements);
+    renderReplacementsVisualList(elem);
+    const inputs = el.mergeReplacementsList.querySelectorAll<HTMLInputElement>("input");
+    if (inputs.length > 0) {
+      inputs[inputs.length - 2]?.focus();
+      inputs[inputs.length - 2]?.select();
+    }
   });
-
-  // 预览视口交互（复刻原生 FontChanger）：左键拖动平移、滚轮上下滚动、Ctrl+滚轮缩放、双击复位。
-  let panState: { startX: number; startY: number; originX: number; originY: number } | null = null;
-  el.previewCanvasBox.addEventListener("mousedown", (ev) => {
-    if (ev.button !== 0) return;
-    ev.preventDefault();
-    panState = { startX: ev.clientX, startY: ev.clientY, originX: previewPanX, originY: previewPanY };
-  });
-  window.addEventListener("mousemove", (ev) => {
-    if (!panState) return;
-    previewPanX = panState.originX + (ev.clientX - panState.startX);
-    previewPanY = panState.originY + (ev.clientY - panState.startY);
-    updatePreviewTransform();
-  });
-  window.addEventListener("mouseup", () => {
-    panState = null;
-  });
-  el.previewCanvasBox.addEventListener(
-    "wheel",
-    (ev) => {
-      ev.preventDefault();
-      if (ev.ctrlKey || ev.metaKey) {
-        const steps = [100, 200, 300, 400, 500];
-        const current = Math.round(currentZoom * 100);
-        const index = Math.max(0, steps.indexOf(current));
-        const next = Math.min(steps.length - 1, Math.max(0, index + (ev.deltaY < 0 ? 1 : -1)));
-        setPreviewZoomLevel(steps[next]);
-        return;
-      }
-      previewPanY -= ev.deltaY;
-      updatePreviewTransform();
-    },
-    { passive: false },
-  );
-  el.previewCanvasBox.addEventListener("dblclick", () => {
-    previewPanX = 0;
-    previewPanY = 0;
-    setPreviewZoomLevel(100);
-  });
-
 }
 
 function wireRuntimeEvents(): void {
-  const on = window.runtime?.EventsOn;
-  if (!on) {
-    return;
-  }
-
   // 自更新进度：下载阶段显示百分比，替换与重启阶段只更新提示文案。
-  on("app-update-progress", (data: unknown) => {
-    const ev = asProgress(data);
+  Events.On("app-update-progress", (event) => {
+    const ev = asProgress(event.data);
     if (!busy) return;
     if (ev.total > 0) {
       const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
@@ -6718,8 +7533,8 @@ function wireRuntimeEvents(): void {
   });
 
   // 制作副本要逐个创建 7114 个 CSV（约 2.7 秒），进度同样压在选择器上。
-  on("csv-copy-progress", (data: unknown) => {
-    const ev = asProgress(data);
+  Events.On("csv-copy-progress", (event) => {
+    const ev = asProgress(event.data);
     if (!csvBusyText || ev.total <= 0) return;
     const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
     el.csvSummary.textContent = `${ev.detail || "制作副本"} ${pct.toFixed(0)}%`;
@@ -6727,11 +7542,35 @@ function wireRuntimeEvents(): void {
     el.csvSyncBar.style.width = `${pct.toFixed(1)}%`;
   });
 
+  Events.On("font-compiler-progress", (event) => {
+    const ev = asProgress(event.data);
+    if (ev.stage === "done" || ev.stage === "failed") {
+      if (ev.stage === "done" && ev.detail === "ready") {
+        fontCompilerReady = true;
+      }
+      if (!openingFontEditor) {
+        resetFontCompilerButtonState();
+      }
+      return;
+    }
+    if (!openingFontEditor) return;
+    el.btnOpenFontEditor.classList.add("is-syncing");
+    if (ev.total > 0) {
+      const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
+      el.btnOpenFontEditorText.textContent = `${ev.detail || "准备组件中"} ${pct.toFixed(0)}%`;
+      el.fontCompilerBar.classList.remove("is-pending");
+      el.fontCompilerBar.style.width = `${pct.toFixed(1)}%`;
+    } else {
+      el.btnOpenFontEditorText.textContent = `${ev.detail || "准备组件中"}…`;
+      el.fontCompilerBar.classList.add("is-pending");
+    }
+  });
+
   // 资源同步的进度直接压在内置词条选择器上；汉化期间的进度同时走顶部进度条。
   let pendingResourceProgress: PatchProgressEvent | null = null;
   let resourceRafId = 0;
-  on("resource-progress", (data: unknown) => {
-    const ev = asProgress(data);
+  Events.On("resource-progress", (event) => {
+    const ev = asProgress(event.data);
     pendingResourceProgress = ev;
     if (!resourceRafId) {
       resourceRafId = requestAnimationFrame(() => {
@@ -6817,8 +7656,8 @@ function wireRuntimeEvents(): void {
     }
   }
 
-  on("patch-progress", (data: unknown) => {
-    const ev = asProgress(data);
+  Events.On("patch-progress", (event) => {
+    const ev = asProgress(event.data);
     pendingPatchProgress = ev;
     if (!patchRafId) {
       patchRafId = requestAnimationFrame(() => {
@@ -6840,21 +7679,24 @@ function wireRuntimeEvents(): void {
   });
 
   // 字体编译是独立动作，进度只压在这一行下方的小进度条上。
-  on("font-build-progress", (data: unknown) => {
+  Events.On("font-build-progress", (event) => {
     if (!fontCompiling) return;
-    const ev = asProgress(data);
+    const ev = asProgress(event.data);
     const pct = ev.total > 0 ? Math.min(100, Math.max(0, (ev.done / ev.total) * 100)) : 0;
     el.fontBuildBar.style.width = `${pct.toFixed(1)}%`;
   });
 
-  on("patch-log", (msg: unknown) => {
-    if (typeof msg === "string") {
-      log(msg);
+  Events.On("patch-log", (event) => {
+    if (typeof event.data === "string") {
+      log(event.data);
     }
   });
 
-  on("unknown-confirm", async (prompt: unknown) => {
-    const text = typeof prompt === "string" ? prompt : "游戏版本过新，云端尚无对应原版文件。继续汉化可能出现异常，是否继续？";
+  Events.On("unknown-confirm", async (event) => {
+    const text =
+      typeof event.data === "string"
+        ? event.data
+        : "游戏版本过新，云端尚无对应原版文件。继续汉化可能出现异常，是否继续？";
     const ok = await showConfirm("未知版本提示", text, "仍要继续汉化");
     try {
       await call("AnswerUnknownConfirm", ok);
@@ -6863,14 +7705,83 @@ function wireRuntimeEvents(): void {
     }
   });
 
-  on("launcher-confirm", async (prompt: unknown) => {
-    const text = typeof prompt === "string" ? prompt : "检测到游戏启动器正在运行，是否强制结束启动器并继续？";
+  Events.On("launcher-confirm", async (event) => {
+    const text =
+      typeof event.data === "string"
+        ? event.data
+        : "检测到游戏启动器正在运行，是否强制结束启动器并继续？";
     const ok = await showConfirm("启动器运行提示", text, "强制结束启动器并继续");
     try {
       await call("AnswerLauncherConfirm", ok);
     } catch (error) {
       log(`确认反馈失败: ${describeError(error)}`, "error");
     }
+  });
+
+  Events.On("elem-editor:update", (event) => {
+    const data = event.data as {
+      sessionId?: number;
+      faceName?: string;
+      elementIndex?: number;
+      element?: FontElement;
+    } | null;
+    if (!subEditorOpen || !data || data.sessionId !== activeSubEditorSessionId || !data.element) return;
+    if (isCompareActive || isBypassActive) return;
+    const hit = findFaceElement(data.faceName, data.elementIndex);
+    if (!hit) return;
+    hit.face.elements[hit.index] = data.element;
+    renderElementList();
+    schedulePreviewRender();
+  });
+
+  Events.On("elem-editor:bypass", (event) => {
+    const data = event.data as { sessionId?: number; active?: boolean } | null;
+    if (!subEditorOpen || !data || data.sessionId !== activeSubEditorSessionId) return;
+    if (data.active) {
+      activateBypass(subEditorFaceName, subEditorElementIndex);
+    } else {
+      deactivateBypass();
+    }
+  });
+
+  Events.On("elem-editor:compare", (event) => {
+    const data = event.data as { sessionId?: number; active?: boolean } | null;
+    if (!subEditorOpen || !data || data.sessionId !== activeSubEditorSessionId) return;
+    if (data.active) {
+      activateCompare(subEditorFaceName, subEditorElementIndex);
+    } else {
+      deactivateCompare();
+    }
+  });
+
+  Events.On("elem-editor:commit", (event) => {
+    const data = event.data as {
+      sessionId?: number;
+      faceName?: string;
+      elementIndex?: number;
+      element?: FontElement;
+    } | null;
+    if (!subEditorOpen || !data || data.sessionId !== activeSubEditorSessionId) return;
+    deactivateBypass();
+    deactivateCompare();
+    if (data.element) {
+      const hit = findFaceElement(data.faceName, data.elementIndex);
+      if (hit) {
+        hit.face.elements[hit.index] = data.element;
+      }
+    }
+    closeElementEditorModal(true, false);
+  });
+
+  Events.On("elem-editor:cancel", (event) => {
+    const data = event.data as { sessionId?: number } | null;
+    if (!subEditorOpen || (data?.sessionId && data.sessionId !== activeSubEditorSessionId)) return;
+    closeElementEditorModal(false, false);
+  });
+
+  Events.On("elem-editor:native-close", () => {
+    if (!subEditorOpen) return;
+    closeElementEditorModal(false, false);
   });
 }
 

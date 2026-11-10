@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/longbridgeapp/opencc"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/text"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/updater"
@@ -633,11 +632,11 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 		}
 		var lastEmit time.Time
 		copyErr := copyCSVTree(srcDir, tmpDir, transform, func(done, total int) {
-			if a.ctx == nil || (done != total && time.Since(lastEmit) < 100*time.Millisecond) {
+			if !a.hasUI() || (done != total && time.Since(lastEmit) < 100*time.Millisecond) {
 				return
 			}
 			lastEmit = time.Now()
-			runtime.EventsEmit(a.ctx, "csv-copy-progress", ProgressEvent{
+			a.emitEvent("csv-copy-progress", ProgressEvent{
 				Stage:  "copy",
 				Detail: detail,
 				Done:   int64(done),

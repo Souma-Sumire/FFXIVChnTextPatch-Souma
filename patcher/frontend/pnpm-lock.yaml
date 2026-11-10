@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@wailsio/runtime':
+        specifier: 3.1.0
+        version: 3.1.0
     devDependencies:
       typescript:
         specifier: ^5.6.3
@@ -321,6 +325,9 @@ packages:
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
+  '@wailsio/runtime@3.1.0':
+    resolution: {integrity: sha512-noEAedvRyO8TLCrqhGwzrp+mbMxAIDa2rYmdJQOzvJV9MxgaZeXAJGNBiMiKMTSSy4ESOtQi4VH/5heSzi6ZmA==}
+
   esbuild@0.25.12:
     resolution: {integrity: sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==}
     engines: {node: '>=18'}
@@ -573,6 +580,8 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.9': {}
+
+  '@wailsio/runtime@3.1.0': {}
 
   esbuild@0.25.12:
     optionalDependencies:

@@ -187,6 +187,13 @@ func (c *GitHubClient) httpClient() *http.Client {
 	return http.DefaultClient
 }
 
+// NetworkState 返回实测得到的下载节点状态，供诊断日志使用。
+func (c *GitHubClient) NetworkState() (preferredNode string, directFast bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.preferredNode, c.directFast
+}
+
 // mirrors 返回可用的镜像节点，未显式配置时回落到默认节点。
 func (c *GitHubClient) mirrors() []string {
 	if len(c.AssetMirrors) == 0 {

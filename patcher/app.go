@@ -16,7 +16,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wailsapp/wails/v3/pkg/events"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamecfg"
@@ -61,6 +62,9 @@ type App struct {
 	// 解压是逐文件覆盖，若与汉化并发，CSV 可能被读到一半，产出部分表未汉化的补丁。
 	resourceLock sync.Mutex
 
+	// fontCompilerMu 序列化字体编译组件的检查、迁移与下载，避免并发覆盖 .part 临时文件。
+	fontCompilerMu sync.Mutex
+
 	// builtinSynced 记录本次运行内置资源是否已同步通过。
 	// 未通过时内置词条不允许汉化，避免读到未校验或残缺的 CSV。
 	builtinSynced atomic.Bool
@@ -100,6 +104,15 @@ type App struct {
 
 	cancelPatchMu sync.Mutex
 	cancelPatch   context.CancelFunc
+
+	wailsApp *application.App
+	mainWin  *application.WebviewWindow
+
+	elemWinMu   sync.Mutex
+	elemWin     *application.WebviewWindow
+	elemState   string
+	elemStateMu sync.RWMutex
+	quitting    atomic.Bool
 }
 
 func (a *App) getCloud() verifier.Cloud {
@@ -130,16 +143,79 @@ func NewApp() *App {
 	}
 }
 
-// OnStartup 保存 Wails 上下文，并清理上一次自更新留下的旧程序文件。
-func (a *App) OnStartup(ctx context.Context) {
+// SetRuntime 注入 Wails v3 应用与主窗口实例。
+func (a *App) SetRuntime(wailsApp *application.App, mainWin *application.WebviewWindow) {
+	a.wailsApp = wailsApp
+	a.mainWin = mainWin
+}
+
+// ServiceStartup 保存 Wails 服务上下文，并清理上一次自更新留下的旧程序文件。
+func (a *App) ServiceStartup(ctx context.Context, _ application.ServiceOptions) error {
 	a.ctx = ctx
 	if exe, err := os.Executable(); err == nil {
 		updater.CleanupStaleAppFiles(exe)
 	}
+	return nil
 }
 
-// OnShutdown 在退出前释放资源。
-func (a *App) OnShutdown(ctx context.Context) {}
+// ServiceShutdown 在服务退出前释放资源。
+func (a *App) ServiceShutdown() error {
+	return nil
+}
+
+// BeginQuit 在主窗口关闭时联动销毁单例编辑子窗口并退出应用。
+func (a *App) BeginQuit() {
+	if a == nil || a.quitting.Swap(true) {
+		return
+	}
+	a.elemWinMu.Lock()
+	ew := a.elemWin
+	a.elemWin = nil
+	a.elemWinMu.Unlock()
+	if ew != nil {
+		ew.Close()
+	}
+	if a.wailsApp != nil {
+		a.wailsApp.Quit()
+	}
+}
+
+func (a *App) hasUI() bool {
+	return a != nil && a.wailsApp != nil
+}
+
+func (a *App) emitEvent(name string, data ...any) {
+	if !a.hasUI() {
+		return
+	}
+	a.wailsApp.Event.Emit(name, data...)
+}
+
+func (a *App) activeDialogWindow() application.Window {
+	if a == nil {
+		return nil
+	}
+	a.elemWinMu.Lock()
+	ew := a.elemWin
+	a.elemWinMu.Unlock()
+	if ew != nil && ew.IsVisible() && ew.IsFocused() {
+		return ew
+	}
+	if a.mainWin != nil {
+		return a.mainWin
+	}
+	return nil
+}
+
+func normalizeDialogSelection(path string, err error) (string, error) {
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "cancel") {
+			return "", nil
+		}
+		return "", err
+	}
+	return path, nil
+}
 
 // LanguageOption 是前端可选的语言。
 type LanguageOption struct {
@@ -275,6 +351,7 @@ type BootstrapInfo struct {
 	Excluded        []string                    `json:"excluded"`
 	ResourceTime    string                      `json:"resourceTime,omitempty"`
 	ResourceHash    string                      `json:"resourceHash,omitempty"`
+	FontCompilerReady bool                      `json:"fontCompilerReady"`
 }
 
 // FileStatus 描述单个客户端文件状态。
@@ -388,15 +465,37 @@ var (
 	resourceDirPath string
 )
 
+type writableDirEntry struct {
+	ok        bool
+	checkedAt time.Time
+}
+
+const writableDirCacheTTL = time.Minute
+
+var writableDirCache sync.Map
+
+// isWritableDir 需要真正落一个探测文件，调用一次就会在目标目录写盘。
+// 结果做短时缓存：既避免诊断快照连续调用时重复写盘，也不会因权限或目录变化永久失效。
 func isWritableDir(dir string) bool {
+	if cached, ok := writableDirCache.Load(dir); ok {
+		entry := cached.(writableDirEntry)
+		if time.Since(entry.checkedAt) < writableDirCacheTTL {
+			if !entry.ok {
+				return false
+			}
+			if st, err := os.Stat(dir); err == nil && st.IsDir() {
+				return true
+			}
+		}
+	}
 	probe := filepath.Join(dir, ".write_test")
 	f, err := os.Create(probe)
-	if err != nil {
-		return false
+	if err == nil {
+		_ = f.Close()
+		_ = os.Remove(probe)
 	}
-	_ = f.Close()
-	_ = os.Remove(probe)
-	return true
+	writableDirCache.Store(dir, writableDirEntry{ok: err == nil, checkedAt: time.Now()})
+	return err == nil
 }
 
 func resolveResourceDir() string {
@@ -457,6 +556,10 @@ func withinDir(child, parent string) bool {
 
 func backupRootFor(resourceDir string) string {
 	return filepath.Join(dataRootFor(resourceDir), "backup")
+}
+
+func (a *App) backupDirFor(reg region.Region) string {
+	return filepath.Join(backupRootFor(a.resourceDir()), string(reg))
 }
 
 func configPathFor(resourceDir string) string {
@@ -627,16 +730,19 @@ func (a *App) loadConfigLocked(resourceDir string) AppConfig {
 			cfg.FontPresets[normalizeRegionCode(code)] = p
 		}
 	}
+	if cfg.FontPresets["GLOBAL"] == fontengine.BuiltinChnAXISSystemPresetID && isGameClientDir(cfg.GameDirs[string(region.CHS)]) {
+		cfg.FontPresets["GLOBAL"] = fontengine.BuiltinChnAXISPresetID
+	}
 	if strings.EqualFold(strings.TrimSpace(saved.FontSource), "compile") {
 		cfg.FontSource = "compile"
 	}
 	return cfg
 }
 
+// emitPatchLog 是后端日志的唯一出口。诊断行会随反馈贴到公开 issue，
+// 统一在这里隐去路径中的用户名，避免某处漏改就把本机账户带出去。
 func (a *App) emitPatchLog(msg string) {
-	if a.ctx != nil {
-		runtime.EventsEmit(a.ctx, "patch-log", msg)
-	}
+	a.emitEvent("patch-log", redactPaths(msg))
 }
 
 func shortHash(h string) string {
@@ -669,30 +775,35 @@ func formatResourceTime(isoStr string) string {
 	return t.Local().Format("2006-01-02 15:04")
 }
 
-// lockResource 取得资源目录的独占访问权，等待期间可被 ctx 取消。
-func (a *App) lockResource(ctx context.Context) (func(), error) {
+// lockMutexWithContext 取得互斥锁，等待期间可被 ctx 取消。
+func lockMutexWithContext(ctx context.Context, mu *sync.Mutex) (func(), error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	if a.resourceLock.TryLock() {
-		return a.resourceLock.Unlock, nil
+	if mu.TryLock() {
+		return mu.Unlock, nil
 	}
 	done := make(chan struct{})
 	go func() {
-		a.resourceLock.Lock()
+		mu.Lock()
 		close(done)
 	}()
 	select {
 	case <-done:
-		return a.resourceLock.Unlock, nil
+		return mu.Unlock, nil
 	case <-ctx.Done():
 		// 放弃等待，但等锁真正到手后必须立即释放，否则这把锁会永远被占住。
 		go func() {
 			<-done
-			a.resourceLock.Unlock()
+			mu.Unlock()
 		}()
 		return nil, ctx.Err()
 	}
+}
+
+// lockResource 取得资源目录的独占访问权，等待期间可被 ctx 取消。
+func (a *App) lockResource(ctx context.Context) (func(), error) {
+	return lockMutexWithContext(ctx, &a.resourceLock)
 }
 
 // ensureBuiltinResource 拉取云端清单并校验内置资源，缺失或过期时下载修复。
@@ -705,6 +816,7 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 	defer unlock()
 
 	status, err := a.updater.Provision(ctx, resourceDir, a.emitResourceProgress)
+	a.emitDiag("资源同步结果：%+v，原始错误=%v", status, err)
 	// 失败也算检查过：否则每次开始汉化都要为同一次网络故障等超时。
 	a.resourceSyncedAt.Store(time.Now().UnixNano())
 	if err != nil {
@@ -894,8 +1006,9 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		Folders:      tables.Folders,
 		CSV:          csvCtx,
 		Excluded:     recommendedExcludedTables,
-		ResourceTime: resTime,
-		ResourceHash: resHash,
+		ResourceTime:      resTime,
+		ResourceHash:      resHash,
+		FontCompilerReady: a.HasFontCompiler(),
 	}, nil
 }
 
@@ -1230,13 +1343,23 @@ func isGlobalClientDir(dir string) bool {
 
 // SelectGameDirectory 打开目录选择对话框。
 func (a *App) SelectGameDirectory(language string) (string, error) {
+	if !a.hasUI() {
+		return "", errors.New("桌面运行时未就绪")
+	}
 	cfg := a.loadConfig(a.resourceDir())
 	defaultDir := cfg.GameDirs[normalizeRegionCode(language)]
-	return runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
-		Title:                "选择 FFXIV 客户端目录（包含 boot 与 game 文件夹）",
-		DefaultDirectory:     defaultDir,
-		CanCreateDirectories: false,
-	})
+	dlg := a.wailsApp.Dialog.OpenFile().
+		SetTitle("选择 FFXIV 客户端目录（包含 boot 与 game 文件夹）").
+		CanChooseDirectories(true).
+		CanChooseFiles(false).
+		CanCreateDirectories(false)
+	if defaultDir != "" {
+		dlg.SetDirectory(defaultDir)
+	}
+	if win := a.activeDialogWindow(); win != nil {
+		dlg.AttachToWindow(win)
+	}
+	return normalizeDialogSelection(dlg.PromptForSingleSelection())
 }
 
 // GetGameInfo 返回游戏目录、版本与文件状态。
@@ -1275,7 +1398,7 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 		info.Files = append(info.Files, status)
 	}
 
-	metaPath := filepath.Join(backupRootFor(a.resourceDir()), string(region.Of(lang)), "meta.json")
+	metaPath := filepath.Join(a.backupDirFor(region.Of(lang)), "meta.json")
 	var meta struct {
 		Version string `json:"version"`
 		Files   map[string]struct {
@@ -1302,6 +1425,19 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 		}
 	}
 	return info, nil
+}
+
+// OpenBackupDirectory 在系统文件管理器中打开当前区服的原版备份目录。
+func (a *App) OpenBackupDirectory(language string) error {
+	lang, err := region.ParseLanguage(language)
+	if err != nil {
+		lang = region.JA
+	}
+	target := a.backupDirFor(region.Of(lang))
+	if st, err := os.Stat(target); err != nil || !st.IsDir() {
+		return fmt.Errorf("目录不存在: %s", target)
+	}
+	return openInFileManager(target)
 }
 
 // ClientStatusResult 表示客户端环境状态。
@@ -1375,7 +1511,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 	// 本地原版备份（同版本才有效）
 	var meta verifier.BackupMeta
 	hasBackupMeta := false
-	backupDir := filepath.Join(backupRootFor(a.resourceDir()), string(reg))
+	backupDir := a.backupDirFor(reg)
 	if data, err := os.ReadFile(filepath.Join(backupDir, "meta.json")); err == nil {
 		if json.Unmarshal(data, &meta) == nil && versionErr == nil && meta.Version == version && len(meta.Files) > 0 {
 			hasBackupMeta = true
@@ -1400,7 +1536,8 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		if relErr == nil && r != nil {
 			cloudAsset = func(name string) (string, bool) { return r.AssetSHA256(name) }
 		} else if relErr != nil && !errors.Is(relErr, verifier.ErrNotFound) {
-			cloudDesc = fmt.Sprintf("获取云端原版信息失败（%v），无法验证原版完整性，继续汉化可能出错", relErr)
+			a.emitDiag("云端原版信息查询原始错误：%v", relErr)
+			cloudDesc = fmt.Sprintf("获取云端原版信息失败（%s），无法验证原版完整性，继续汉化可能出错", verifier.CleanNetError(relErr))
 		}
 	}
 
@@ -1465,7 +1602,7 @@ func (a *App) AnswerUnknownConfirm(ok bool) {
 }
 
 func (a *App) waitUnknownConfirm(ctx context.Context, version string) (bool, error) {
-	if a == nil || a.ctx == nil {
+	if !a.hasUI() {
 		return false, nil
 	}
 	ch := make(chan bool, 1)
@@ -1473,7 +1610,7 @@ func (a *App) waitUnknownConfirm(ctx context.Context, version string) (bool, err
 	a.confirmCh = ch
 	a.confirmMu.Unlock()
 
-	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("无法确认游戏版本 %s 是否为官方原版（云端信息未获取或尚未收录）。\n\n继续汉化可能出错；程序将把当前客户端文件备份下来，供以后还原使用。若文件已被其他汉化修改，还原只能回到当前状态。\n\n如需还原到官方原版，请先运行官方启动器修复客户端。\n\n是否继续？", version))
+	a.emitEvent("unknown-confirm", fmt.Sprintf("无法确认游戏版本 %s 是否为官方原版（云端信息未获取或尚未收录）。\n\n继续汉化可能出错；程序将把当前客户端文件备份下来，供以后还原使用。若文件已被其他汉化修改，还原只能回到当前状态。\n\n如需还原到官方原版，请先运行官方启动器修复客户端。\n\n是否继续？", version))
 	select {
 	case ok := <-ch:
 		return ok, nil
@@ -1499,7 +1636,7 @@ func (a *App) AnswerLauncherConfirm(ok bool) {
 }
 
 func (a *App) waitLauncherConfirm(ctx context.Context, launcherNames []string) (bool, error) {
-	if a == nil || a.ctx == nil {
+	if !a.hasUI() {
 		return false, nil
 	}
 	ch := make(chan bool, 1)
@@ -1509,7 +1646,12 @@ func (a *App) waitLauncherConfirm(ctx context.Context, launcherNames []string) (
 
 	namesStr := strings.Join(launcherNames, "、")
 	prompt := fmt.Sprintf("检测到游戏启动器正在运行（%s），为防止文件冲突或更新损坏，需要先关闭启动器。\n\n是否强制结束启动器进程并继续？", namesStr)
-	runtime.EventsEmit(a.ctx, "launcher-confirm", prompt)
+	a.emitEvent("launcher-confirm", prompt)
+
+	var appDone <-chan struct{}
+	if a.ctx != nil {
+		appDone = a.ctx.Done()
+	}
 
 	select {
 	case ok := <-ch:
@@ -1525,7 +1667,7 @@ func (a *App) waitLauncherConfirm(ctx context.Context, launcherNames []string) (
 		}
 		a.launcherConfirmMu.Unlock()
 		return false, ctx.Err()
-	case <-a.ctx.Done():
+	case <-appDone:
 		return false, a.ctx.Err()
 	}
 }
@@ -1597,17 +1739,17 @@ func (a *App) shouldThrottleProgress(stage, detail string, done, total int64) bo
 }
 
 func (a *App) emitResourceProgress(stage, detail string, done, total int64) {
-	if a.ctx == nil || a.shouldThrottleProgress(stage, detail, done, total) {
+	if !a.hasUI() || a.shouldThrottleProgress(stage, detail, done, total) {
 		return
 	}
-	runtime.EventsEmit(a.ctx, "resource-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
+	a.emitEvent("resource-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
 func (a *App) emitProgress(stage, detail string, done, total int64) {
-	if a.ctx == nil || a.shouldThrottleProgress(stage, detail, done, total) {
+	if !a.hasUI() || a.shouldThrottleProgress(stage, detail, done, total) {
 		return
 	}
-	runtime.EventsEmit(a.ctx, "patch-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
+	a.emitEvent("patch-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
 // revertWrites 逆序撤回本次已开始写入的文件组，返回真正被改回的文件组数。
@@ -1627,28 +1769,48 @@ func revertWrites(undos []*replace.Undo) (int, error) {
 	return changed, errors.Join(errs...)
 }
 
+func fontCompilerPaths(resourceDir string) (dir, path, legacyPath string) {
+	dir = filepath.Join(dataRootFor(resourceDir), "fontchanger")
+	path = filepath.Join(dir, fontengine.CLIBinaryName)
+	if abs, err := filepath.Abs(path); err == nil {
+		path = abs
+		dir = filepath.Dir(path)
+	}
+	legacyPath = filepath.Join(filepath.Dir(dir), fontengine.CLIBinaryName)
+	return dir, path, legacyPath
+}
+
+func (a *App) emitFontCompilerProgress(stage, detail string, done, total int64) {
+	a.emitEvent("font-compiler-progress", map[string]any{
+		"stage":  stage,
+		"detail": detail,
+		"done":   done,
+		"total":  total,
+	})
+}
+
 // ensureFontCompiler 确保字体编译组件就绪：已存在就直接用，否则按需下载。
 // 组件单独发布在 fontchanger-cli 分支，不随主程序打包。
 func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error {
 	if goruntime.GOOS != "windows" {
 		return errors.New("字体编译组件仅支持 Windows，当前系统无法编译和预览")
 	}
+	unlock, err := lockMutexWithContext(ctx, &a.fontCompilerMu)
+	if err != nil {
+		return err
+	}
+	defer unlock()
+
 	// 组件和它自己读写的 config.json 必须留在独立目录：CLI 会写同目录的 config.json，
 	// 与主程序配置同目录时会互相覆盖。因此优先使用隔离目录，并把旧的同目录组件迁进来；
 	// 程序目录/PATH 里的旧组件不再直接复用。
-	dir := filepath.Join(dataRootFor(resourceDir), "fontchanger")
-	path := filepath.Join(dir, fontengine.CLIBinaryName)
-	if abs, err := filepath.Abs(path); err == nil {
-		path = abs
-		dir = filepath.Dir(path)
-	}
-	legacyPath := filepath.Join(filepath.Dir(dir), fontengine.CLIBinaryName)
+	dir, path, legacyPath := fontCompilerPaths(resourceDir)
 
-	if st, err := os.Stat(path); err == nil && st.Size() > 1<<20 && !st.IsDir() {
+	if verifyExecutable(path) == nil {
 		a.fontEngine.SetBinPath(path)
 		return nil
 	}
-	if st, err := os.Stat(legacyPath); err == nil && st.Size() > 1<<20 && !st.IsDir() {
+	if verifyExecutable(legacyPath) == nil {
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			return fmt.Errorf("创建字体组件目录失败: %w", err)
 		}
@@ -1668,6 +1830,17 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("创建字体组件目录失败: %w", err)
 	}
+
+	ready := false
+	a.emitFontCompilerProgress("downloading", "准备组件中", 0, 0)
+	defer func() {
+		if ready {
+			a.emitFontCompilerProgress("done", "ready", 0, 0)
+		} else {
+			a.emitFontCompilerProgress("failed", "", 0, 0)
+		}
+	}()
+
 	a.emitPatchLog("[字体] 正在下载字体编译组件...")
 	var lastErr error
 	for _, url := range updater.FontCompilerURLs() {
@@ -1676,8 +1849,12 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 		}
 		tmp := path + ".part"
 		_ = os.Remove(tmp)
-		if err := a.updater.DownloadFile(ctx, url, tmp, nil); err != nil {
+		progressCb := func(done, total int64) {
+			a.emitFontCompilerProgress("downloading", "准备组件中", done, total)
+		}
+		if err := a.updater.DownloadFile(ctx, url, tmp, progressCb); err != nil {
 			lastErr = err
+			_ = os.Remove(tmp)
 			continue
 		}
 		if err := verifyExecutable(tmp); err != nil {
@@ -1690,6 +1867,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 			_ = os.Remove(tmp)
 			continue
 		}
+		ready = true
 		a.fontEngine.SetBinPath(path)
 		a.emitPatchLog("[字体] 字体编译组件已就绪")
 		return nil
@@ -1705,6 +1883,9 @@ func verifyExecutable(path string) error {
 	st, err := os.Stat(path)
 	if err != nil {
 		return err
+	}
+	if st.IsDir() {
+		return errors.New("目标路径是目录")
 	}
 	if st.Size() < 1<<20 {
 		return fmt.Errorf("下载内容过小（%d 字节）", st.Size())
@@ -1809,8 +1990,43 @@ func constrainPresetForCompile(presetID, configJson string) (string, int, error)
 }
 
 // StartPatch 执行完整的校验与汉化流程。
-func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
-	var resp PatchResponse
+func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
+	started := time.Now()
+	// 资源、备份、配置的位置在会话快照里已经有了，这里只记与本次请求相关的。
+	sqpackDesc := "未选择游戏目录"
+	if req.GameDir != "" {
+		sqpackDesc = filepath.Join(req.GameDir, "game", "sqpack", "ffxiv")
+	}
+	a.emitDiag("=== 开始汉化 %s === 请求：%s｜sqpack=%s",
+		started.Format("2006-01-02 15:04:05"), patchRequestSummary(req), sqpackDesc)
+	defer func() {
+		state := "成功"
+		if err != nil {
+			state = "失败"
+		} else if resp.Cancelled {
+			state = "已取消"
+		}
+		var extra strings.Builder
+		if err != nil {
+			fmt.Fprintf(&extra, "｜原始错误=%v", err)
+		}
+		if len(resp.Warnings) > 0 {
+			fmt.Fprintf(&extra, "｜警告=%s", strings.Join(resp.Warnings, "、"))
+		}
+		if len(resp.Notes) > 0 {
+			fmt.Fprintf(&extra, "｜备注=%s", strings.Join(resp.Notes, "、"))
+		}
+		if len(resp.Downloaded) > 0 {
+			fmt.Fprintf(&extra, "｜本次下载=%s", strings.Join(resp.Downloaded, "、"))
+		}
+		// 提前失败时 Plan 是零值，打出来只是噪音。
+		planDesc := "未执行"
+		if resp.Plan.GameVersion != "" {
+			planDesc = fmt.Sprintf("%+v", resp.Plan)
+		}
+		a.emitDiag("汉化结束：%s｜耗时 %s｜计划=%s｜文本=%+v｜字体=%+v%s",
+			state, time.Since(started).Round(time.Millisecond), planDesc, resp.Text, resp.Font, extra.String())
+	}()
 	if req.GameDir == "" {
 		return resp, errors.New("请先选择游戏目录")
 	}
@@ -1853,7 +2069,9 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 
 	targetReg := region.Of(lang)
-	if actualReg, err := verifier.DetectClientRegion(req.GameDir); err == nil && actualReg != "" && actualReg != targetReg {
+	actualReg, detectErr := verifier.DetectClientRegion(req.GameDir)
+	a.emitDiag("客户端区服探测：结果=%s，错误=%v", actualReg, detectErr)
+	if detectErr == nil && actualReg != "" && actualReg != targetReg {
 		return resp, fmt.Errorf("区服不匹配：目录为【%s】客户端，目标区服为【%s】，已停止汉化。请切换区服或重新选择目录",
 			region.DisplayName(actualReg), region.DisplayName(targetReg))
 	}
@@ -1971,6 +2189,10 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			registry.SetEnabled(id, on)
 		}
 	}
+	ruleStates := make([]string, 0, len(registry.List()))
+	for _, meta := range registry.List() {
+		ruleStates = append(ruleStates, fmt.Sprintf("%s=%t", meta.ID, registry.Enabled(meta.ID)))
+	}
 
 	// 目标语言：非国际服固定为该区服唯一语言；国际服使用用户勾选列表，
 	// 未指定时默认处理日语与英语。
@@ -1993,6 +2215,9 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		labels = append(labels, fmt.Sprintf("%s（%s）", name, code))
 	}
 	a.emitPatchLog(fmt.Sprintf("[范围] 本次汉化目标语言：%s", strings.Join(labels, "、")))
+	a.emitDiag("生效配置：词条目录=%s（自定义=%t）｜sqpack=%s｜目标语言=%v｜词表=%d/%s｜规则=%s｜规则数据加载错误=%v",
+		csvDir, customCSV, sqpackDir, targetLangs, len(req.SelectedTables),
+		stringListFingerprint(req.SelectedTables), strings.Join(ruleStates, "、"), ruleErr)
 
 	if req.ReplaceText && len(req.SelectedTables) == 0 {
 		return resp, errors.New("未选择任何需要汉化的文本数据表")
@@ -2017,7 +2242,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			a.emitProgress(ev.Stage, ev.Detail, ev.Done, ev.Total)
 		},
 		Log: func(format string, args ...any) {
-			runtime.EventsEmit(a.ctx, "patch-log", fmt.Sprintf(format, args...))
+			a.emitPatchLog(fmt.Sprintf(format, args...))
 		},
 	}
 	// undos 记录本次已开始写入的文件组，失败或中止时按相反顺序撤回。
@@ -2038,6 +2263,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			}
 		}
 		textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
+		a.emitDiag("文本写入：索引=%s｜包含表=%d", textIndexPath, len(include))
 		undo, undoErr := replace.NewUndo(textIndexPath)
 		if undoErr != nil {
 			return undoErr
@@ -2098,6 +2324,15 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 				fontDir = filepath.Join(resourceDir, "font")
 			}
 		}
+
+		fontCount, fontSide := fontTextureStats(fontDir)
+		cfgFileDesc, cfgFileErr := gamecfg.FindConfigFile()
+		if cfgFileErr != nil {
+			cfgFileDesc = fmt.Sprintf("未找到（%v）", cfgFileErr)
+		}
+		a.emitDiag("字体：方案=%s（sha256 %s）｜来源=%s｜16 位=%t｜目录=%s｜%d 张/%dpx｜游戏配置=%s",
+			presetID, hashText(configJson), a.fontSourceMode(resourceDir), a.fontTexture16Bit(resourceDir),
+			fontDir, fontCount, fontSide, cfgFileDesc)
 
 		// 4096 的字体贴图需要游戏开启「高分辨率 UI 贴图」（FFXIV-FontChanger 的
 		// Wiki 也是这么要求的），否则大厅/界面会闪退。1024 的原版规格不需要。
@@ -2231,8 +2466,24 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 }
 
 // RestoreOriginal 从本地备份或云端备份还原文本与字体原文件。
-func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont bool) (RestoreResponse, error) {
-	var resp RestoreResponse
+func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont bool) (resp RestoreResponse, err error) {
+	started := time.Now()
+	a.emitDiag("=== 开始还原 %s === 目录=%s｜区服=%s｜文本=%t｜字体=%t｜云端仓库=%s",
+		started.Format("2006-01-02 15:04:05"), gameDir, language, restoreText, restoreFont, appUpdateRepo)
+	defer func() {
+		state := "成功"
+		if err != nil {
+			state = "失败"
+		} else if resp.Cancelled {
+			state = "已取消"
+		}
+		extra := ""
+		if err != nil {
+			extra = fmt.Sprintf("｜原始错误=%v", err)
+		}
+		a.emitDiag("还原结束：%s｜耗时 %s｜已恢复 %d 个文件（%v）%s",
+			state, time.Since(started).Round(time.Millisecond), len(resp.Restored), resp.Restored, extra)
+	}()
 	if gameDir == "" {
 		return resp, errors.New("请先选择游戏目录")
 	}
@@ -2274,7 +2525,9 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 	}
 
 	targetReg := region.Of(lang)
-	if actualReg, err := verifier.DetectClientRegion(gameDir); err == nil && actualReg != "" && actualReg != targetReg {
+	actualReg, detectErr := verifier.DetectClientRegion(gameDir)
+	a.emitDiag("客户端区服探测：结果=%s，错误=%v", actualReg, detectErr)
+	if detectErr == nil && actualReg != "" && actualReg != targetReg {
 		return resp, fmt.Errorf("区服不匹配：目录为【%s】客户端，目标区服为【%s】，已停止还原",
 			region.DisplayName(actualReg), region.DisplayName(targetReg))
 	}
@@ -2344,7 +2597,7 @@ func (a *App) SyncResources() (SyncSummary, error) {
 	// 在手动同步与汉化前检查之间共享，避免重新探测一遍。
 	u := a.updater
 	status, err := u.Provision(a.ctx, resourceDir, func(stage, detail string, done, total int64) {
-		runtime.EventsEmit(a.ctx, "sync-progress", ProgressEvent{
+		a.emitEvent("sync-progress", ProgressEvent{
 			Stage: stage, Detail: detail, Done: done, Total: total,
 		})
 	})
@@ -2365,8 +2618,10 @@ func (a *App) OpenLink(url string) error {
 	if !strings.HasPrefix(url, "https://") {
 		return errors.New("仅允许打开 HTTPS 链接")
 	}
-	runtime.BrowserOpenURL(a.ctx, url)
-	return nil
+	if !a.hasUI() {
+		return errors.New("桌面运行时未就绪")
+	}
+	return a.wailsApp.Browser.OpenURL(url)
 }
 
 // EnsureHighResolutionUiAsset 检查并确保 FFXIV.cfg 开启高分辨率贴图模式 (UiAssetType 1)。
@@ -2484,8 +2739,8 @@ func (a *App) RestartApp() error {
 
 	go func() {
 		time.Sleep(700 * time.Millisecond)
-		if a.ctx != nil {
-			runtime.Quit(a.ctx)
+		if a.hasUI() {
+			a.BeginQuit()
 			return
 		}
 		os.Exit(0)
@@ -2495,7 +2750,7 @@ func (a *App) RestartApp() error {
 
 // emitAppUpdateProgress 汇报自更新进度。下载回调触发很密，只按时间间隔转发。
 func (a *App) emitAppUpdateProgress(stage, detail string, done, total int64) {
-	if a.ctx == nil {
+	if !a.hasUI() {
 		return
 	}
 	if total > 0 && done < total {
@@ -2507,7 +2762,7 @@ func (a *App) emitAppUpdateProgress(stage, detail string, done, total int64) {
 		a.updateEmitAt = time.Now()
 		a.updateEmitMu.Unlock()
 	}
-	runtime.EventsEmit(a.ctx, "app-update-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
+	a.emitEvent("app-update-progress", ProgressEvent{Stage: stage, Detail: detail, Done: done, Total: total})
 }
 
 func isGameClientDir(dir string) bool {
@@ -2767,6 +3022,12 @@ func (a *App) RenderFontPreview(configJson string, fontName string, text string,
 	return "data:image/png;base64," + b64, nil
 }
 
+// HasFontCompiler 检查本地字体编译组件是否已就绪。
+func (a *App) HasFontCompiler() bool {
+	_, path, legacyPath := fontCompilerPaths(a.resourceDir())
+	return verifyExecutable(path) == nil || verifyExecutable(legacyPath) == nil
+}
+
 // EnsureFontCompiler 供前端进入字体定制视图或执行字体操作前显式预检/下载字体编译组件。
 func (a *App) EnsureFontCompiler() error {
 	ctx := context.Background()
@@ -2832,32 +3093,73 @@ func (a *App) ExportFontRaw(configJson string, outDir string) error {
 	return a.fontEngine.CompileRaw(ctx, constrained, outDir, use16Bit, nil)
 }
 
+func (a *App) openDirectoryDialog(title string, defaultDir string) (string, error) {
+	if !a.hasUI() {
+		return "", errors.New("桌面运行时未就绪")
+	}
+	dlg := a.wailsApp.Dialog.OpenFile().
+		SetTitle(title).
+		CanChooseDirectories(true).
+		CanChooseFiles(false)
+	if defaultDir != "" {
+		dlg.SetDirectory(defaultDir)
+	}
+	if win := a.activeDialogWindow(); win != nil {
+		dlg.AttachToWindow(win)
+	}
+	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+}
+
+func (a *App) openFileDialog(title string, filters []application.FileFilter) (string, error) {
+	if !a.hasUI() {
+		return "", errors.New("桌面运行时未就绪")
+	}
+	dlg := a.wailsApp.Dialog.OpenFile().
+		SetTitle(title).
+		CanChooseFiles(true).
+		CanChooseDirectories(false)
+	for _, f := range filters {
+		dlg.AddFilter(f.DisplayName, f.Pattern)
+	}
+	if win := a.activeDialogWindow(); win != nil {
+		dlg.AttachToWindow(win)
+	}
+	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+}
+
+func (a *App) saveFileDialog(title string, defaultName string, filters []application.FileFilter) (string, error) {
+	if !a.hasUI() {
+		return "", errors.New("桌面运行时未就绪")
+	}
+	dlg := a.wailsApp.Dialog.SaveFile()
+	dlg.SetOptions(&application.SaveFileDialogOptions{
+		Title:                title,
+		Filename:             defaultName,
+		Filters:              filters,
+		Window:               a.activeDialogWindow(),
+		CanCreateDirectories: true,
+	})
+	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+}
+
 // SelectRawExportDir 弹出原生目录选择框供用户指定原始文件导出目录
 func (a *App) SelectRawExportDir() (string, error) {
-	return runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "选择原始字体文件 (fdt/tex) 导出目录",
-	})
+	return a.openDirectoryDialog("选择原始字体文件 (fdt/tex) 导出目录", "")
 }
 
 // SelectFontFile 弹出原生文件选择框供用户选取本地 TTF/OTF 字体文件
 func (a *App) SelectFontFile() (string, error) {
-	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "选择字体文件",
-		Filters: []runtime.FileFilter{
-			{DisplayName: "字体文件 (*.ttf;*.otf)", Pattern: "*.ttf;*.otf"},
-			{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
-		},
+	return a.openFileDialog("选择字体文件", []application.FileFilter{
+		{DisplayName: "字体文件 (*.ttf;*.otf)", Pattern: "*.ttf;*.otf"},
+		{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
 	})
 }
 
 // SelectFontJsonFile 弹出原生文件选择框供用户选取字体方案 JSON 文件
 func (a *App) SelectFontJsonFile() (string, error) {
-	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "导入字体方案文件",
-		Filters: []runtime.FileFilter{
-			{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
-			{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
-		},
+	return a.openFileDialog("导入字体方案文件", []application.FileFilter{
+		{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
+		{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
 	})
 }
 
@@ -2866,24 +3168,113 @@ func (a *App) SelectFontJsonSavePath(defaultName string) (string, error) {
 	if defaultName == "" {
 		defaultName = "FFXIV_Font_Preset.json"
 	}
-	return runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
-		Title:           "导出字体方案 JSON 文件",
-		DefaultFilename: defaultName,
-		Filters: []runtime.FileFilter{
-			{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
-		},
+	return a.saveFileDialog("导出字体方案 JSON 文件", defaultName, []application.FileFilter{
+		{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
 	})
 }
 
 // SelectTTMPSavePath 弹出原生文件保存框供用户指定 TTMP2 输出路径
 func (a *App) SelectTTMPSavePath() (string, error) {
-	return runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
-		Title:           "导出 Penumbra TTMP2 模组包",
-		DefaultFilename: "FFXIV_Custom_Font.ttmp2",
-		Filters: []runtime.FileFilter{
-			{DisplayName: "Penumbra TTMP2 模组包 (*.ttmp2)", Pattern: "*.ttmp2"},
-		},
+	return a.saveFileDialog("导出 Penumbra TTMP2 模组包", "FFXIV_Custom_Font.ttmp2", []application.FileFilter{
+		{DisplayName: "Penumbra TTMP2 模组包 (*.ttmp2)", Pattern: "*.ttmp2"},
 	})
+}
+
+// OpenElementEditorWindow 打开或复用单例「字体图层属性」原生子窗口。
+func (a *App) OpenElementEditorWindow(title string, stateJson string) error {
+	if !a.hasUI() {
+		return errors.New("桌面运行时未就绪")
+	}
+	if strings.TrimSpace(title) == "" {
+		title = "字体图层属性"
+	}
+
+	a.elemStateMu.Lock()
+	a.elemState = stateJson
+	a.elemStateMu.Unlock()
+
+	a.elemWinMu.Lock()
+	win := a.elemWin
+	if win == nil {
+		win = a.wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
+			Name:             "element-editor",
+			Title:            title,
+			Width:            860,
+			Height:           700,
+			MinWidth:         680,
+			MinHeight:        520,
+			InitialPosition:  application.WindowCentered,
+			URL:              "/?window=element-editor",
+			BackgroundColour: application.NewRGB(22, 23, 26),
+			Windows: application.WindowsWindow{
+				Theme:       application.Dark,
+				DisableMenu: true,
+			},
+		})
+		win.RegisterHook(events.Common.WindowClosing, func(e *application.WindowEvent) {
+			if a.quitting.Load() {
+				return
+			}
+			e.Cancel()
+			win.Hide()
+			a.emitEvent("elem-editor:native-close")
+		})
+		a.elemWin = win
+		a.elemWinMu.Unlock()
+		return nil
+	}
+	a.elemWinMu.Unlock()
+
+	win.SetTitle(title)
+	win.Show()
+	win.Focus()
+	a.emitEvent("elem-editor:open", stateJson)
+	return nil
+}
+
+// SyncElementEditorWindow 若图层属性子窗口当前可见，则刷新其标题与图层内容。
+func (a *App) SyncElementEditorWindow(title string, stateJson string) error {
+	if !a.hasUI() {
+		return nil
+	}
+	a.elemStateMu.Lock()
+	a.elemState = stateJson
+	a.elemStateMu.Unlock()
+
+	a.elemWinMu.Lock()
+	win := a.elemWin
+	a.elemWinMu.Unlock()
+	if win == nil || !win.IsVisible() {
+		return nil
+	}
+	if strings.TrimSpace(title) != "" {
+		win.SetTitle(title)
+	}
+	a.emitEvent("elem-editor:sync", stateJson)
+	return nil
+}
+
+// HideElementEditorWindow 隐藏图层属性子窗口并切回主窗口焦点。
+func (a *App) HideElementEditorWindow() {
+	if !a.hasUI() {
+		return
+	}
+	a.elemWinMu.Lock()
+	win := a.elemWin
+	a.elemWinMu.Unlock()
+	if win != nil && win.IsVisible() {
+		win.Hide()
+	}
+	if a.mainWin != nil {
+		a.mainWin.Focus()
+	}
+}
+
+// GetElementEditorState 返回最近一次打开或同步的图层属性状态快照 JSON。
+func (a *App) GetElementEditorState() string {
+	a.elemStateMu.RLock()
+	defer a.elemStateMu.RUnlock()
+	return a.elemState
 }
 
 // ReadTextFile 读取指定文本文件内容

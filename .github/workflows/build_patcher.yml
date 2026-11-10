@@ -21,7 +21,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24.x"
+          go-version: "1.26.x"
           cache-dependency-path: patcher/go.sum
 
       - name: Install pnpm
@@ -58,7 +58,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24.x"
+          go-version: "1.26.x"
           cache-dependency-path: patcher/go.sum
 
       - name: Install pnpm
@@ -70,9 +70,6 @@ jobs:
           node-version: "22"
           cache: "pnpm"
           cache-dependency-path: patcher/frontend/pnpm-lock.yaml
-
-      - name: Install Wails CLI
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.2
 
       - name: Run Go tests
         working-directory: patcher

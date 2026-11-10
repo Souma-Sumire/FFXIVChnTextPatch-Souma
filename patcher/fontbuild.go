@@ -15,8 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
-
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/replace"
@@ -270,10 +268,10 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 }
 
 func (a *App) emitFontBuildProgress(done int64, detail string) {
-	if a.ctx == nil || a.shouldThrottleProgress("font-build", detail, done, 100) {
+	if !a.hasUI() || a.shouldThrottleProgress("font-build", detail, done, 100) {
 		return
 	}
-	runtime.EventsEmit(a.ctx, "font-build-progress", ProgressEvent{
+	a.emitEvent("font-build-progress", ProgressEvent{
 		Stage: "font-build", Detail: detail, Done: done, Total: 100,
 	})
 }

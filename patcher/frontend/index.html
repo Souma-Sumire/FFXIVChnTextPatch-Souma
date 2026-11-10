@@ -50,10 +50,9 @@
               </label>
 
               <div id="csv-picker" class="csv-picker">
-                <span class="csv-picker-label">词条目录</span>
                 <div class="multiselect csv-multiselect">
                   <button type="button" id="csv-select-trigger" class="select csv-select-trigger" aria-haspopup="listbox"
-                    aria-expanded="false">
+                    aria-expanded="false" aria-label="词条目录">
                     <span id="csv-select-summary">内置词条</span>
                     <span id="csv-sync-bar" class="csv-sync-bar" aria-hidden="true"></span>
                   </button>
@@ -102,8 +101,7 @@
               </label>
 
               <div class="font-source-inline">
-                <label class="scope-label" for="font-source">字体来源</label>
-                <select id="font-source" class="select font-source-select">
+                <select id="font-source" class="select font-source-select" aria-label="字体来源">
                   <option value="package">内置字体包</option>
                   <option value="compile">自定义方案</option>
                 </select>
@@ -111,16 +109,17 @@
 
               <div class="font-preset-inline font-preset-control">
                 <span id="font-preset-summary" class="scope-value hidden">思源黑体（高清中文字体）</span>
+                <button type="button" id="btn-open-font-editor" class="btn scope-action">
+                  <span id="btn-open-font-editor-text">编辑方案</span>
+                  <span id="font-compiler-bar" class="csv-sync-bar" aria-hidden="true"></span>
+                </button>
                 <button type="button" id="btn-compile-font" class="btn scope-action">编译</button>
-                <button type="button" id="btn-open-font-editor" class="btn scope-action">编辑方案</button>
                 <div id="font-build-progress" class="font-build-progress hidden" aria-hidden="true">
                   <div id="font-build-bar" class="font-build-bar"></div>
                 </div>
               </div>
-            </div>
 
-            <div id="font-editor-alert" class="form-row font-alert-row hidden" role="alert">
-              <div class="inline-alert">
+              <div id="font-editor-alert" class="font-alert-inline hidden" role="alert">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
@@ -146,9 +145,9 @@
               </button>
             </div>
             <div class="log-head-right">
-              <button id="btn-copy-log" class="btn btn-quiet btn-xs btn-plain" type="button">
+              <button id="btn-copy-log" class="btn btn-quiet btn-xs btn-plain" type="button" data-tip="汇总环境、配置、客户端状态与全部日志，粘贴到 GitHub Issues 即可">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                <span id="btn-copy-log-text">复制</span>
+                <span id="btn-copy-log-text">复制调试信息</span>
               </button>
               <button id="btn-clear-log" class="btn btn-quiet btn-xs btn-plain" type="button">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -374,8 +373,10 @@
           <span class="bar-sep" aria-hidden="true"></span>
 
           <!-- 方案下拉切换选择器 -->
-          <div class="fc-preset-picker">
-            <label class="fc-preset-picker-label" for="fc-preset-select">方案</label>
+          <div class="fc-preset-picker" title="选择字体方案">
+            <svg class="fc-preset-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+            </svg>
             <select id="fc-preset-select" class="fc-preset-select" aria-label="选择字体方案"></select>
           </div>
         </div>
@@ -506,140 +507,191 @@
       <div id="font-element-modal" class="modal-overlay elem-modal-overlay hidden">
         <div class="elem-modal-window" role="dialog" aria-modal="true" aria-labelledby="elem-modal-title">
           <div class="elem-modal-header">
-            <div class="elem-modal-title-wrap">
-              <span id="elem-modal-title" class="elem-modal-title">编辑字体图层</span>
-              <span id="elem-modal-subtitle" class="meta-tag">AXIS_18 · 图层 #1</span>
+            <div class="elem-modal-head-top">
+              <div class="elem-modal-title-wrap">
+                <span id="elem-modal-title" class="elem-modal-title">字体图层属性</span>
+                <span id="elem-modal-subtitle" class="elem-modal-badge">AXIS_18 · 图层 #1</span>
+              </div>
+              <button type="button" id="btn-elem-modal-close" class="elem-modal-close-btn" aria-label="关闭">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
-            <div class="elem-modal-tabs" role="tablist">
-              <button type="button" class="elem-tab-btn active" data-elem-tab="font" role="tab">字体与排版</button>
-              <button type="button" class="elem-tab-btn" data-elem-tab="chars" role="tab">字符范围</button>
-              <button type="button" class="elem-tab-btn" data-elem-tab="typo" role="tab">OpenType 特性</button>
-              <button type="button" class="elem-tab-btn" data-elem-tab="merge" role="tab">字符替换</button>
-            </div>
+            <nav class="elem-modal-nav" role="tablist">
+              <button type="button" class="elem-tab-btn active" data-elem-tab="font" role="tab">
+                <span>字体与排版</span>
+              </button>
+              <button type="button" class="elem-tab-btn" data-elem-tab="chars" role="tab">
+                <span>字符范围</span>
+              </button>
+              <button type="button" class="elem-tab-btn" data-elem-tab="typo" role="tab">
+                <span>OpenType 特性</span>
+              </button>
+              <button type="button" class="elem-tab-btn" data-elem-tab="merge" role="tab">
+                <span>字符替换</span>
+              </button>
+            </nav>
           </div>
 
           <div class="elem-modal-body" id="font-props-panel">
-            <!-- Tab 1: 字体设置 -->
+            <!-- Tab 1: 字体与排版 -->
             <div class="elem-tab-pane" id="elem-tab-font">
-              <div class="elem-form-grid">
-                <div class="props-group">
-                  <h4 class="props-sub-title">字体来源</h4>
-                  <div class="props-row">
-                    <label class="props-label" for="prop-renderer">渲染引擎</label>
-                    <select id="prop-renderer" class="select">
-                      <option value="2">DirectWrite（Windows 原生渲染，推荐）</option>
-                      <option value="3">FreeType（跨平台开源光栅化）</option>
-                      <option value="1">游戏字库（从客户端提取预渲染字形）</option>
-                      <option value="0">空白字体（仅占位定义行高与基线）</option>
-                    </select>
+              <div class="elem-inspector-stack">
+                <!-- 基础策略：渲染引擎与覆盖模式 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">图层源与合成模式</span>
                   </div>
-
-                  <div class="props-row">
-                    <label class="props-label" for="prop-font-family">系统已安装字体</label>
-                    <div class="file-pick-row">
-                      <select id="prop-font-family" class="select flex-1"></select>
+                  <div class="props-grid-2">
+                    <div class="props-field">
+                      <label for="prop-renderer">渲染引擎</label>
+                      <select id="prop-renderer" class="select">
+                        <option value="2">DirectWrite</option>
+                        <option value="3">FreeType</option>
+                        <option value="1">游戏字库</option>
+                        <option value="0">空白占位</option>
+                      </select>
+                    </div>
+                    <div class="props-field">
+                      <label for="prop-merge-mode">图层合成覆盖策略</label>
+                      <select id="prop-merge-mode" class="select">
+                        <option value="0">仅添加新字符</option>
+                        <option value="1">添加全部字符</option>
+                        <option value="2">仅替换已有字符</option>
+                      </select>
                     </div>
                   </div>
 
-                  <div class="props-row">
-                    <label class="props-label" for="prop-font-file">字体家族名称或本地字体文件</label>
-                    <div class="file-pick-row">
-                      <input id="prop-font-file" class="input input-mono flex-1" placeholder="输入字体名（如 Microsoft YaHei）或浏览本地 TTF / OTF" />
-                      <button id="btn-browse-font-file" class="btn btn-xs" type="button">浏览文件…</button>
-                    </div>
+                  <!-- 游戏字库提示 -->
+                  <div id="props-game-font-notice" class="elem-notice-box hidden">
+                    使用客户端原版提取字形，图层无需外部字体文件，已自动保持原始排印度量。
                   </div>
 
+                  <!-- 空白字体提示 -->
+                  <div id="props-empty-font-notice" class="elem-notice-box hidden">
+                    空白占位图层，不包含实际笔画字形，主要用于修正字体的基线高度与行高结构。
+                  </div>
+
+                  <!-- 外部字体选择栏（DirectWrite / FreeType） -->
+                  <div id="props-external-font-wrap" class="props-grid-2" style="margin-top: 8px;">
+                    <div class="props-field">
+                      <label for="prop-font-family">系统已安装字体</label>
+                      <select id="prop-font-family" class="select"></select>
+                    </div>
+                    <div class="props-field">
+                      <label for="prop-font-file">指定家族名称或文件路径</label>
+                      <div class="file-pick-row">
+                        <input id="prop-font-file" class="input input-mono flex-1" placeholder="字体名（如 Microsoft YaHei）或本地 TTF/OTF 路径" />
+                        <button id="btn-browse-font-file" class="btn btn-quiet btn-xs" type="button">浏览本地文件…</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 排印度量与字型规格 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">字型规格与排印度量</span>
+                  </div>
                   <div class="props-grid-4">
                     <div class="props-field">
                       <label for="prop-size">字号 (px)</label>
                       <input type="number" step="0.2" id="prop-size" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-weight">字重</label>
+                      <label for="prop-weight">字重 (Weight)</label>
                       <select id="prop-weight" class="select">
-                        <option value="100">100 · Thin</option>
-                        <option value="200">200 · ExtraLight</option>
-                        <option value="300">300 · Light</option>
-                        <option value="350">350 · SemiLight</option>
-                        <option value="400">400 · Regular</option>
-                        <option value="500">500 · Medium</option>
-                        <option value="600">600 · SemiBold</option>
-                        <option value="700">700 · Bold</option>
-                        <option value="800">800 · ExtraBold</option>
-                        <option value="900">900 · Black</option>
+                        <option value="100">100 · Thin 极细</option>
+                        <option value="200">200 · ExtraLight 特细</option>
+                        <option value="300">300 · Light 细体</option>
+                        <option value="350">350 · SemiLight 次细</option>
+                        <option value="400">400 · Regular 常规</option>
+                        <option value="500">500 · Medium 中黑</option>
+                        <option value="600">600 · SemiBold 次粗</option>
+                        <option value="700">700 · Bold 粗体</option>
+                        <option value="800">800 · ExtraBold 特粗</option>
+                        <option value="900">900 · Black 浓黑</option>
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-style">样式</label>
+                      <label for="prop-style">样式 (Style)</label>
                       <select id="prop-style" class="select">
-                        <option value="0">标准 (Normal)</option>
+                        <option value="0">常规 (Normal)</option>
                         <option value="1">倾斜 (Oblique)</option>
                         <option value="2">斜体 (Italic)</option>
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-stretch">字宽</label>
+                      <label for="prop-stretch">字宽 (Stretch)</label>
                       <select id="prop-stretch" class="select">
-                        <option value="1">1 · 超窄</option>
-                        <option value="2">2 · 极窄</option>
-                        <option value="3">3 · 窄体</option>
-                        <option value="4">4 · 半窄</option>
-                        <option value="5">5 · 标准</option>
-                        <option value="6">6 · 半宽</option>
-                        <option value="7">7 · 宽体</option>
-                        <option value="8">8 · 极宽</option>
-                        <option value="9">9 · 超宽</option>
+                        <option value="1">1 · 超窄 UltraCondensed</option>
+                        <option value="2">2 · 极窄 ExtraCondensed</option>
+                        <option value="3">3 · 窄体 Condensed</option>
+                        <option value="4">4 · 半窄 SemiCondensed</option>
+                        <option value="5">5 · 标准 Medium</option>
+                        <option value="6">6 · 半宽 SemiExpanded</option>
+                        <option value="7">7 · 宽体 Expanded</option>
+                        <option value="8">8 · 极宽 ExtraExpanded</option>
+                        <option value="9">9 · 超宽 UltraExpanded</option>
                       </select>
+                    </div>
+                  </div>
+
+                  <div class="props-grid-4" style="margin-top: 8px;">
+                    <div class="props-field">
+                      <label for="prop-baseline-shift">垂直基线偏移 (px)</label>
+                      <input type="number" step="0.5" id="prop-baseline-shift" class="input" />
+                    </div>
+                    <div class="props-field">
+                      <label for="prop-horizontal-offset">水平对齐偏移 (px)</label>
+                      <input type="number" step="0.5" id="prop-horizontal-offset" class="input" />
+                    </div>
+                    <div class="props-field">
+                      <label for="prop-letter-spacing">字间距微调 (px)</label>
+                      <input type="number" step="0.5" id="prop-letter-spacing" class="input" />
+                    </div>
+                    <div class="props-field">
+                      <label for="prop-gamma">伽马对比校正 (γ)</label>
+                      <input type="number" step="0.05" id="prop-gamma" class="input" />
                     </div>
                   </div>
                 </div>
 
-                <div class="props-group">
-                  <h4 class="props-sub-title">位置微调与几何变换</h4>
-                  <div class="props-grid-4">
-                    <div class="props-field">
-                      <label for="prop-baseline-shift">垂直偏移 (px)</label>
-                      <input type="number" step="0.5" id="prop-baseline-shift" class="input" />
-                    </div>
-                    <div class="props-field">
-                      <label for="prop-horizontal-offset">水平偏移 (px)</label>
-                      <input type="number" step="0.5" id="prop-horizontal-offset" class="input" />
-                    </div>
-                    <div class="props-field">
-                      <label for="prop-letter-spacing">字符间距 (px)</label>
-                      <input type="number" step="0.5" id="prop-letter-spacing" class="input" />
-                    </div>
-                    <div class="props-field">
-                      <label for="prop-gamma">伽马值</label>
-                      <input type="number" step="0.05" id="prop-gamma" class="input" />
-                    </div>
+                <!-- 几何变换 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">几何变换</span>
                   </div>
-
                   <div class="props-grid-4">
                     <div class="props-field">
-                      <label for="prop-scale-x">水平缩放</label>
+                      <label for="prop-scale-x">水平缩放 (×)</label>
                       <input type="number" step="0.05" id="prop-scale-x" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-scale-y">垂直缩放</label>
+                      <label for="prop-scale-y">垂直缩放 (×)</label>
                       <input type="number" step="0.05" id="prop-scale-y" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-skew">倾斜角度 (°)</label>
+                      <label for="prop-skew">水平倾斜角 (°)</label>
                       <input type="number" step="0.5" id="prop-skew" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-rotation">旋转角度 (°)</label>
+                      <label for="prop-rotation">平面旋转角 (°)</label>
                       <input type="number" step="0.5" id="prop-rotation" class="input" />
                     </div>
                   </div>
                 </div>
 
-                <div class="props-group" id="props-directwrite-group">
-                  <h4 class="props-sub-title">DirectWrite 栅格化参数</h4>
+                <!-- DirectWrite 光栅化参数 -->
+                <div class="elem-inspector-section" id="props-directwrite-group">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">DirectWrite 光栅化细节</span>
+                  </div>
                   <div class="props-grid-3">
                     <div class="props-field">
-                      <label for="prop-dw-render">渲染模式</label>
+                      <label for="prop-dw-render">渲染平滑模式</label>
                       <select id="prop-dw-render" class="select">
                         <option value="0">默认 (Default)</option>
                         <option value="1">无抗锯齿 (Aliased)</option>
@@ -651,7 +703,7 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-dw-measure">测量模式</label>
+                      <label for="prop-dw-measure">排版测量模式</label>
                       <select id="prop-dw-measure" class="select">
                         <option value="0">自然 (Natural)</option>
                         <option value="1">GDI 传统 (GDI Classic)</option>
@@ -659,7 +711,7 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-dw-gridfit">像素网格对齐</label>
+                      <label for="prop-dw-gridfit">像素网格贴靠 (Grid Fit)</label>
                       <select id="prop-dw-gridfit" class="select">
                         <option value="0">默认 (Default)</option>
                         <option value="1">停用 (Disabled)</option>
@@ -669,15 +721,18 @@
                   </div>
                 </div>
 
-                <div class="props-group hidden" id="props-freetype-group">
-                  <h4 class="props-sub-title">FreeType 栅格化参数</h4>
+                <!-- FreeType 光栅化参数 -->
+                <div class="elem-inspector-section hidden" id="props-freetype-group">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">FreeType 光栅化细节</span>
+                  </div>
                   <div class="props-grid-4">
                     <div class="props-field">
-                      <label for="prop-ft-render">渲染模式</label>
+                      <label for="prop-ft-render">渲染质量</label>
                       <select id="prop-ft-render" class="select">
-                        <option value="0">标准 (Normal)</option>
-                        <option value="1">轻量 (Light)</option>
-                        <option value="2">单色 (Mono)</option>
+                        <option value="0">标准平滑 (Normal)</option>
+                        <option value="1">轻量抗锯齿 (Light)</option>
+                        <option value="2">黑白单色 (Mono)</option>
                       </select>
                     </div>
                     <div class="props-field checkbox-field">
@@ -692,15 +747,18 @@
                   </div>
                 </div>
 
-                <div class="props-group hidden" id="props-empty-group">
-                  <h4 class="props-sub-title">空白字体度量</h4>
+                <!-- 空白字体度量 -->
+                <div class="elem-inspector-section hidden" id="props-empty-group">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">空白字体度量定义</span>
+                  </div>
                   <div class="props-grid-2">
                     <div class="props-field">
-                      <label for="prop-empty-ascent">基线高度 (px)</label>
+                      <label for="prop-empty-ascent">基线高度 (Ascent, px)</label>
                       <input type="number" step="1" id="prop-empty-ascent" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-empty-lineheight">行高 (px)</label>
+                      <label for="prop-empty-lineheight">行高 (Line Height, px)</label>
                       <input type="number" step="1" id="prop-empty-lineheight" class="input" />
                     </div>
                   </div>
@@ -711,103 +769,129 @@
             <!-- Tab 2: 字符范围 -->
             <div class="elem-tab-pane hidden" id="elem-tab-chars">
               <div class="chars-tab-layout">
+                <!-- 左列：当前生效区间 -->
                 <div class="chars-left-col">
-                  <div class="props-row">
-                    <label class="props-label" for="prop-merge-mode">覆盖模式</label>
-                    <select id="prop-merge-mode" class="select">
-                      <option value="0">仅添加新字符（不覆盖上层已有字形）</option>
-                      <option value="1">添加全部字符（覆盖上层已有字形）</option>
-                      <option value="2">仅替换已有字符（不添加上层没有的字形）</option>
-                    </select>
-                  </div>
-
-                  <div class="chars-list-header">
-                    <span class="props-label">已选码点区间（<span id="cp-total-summary">0 段</span>）</span>
-                    <button type="button" id="btn-cp-clear" class="btn btn-quiet btn-xs">清空全部</button>
+                  <div class="chars-pane-header">
+                    <div class="chars-pane-title-group">
+                      <span class="chars-pane-title">生效码点区间</span>
+                      <span id="cp-total-summary" class="chars-summary-pill">0 段 · 共 0 字符</span>
+                    </div>
+                    <button type="button" id="btn-cp-clear" class="btn btn-quiet btn-xs">清空</button>
                   </div>
 
                   <div class="cp-intervals-box" id="cp-intervals-box"></div>
 
-                  <div class="props-row" id="custom-codepoint-wrap">
-                    <label class="props-label" for="prop-codepoints-text">十进制区间表达式</label>
-                    <input id="prop-codepoints-text" class="input input-mono" placeholder="0-127, 19968-40959" />
+                  <div class="chars-custom-box">
+                    <label class="props-label" for="cp-custom-input">输入码点或抽样字符</label>
+                    <div class="file-pick-row">
+                      <input id="cp-custom-input" class="input input-mono flex-1" placeholder="如 U+4E00-9FFF、0x3000 或直接粘贴文字" />
+                      <button type="button" id="btn-cp-custom-add" class="btn btn-xs btn-primary">+ 追加</button>
+                      <button type="button" id="btn-cp-custom-sub" class="btn btn-quiet btn-xs">− 剔除</button>
+                    </div>
+                    <div class="chars-raw-toggle-wrap">
+                      <details class="chars-raw-details">
+                        <summary>十进制区间表达式</summary>
+                        <input id="prop-codepoints-text" class="input input-mono" placeholder="0-127, 19968-40959" />
+                      </details>
+                    </div>
                   </div>
                 </div>
 
+                <!-- 右列：预设字符集矩阵 -->
                 <div class="chars-right-col">
-                  <div class="props-group">
-                    <h4 class="props-sub-title">常用字符集快速增减</h4>
-                    <div class="cp-preset-table">
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">全部字符 (U+0000 ~ U+10FFFF)</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="all">设为</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="all">+添加</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">中日韩统一表意文字（常用及扩展区汉字）</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="cjk">设为</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="cjk">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="cjk">−减去</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">非中日韩字符（拉丁字母、数字、西文符号）</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="noncjk">设为</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="noncjk">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="noncjk">−减去</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">日文假名（平假名、片假名、半角假名）</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="kana">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="kana">−减去</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">韩文谚文（音节与字母）</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="hangul">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="hangul">−减去</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">ASCII 基础字符 (U+0020 ~ U+007E)</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="ascii">设为</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="ascii">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="ascii">−减去</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">全角标点与全角 ASCII (U+3000~303F, FF00~FFEF)</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="cjksym">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="cjksym">−减去</button>
-                        </div>
-                      </div>
-                      <div class="cp-preset-row">
-                        <span class="cp-preset-name">FFXIV 私用区特殊图标 (U+E000 ~ U+F8FF)</span>
-                        <div class="cp-preset-actions">
-                          <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="pua">+添加</button>
-                          <button type="button" class="btn btn-xs" data-cp-op="sub" data-cp-group="pua">−减去</button>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="chars-pane-header">
+                    <span class="chars-pane-title">常用字符集</span>
                   </div>
 
-                  <div class="props-group">
-                    <h4 class="props-sub-title">按字符或十六进制码点增减</h4>
-                    <div class="props-row">
-                      <label class="props-label" for="cp-custom-input">输入字符或码点区间（如 U+4E00-9FFF 或直接粘贴文字）</label>
-                      <div class="file-pick-row">
-                        <input id="cp-custom-input" class="input input-mono flex-1" placeholder="U+4E00-9FFF 或直接输入字符" />
-                        <button type="button" id="btn-cp-custom-add" class="btn btn-xs">+添加</button>
-                        <button type="button" id="btn-cp-custom-sub" class="btn btn-xs">−减去</button>
+                  <div class="cp-preset-list">
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">全部字符范围</span>
+                        <span class="cp-preset-range">U+0000 ~ U+10FFFF · 完整 Unicode</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="all">设为</button>
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="all">+ 追加</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">中日韩统一表意文字 (CJK)</span>
+                        <span class="cp-preset-range">U+4E00 ~ U+9FFF (6 区间) · 约 20,997 字</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="cjk">设为</button>
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="cjk">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="cjk">− 剔除</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">西文与非中日韩字符</span>
+                        <span class="cp-preset-range">拉丁 / 希腊 / 西里尔 / 基础数字</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="noncjk">设为</button>
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="noncjk">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="noncjk">− 剔除</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">ASCII 基础字符</span>
+                        <span class="cp-preset-range">U+0020 ~ U+007E · 英数及半角标点</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="set" data-cp-group="ascii">设为</button>
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="ascii">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="ascii">− 剔除</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">日文假名</span>
+                        <span class="cp-preset-range">U+3040 ~ U+30FF · 平假名 / 片假名</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="kana">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="kana">− 剔除</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">韩文谚文</span>
+                        <span class="cp-preset-range">U+AC00 ~ U+D7AF · 音节与字母</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="hangul">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="hangul">− 剔除</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">全角标点与符号</span>
+                        <span class="cp-preset-range">U+3000 ~ U+303F, U+FF00 ~ U+FFEF</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="cjksym">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="cjksym">− 剔除</button>
+                      </div>
+                    </div>
+
+                    <div class="cp-preset-row">
+                      <div class="cp-preset-info">
+                        <span class="cp-preset-name">FFXIV 游戏私用区图标 (PUA)</span>
+                        <span class="cp-preset-range">U+E000 ~ U+F8FF · HQ/职业/天气图标</span>
+                      </div>
+                      <div class="cp-preset-actions">
+                        <button type="button" class="btn btn-xs" data-cp-op="add" data-cp-group="pua">+ 追加</button>
+                        <button type="button" class="btn btn-quiet btn-xs" data-cp-op="sub" data-cp-group="pua">− 剔除</button>
                       </div>
                     </div>
                   </div>
@@ -817,48 +901,179 @@
 
             <!-- Tab 3: OpenType 特性 -->
             <div class="elem-tab-pane hidden" id="elem-tab-typo">
-              <div class="props-group">
-                <h4 class="props-sub-title">OpenType 排版特性</h4>
-                <div class="ot-features-grid" id="ot-features-grid">
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="kern" /><span>kern · 标准字距调整</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="liga" /><span>liga · 标准连字</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="calt" /><span>calt · 上下文替代</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="tnum" /><span>tnum · 等宽表格数字</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="pnum" /><span>pnum · 比例宽度数字</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="zero" /><span>zero · 斜线零</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="pwid" /><span>pwid · 比例字宽</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="fwid" /><span>fwid · 全角字宽</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="halt" /><span>halt · 半角标点挤压</span></label>
-                  <label class="checkbox-inline"><input type="checkbox" data-ot-tag="chws" /><span>chws · 上下文半角标点间距</span></label>
+              <div class="elem-inspector-stack" id="ot-features-grid">
+                <!-- 间距与连字 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">字距与连字 (Kerning &amp; Ligatures)</span>
+                  </div>
+                  <div class="ot-feature-matrix">
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">kern</span>
+                        <span class="ot-feature-label">字距微调</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="kern" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">liga</span>
+                        <span class="ot-feature-label">标准连字</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="liga" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">calt</span>
+                        <span class="ot-feature-label">上下文连字</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="calt" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+                  </div>
                 </div>
-                <div class="props-row" style="margin-top: 8px;">
-                  <label class="props-label" for="prop-ot-custom">自定义特性标签（逗号分隔）</label>
-                  <input id="prop-ot-custom" class="input input-mono" placeholder="kern, liga, tnum" />
+
+                <!-- 数字排印 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">数字排版 (Numerals)</span>
+                  </div>
+                  <div class="ot-feature-matrix">
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">tnum</span>
+                        <span class="ot-feature-label">等宽表格数字</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="tnum" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">pnum</span>
+                        <span class="ot-feature-label">比例宽度数字</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="pnum" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">zero</span>
+                        <span class="ot-feature-label">斜线数字零</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="zero" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 东亚与字宽特性 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">东亚排印 (East Asian Metrics)</span>
+                  </div>
+                  <div class="ot-feature-matrix">
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">halt</span>
+                        <span class="ot-feature-label">半角标点挤压</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="halt" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">chws</span>
+                        <span class="ot-feature-label">上下文标点间距</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="chws" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">fwid</span>
+                        <span class="ot-feature-label">全角字符宽度</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="fwid" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+
+                    <label class="ot-feature-cell">
+                      <div class="ot-feature-info">
+                        <span class="ot-tag-badge">pwid</span>
+                        <span class="ot-feature-label">比例字符宽度</span>
+                      </div>
+                      <input type="checkbox" data-ot-tag="pwid" class="ot-switch-input" />
+                      <span class="ot-switch-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 自定义特性标签 -->
+                <div class="elem-inspector-section">
+                  <div class="elem-inspector-header">
+                    <span class="elem-inspector-title">自定义 OpenType 特性标签</span>
+                  </div>
+                  <div class="props-row">
+                    <label class="props-label" for="prop-ot-custom">逗号分隔的 4 字符 Tag（实时与上方开关双向同步）</label>
+                    <input id="prop-ot-custom" class="input input-mono" placeholder="kern, liga, tnum" />
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Tab 4: 字符替换 -->
             <div class="elem-tab-pane hidden" id="elem-tab-merge">
-              <div class="props-group">
-                <h4 class="props-sub-title">特殊符号与字符映射</h4>
-                <div class="merge-preset-bar">
-                  <button type="button" class="btn btn-xs" id="btn-merge-preset-chs-time">填充中文时间标示（本 / 服 / 艾）</button>
-                  <button type="button" class="btn btn-xs" id="btn-merge-preset-en-time">填充英文时间标示（LT / ST / ET）</button>
-                  <button type="button" class="btn btn-quiet btn-xs" id="btn-merge-clear">清空映射</button>
+              <div class="merge-tab-layout">
+                <div class="replacements-head-bar">
+                  <div class="replacements-head-left">
+                    <span class="elem-inspector-title" style="margin: 0;">字符映射对照表</span>
+                  </div>
+                  <div class="merge-preset-bar">
+                    <button type="button" class="btn btn-xs" id="btn-merge-preset-chs-time">填入国服时间 (艾/本/服)</button>
+                    <button type="button" class="btn btn-xs" id="btn-merge-preset-en-time">填入国际服时间 (ET/LT/ST)</button>
+                    <button type="button" class="btn btn-quiet btn-xs" id="btn-merge-clear">清空全部规则</button>
+                  </div>
                 </div>
-                <div class="props-row" style="margin-top: 8px;">
-                  <label class="props-label" for="prop-replacements-json">映射规则（每行一条：源字符或 U+XXXX = 目标字符）</label>
-                  <textarea id="prop-replacements-json" class="input input-mono" rows="6" style="height: auto; padding: 8px;" placeholder="U+E0B0 = 艾&#10;U+E0B1 = 本&#10;U+E0B2 = 服"></textarea>
+
+                <!-- 可视化映射列表 -->
+                <div id="merge-replacements-list" class="replacements-table-wrap"></div>
+
+                <div class="replacements-add-row">
+                  <button type="button" id="btn-merge-add-rule" class="btn btn-xs btn-primary">+ 添加映射规则</button>
+                  <button type="button" id="btn-merge-toggle-raw" class="btn btn-quiet btn-xs">批量文本编辑</button>
+                </div>
+
+                <!-- 批量模式折叠容器 -->
+                <div id="merge-raw-container" class="merge-raw-box hidden" style="margin-top: 8px;">
+                  <label class="props-label" for="prop-replacements-json">每行一条规则：源字符/U+XXXX = 目标文本</label>
+                  <textarea id="prop-replacements-json" class="input input-mono" rows="5" style="height: auto; padding: 8px; width: 100%; resize: vertical;" placeholder="U+E0B0 = 艾&#10;U+E0B1 = 本&#10;U+E0B2 = 服"></textarea>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="elem-modal-footer">
+            <div class="elem-lever-group">
+              <button type="button" id="btn-lever-bypass" class="elem-lever-btn" title="按住临时禁用当前图层，松开恢复">
+                <span class="lever-track"><span class="lever-thumb"></span></span>
+                <span class="lever-text">按住临时禁用</span>
+              </button>
+              <button type="button" id="btn-lever-compare" class="elem-lever-btn" title="按住临时对比打开时的数值，松开恢复现有值">
+                <span class="lever-track"><span class="lever-thumb"></span></span>
+                <span class="lever-text">按住对比调整前</span>
+              </button>
+            </div>
             <div class="elem-modal-actions">
               <button type="button" id="btn-elem-modal-cancel" class="btn">取消</button>
-              <button type="button" id="btn-elem-modal-ok" class="btn btn-primary">确定</button>
+              <button type="button" id="btn-elem-modal-ok" class="btn btn-primary">保存图层</button>
             </div>
           </div>
         </div>

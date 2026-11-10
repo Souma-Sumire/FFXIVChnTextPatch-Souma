@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"sort"
@@ -17,6 +18,10 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/region"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 )
+
+// DiagPrefix 标记诊断行，前端按这个前缀把日志降级显示。
+// 改这里要同步 frontend/src/main.ts 的 DIAG_PREFIX。
+const DiagPrefix = "[诊断] "
 
 var (
 	TextFiles = []string{"0a0000.win32.dat0", "0a0000.win32.index", "0a0000.win32.index2"}
@@ -160,7 +165,8 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			// 云端未收录 或 网络失败 + 游戏已更新 = 未知版本
 			var note string
 			if cloudErr != nil && !errors.Is(cloudErr, ErrNotFound) {
-				note = fmt.Sprintf("获取云端官方原版备份失败（%v），无法验证原版完整性，继续汉化可能出错", cloudErr)
+				note = fmt.Sprintf("获取云端官方原版备份失败（%s），无法验证原版完整性，继续汉化可能出错", CleanNetError(cloudErr))
+				cfg.log(DiagPrefix+"云端原版查询原始错误：%v", cloudErr)
 				cfg.log("[警告] %s", note)
 			} else if reg == region.Global {
 				note = fmt.Sprintf("云端尚未收录当前游戏版本 (%s) 的官方原版备份，继续汉化可能出错", version)
@@ -707,4 +713,34 @@ func writeBackupMeta(backupDir string, meta *BackupMeta) error {
 		return fmt.Errorf("写入备份清单失败: %w", err)
 	}
 	return nil
+}
+
+// CleanNetError 将可确认的网络错误归纳为简短提示；其余错误保留精简后的原始摘要，避免把 HTTP 限流或解析失败误报成网络异常。
+func CleanNetError(err error) string {
+	if err == nil {
+		return ""
+	}
+	lower := strings.ToLower(err.Error())
+	var netErr net.Error
+	if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &netErr) && netErr.Timeout()) ||
+		strings.Contains(lower, "context deadline exceeded") ||
+		strings.Contains(lower, "timed out") ||
+		strings.Contains(lower, "i/o timeout") {
+		return "网络超时"
+	}
+	if strings.Contains(lower, "connection refused") {
+		return "连接被拒绝"
+	}
+	if strings.Contains(lower, "no such host") {
+		return "域名解析失败"
+	}
+	if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || strings.Contains(lower, "connection reset") {
+		return "连接中断"
+	}
+	summary := strings.Join(strings.Fields(err.Error()), " ")
+	runes := []rune(summary)
+	if len(runes) > 120 {
+		return string(runes[:120]) + "…"
+	}
+	return summary
 }
