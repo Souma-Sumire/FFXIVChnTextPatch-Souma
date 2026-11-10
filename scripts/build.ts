@@ -112,7 +112,8 @@ if (isMac) {
   }
 
   if (hasWails) {
-    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-skipfrontend", "-skipbindings", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
+    // Wails CLI v2.10.2 跳过前端构建的参数只有 -s，没有 -skipfrontend 这个长名。
+    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-s", "-skipbindings", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
     const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
     const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
     if (!fs.existsSync(appPath)) {
