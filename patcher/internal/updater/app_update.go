@@ -203,7 +203,8 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 		info.ReleaseURL = fmt.Sprintf("https://github.com/%s/releases/tag/%s", repo, latestPatcherRelease.Tag)
 	}
 
-	if assetName := pickReleaseAssetName(goruntime.GOOS, latestPatcherRelease.Assets); assetName != "" {
+	assetName := pickReleaseAssetName(goruntime.GOOS, latestPatcherRelease.Assets)
+	if assetName != "" {
 		info.DownloadURL = latestPatcherRelease.Assets[assetName].DownloadURL
 		if digest, ok := latestPatcherRelease.AssetSHA256(assetName); ok {
 			info.DownloadSHA256 = digest
@@ -226,6 +227,13 @@ func CheckAppUpdate(ctx context.Context, cloud verifier.Cloud, repo, currentVers
 		// 预览版与同号正式版比较结果相等，仍需让预览用户升级到正式版。
 		if cmp > 0 || (cmp == 0 && isPreviewTag(currentVersion)) {
 			info.HasUpdate = true
+			if info.DownloadSHA256 == "" && assetName != "" {
+				if fullRel, err := cloud.ReleaseByTag(ctx, repo, latestPatcherRelease.Tag); err == nil && fullRel != nil {
+					if digest, ok := fullRel.AssetSHA256(assetName); ok {
+						info.DownloadSHA256 = digest
+					}
+				}
+			}
 		}
 	}
 

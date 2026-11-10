@@ -322,6 +322,7 @@ interface GoApp {
   InstallAppUpdate(): Promise<void>;
   RestartApp(): Promise<void>;
   GetBootstrap(): Promise<BootstrapInfo>;
+  GetRules(): Promise<RuleMeta[]>;
   SaveConfig(config: AppConfig): Promise<void>;
   SyncBuiltinResource(): Promise<void>;
   EnsureTableDoc(): Promise<boolean>;
@@ -980,6 +981,11 @@ async function detectGameDir(silent: boolean): Promise<void> {
     await refreshGameInfo();
     if (detectedDir !== prevDir) {
       void checkClientEnvironment();
+      if (isGlobalLanguage(config.language) && !config.gameDirs?.["CHS"]) {
+        runWhenIdle(() => {
+          void detectChsGameDirForFontInBackground();
+        });
+      }
     }
   } catch (error) {
     log(`探测游戏目录失败: ${describeError(error)}`, "error");
@@ -1400,6 +1406,7 @@ async function syncBuiltinOnStart(): Promise<void> {
   if (bootstrap?.devMode) {
     try {
       await call("SyncBuiltinResource");
+      await reloadRules();
     } catch (err) {
       log(`[警告] 本地内置词条不可用: ${describeError(err)}`, "warn");
     }
@@ -1414,7 +1421,6 @@ async function ensureTableDoc(): Promise<void> {
   try {
     const updated = await call("EnsureTableDoc");
     if (updated) {
-      log("[资源] 已更新表清单 tables.json");
       await reloadCSVContext();
     }
   } catch (err) {
@@ -1485,6 +1491,19 @@ function updateWorkbenchState(): void {
   updateRulesSummary();
 }
 
+async function reloadRules(): Promise<void> {
+  if (!bootstrap) {
+    return;
+  }
+  try {
+    const rules = await call("GetRules");
+    bootstrap.rules = rules;
+    renderRules();
+  } catch (err) {
+    log(`[警告] 刷新附加规则失败: ${describeError(err)}`, "warn");
+  }
+}
+
 function renderRules(): void {
   if (!bootstrap) {
     return;
@@ -1495,7 +1514,11 @@ function renderRules(): void {
   if (unavailable.length > 0) {
     const notice = document.createElement("div");
     notice.className = "rule-notice";
-    notice.textContent = `不可用规则：${unavailable.map((rule) => rule.name).join("、")}。请同步资源后重试`;
+    if (syncingResource) {
+      notice.textContent = `规则数据同步中（${unavailable.map((rule) => rule.name).join("、")}），请稍候…`;
+    } else {
+      notice.textContent = `不可用规则：${unavailable.map((rule) => rule.name).join("、")}。请同步资源后重试`;
+    }
     el.rules.append(notice);
   }
 
@@ -1527,7 +1550,7 @@ function renderRules(): void {
     if (blocked) {
       const badge = document.createElement("span");
       badge.className = "rule-badge";
-      badge.textContent = "不可用";
+      badge.textContent = syncingResource ? "同步中" : "不可用";
       title.append(badge);
     }
 
@@ -2464,6 +2487,10 @@ function setResourceSyncing(value: boolean): void {
   if (el.btnPatchText) {
     el.btnPatchText.textContent = value ? "同步词条中…" : "开始汉化";
   }
+  const hasUnavailable = bootstrap?.rules?.some((rule) => rule.status === "unavailable");
+  if (hasUnavailable) {
+    renderRules();
+  }
 }
 
 // syncBuiltinResource 同步并校验内置资源，进度压在选择器上；
@@ -2482,6 +2509,7 @@ async function syncBuiltinResource(): Promise<void> {
     await call("SyncBuiltinResource");
     builtinSyncFailed = false;
     await reloadCSVContext();
+    await reloadRules();
   } catch (err) {
     builtinSyncFailed = true;
     log(`[警告] 内置词条同步失败: ${describeError(err)}`, "warn");
@@ -2502,13 +2530,13 @@ function partStatusClass(status: string | undefined): string {
   if (status === "original") {
     return "ok";
   }
-  if (status === "modified") {
+  if (status === "modified" || status === "unknown") {
     return "warn";
   }
   if (status === "missing") {
     return "err";
   }
-  return status === "unknown" ? "warn" : "";
+  return "";
 }
 
 // createClientStatusItem 第一行只有「客户端状态」和重测按钮，
@@ -2544,6 +2572,9 @@ function createClientStatusItem(): HTMLDivElement {
     pv.className = `diag-v ${checkingClient ? "" : partStatusClass(part?.status)}`.trim();
     pv.textContent = checkingClient ? "校验中…" : part?.label ?? "未检测";
     pair.append(pk, pv);
+    if (part?.description) {
+      setTip(pair, part.description);
+    }
     return pair;
   };
 
@@ -2554,6 +2585,9 @@ function createClientStatusItem(): HTMLDivElement {
   sub.append(makePair("文本", clientStatus?.text), sep, makePair("字体", clientStatus?.font));
 
   item.append(head, sub);
+  if (clientStatus?.description) {
+    setTip(item, clientStatus.description);
+  }
   return item;
 }
 let checkClientGeneration = 0;
@@ -2579,14 +2613,19 @@ async function checkClientEnvironment(): Promise<void> {
     let logKind: "ok" | "warn" | "error" | "info" = "info";
     if (clientStatus.status === "original") {
       logKind = "ok";
-    } else if (clientStatus.status === "modified" || clientStatus.status === "mismatch") {
+    } else if (clientStatus.status === "modified" || clientStatus.status === "mismatch" || clientStatus.status === "unknown") {
       logKind = "warn";
     } else if (clientStatus.label === "文件缺失") {
       logKind = "error";
     }
     const textLabel = clientStatus.text?.label ?? clientStatus.label;
     const fontLabel = clientStatus.font?.label ?? clientStatus.label;
-    log(`[状态] 文本：${textLabel}；字体：${fontLabel}`, logKind);
+    if (clientStatus.status === "unknown") {
+      const desc = clientStatus.description ? `（${clientStatus.description}）` : "";
+      log(`[警告] 客户端状态：文本【${textLabel}】、字体【${fontLabel}】${desc}`, "warn");
+    } else {
+      log(`[状态] 文本：${textLabel}；字体：${fontLabel}`, logKind);
+    }
   } catch (err) {
     if (gen !== checkClientGeneration || config.language !== currentLang || currentGameDir() !== currentDir) {
       return;
@@ -6003,6 +6042,7 @@ function wireEvents(): void {
       }
       await refreshGameInfo();
       await reloadCSVContext();
+      await reloadRules();
     } catch (error) {
       log(`汉化失败: ${describeError(error)}`, "error");
     } finally {
@@ -6058,9 +6098,12 @@ function wireEvents(): void {
       if (isGlobalLanguage(config.language)) {
         const status = await call("CheckClientStatus", gameDir, config.language);
         clientStatus = status;
-        if (status.font?.status !== "original") {
+        if (status.font?.status === "modified") {
           log("[字体] 字体文件已被修改，此时打开定制可能提取到错误字形。请先在主界面执行「还原原版」，再进行定制。", "error");
           return;
+        }
+        if (status.font?.status === "unknown") {
+          log("[字体] 无法验证字体文件是否为官方原版，继续编辑若字形已被修改可能有误。", "warn");
         }
       } else {
         log("[字体] 此区服无法自动检查文件是否被修改。若客户端不是官方原版，提取的字形可能有误。", "warn");

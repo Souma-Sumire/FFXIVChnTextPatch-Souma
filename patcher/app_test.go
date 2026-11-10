@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	goruntime "runtime"
@@ -16,11 +17,15 @@ import (
 )
 
 type mockCloud struct {
-	releases map[string]*verifier.Release
-	recent   []*verifier.Release
+	releases   map[string]*verifier.Release
+	recent     []*verifier.Release
+	releaseErr error
 }
 
 func (m *mockCloud) ReleaseByTag(ctx context.Context, repo, tag string) (*verifier.Release, error) {
+	if m.releaseErr != nil {
+		return nil, m.releaseErr
+	}
 	if m.releases != nil {
 		if r, ok := m.releases[tag]; ok {
 			return r, nil
@@ -956,5 +961,76 @@ func TestConstrainPresetForCompileFixesCustom(t *testing.T) {
 	}
 	if strings.Contains(out, `"sideLength":1024`) {
 		t.Fatalf("旧的 1024 应被覆盖，实际 %s", out)
+	}
+}
+
+func TestGetRulesReflectsDiskChanges(t *testing.T) {
+	app := NewApp()
+	dir := t.TempDir()
+	app.resourceDirOverride = dir
+
+	initial := app.GetRules()
+	if len(initial) != 4 {
+		t.Fatalf("初始规则数量应为 4，实际 %d", len(initial))
+	}
+	for _, meta := range initial {
+		if meta.ID == "treasure_map_alias" && meta.Status != pipeline.RuleStatusUnavailable {
+			t.Fatalf("初始缺少 rules.json 时藏宝图规则应不可用，实际 %q", meta.Status)
+		}
+	}
+
+	valid := `{"specialWord":{"古ぼけた地図G1":"陈旧的鞣革地图（G1）"},"materiaMap":{"武略":"暴击"}}`
+	if err := os.WriteFile(filepath.Join(dir, "rules.json"), []byte(valid), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	updated := app.GetRules()
+	for _, meta := range updated {
+		if meta.ID == "treasure_map_alias" && meta.Status != pipeline.RuleStatusOK {
+			t.Fatalf("写入有效 rules.json 后藏宝图规则应为 ok，实际 %q", meta.Status)
+		}
+		if meta.ID == "materia_stat_suffix" && meta.Status != pipeline.RuleStatusOK {
+			t.Fatalf("写入有效 rules.json 后魔晶石规则应为 ok，实际 %q", meta.Status)
+		}
+	}
+}
+
+func TestCheckClientStatusCloudNetworkErrorWarnsUnknown(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	verPath := filepath.Join(gameDir, "game", "ffxivgame.ver")
+	if err := os.WriteFile(verPath, []byte("2026.10.16.0000.0000"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := createMinimalIndexFile(filepath.Join(sqpackDir, "0a0000.win32.index")); err != nil {
+		t.Fatal(err)
+	}
+	if err := createMinimalIndexFile(filepath.Join(sqpackDir, "000000.win32.index")); err != nil {
+		t.Fatal(err)
+	}
+
+	app := NewApp()
+	app.skipProcessCheck = true
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.cloudOverride = &mockCloud{
+		releaseErr: errors.New("connection timed out"),
+	}
+
+	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
+	if err != nil {
+		t.Fatalf("网络失败时 CheckClientStatus 不应报错，实际 %v", err)
+	}
+	if status.Status != "unknown" {
+		t.Fatalf("网络失败时状态应为 unknown，实际 %q", status.Status)
+	}
+	if status.Label != "未知版本" {
+		t.Fatalf("网络失败时标签应为 未知版本，实际 %q", status.Label)
+	}
+	if !strings.Contains(status.Description, "获取云端原版信息失败") || !strings.Contains(status.Description, "继续汉化可能出错") {
+		t.Fatalf("网络失败时描述应包含明确警告与可能出错提示，实际 %q", status.Description)
 	}
 }
