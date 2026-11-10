@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func writeTestTables(t *testing.T, resourceDir string) {
@@ -354,8 +355,10 @@ func TestResourceUpdatedAt(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(resDir, "manifest.json"), []byte(manifest), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if got := resourceUpdatedAt(resDir); got != "2026-10-16 16:30" {
-		t.Fatalf("资源更新时间格式化不正确: %q", got)
+	// 界面按本机时区显示，CI runner 通常是 UTC，不能硬编码某一时区的时刻。
+	want := time.Date(2026, 10, 16, 8, 30, 0, 0, time.UTC).In(time.Local).Format("2006-01-02 15:04")
+	if got := resourceUpdatedAt(resDir); got != want {
+		t.Fatalf("资源更新时间格式化不正确: %q，期望 %q", got, want)
 	}
 }
 

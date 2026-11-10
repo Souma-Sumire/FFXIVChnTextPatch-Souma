@@ -773,8 +773,13 @@ func removeCSVDirectoryFiles(resourceDir, target string) error {
 	if info.Mode()&os.ModeSymlink != 0 {
 		return errors.New("目标目录是符号链接，已取消删除")
 	}
-	if resolved, resolveErr := filepath.EvalSymlinks(managed); resolveErr == nil && !sameDirPath(resolved, managed) {
-		return errors.New("目标目录指向其他位置，已取消删除")
+	// 父目录链上的链接（如 macOS 的 /var -> /private/var）会改变整条路径的解析结果，
+	// 但删除目标仍是同一个副本目录；只有最后一段解析到别处才拒绝。
+	if resolved, resolveErr := filepath.EvalSymlinks(managed); resolveErr == nil {
+		parent, parentErr := filepath.EvalSymlinks(filepath.Dir(managed))
+		if parentErr == nil && !sameDirPath(resolved, filepath.Join(parent, filepath.Base(managed))) {
+			return errors.New("目标目录指向其他位置，已取消删除")
+		}
 	}
 	return os.RemoveAll(managed)
 }
