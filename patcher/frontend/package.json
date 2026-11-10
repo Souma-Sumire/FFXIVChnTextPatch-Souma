@@ -11,5 +11,8 @@
   "devDependencies": {
     "typescript": "^5.6.3",
     "vite": "^6.0.7"
+  },
+  "dependencies": {
+    "@wailsio/runtime": "3.1.0"
   }
 }

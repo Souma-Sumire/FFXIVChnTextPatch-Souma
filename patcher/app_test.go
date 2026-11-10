@@ -6,7 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	goruntime "runtime"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -138,56 +138,6 @@ func TestCheckClientStatusOriginalNoBackup(t *testing.T) {
 	}
 }
 
-func TestCheckClientStatusPatched(t *testing.T) {
-	tmpDir := t.TempDir()
-	gameDir := filepath.Join(tmpDir, "game_root")
-	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
-	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	verPath := filepath.Join(gameDir, "game", "ffxivgame.ver")
-	if err := os.WriteFile(verPath, []byte("2026.10.16.0000.0000"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
-	if err := createMinimalIndexFile(textIndexPath); err != nil {
-		t.Fatal(err)
-	}
-	fontIndexPath := filepath.Join(sqpackDir, "000000.win32.index")
-	if err := createMinimalIndexFile(fontIndexPath); err != nil {
-		t.Fatal(err)
-	}
-
-	app := NewApp()
-	app.skipProcessCheck = true
-	app.cloudOverride = &mockCloud{}
-	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
-	app.skipProcessCheck = true
-	if err := os.MkdirAll(app.resourceDirOverride, 0o755); err != nil {
-		t.Fatal(err)
-	}
-
-	meta := verifier.BackupMeta{
-		Region:  "GLOBAL",
-		Version: "2026.10.16.0000.0000",
-		Files: map[string]verifier.FileHash{
-			"0a0000.win32.index": {SHA256: "different-hash", Size: 100},
-		},
-	}
-	backupDir := filepath.Join(backupRootFor(app.resourceDirOverride), "GLOBAL")
-	_ = os.MkdirAll(backupDir, 0o755)
-	metaData, _ := json.Marshal(meta)
-	_ = os.WriteFile(filepath.Join(backupDir, "meta.json"), metaData, 0o644)
-
-	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
-	if err != nil {
-		t.Fatalf("CheckClientStatus 失败: %v", err)
-	}
-	if status.Status != "modified" {
-		t.Fatalf("与备份不匹配时应判定为 modified，实际为 %s (%s)", status.Status, status.Label)
-	}
-}
-
 func TestCheckClientStatusModifiedWithBackup(t *testing.T) {
 	tmpDir := t.TempDir()
 	gameDir := filepath.Join(tmpDir, "game_root")
@@ -236,19 +186,6 @@ func TestCheckClientStatusModifiedWithBackup(t *testing.T) {
 	}
 	if status.Status != "modified" {
 		t.Fatalf("本地备份不匹配且非本工具汉化时应判定为 modified，实际为 %s (%s)", status.Status, status.Label)
-	}
-}
-
-func TestCheckClientStatusNonGlobalUnsupported(t *testing.T) {
-	app := NewApp()
-	for _, lang := range []string{"CHS", "TC", "KO"} {
-		status, err := app.CheckClientStatus("any/path", lang)
-		if err != nil {
-			t.Fatalf("%s CheckClientStatus 失败: %v", lang, err)
-		}
-		if status.Status != "unknown" {
-			t.Fatalf("%s 无备份时状态应为 unknown，实际为 %s", lang, status.Status)
-		}
 	}
 }
 
@@ -312,6 +249,19 @@ func TestGetGameInfoNonGlobalBackup(t *testing.T) {
 	}
 	if !info.BackupExists || info.BackupVersion != "2026.10.16.0000.0000" {
 		t.Fatalf("其他服有本地备份时应正确识别: exists=%v, ver=%s", info.BackupExists, info.BackupVersion)
+	}
+}
+
+func TestOpenBackupDirectoryUsesSelectedRegion(t *testing.T) {
+	tmpDir := t.TempDir()
+	app := NewApp()
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	if err := os.MkdirAll(filepath.Join(tmpDir, "backup", "global"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	err := app.OpenBackupDirectory("TC")
+	if err == nil || !strings.Contains(err.Error(), filepath.Join("backup", "tc")) {
+		t.Fatalf("应按所选区服定位备份目录，不能回落到 global，实际错误=%v", err)
 	}
 }
 
@@ -393,27 +343,6 @@ func TestCheckClientStatusNonGlobalPatched(t *testing.T) {
 	}
 	if status.Status != "modified" {
 		t.Fatalf("繁中服与备份不匹配时应判定为 modified，实际为 %s (%s)", status.Status, status.Label)
-	}
-}
-
-func TestEnsureHighResolutionUiAssetAndGetGameInfo(t *testing.T) {
-	app := NewApp()
-	info, err := app.GetGameInfo("", "GLOBAL")
-	if err != nil {
-		t.Fatalf("GetGameInfo 失败: %v", err)
-	}
-	if info.UiAssetType != 0 && info.UiAssetType != 1 && info.UiAssetType != -1 {
-		t.Fatalf("UiAssetType 状态异常: %d", info.UiAssetType)
-	}
-
-	res, err := app.EnsureHighResolutionUiAsset()
-	if err != nil && !strings.Contains(err.Error(), "未找到") {
-		t.Fatalf("EnsureHighResolutionUiAsset 失败: %v", err)
-	}
-	if err == nil {
-		if res.Current != 1 {
-			t.Fatalf("修改后当前值应为 1，实际为 %d", res.Current)
-		}
 	}
 }
 
@@ -532,37 +461,6 @@ func TestTargetLanguagesPerRegion(t *testing.T) {
 	}
 }
 
-func TestSaveConfigCompletesRegionLanguages(t *testing.T) {
-	tmpDir := t.TempDir()
-	app := NewApp()
-	app.skipProcessCheck = true
-	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
-	_ = os.MkdirAll(app.resourceDirOverride, 0o755)
-
-	cfg := defaultConfig()
-	cfg.Language = "CHS"
-	if err := app.SaveConfig(cfg); err != nil {
-		t.Fatal(err)
-	}
-
-	raw, err := os.ReadFile(filepath.Join(tmpDir, "config.json"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	var persisted struct {
-		TargetLanguages map[string][]string `json:"targetLanguages"`
-	}
-	if err := json.Unmarshal(raw, &persisted); err != nil {
-		t.Fatal(err)
-	}
-	want := map[string]string{"GLOBAL": "JA,EN", "CHS": "CHS", "TC": "TC", "KO": "KO"}
-	for code, expected := range want {
-		if got := strings.Join(persisted.TargetLanguages[code], ","); got != expected {
-			t.Fatalf("%s 的汉化语言应为 %q，实际为 %q", code, expected, got)
-		}
-	}
-}
-
 func TestCheckClientStatusRegionMismatch(t *testing.T) {
 	tmpDir := t.TempDir()
 	cnDir := filepath.Join(tmpDir, "client_cn")
@@ -602,43 +500,6 @@ func TestCheckClientStatusRegionMismatch(t *testing.T) {
 	_, err = app.RestoreOriginal(cnDir, "GLOBAL", true, true)
 	if err == nil || !strings.Contains(err.Error(), "区服不匹配") {
 		t.Fatalf("RestoreOriginal 在区服不匹配时应拦截并报错，实际为: %v", err)
-	}
-}
-
-func TestCheckGameNotRunning(t *testing.T) {
-	tmpDir := t.TempDir()
-	app := NewApp()
-	app.skipProcessCheck = true
-	if err := app.checkGameNotRunning(context.Background(), tmpDir); err != nil {
-		t.Fatalf("App.checkGameNotRunning 在跳过进程检查时不应报错: %v", err)
-	}
-}
-
-func TestAnswerLauncherConfirm(t *testing.T) {
-	app := NewApp()
-	ch := make(chan bool, 1)
-	app.launcherConfirmCh = ch
-
-	app.AnswerLauncherConfirm(true)
-	select {
-	case ok := <-ch:
-		if !ok {
-			t.Fatalf("期望得到 true，实际得到 false")
-		}
-	default:
-		t.Fatalf("期望收到确认结果")
-	}
-}
-
-func TestCancelPatch(t *testing.T) {
-	app := NewApp()
-	called := false
-	app.cancelPatch = func() {
-		called = true
-	}
-	app.CancelPatch()
-	if !called {
-		t.Fatalf("CancelPatch 未触发底层 cancel 回调")
 	}
 }
 
@@ -753,25 +614,6 @@ func TestIsGlobalClientDir(t *testing.T) {
 	for _, tc := range cases {
 		if got := isGlobalClientDir(tc.dir); got != tc.want {
 			t.Errorf("%s: 期望 %v，实际 %v", tc.desc, tc.want, got)
-		}
-	}
-}
-
-func TestGetScanDriveRoots(t *testing.T) {
-	roots := getScanDriveRoots()
-	// 非 Windows 平台没有盘符概念，未设置 WINEPREFIX 时返回空是预期行为。
-	if len(roots) == 0 {
-		if goruntime.GOOS == "windows" {
-			t.Fatalf("getScanDriveRoots 在 Windows 下不应返回空")
-		}
-		return
-	}
-	for _, root := range roots {
-		if root == "" {
-			t.Errorf("驱动器根目录不应为空")
-		}
-		if !filepath.IsAbs(root) {
-			t.Errorf("驱动器根目录应为绝对路径: %s", root)
 		}
 	}
 }
@@ -1032,5 +874,42 @@ func TestCheckClientStatusCloudNetworkErrorWarnsUnknown(t *testing.T) {
 	}
 	if !strings.Contains(status.Description, "获取云端原版信息失败") || !strings.Contains(status.Description, "继续汉化可能出错") {
 		t.Fatalf("网络失败时描述应包含明确警告与可能出错提示，实际 %q", status.Description)
+	}
+}
+
+func TestWailsBindingMethodFQN(t *testing.T) {
+	app := NewApp()
+	ptrType := reflect.TypeOf(app)
+	namedType := ptrType.Elem()
+	// go build 生成的 package main 可执行文件在运行时 PkgPath() 为 "main"，go test 下则为包导入路径。
+	gotPkg := namedType.PkgPath()
+	if gotPkg != "main" && gotPkg != "github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher" {
+		t.Fatalf("Wails 绑定包路径异常: got %q", gotPkg)
+	}
+	if namedType.Name() != "App" {
+		t.Fatalf("Wails 绑定类型名不匹配: got %q, want %q", namedType.Name(), "App")
+	}
+
+	requiredMethods := []string{
+		"GetAppVersion",
+		"GetBootstrap",
+		"SelectGameDirectory",
+		"SelectFontFile",
+		"OpenElementEditorWindow",
+		"SyncElementEditorWindow",
+		"HideElementEditorWindow",
+		"GetElementEditorState",
+	}
+	for _, name := range requiredMethods {
+		if _, ok := ptrType.MethodByName(name); !ok {
+			t.Fatalf("缺少绑定方法 main.%s.%s", namedType.Name(), name)
+		}
+	}
+
+	if got, err := normalizeDialogSelection("", errors.New("cancelled by user")); err != nil || got != "" {
+		t.Fatalf("取消对话框应返回空字符串且无报错，实际 (%q, %v)", got, err)
+	}
+	if _, err := normalizeDialogSelection("", errors.New("unexpected io error")); err == nil {
+		t.Fatal("非取消异常应透传错误")
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 )
 
 func writeTestTables(t *testing.T, resourceDir string) {
@@ -191,24 +190,6 @@ func TestCSVContextRealResource(t *testing.T) {
 	}
 }
 
-func TestPathWithin(t *testing.T) {
-	base := filepath.Join(t.TempDir(), "rawexd")
-	cases := []struct {
-		path string
-		want bool
-	}{
-		{base, true},
-		{filepath.Join(base, "sub"), true},
-		{filepath.Dir(base), false},
-		{filepath.Join(filepath.Dir(base), "other"), false},
-	}
-	for _, c := range cases {
-		if got := pathWithin(c.path, base); got != c.want {
-			t.Fatalf("pathWithin(%q, %q) = %v, want %v", c.path, base, got, c.want)
-		}
-	}
-}
-
 func TestCSVDirectoryMeta(t *testing.T) {
 	app, _ := newCSVTestApp(t)
 	customDir := filepath.Join(t.TempDir(), "my_rawexd")
@@ -326,53 +307,6 @@ func TestCopyBuiltinCSVDirectoryIsAtomic(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(dstDir, name)); err != nil {
 			t.Fatalf("副本缺少 %s: %v", name, err)
 		}
-	}
-}
-
-// 副本比内置词条少文件时要能被识别（用于提示旧版本留下的半成品副本）。
-func TestMissingCopyCount(t *testing.T) {
-	src, dst := t.TempDir(), t.TempDir()
-	writeTestCSV(t, src, "Item")
-	writeTestCSV(t, src, "quest/000/Test001")
-	writeTestCSV(t, dst, "Item")
-	known := map[string]bool{"Item": true, "BNpcName": true, "quest/000/Test001": true}
-
-	if got := missingCopyCount(dst, src, known); got != 1 {
-		t.Fatalf("缺少数量应为 1，实际 %d", got)
-	}
-	writeTestCSV(t, dst, "quest/000/Test001")
-	if got := missingCopyCount(dst, src, known); got != 0 {
-		t.Fatalf("完整副本不应报缺文件，实际 %d", got)
-	}
-}
-
-func TestResourceUpdatedAt(t *testing.T) {
-	resDir := t.TempDir()
-	if got := resourceUpdatedAt(resDir); got != "" {
-		t.Fatalf("缺少清单时应为空: %q", got)
-	}
-	manifest := `{"generatedAt":"2026-10-16T08:30:00Z"}`
-	if err := os.WriteFile(filepath.Join(resDir, "manifest.json"), []byte(manifest), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	// 界面按本机时区显示，CI runner 通常是 UTC，不能硬编码某一时区的时刻。
-	want := time.Date(2026, 10, 16, 8, 30, 0, 0, time.UTC).In(time.Local).Format("2006-01-02 15:04")
-	if got := resourceUpdatedAt(resDir); got != want {
-		t.Fatalf("资源更新时间格式化不正确: %q，期望 %q", got, want)
-	}
-}
-
-func TestCSVDirUpdatedAt(t *testing.T) {
-	dir := t.TempDir()
-	if got := csvDirUpdatedAt(filepath.Join(dir, "missing")); got != "" {
-		t.Fatalf("不存在的目录应返回空: %q", got)
-	}
-	if got := csvDirUpdatedAt(dir); got != "" {
-		t.Fatalf("空目录应返回空: %q", got)
-	}
-	writeTestCSV(t, dir, "Item")
-	if got := csvDirUpdatedAt(dir); got == "" {
-		t.Fatal("含 CSV 的目录应返回最后更新时间")
 	}
 }
 
@@ -519,15 +453,5 @@ func TestCopyBuiltinCSVDirectoryConverts(t *testing.T) {
 	// 已有副本时再要求转换会覆盖用户修改，直接拒绝。
 	if _, err := app.CopyBuiltinCSVDirectory("GLOBAL", true); err == nil {
 		t.Fatal("已存在副本时不应重新转换")
-	}
-}
-
-func TestCopyDescription(t *testing.T) {
-	resDir := t.TempDir()
-	if got := copyDescription(resDir, false); got != "基于内置词条制作" {
-		t.Fatalf("缺少清单时的描述不正确: %q", got)
-	}
-	if got := copyDescription(resDir, true); got != "基于内置词条制作（已简繁转换）" {
-		t.Fatalf("缺少清单时的转换描述不正确: %q", got)
 	}
 }

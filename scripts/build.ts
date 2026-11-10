@@ -13,18 +13,19 @@ const isMac = process.platform === "darwin";
 // macOS 没有 C.UTF-8 locale，沿用系统 locale；只有 Windows 需要强制子进程输出 UTF-8。
 const buildEnv = { ...process.env, ...(isWin ? { LANG: "C.UTF-8" } : {}) };
 
-function run(cmd: string, args: string[], cwd: string): void {
+function run(cmd: string, args: string[], cwd: string, extraEnv?: Record<string, string>): void {
+  const env = extraEnv ? { ...buildEnv, ...extraEnv } : buildEnv;
   if (isWin && (cmd === "pnpm" || cmd === "npm")) {
     execFileSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", cmd, ...args], {
       cwd,
       stdio: "inherit",
-      env: buildEnv,
+      env,
     });
   } else {
     execFileSync(cmd, args, {
       cwd,
       stdio: "inherit",
-      env: buildEnv,
+      env,
     });
   }
 }
@@ -75,72 +76,157 @@ function resolveAppVersion(): string {
   }
 }
 
-const appVersion = resolveAppVersion();
-const releaseBuild = process.argv.includes("--release") || process.env.PATCHER_RELEASE === "1";
-console.log(`\n构建版本: ${appVersion}（${releaseBuild ? "发布构建" : "本地开发构建"}）`);
-
-// 字体编译组件不再打进主程序：运行时按需下载到数据目录（见 ensureFontCompiler），
-// 拿不到时改用同样按需下载的预编译字体包，构建本身不依赖这个二进制。
-// development tag 让本地构建只校验工作区 resource/，不向云端同步 CSV 与字体；
-// 发布构建不带该 tag，保持「内置词条始终为云端最新」的行为。
-const goTags = releaseBuild ? "desktop,production" : "desktop,production,development";
-
-// 1. 构建前端产物
-const nodeModules = path.join(frontendDir, "node_modules");
-if (!fs.existsSync(nodeModules)) {
-  try {
-    run("pnpm", ["install", "--frozen-lockfile"], frontendDir);
-  } catch {
-    run("pnpm", ["install"], frontendDir);
+function buildFrontend(): void {
+  const nodeModules = path.join(frontendDir, "node_modules");
+  if (!fs.existsSync(nodeModules)) {
+    try {
+      run("pnpm", ["install", "--frozen-lockfile"], frontendDir);
+    } catch {
+      run("pnpm", ["install"], frontendDir);
+    }
   }
+  run("pnpm", ["run", "build"], frontendDir);
 }
-run("pnpm", ["run", "build"], frontendDir);
 
-// 2. 编译 Go 目标程序
-if (isMac) {
-  let hasWails = false;
+function buildMacOS(appVersion: string, goTags: string, releaseBuild: boolean): void {
+  const appName = "FFXIVChnTextPatch-SM-v2";
+  const binDir = path.join(patcherDir, "build", "bin");
+  const appPath = path.join(binDir, `${appName}.app`);
+  const contentsDir = path.join(appPath, "Contents");
+  const macosDir = path.join(contentsDir, "MacOS");
+  const resourcesDir = path.join(contentsDir, "Resources");
+  const tmpArchDir = path.join(binDir, ".universal-tmp");
+  const zipPath = path.join(repoRoot, `${appName}-macOS.zip`);
+
+  fs.rmSync(appPath, { recursive: true, force: true });
+  fs.rmSync(tmpArchDir, { recursive: true, force: true });
+  if (releaseBuild) {
+    fs.rmSync(zipPath, { force: true });
+  }
+  fs.mkdirSync(macosDir, { recursive: true });
+  fs.mkdirSync(resourcesDir, { recursive: true });
+  fs.mkdirSync(tmpArchDir, { recursive: true });
+
+  const ldflags = `-s -w -X main.appVersion=${appVersion}`;
+  const macCommonEnv = {
+    GOOS: "darwin",
+    CGO_ENABLED: "1",
+    CGO_CFLAGS: "-mmacosx-version-min=12.0",
+    CGO_LDFLAGS: "-mmacosx-version-min=12.0",
+    MACOSX_DEPLOYMENT_TARGET: "12.0",
+  };
+
   try {
-    execFileSync("wails", ["version"], { stdio: "ignore" });
-    hasWails = true;
-  } catch {
-    hasWails = false;
-  }
+    const universalBin = path.join(macosDir, appName);
+    if (releaseBuild) {
+      const amd64Bin = path.join(tmpArchDir, `${appName}-amd64`);
+      const arm64Bin = path.join(tmpArchDir, `${appName}-arm64`);
+      run(
+        "go",
+        ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", amd64Bin, "."],
+        patcherDir,
+        { ...macCommonEnv, GOARCH: "amd64" },
+      );
+      run(
+        "go",
+        ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", arm64Bin, "."],
+        patcherDir,
+        { ...macCommonEnv, GOARCH: "arm64" },
+      );
+      run("lipo", ["-create", "-output", universalBin, amd64Bin, arm64Bin], patcherDir);
+    } else {
+      const localArch = process.arch === "arm64" ? "arm64" : "amd64";
+      run(
+        "go",
+        ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", universalBin, "."],
+        patcherDir,
+        { ...macCommonEnv, GOARCH: localArch },
+      );
+    }
+    fs.chmodSync(universalBin, 0o755);
 
-  if (!hasWails && releaseBuild) {
-    console.error("\n构建失败: 未检测到 Wails CLI，macOS 发布构建无法产出 .app 与 zip。请先执行 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.2");
-    process.exit(1);
-  }
+    const iconSrc = path.join(frontendDir, "public", "appicon.png");
+    let hasIcns = false;
+    if (fs.existsSync(iconSrc)) {
+      const iconsetDir = path.join(tmpArchDir, "icons.iconset");
+      const icnsOut = path.join(resourcesDir, "icons.icns");
+      try {
+        fs.mkdirSync(iconsetDir, { recursive: true });
+        for (const [size, name] of [
+          [16, "icon_16x16.png"],
+          [32, "icon_16x16@2x.png"],
+          [32, "icon_32x32.png"],
+          [64, "icon_32x32@2x.png"],
+          [128, "icon_128x128.png"],
+          [256, "icon_128x128@2x.png"],
+          [256, "icon_256x256.png"],
+          [512, "icon_256x256@2x.png"],
+          [512, "icon_512x512.png"],
+          [1024, "icon_512x512@2x.png"],
+        ] as const) {
+          execFileSync("sips", ["-z", String(size), String(size), iconSrc, "--out", path.join(iconsetDir, name)], {
+            stdio: "ignore",
+          });
+        }
+        execFileSync("iconutil", ["-c", "icns", iconsetDir, "-o", icnsOut], { stdio: "ignore" });
+        hasIcns = fs.existsSync(icnsOut);
+      } catch {
+        hasIcns = false;
+      }
+    }
 
-  if (hasWails) {
-    // Wails CLI v2.10.2 跳过前端构建的参数只有 -s，没有 -skipfrontend 这个长名。
-    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-s", "-skipbindings", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
-    const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
-    const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
-    if (!fs.existsSync(appPath)) {
-      console.error(`\n构建失败: wails 构建结束但未找到 ${appPath}`);
-      process.exit(1);
+    const bundleVersion = appVersion === "dev" ? "0.0.0" : appVersion.replace(/[^0-9.].*$/, "") || "1.0.0";
+    const infoPlist = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleName</key>
+  <string>${appName}</string>
+  <key>CFBundleDisplayName</key>
+  <string>FFXIV 汉化器</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.souma.ffxivchntextpatch</string>
+  <key>CFBundleVersion</key>
+  <string>${bundleVersion}</string>
+  <key>CFBundleShortVersionString</key>
+  <string>${bundleVersion}</string>
+  <key>CFBundleExecutable</key>
+  <string>${appName}</string>
+  ${hasIcns ? "<key>CFBundleIconFile</key>\n  <string>icons.icns</string>" : ""}
+  <key>LSMinimumSystemVersion</key>
+  <string>12.0</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
+`;
+    fs.writeFileSync(path.join(contentsDir, "Info.plist"), infoPlist, "utf-8");
+
+    run("codesign", ["--force", "--deep", "--sign", "-", appPath], patcherDir);
+    if (!releaseBuild) {
+      console.log(`\n构建成功: ${appPath}`);
+      return;
     }
     run("ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", appPath, zipPath], repoRoot);
     if (!fs.existsSync(zipPath)) {
-      console.error(`\n构建失败: 打包结束但未找到 ${zipPath}`);
-      process.exit(1);
+      throw new Error(`打包结束但未找到 ${zipPath}`);
     }
     console.log(`\n构建成功: ${zipPath}`);
-  } else {
-    const outBin = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2");
-    console.warn("\n[警告] 未检测到 Wails CLI，本次只编译命令行二进制，不会生成 .app 或 macOS zip；发布构建不可使用此模式。");
-    run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
-    console.log(`\n构建成功: ${outBin}`);
+  } finally {
+    fs.rmSync(tmpArchDir, { recursive: true, force: true });
   }
-} else {
+}
+
+function buildWindows(appVersion: string, goTags: string): void {
   const outExe = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2.exe");
   if (fs.existsSync(outExe)) {
     try {
       const fd = fs.openSync(outExe, "r+");
       fs.closeSync(fd);
     } catch {
-      console.error(`\n构建失败: 目标文件 [${outExe}] 正在运行或被占用，请先退出程序后再试。`);
-      process.exit(1);
+      throw new Error(`目标文件 [${outExe}] 正在运行或被占用，请先退出程序后再试。`);
     }
   }
 
@@ -174,4 +260,31 @@ if (isMac) {
   } finally {
     restoreSyso();
   }
+}
+
+function main(): void {
+  const appVersion = resolveAppVersion();
+  const releaseBuild = process.argv.includes("--release") || process.env.PATCHER_RELEASE === "1";
+  console.log(`\n构建版本: ${appVersion}（${releaseBuild ? "发布构建" : "本地开发构建"}）`);
+
+  // 字体编译组件不再打进主程序：运行时按需下载到数据目录（见 ensureFontCompiler），
+  // 拿不到时改用同样按需下载的预编译字体包，构建本身不依赖这个二进制。
+  // development tag 让本地构建只校验工作区 resource/，不向云端同步 CSV 与字体；
+  // 发布构建不带该 tag，保持「内置词条始终为云端最新」的行为。
+  const goTags = releaseBuild ? "desktop,production" : "desktop,production,development";
+
+  buildFrontend();
+  if (isMac) {
+    buildMacOS(appVersion, goTags, releaseBuild);
+  } else {
+    buildWindows(appVersion, goTags);
+  }
+}
+
+try {
+  main();
+} catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`\n构建失败: ${message}`);
+  process.exit(1);
 }

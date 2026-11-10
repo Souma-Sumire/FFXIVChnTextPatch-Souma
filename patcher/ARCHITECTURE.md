@@ -1,6 +1,6 @@
 # 架构
 
-Wails v2，Go 加原生 TypeScript，打包成一个 `FFXIVChnTextPatch-SM-v2.exe`。
+Wails v3，Go 加原生 TypeScript，打包成一个 `FFXIVChnTextPatch-SM-v2.exe`（macOS 为 `FFXIVChnTextPatch-SM-v2-macOS.zip`）。
 
 只写代码里看不出来、改错会出事的。大部分理由已经在注释里了，这里不复述。
 
@@ -13,6 +13,7 @@ Wails v2，Go 加原生 TypeScript，打包成一个 `FFXIVChnTextPatch-SM-v2.ex
 | `frontend/`：`src/main.ts`、`index.html`、`src/style.css` | 界面、交互、字体编辑器（`runFontCommand`） |
 | `app.go` | 绑定、配置、启动探测、并发与取消、资源同步编排 |
 | `csvdirs.go` | 词条目录 |
+| `diagnostics.go` | 会话诊断快照：环境、配置、资源、客户端与备份状态 |
 | `verifier/verifier.go` | 版本与备份校验、回原版、跑改写、还原 |
 | `verifier/github.go` | Release 访问、镜像竞速 |
 | `replace/` | 追加 dat、改 index、撤销 |
