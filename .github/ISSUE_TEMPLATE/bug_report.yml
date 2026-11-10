@@ -1,0 +1,18 @@
+name: Bug 反馈
+description: 提交汉化器报错或异常
+body:
+  - type: textarea
+    id: logs
+    attributes:
+      label: 完整日志
+      description: 点击汉化器执行日志右上角的「复制」按钮粘贴于此。
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 简要说明遇到的问题或发生异常时的操作。
+    validations:
+      required: true

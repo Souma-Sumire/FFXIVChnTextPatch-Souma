@@ -1313,6 +1313,9 @@ async function bootstrapApp(): Promise<void> {
       if (ver && el.versionBadge) {
         el.versionBadge.textContent = `v${ver}`;
       }
+      if (ver) {
+        log(`[程序] 汉化器版本：v${ver}`);
+      }
     } catch {
       // 容错防御
     }
@@ -1348,6 +1351,9 @@ async function bootstrapApp(): Promise<void> {
       const ver = await call("GetAppVersion");
       if (ver && el.versionBadge) {
         el.versionBadge.textContent = `v${ver}`;
+      }
+      if (ver) {
+        log(`[程序] 汉化器版本：v${ver}`);
       }
     } catch {
       // 容错防御
