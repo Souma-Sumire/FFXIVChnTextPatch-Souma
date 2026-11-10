@@ -1841,6 +1841,8 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		cancel()
 	}()
 
+	a.emitPatchLog(fmt.Sprintf("[程序] 汉化器版本：%s", updater.DisplayAppVersion(appVersion)))
+
 	if err := a.checkGameNotRunning(patchCtx, req.GameDir); err != nil {
 		if errors.Is(err, gameproc.ErrCancelled) {
 			a.emitPatchLog("[提示] 汉化已取消：游戏启动器正在运行")
@@ -2285,6 +2287,7 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 			scope = "仅字体"
 		}
 	}
+	a.emitPatchLog(fmt.Sprintf("[程序] 汉化器版本：%s", updater.DisplayAppVersion(appVersion)))
 	a.emitPatchLog(fmt.Sprintf("[还原] 开始执行官方原版恢复流程（%s）...", scope))
 	resourceDir := a.resourceDir()
 	restored, err := verifier.Restore(patchCtx, verifier.RestoreConfig{
