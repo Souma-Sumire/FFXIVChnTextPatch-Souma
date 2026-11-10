@@ -58,7 +58,7 @@ Int32,String,String
 53,TEXT_BANIXA505_01513_DUZALMEYEAN_000_050,……让我见识一下你掌握的人类技术吧。<hex:02100103>去丧灵钟钻石工房找菲厄布瑞达谈谈，进行制作！
 54,TEXT_BANIXA505_01513_FYRBRYDA_000_060,啊，欢迎。<hex:02100103>想要使用设施吗？<hex:02100103>那请你接受一份委托。
 55,TEXT_BANIXA505_01513_FYRBRYDA_000_061,呵呵……你看起来身手不错。<hex:02100103>能接受一份稍微危险的委托吗？<hex:02100103>希望你能从帝国军那边抢来<hex:022811FF0A>EventItem<hex:F61E8A0C0103>。
-56,TEXT_BANIXA505_01513_FYRBRYDA_000_062,这是武具商罗薇娜小姐委托的。<hex:02100103>她想拿去为新商品开发作参考，<hex:02100103>但肯去帝国军据点的冒险者实在不多。
+56,TEXT_BANIXA505_01513_FYRBRYDA_000_062,这是武器商罗薇娜小姐委托的。<hex:02100103>她想拿去为新商品开发作参考，<hex:02100103>但肯去帝国军据点的冒险者实在不多。
 57,TEXT_BANIXA505_01513_FYRBRYDA_000_063,帝国中央堡周边的<hex:02280CFF05>EObj<hex:F61E95FF0103>里就可以找到<hex:022811FF0A>EventItem<hex:F61E8A0C0103>……<hex:02100103>虽然有些危险，但麻烦你了。
 58,TEXT_BANIXA505_01513_FYRBRYDA_100_062,帝国中央堡周边的<hex:02280CFF05>EObj<hex:F61E95FF0103>里就可以找到<hex:022811FF0A>EventItem<hex:F61E8A0C0103>……<hex:02100103>虽然有些危险，但麻烦你了。
 59,TEXT_BANIXA505_01513_POP_MESSAGE,察觉到了敌人的气息！

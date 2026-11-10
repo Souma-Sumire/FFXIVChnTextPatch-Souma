@@ -5,7 +5,7 @@ Int32,String,String
 0,TEXT_HEAVNZ918_01983_SEQ_00,第三传送环的研究系统安静地伫立着。
 1,TEXT_HEAVNZ918_01983_SEQ_01,研究系统向亚拉戈帝国军兵将请求协助。在阿济兹拉的贝塔管区讨伐2只<hex:02280FFF09>BNpcName<hex:F20DD40103>。
 2,TEXT_HEAVNZ918_01983_SEQ_02,成功讨伐了<hex:02280FFF09>BNpcName<hex:F20DD40103>。向第三传送环的研究系统报告。
-3,TEXT_HEAVNZ918_01983_SEQ_03,向研究系统报告完毕。<hex:02280FFF09>BNpcName<hex:F20DD40103>是一种精神极度不稳定，而且繁殖能力过强的问题合成兽。
+3,TEXT_HEAVNZ918_01983_SEQ_03,向研究系统报告完毕。<hex:02280FFF09>BNpcName<hex:F20DD40103>是一种精神极度不稳定，而且繁殖能力过强的问题合成生物。
 4,TEXT_HEAVNZ918_01983_SEQ_04,空
 5,TEXT_HEAVNZ918_01983_SEQ_05,空
 6,TEXT_HEAVNZ918_01983_SEQ_06,空
@@ -51,7 +51,7 @@ Int32,String,String
 46,TEXT_HEAVNZ918_01983_TODO_22,空
 47,TEXT_HEAVNZ918_01983_TODO_23,空
 48,TEXT_HEAVNZ918_01983_RESEARCHSYSTEM_000_000,咔……咔咔……来自重组实验室的消息。<hex:02100103>请求诸位忠诚的亚拉戈帝国军兵将的协助。
-49,TEXT_HEAVNZ918_01983_RESEARCHSYSTEM_000_001,<hex:02280FFF09>BNpcName<hex:F20DD40103>是从生体培养局逃出的试验合成兽……<hex:02100103>因其不断地繁殖，数量持续在增长。<hex:02100103>请每人消灭2只。
+49,TEXT_HEAVNZ918_01983_RESEARCHSYSTEM_000_001,<hex:02280FFF09>BNpcName<hex:F20DD40103>是从生体培养局逃出的试验合成生物……<hex:02100103>因其不断地繁殖，数量持续在增长。<hex:02100103>请每人消灭2只。
 50,TEXT_HEAVNZ918_01983_RESEARCHSYSTEM_000_010,<hex:02280FFF09>BNpcName<hex:F20DD40103>是从生体培养局逃出的试验合成兽……<hex:02100103>因其不断地繁殖，数量持续在增长。<hex:02100103>请每人消灭2只。
 51,TEXT_HEAVNZ918_01983_RESEARCHSYSTEM_000_020,咔……咔咔……确认已消灭<hex:02280FFF09>BNpcName<hex:F20DD40103>。<hex:02100103>辛苦了，今天你已经完成了定量。
 52,TEXT_HEAVNZ918_01983_RESEARCHSYSTEM_000_021,果然，用3种以上的魔物合成会导致精神上的不稳定。<hex:02100103>再加上急于量产、强化繁殖能力这一点也是问题。<hex:02100103>为开发新型品种，向实验室传送数据……
