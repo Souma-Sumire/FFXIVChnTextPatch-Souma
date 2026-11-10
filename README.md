@@ -26,6 +26,8 @@ pnpm run build
 pnpm run build:release
 ```
 
+推送 `patcher-v*` 标签触发 CI 发布。带有 `-alpha`、`-beta`、`-rc` 或 `-preview` 后缀发布为预览版，不向正式版推送更新。
+
 CSV：
 
 ```bash

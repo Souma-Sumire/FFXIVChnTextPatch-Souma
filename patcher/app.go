@@ -833,7 +833,7 @@ func (a *App) SyncBuiltinResource() error {
 
 // GetAppVersion 返回补丁器自身版本号。
 func (a *App) GetAppVersion() string {
-	return updater.CleanAppVersion(appVersion)
+	return updater.DisplayAppVersion(appVersion)
 }
 
 // GetBootstrap 返回前端启动数据。只读本地文件，不做任何联网操作。
@@ -863,7 +863,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	}
 
 	return BootstrapInfo{
-		Version:       updater.CleanAppVersion(appVersion),
+		Version:       updater.DisplayAppVersion(appVersion),
 		ResourceDir:   resourceDir,
 		ResourceReady: updater.HasLocalResource(resourceDir),
 		DevMode:       a.updater.LocalOnly,
@@ -2358,7 +2358,7 @@ func (a *App) EnsureHighResolutionUiAsset() (gamecfg.ModifyResult, error) {
 // CheckAppUpdate 查询云端获取汉化器主程序的最新版本并比对当前版本。
 // 汉化、还原进行中直接拒绝：此时替换程序或拉取元数据都会干扰正在写入客户端的任务。
 func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
-	current := updater.CleanAppVersion(appVersion)
+	current := updater.DisplayAppVersion(appVersion)
 	if a.updater.LocalOnly {
 		return updater.AppUpdateInfo{CurrentVersion: current, LatestVersion: current}, nil
 	}

@@ -48,6 +48,8 @@ type Release struct {
 	URL        string
 	Assets     map[string]ReleaseAsset
 	FileHashes map[string]string
+	// Prerelease 只有 REST API 会给出；网页端兜底列表只有 tag，调用方须同时按 tag 判定。
+	Prerelease bool
 }
 
 func (r *Release) linkZipAliases() {
@@ -316,11 +318,12 @@ type githubAsset struct {
 }
 
 type githubRelease struct {
-	TagName string        `json:"tag_name"`
-	Name    string        `json:"name"`
-	Body    string        `json:"body"`
-	HTMLURL string        `json:"html_url"`
-	Assets  []githubAsset `json:"assets"`
+	TagName    string        `json:"tag_name"`
+	Name       string        `json:"name"`
+	Body       string        `json:"body"`
+	HTMLURL    string        `json:"html_url"`
+	Assets     []githubAsset `json:"assets"`
+	Prerelease bool          `json:"prerelease"`
 }
 
 // httpResult 是单个候选地址的请求结果。
@@ -481,11 +484,12 @@ func isValidReleaseJSON(b []byte) bool {
 
 func toRelease(in githubRelease) *Release {
 	out := &Release{
-		Tag:    in.TagName,
-		Title:  in.Name,
-		Body:   in.Body,
-		URL:    in.HTMLURL,
-		Assets: make(map[string]ReleaseAsset, len(in.Assets)),
+		Tag:        in.TagName,
+		Title:      in.Name,
+		Body:       in.Body,
+		URL:        in.HTMLURL,
+		Assets:     make(map[string]ReleaseAsset, len(in.Assets)),
+		Prerelease: in.Prerelease,
 	}
 	for _, a := range in.Assets {
 		out.Assets[a.Name] = ReleaseAsset{Name: a.Name, Digest: a.Digest, DownloadURL: a.BrowserDownloadURL}
