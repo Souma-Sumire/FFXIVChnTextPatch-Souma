@@ -123,6 +123,15 @@ jobs:
         with:
           merge-multiple: true
 
+      - name: Generate hashes.json
+        run: |
+          WIN_HASH=$(sha256sum FFXIVChnTextPatch-SM-v2.exe | awk '{print $1}')
+          MAC_HASH=$(sha256sum FFXIVChnTextPatch-SM-v2-macOS.zip | awk '{print $1}')
+          jq -n \
+            --arg win "$WIN_HASH" \
+            --arg mac "$MAC_HASH" \
+            '{"FFXIVChnTextPatch-SM-v2.exe": $win, "FFXIVChnTextPatch-SM-v2-macOS.zip": $mac}' > hashes.json
+
       - name: Publish release
         uses: softprops/action-gh-release@v3
         env:
@@ -133,6 +142,7 @@ jobs:
           files: |
             FFXIVChnTextPatch-SM-v2.exe
             FFXIVChnTextPatch-SM-v2-macOS.zip
+            hashes.json
           fail_on_unmatched_files: true
           draft: false
           prerelease: ${{ steps.ver.outputs.prerelease }}

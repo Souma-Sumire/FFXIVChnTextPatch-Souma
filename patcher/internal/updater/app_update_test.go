@@ -476,3 +476,42 @@ func TestCheckAppUpdatePreviewUserUpgradesToFinal(t *testing.T) {
 		t.Error("正式版用户不应收到同版本的更新提示")
 	}
 }
+
+func TestCheckAppUpdateFetchesHashFromReleaseByTag(t *testing.T) {
+	assetName := "FFXIVChnTextPatch-SM-v2.exe"
+	if goruntime.GOOS == "darwin" {
+		assetName = "FFXIVChnTextPatch-SM-v2-macOS.zip"
+	}
+	cloud := &mockUpdateCloud{
+		releases: []*verifier.Release{
+			{
+				Tag: "patcher-v2.2.0",
+				Assets: map[string]verifier.ReleaseAsset{
+					assetName: {Name: assetName, DownloadURL: "https://example.com/app"},
+				},
+			},
+		},
+		byTag: map[string]*verifier.Release{
+			"patcher-v2.2.0": {
+				Tag: "patcher-v2.2.0",
+				Assets: map[string]verifier.ReleaseAsset{
+					assetName: {Name: assetName, DownloadURL: "https://example.com/app"},
+				},
+				FileHashes: map[string]string{
+					assetName: "deadbeef12345678deadbeef12345678deadbeef12345678deadbeef12345678",
+				},
+			},
+		},
+	}
+
+	info, err := CheckAppUpdate(context.Background(), cloud, "o/r", "2.1.0")
+	if err != nil {
+		t.Fatalf("CheckAppUpdate 失败: %v", err)
+	}
+	if !info.HasUpdate {
+		t.Fatal("应检测到更新")
+	}
+	if info.DownloadSHA256 != "deadbeef12345678deadbeef12345678deadbeef12345678deadbeef12345678" {
+		t.Fatalf("应从 ReleaseByTag 补充拉取到哈希，实际: %q", info.DownloadSHA256)
+	}
+}

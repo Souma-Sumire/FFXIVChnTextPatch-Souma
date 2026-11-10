@@ -836,6 +836,23 @@ func (a *App) GetAppVersion() string {
 	return updater.DisplayAppVersion(appVersion)
 }
 
+// GetRules 返回当前规则集合的元数据列表（供资源同步后前端刷新规则状态）。
+func (a *App) GetRules() []pipeline.RuleMeta {
+	return a.getRules(a.resourceDir())
+}
+
+func (a *App) getRules(resourceDir string) []pipeline.RuleMeta {
+	ruleList, ruleErr := loadRules(resourceDir)
+	if ruleErr != nil {
+		a.emitPatchLog(fmt.Sprintf("[警告] %v", ruleErr))
+	}
+	ruleMetas := make([]pipeline.RuleMeta, 0, len(ruleList))
+	for _, rule := range ruleList {
+		ruleMetas = append(ruleMetas, rule.Meta())
+	}
+	return ruleMetas
+}
+
 // GetBootstrap 返回前端启动数据。只读本地文件，不做任何联网操作。
 func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	resourceDir := a.resourceDir()
@@ -845,14 +862,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 	tables := a.loadTablesDoc(resourceDir)
 	csvCtx := a.csvContext(cfg, tables, normalizeRegionCode(cfg.Language))
 
-	ruleList, ruleErr := loadRules(resourceDir)
-	if ruleErr != nil {
-		a.emitPatchLog(fmt.Sprintf("[警告] %v", ruleErr))
-	}
-	ruleMetas := make([]pipeline.RuleMeta, 0, 4)
-	for _, rule := range ruleList {
-		ruleMetas = append(ruleMetas, rule.Meta())
-	}
+	ruleMetas := a.getRules(resourceDir)
 
 	var resTime, resHash string
 	if mf, err := updater.ReadLocalManifest(resourceDir); err == nil && mf != nil {
@@ -1374,17 +1384,23 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 
 	// 国际服且本地没有备份时，用云端 Release 作为比对基准
 	var cloudAsset func(string) (string, bool)
+	cloudDesc := "本地尚无该版本的原版备份"
+	if reg == region.Global {
+		cloudDesc = "云端尚未收录该版本的官方原版备份，继续汉化可能出错"
+	}
 	if reg == region.Global && !hasBackupMeta && versionErr == nil {
 		cloud := a.getCloud()
 		parentCtx := a.ctx
 		if parentCtx == nil {
 			parentCtx = context.Background()
 		}
-		ctx, cancel := context.WithTimeout(parentCtx, 4*time.Second)
+		ctx, cancel := context.WithTimeout(parentCtx, 8*time.Second)
 		r, relErr := cloud.ReleaseByTag(ctx, "Souma-Sumire/FFXIVChnTextPatch-Souma", version)
 		cancel()
 		if relErr == nil && r != nil {
 			cloudAsset = func(name string) (string, bool) { return r.AssetSHA256(name) }
+		} else if relErr != nil && !errors.Is(relErr, verifier.ErrNotFound) {
+			cloudDesc = fmt.Sprintf("获取云端原版信息失败（%v），无法验证原版完整性，继续汉化可能出错", relErr)
 		}
 	}
 
@@ -1409,13 +1425,13 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 				return ClientPartStatus{Status: "modified", Label: "已修改", Description: "与云端原版不一致"}
 			}
 		}
-		return ClientPartStatus{Status: "unknown", Label: "未知版本", Description: "云端尚未收录该版本"}
+		return ClientPartStatus{Status: "unknown", Label: "未知版本", Description: cloudDesc}
 	}
 
 	textPart := partStatus(textIndex, textHash, textErr)
 	fontPart := partStatus(fontIndex, fontHash, fontErr)
 
-	summary := ClientPartStatus{Status: "unknown", Label: "未知版本", Description: "云端尚未收录该版本的原版备份"}
+	summary := ClientPartStatus{Status: "unknown", Label: "未知版本", Description: cloudDesc}
 	switch {
 	case textPart.Status == "original" && fontPart.Status == "original":
 		summary = ClientPartStatus{Status: "original", Label: "原版", Description: version}
@@ -1457,7 +1473,7 @@ func (a *App) waitUnknownConfirm(ctx context.Context, version string) (bool, err
 	a.confirmCh = ch
 	a.confirmMu.Unlock()
 
-	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("游戏版本 %s 尚无云端原版文件，无法确认客户端是否被修改。继续将把当前客户端文件备份下来，供以后还原使用；若文件已被其他汉化修改，还原只能回到当前状态。如需还原到官方原版，请先运行官方启动器修复客户端。是否继续？", version))
+	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("无法确认游戏版本 %s 是否为官方原版（云端信息未获取或尚未收录）。\n\n继续汉化可能出错；程序将把当前客户端文件备份下来，供以后还原使用。若文件已被其他汉化修改，还原只能回到当前状态。\n\n如需还原到官方原版，请先运行官方启动器修复客户端。\n\n是否继续？", version))
 	select {
 	case ok := <-ch:
 		return ok, nil

@@ -134,10 +134,13 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	} else {
 		// 本地没有当前版本的可信备份，尝试云端
 		var release *Release
+		var cloudErr error
 		if reg == region.Global && cfg.Cloud != nil {
 			rel, relErr := cfg.Cloud.ReleaseByTag(ctx, cfg.Repo, version)
 			if relErr == nil && rel != nil && hasReleaseFiles(rel, AllFiles) {
 				release = rel
+			} else if relErr != nil {
+				cloudErr = relErr
 			}
 		}
 
@@ -154,9 +157,18 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 				return result, err
 			}
 		} else {
-			// 云端未收录 + 游戏已更新 = 未知版本
-			note := fmt.Sprintf("云端尚未收录当前游戏版本 (%s) 的官方原版备份", version)
-			cfg.log("[提示] %s", note)
+			// 云端未收录 或 网络失败 + 游戏已更新 = 未知版本
+			var note string
+			if cloudErr != nil && !errors.Is(cloudErr, ErrNotFound) {
+				note = fmt.Sprintf("获取云端官方原版备份失败（%v），无法验证原版完整性，继续汉化可能出错", cloudErr)
+				cfg.log("[警告] %s", note)
+			} else if reg == region.Global {
+				note = fmt.Sprintf("云端尚未收录当前游戏版本 (%s) 的官方原版备份，继续汉化可能出错", version)
+				cfg.log("[警告] %s", note)
+			} else {
+				note = fmt.Sprintf("本地尚无当前游戏版本 (%s) 的原版备份，继续汉化可能出错", version)
+				cfg.log("[警告] %s", note)
+			}
 			result.Plan.Notes = append(result.Plan.Notes, note)
 
 			if cfg.ConfirmUnknown == nil {

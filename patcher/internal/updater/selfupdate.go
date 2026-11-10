@@ -45,9 +45,14 @@ func PrepareAppUpdate(ctx context.Context, cloud verifier.Cloud, info *AppUpdate
 	if info == nil || info.DownloadURL == "" {
 		return "", errors.New("未找到可用的更新下载地址")
 	}
-	if info.DownloadSHA256 == "" {
-		// 没有发布方哈希时只剩「大小下限 + PE 头」这种弱校验，不足以放行就地替换主程序。
-		return "", errors.New("云端未提供更新包校验值，已停止自动更新。请到发布页手动下载")
+	if info.DownloadSHA256 == "" && info.LatestVersion != "" {
+		tag := "patcher-v" + info.LatestVersion
+		if rel, err := cloud.ReleaseByTag(ctx, "Souma-Sumire/FFXIVChnTextPatch-Souma", tag); err == nil && rel != nil {
+			assetName := pickReleaseAssetName(goruntime.GOOS, rel.Assets)
+			if digest, ok := rel.AssetSHA256(assetName); ok {
+				info.DownloadSHA256 = digest
+			}
+		}
 	}
 	if target == "" {
 		return "", errors.New("无法定位当前程序所在路径")
