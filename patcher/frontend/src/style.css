@@ -1660,7 +1660,17 @@ body.is-resizing-log * {
 .action-bar-left {
   display: flex;
   align-items: center;
+  gap: 8px;
   flex-shrink: 0;
+}
+
+.action-reason {
+  max-width: 220px;
+  overflow: hidden;
+  font-size: var(--fs-meta);
+  color: var(--warn);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .action-bar-center {
@@ -3212,9 +3222,67 @@ body.row-resizing * {
    两行都交给行尾的开关去占住右边缘。 */
 
 
+/* 编译进度条贴在这一行下方，不占布局位置，避免按钮出现时把整行顶高。 */
+.font-preset-control {
+  position: relative;
+}
+
+.font-build-progress {
+  position: absolute;
+  left: 80px;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.font-build-bar {
+  width: 0%;
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.2s var(--ease);
+}
+
 .font-preset-control.disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* 按钮灰掉时把原因摆在同一块面板里，光靠 title 要悬停才看得见。
+   分隔线交给提示条自己带，提示条隐藏时面板底边才不会多出一条线。 */
+.form-section > .content-font-row {
+  border-bottom: none;
+}
+
+.font-alert-row {
+  min-height: 0;
+  padding-top: 10px;
+  padding-bottom: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.inline-alert {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-left: calc(var(--row-label-w) + 16px);
+  padding: 7px 10px;
+  font-size: var(--fs-label);
+  line-height: 1.5;
+  color: var(--warn);
+  background-color: var(--warn-soft);
+  border: 1px solid rgba(208, 154, 72, 0.28);
+  border-radius: var(--radius-sm);
+}
+
+.inline-alert svg {
+  margin-top: 2px;
+}
+
+.inline-alert span {
+  white-space: pre-line;
 }
 
 /* 字体方案的变灰由父级 .font-preset-control.disabled 统一处理，这里不再叠一层。 */
@@ -3560,4 +3628,22 @@ body.row-resizing * {
 
 .preset-manager-actions .btn-done {
   min-width: 54px;
+}
+
+/* 统一悬浮反馈层：替代浏览器原生 title，浮层自身不参与命中测试。 */
+.app-tooltip {
+  position: fixed;
+  z-index: 3000;
+  max-width: 320px;
+  padding: 6px 9px;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--text-2);
+  background-color: var(--bg-control);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  pointer-events: none;
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	goruntime "runtime"
+	"strings"
 	"testing"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
@@ -34,8 +35,9 @@ func TestCheckFontSourcePackageNeedsNoCompiler(t *testing.T) {
 	}
 }
 
-// 自定义方案来源：数据根目录里已有编译组件时直接可用，不再下载。
-func TestCheckFontSourceCompileUsesInstalledCompiler(t *testing.T) {
+// 自定义方案来源：装好编译组件只是前提，方案本身没编译过时仍要拦住，
+// 否则用户会一路跑到字体那一步才发现。
+func TestCheckFontSourceCompileRequiresBuild(t *testing.T) {
 	if goruntime.GOOS != "windows" {
 		t.Skip("现场编译只在 Windows 上可用")
 	}
@@ -51,8 +53,12 @@ func TestCheckFontSourceCompileUsesInstalledCompiler(t *testing.T) {
 
 	app := NewApp()
 	app.resourceDirOverride = resDir
-	if err := app.checkFontSource(context.Background(), resDir, t.TempDir()); err != nil {
-		t.Fatalf("已有编译组件时不应失败: %v", err)
+	err := app.checkFontSource(context.Background(), resDir, t.TempDir())
+	if err == nil {
+		t.Fatal("方案尚未编译时不应放行")
+	}
+	if !strings.Contains(err.Error(), "尚未编译") {
+		t.Fatalf("组件可用时应卡在未编译，而不是组件问题: %v", err)
 	}
 }
 

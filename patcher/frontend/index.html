@@ -111,7 +111,23 @@
 
               <div class="font-preset-inline font-preset-control">
                 <span id="font-preset-summary" class="scope-value hidden">思源黑体（高清中文字体）</span>
+                <button type="button" id="btn-compile-font" class="btn scope-action">编译</button>
                 <button type="button" id="btn-open-font-editor" class="btn scope-action">编辑方案</button>
+                <div id="font-build-progress" class="font-build-progress hidden" aria-hidden="true">
+                  <div id="font-build-bar" class="font-build-bar"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="font-editor-alert" class="form-row font-alert-row hidden" role="alert">
+              <div class="inline-alert">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span id="font-editor-alert-text"></span>
               </div>
             </div>
           </section>
@@ -123,7 +139,7 @@
           <div class="log-head">
             <div class="log-head-left">
               <span class="log-title">执行日志</span>
-              <button id="version-badge" class="app-version app-version-btn" type="button" title="检查更新">v--</button>
+              <button id="version-badge" class="app-version app-version-btn" type="button" data-tip="检查更新">v--</button>
               <button id="btn-app-update" class="btn-app-update hidden" type="button">
                 <span class="update-dot" aria-hidden="true"></span>
                 <span>新版本</span>
@@ -158,6 +174,7 @@
             </svg>
             <span>还原原版</span>
           </button>
+          <span id="restore-reason" class="action-reason hidden"></span>
         </div>
 
         <div class="action-bar-center">
@@ -347,7 +364,7 @@
                 <span class="fc-menu-label">导出原始字库文件 (fdt / tex)…</span>
               </button>
               <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry has-check" data-menu="export-toggle-16bit" title="默认开启。将贴图体积减半以节省显存；关闭则生成 32 位贴图">
+              <button type="button" class="fc-menu-entry has-check" data-menu="export-toggle-16bit" data-tip="默认开启，贴图体积减半、节省显存；关闭后将生成 32 位贴图，体积翻倍">
                 <span class="fc-menu-check" id="fc-check-16bit" aria-hidden="true"></span>
                 <span class="fc-menu-label">16 位贴图压缩</span>
               </button>
@@ -365,7 +382,7 @@
 
         <!-- 顶栏右侧：仅保留区服状态芯片 -->
         <div class="fc-menubar-right">
-          <span id="font-region-warning" class="fc-warn-chip hidden" title="当前区服无法自动校验客户端文件，请确认客户端为官方原版后再定制字体">需使用原版客户端</span>
+          <span id="font-region-warning" class="fc-warn-chip hidden" data-tip="此区服无法自动检查客户端状态，定制前请确认客户端为官方原版">需使用原版客户端</span>
           <span id="font-region-badge" class="hidden" aria-hidden="true"></span>
         </div>
       </header>

@@ -47,7 +47,7 @@ func PrepareAppUpdate(ctx context.Context, cloud verifier.Cloud, info *AppUpdate
 	}
 	if info.DownloadSHA256 == "" {
 		// 没有发布方哈希时只剩「大小下限 + PE 头」这种弱校验，不足以放行就地替换主程序。
-		return "", errors.New("云端未提供更新包的校验哈希，已中止自动更新以避免替换未经校验的程序；请前往发布页面手动下载")
+		return "", errors.New("云端未提供更新包校验值，已停止自动更新。请到发布页手动下载")
 	}
 	if target == "" {
 		return "", errors.New("无法定位当前程序所在路径")
@@ -58,7 +58,7 @@ func PrepareAppUpdate(ctx context.Context, cloud verifier.Cloud, info *AppUpdate
 
 	dir := filepath.Dir(target)
 	if err := ensureWritableDir(dir); err != nil {
-		return "", fmt.Errorf("程序所在目录不可写，无法自动更新。请将程序移到可写目录后重试，或手动下载最新版本（%w）", err)
+		return "", fmt.Errorf("程序所在目录不可写，无法自动更新。请将程序移至可写目录后重试，或手动下载最新版（%w）", err)
 	}
 
 	tmp, err := os.CreateTemp(dir, appUpdateTempPattern)

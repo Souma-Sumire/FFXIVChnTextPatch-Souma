@@ -86,6 +86,7 @@ jobs:
         with:
           name: FFXIVChnTextPatch-SM-v2-macos
           path: FFXIVChnTextPatch-SM-v2-macOS.zip
+          if-no-files-found: error
           retention-days: 7
 
   release:
@@ -118,6 +119,7 @@ jobs:
           files: |
             FFXIVChnTextPatch-SM-v2.exe
             FFXIVChnTextPatch-SM-v2-macOS.zip
+          fail_on_unmatched_files: true
           draft: false
           prerelease: false
           make_latest: true

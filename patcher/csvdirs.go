@@ -452,10 +452,10 @@ func (a *App) resolveCSVDir(resourceDir, regionKey string) (string, bool, error)
 	doc := a.loadTablesDoc(resourceDir)
 	known := knownTableKeys(doc)
 	if len(known) == 0 {
-		return "", true, errors.New("本地缺少表清单（tables.json），无法识别自定义词条目录；请先联网同步一次资源")
+		return "", true, errors.New("缺少表清单 tables.json，无法识别自定义词条目录，请先联网同步资源")
 	}
 	if !csvDirHasTables(conf.Selected, known) {
-		return "", true, fmt.Errorf("自定义词条目录不可用：%s（目录不存在或没有可识别的词条 CSV），请重新选择或删除后重试", conf.Selected)
+		return "", true, fmt.Errorf("自定义词条目录不可用：%s（目录不存在或其中没有 CSV），请重新选择或删除后重试", conf.Selected)
 	}
 	return conf.Selected, true, nil
 }
@@ -555,7 +555,12 @@ func openInFileManager(dir string) error {
 	default:
 		cmd = exec.Command("xdg-open", dir)
 	}
-	return cmd.Start()
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	// open / explorer / xdg-open 都是短命进程，不回收会一直留到主程序退出。
+	go func() { _ = cmd.Wait() }()
+	return nil
 }
 
 // customCSVDirName 是自动生成的自定义词条目录名，位于 resource 目录内。
@@ -606,7 +611,7 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 		}
 		a.emitPatchLog("[词条] 已存在内置词条副本，直接使用其中的 CSV（不会覆盖你的修改）")
 		if missing := missingCopyCount(dstDir, srcDir, knownTableKeys(doc)); missing > 0 {
-			a.emitPatchLog(fmt.Sprintf("[词条] 副本比内置词条少 %d 份 CSV（多为上次复制被中断所致），这些表会回退为原文；需要完整副本请先删除现有副本再重新制作", missing))
+			a.emitPatchLog(fmt.Sprintf("[词条] 副本比内置词条少 %d 份 CSV（上次复制可能被打断），缺失的表将使用原文。如需完整副本，请删除现有副本后重新制作", missing))
 		}
 	} else {
 		transform := func(data []byte) ([]byte, error) { return data, nil }

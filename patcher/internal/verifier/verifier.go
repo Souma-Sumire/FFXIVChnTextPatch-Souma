@@ -170,7 +170,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 				result.Cancelled = true
 				return result, nil
 			}
-			cfg.log("[提示] 用户已确认在未知版本状态下继续汉化，正在从当前客户端提取文件建立还原基线备份...")
+			cfg.log("[提示] 版本未知，已按确认继续。正在备份当前客户端文件，供以后还原使用...")
 			createdMeta, backupErr := createLocalBackupFromGameDir(ctx, cfg, sqpackDir, backupDir, version, string(reg))
 			if backupErr != nil {
 				return result, fmt.Errorf("建立本地原版备份失败: %w", backupErr)

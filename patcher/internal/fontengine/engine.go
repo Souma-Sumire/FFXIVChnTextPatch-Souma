@@ -381,6 +381,8 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 		return err
 	}
 
+	// 贴图边长由调用方决定：内置方案的边长是设计好的（主集 4096、大厅 2048），
+	// 不能在这里一刀切，需要固定边长的只有用户自己带来的方案。
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return fmt.Errorf("创建字体输出目录失败: %w", err)
 	}

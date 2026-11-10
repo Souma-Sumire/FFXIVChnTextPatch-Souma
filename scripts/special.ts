@@ -2,7 +2,9 @@ import { ktgSpecialFile } from "./ktg.ts";
 
 export type LanguageSource = "ja" | "cn";
 
-export const specialFile: Record<string, Record<string, Record<string, string>>> = {
+type SpecialFileMap = Record<string, Record<string, Record<string, string>>>;
+
+export const specialFile: SpecialFileMap = {
   "KTGTypeWordTextData.csv": ktgSpecialFile,
   "SpecialShop.csv": {
     "0": {
@@ -480,6 +482,18 @@ export const specialFile: Record<string, Record<string, Record<string, string>>>
       "473": "",
       "474": "",
       "475": ""
+    }
+  }
+};
+
+// 国服 CSV 对应单元格为空时才生效，国服实装后自动采用官方译文。
+export const specialFileFallback: SpecialFileMap = {
+  "MainCommand.csv": {
+    "5": {
+      "99": "设置分享"
+    },
+    "6": {
+      "99": "将热键栏与各种设置数据临时上传至服务器保存，可分享给其他角色使用。"
     }
   }
 };

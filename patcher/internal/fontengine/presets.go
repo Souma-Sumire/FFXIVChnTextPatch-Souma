@@ -391,19 +391,19 @@ func ValidatePresetForRegion(presetJson string, r region.Region) error {
 	switch r {
 	case region.China:
 		if !hasChnAxis && !exportChn {
-			return fmt.Errorf("该字体方案既没有 ChnAXIS 字体面，也没有启用 ChnAXIS 导出映射，不能用于国服客户端")
+			return fmt.Errorf("方案中缺少 ChnAXIS 字体，且未启用对应导出映射，国服客户端无法使用")
 		}
 	case region.Korea:
 		if !hasKrnAxis && !exportKrn {
-			return fmt.Errorf("该字体方案既没有 KrnAXIS 字体面，也没有启用 KrnAXIS 导出映射，不能用于韩服客户端")
+			return fmt.Errorf("方案中缺少 KrnAXIS 字体，且未启用对应导出映射，韩服客户端无法使用")
 		}
 	case region.Taiwan:
 		if !hasTcAxis && !exportTc {
-			return fmt.Errorf("该字体方案既没有 tcaxis 字体面，也没有启用 tcaxis 导出映射，不能用于繁中服客户端")
+			return fmt.Errorf("方案中缺少 tcaxis 字体，且未启用对应导出映射，繁中服客户端无法使用")
 		}
 	default:
 		if !hasGlobalAxis {
-			return fmt.Errorf("该字体方案没有 AXIS 字体面，不能用于国际服客户端")
+			return fmt.Errorf("方案中缺少 AXIS 字体，国际服客户端无法使用")
 		}
 	}
 	return nil

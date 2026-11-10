@@ -137,6 +137,8 @@ function traverseAndCopyFiles(currentDir: string, stack = 0): void {
     } else if (stat.isFile() && (file.includes("_ja") || file.includes("_en") || file.includes("_ko") || file.includes("_tc"))) {
       const rawName = file.replace(/^([^_]+).*?_.+$/, "$1");
       const relativePath = path.relative(sourceDir, filePath);
+      // Penumbra 清单里的游戏内部路径用反斜杠，macOS 的 path.relative 给的是正斜杠。
+      const gamePath = `exd\\${relativePath.replace(/\//g, "\\")}`;
       const targetPath = path.join(targetDir, relativePath);
       const targetDirPath = path.dirname(targetPath);
       const stackIsZero = stack === 0;
@@ -145,7 +147,7 @@ function traverseAndCopyFiles(currentDir: string, stack = 0): void {
         return;
       }
 
-      const name = stackIsZero ? rawName : (relativePath.match(/^[^\\]+/)?.[0] ?? "");
+      const name = stackIsZero ? rawName : (relativePath.split(/[\\/]/)[0] ?? "");
       const cn = stackIsZero ? csvNamesObj[name] : folderName[name as keyof typeof folderName];
       if (!cn) {
         console.error(`找不到 ${name} 的中文名，请检查 names.ts 文件`);
@@ -169,7 +171,7 @@ function traverseAndCopyFiles(currentDir: string, stack = 0): void {
           };
           group.Options.push(opt);
         }
-        opt.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = `exd\\${relativePath}`;
+        opt.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = gamePath;
       } else if (!stackIsZero) {
         const key = `汉化${folderName[name as keyof typeof folderName]}（${name}）文件夹`;
         let opt = FolderOptionsGroup.Options.find((v) => v.Name === key);
@@ -184,9 +186,9 @@ function traverseAndCopyFiles(currentDir: string, stack = 0): void {
           };
           FolderOptionsGroup.Options.push(opt);
         }
-        opt.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = `exd\\${relativePath}`;
+        opt.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = gamePath;
       } else {
-        jsonDefaultMod.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = `exd\\${relativePath}`;
+        jsonDefaultMod.Files[`exd/${relativePath.replace(/\\/g, "/")}`] = gamePath;
       }
 
       fs.mkdirSync(targetDirPath, { recursive: true });

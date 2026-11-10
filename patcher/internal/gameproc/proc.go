@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	goruntime "runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -72,6 +73,60 @@ func ClassifyProcess(name string) (ProcessType, bool) {
 		return TypeThirdPartyLauncher, true
 	}
 	return TypeUnknown, false
+}
+
+// classifyCommandLine 在完整命令行里找已知的游戏与启动器进程名。
+// Wine/CrossOver 把 Windows exe 当参数传给加载器，ps 的 comm 只显示 wine，
+// 而 Windows 路径分隔符在 Unix 下不参与 filepath.Base，需要先归一化。
+func classifyCommandLine(command string) (string, ProcessType, bool) {
+	var fallbackName string
+	var fallbackType ProcessType
+	for _, token := range strings.FieldsFunc(command, func(r rune) bool {
+		return r == ' ' || r == '\t' || r == '\r' || r == '\n' || r == '"' || r == '\''
+	}) {
+		if strings.Contains(token, "=") {
+			continue
+		}
+		name := filepath.Base(strings.ReplaceAll(token, "\\", "/"))
+		pType, ok := ClassifyProcess(name)
+		if !ok {
+			continue
+		}
+		// 一条命令行里可能同时出现 boot 与游戏本体，游戏本体必须先判定，
+		// 否则会被当成启动器进入「强制结束」流程。
+		if pType == TypeGame {
+			return name, pType, true
+		}
+		if fallbackName == "" {
+			fallbackName, fallbackType = name, pType
+		}
+	}
+	if fallbackName != "" {
+		return fallbackName, fallbackType, true
+	}
+	return "", TypeUnknown, false
+}
+
+// parseProcessLine 从 "PID 其余内容" 形式的 ps 输出里取出 PID 与剩余文本。
+// PID 列通常右对齐带前导空格，comm / command 又可能含空格，所以按首段切分而不是按列宽。
+func parseProcessLine(line string) (uint32, string, bool) {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return 0, "", false
+	}
+	fields := strings.Fields(line)
+	if len(fields) < 2 {
+		return 0, "", false
+	}
+	pid64, err := strconv.ParseUint(fields[0], 10, 32)
+	if err != nil {
+		return 0, "", false
+	}
+	detail := strings.TrimSpace(line[len(fields[0]):])
+	if detail == "" {
+		return 0, "", false
+	}
+	return uint32(pid64), detail, true
 }
 
 func isPathUnder(childPath, parentDir string) bool {

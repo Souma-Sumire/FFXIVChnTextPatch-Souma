@@ -8,11 +8,16 @@ import {
   resolveRsv,
   shoutingReplace,
   specialFile,
+  specialFileFallback,
   specialRow,
   specialWord,
 } from "./special.ts";
 
-const DATAMINING_ROOT = "D:/Github/ffxiv-datamining-hexcode-mixed";
+// Windows 沿用原有解包目录；其他平台没有盘符，默认取仓库同级目录，也可用环境变量指定。
+const DATAMINING_ROOT = process.env.DATAMINING_ROOT ??
+  (process.platform === "win32"
+    ? "D:/Github/ffxiv-datamining-hexcode-mixed"
+    : path.resolve(import.meta.dirname, "../../ffxiv-datamining-hexcode-mixed"));
 const CSV_PATHS = {
   cn: path.join(DATAMINING_ROOT, "chs"),
   ja: path.join(DATAMINING_ROOT, "ja"),
@@ -187,7 +192,11 @@ function resolveCellValue(params: {
     }
   }
 
-  if (!cn || NO_TRANSLATION_REG.test(cn)) {
+  if (!cn) {
+    return specialFileFallback[fileName]?.[col]?.[rowKey] ?? "";
+  }
+
+  if (NO_TRANSLATION_REG.test(cn)) {
     return "";
   }
 
@@ -527,6 +536,10 @@ function walkFolder(relDir: string): void {
 }
 
 function detectNewCsvTables(): void {
+  if (!fs.existsSync(CSV_PATHS.cn)) {
+    console.warn(`[提示] 未找到解包数据源 ${CSV_PATHS.cn}，跳过新表检测；可用 DATAMINING_ROOT 指定路径。`);
+    return;
+  }
   const knownFiles = new Set(Object.keys(csvName).map((name) => `${name}.csv`));
   const chsFiles = fs
     .readdirSync(CSV_PATHS.cn)

@@ -10,18 +10,21 @@ const frontendDir = path.join(patcherDir, "frontend");
 const isWin = process.platform === "win32";
 const isMac = process.platform === "darwin";
 
+// macOS 没有 C.UTF-8 locale，沿用系统 locale；只有 Windows 需要强制子进程输出 UTF-8。
+const buildEnv = { ...process.env, ...(isWin ? { LANG: "C.UTF-8" } : {}) };
+
 function run(cmd: string, args: string[], cwd: string): void {
   if (isWin && (cmd === "pnpm" || cmd === "npm")) {
     execFileSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", cmd, ...args], {
       cwd,
       stdio: "inherit",
-      env: { ...process.env, LANG: "C.UTF-8" },
+      env: buildEnv,
     });
   } else {
     execFileSync(cmd, args, {
       cwd,
       stdio: "inherit",
-      env: { ...process.env, LANG: "C.UTF-8" },
+      env: buildEnv,
     });
   }
 }
@@ -103,16 +106,28 @@ if (isMac) {
     hasWails = false;
   }
 
+  if (!hasWails && releaseBuild) {
+    console.error("\n构建失败: 未检测到 Wails CLI，macOS 发布构建无法产出 .app 与 zip。请先执行 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.2");
+    process.exit(1);
+  }
+
   if (hasWails) {
-    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-skipfrontend", "-skipbindings", "-s", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
+    run("wails", ["build", "-platform", "darwin/universal", "-tags", goTags, "-skipfrontend", "-skipbindings", "-trimpath", "-ldflags", `-X main.appVersion=${appVersion}`], patcherDir);
     const appPath = path.join(patcherDir, "build", "bin", "FFXIVChnTextPatch-SM-v2.app");
     const zipPath = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2-macOS.zip");
-    if (fs.existsSync(appPath)) {
-      run("ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", appPath, zipPath], repoRoot);
-      console.log(`\n构建成功: ${zipPath}`);
+    if (!fs.existsSync(appPath)) {
+      console.error(`\n构建失败: wails 构建结束但未找到 ${appPath}`);
+      process.exit(1);
     }
+    run("ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", appPath, zipPath], repoRoot);
+    if (!fs.existsSync(zipPath)) {
+      console.error(`\n构建失败: 打包结束但未找到 ${zipPath}`);
+      process.exit(1);
+    }
+    console.log(`\n构建成功: ${zipPath}`);
   } else {
     const outBin = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2");
+    console.warn("\n[警告] 未检测到 Wails CLI，本次只编译命令行二进制，不会生成 .app 或 macOS zip；发布构建不可使用此模式。");
     run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", `-s -w -X main.appVersion=${appVersion}`, "-o", outBin, "."], patcherDir);
     console.log(`\n构建成功: ${outBin}`);
   }

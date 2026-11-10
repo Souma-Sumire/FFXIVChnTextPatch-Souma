@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -353,6 +352,37 @@ func executableDir() string {
 	return filepath.Dir(exe)
 }
 
+// inAppBundle 判断程序是否从 macOS 的 .app 包内启动。
+func inAppBundle(dir string) bool {
+	return goruntime.GOOS == "darwin" && isAppBundlePath(dir)
+}
+
+// isAppBundlePath 单独抽出路径判断，便于在没有 Mac 的环境验证。
+func isAppBundlePath(dir string) bool {
+	parts := strings.Split(filepath.ToSlash(filepath.Clean(dir)), "/")
+	for i := 0; i+2 < len(parts); i++ {
+		if strings.HasSuffix(parts[i], ".app") && parts[i+1] == "Contents" && parts[i+2] == "MacOS" {
+			return true
+		}
+	}
+	return false
+}
+
+// userDataResourceDir 返回 macOS 发布包专用的数据目录。
+// 从 Finder 启动时工作目录是 /，往 .app 包里写资源会破坏签名，
+// 覆盖式升级还会把配置、自定义词条和还原基线一起删掉。
+func userDataResourceDir() string {
+	base, err := os.UserConfigDir()
+	if err != nil || base == "" {
+		return ""
+	}
+	dir := filepath.Join(base, "FFXIVChnTextPatch", "resource")
+	if os.MkdirAll(dir, 0o755) == nil && isWritableDir(dir) {
+		return dir
+	}
+	return ""
+}
+
 var (
 	resourceDirOnce sync.Once
 	resourceDirPath string
@@ -371,6 +401,12 @@ func isWritableDir(dir string) bool {
 
 func resolveResourceDir() string {
 	resourceDirOnce.Do(func() {
+		if inAppBundle(executableDir()) {
+			if dir := userDataResourceDir(); dir != "" {
+				resourceDirPath = dir
+				return
+			}
+		}
 		existing := []string{
 			"resource",
 			filepath.Join("..", "resource"),
@@ -405,13 +441,18 @@ func resolveResourceDir() string {
 func dataRootFor(resourceDir string) string {
 	parent := filepath.Dir(resourceDir)
 	if goruntime.GOOS == "darwin" {
-		if cache, err := os.UserCacheDir(); err == nil && strings.HasPrefix(parent, cache) {
+		if cache, err := os.UserCacheDir(); err == nil && withinDir(parent, cache) {
 			if configDir, err := os.UserConfigDir(); err == nil {
 				return filepath.Join(configDir, "FFXIVChnTextPatch")
 			}
 		}
 	}
 	return parent
+}
+
+// withinDir 按目录边界判断 child 是否位于 parent 之内。
+func withinDir(child, parent string) bool {
+	return child == parent || strings.HasPrefix(child, parent+string(os.PathSeparator))
 }
 
 func backupRootFor(resourceDir string) string {
@@ -684,7 +725,7 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 	} else if status.Updated {
 		a.emitPatchLog("[资源] 已修复内置资源并完成哈希校验")
 	} else if a.updater.LocalOnly {
-		a.emitPatchLog("[资源] 本地开发构建：直接使用 resource/ 中的词条，已跳过云端同步")
+		a.emitPatchLog("[资源] 开发构建：直接使用 resource/ 中的词条，跳过云端同步")
 	} else {
 		a.emitPatchLog("[资源] 内置资源已是最新，哈希校验通过")
 	}
@@ -1299,7 +1340,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		return ClientStatusResult{
 			Status:      "mismatch",
 			Label:       "区服不匹配",
-			Description: fmt.Sprintf("当前目录检测为【%s】客户端，与所选目标区服【%s】不一致，请切换区服或重新选择目录", region.DisplayName(actualReg), region.DisplayName(reg)),
+			Description: fmt.Sprintf("目录为【%s】客户端，与所选区服【%s】不匹配，请切换区服或重新选择目录", region.DisplayName(actualReg), region.DisplayName(reg)),
 		}, nil
 	}
 
@@ -1416,7 +1457,7 @@ func (a *App) waitUnknownConfirm(ctx context.Context, version string) (bool, err
 	a.confirmCh = ch
 	a.confirmMu.Unlock()
 
-	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("当前游戏版本（%s）在云端尚未收录原版备份，无法保证当前客户端文件是官方原版。继续后会以当前客户端文件作为还原基线备份；如果它此前已被其他汉化补丁改过，还原时也只能回到现在的状态。建议先用官方启动器修复客户端，再继续汉化。是否仍要继续？", version))
+	runtime.EventsEmit(a.ctx, "unknown-confirm", fmt.Sprintf("游戏版本 %s 尚无云端原版文件，无法确认客户端是否被修改。继续将把当前客户端文件备份下来，供以后还原使用；若文件已被其他汉化修改，还原只能回到当前状态。如需还原到官方原版，请先运行官方启动器修复客户端。是否继续？", version))
 	select {
 	case ok := <-ch:
 		return ok, nil
@@ -1574,7 +1615,7 @@ func revertWrites(undos []*replace.Undo) (int, error) {
 // 组件单独发布在 fontchanger-cli 分支，不随主程序打包。
 func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error {
 	if goruntime.GOOS != "windows" {
-		return errors.New("字体编译组件仅支持 Windows 平台，当前操作系统暂不支持现场编译与预览")
+		return errors.New("字体编译组件仅支持 Windows，当前系统无法编译和预览")
 	}
 	// 组件和它自己读写的 config.json 必须留在独立目录：CLI 会写同目录的 config.json，
 	// 与主程序配置同目录时会互相覆盖。因此优先使用隔离目录，并把旧的同目录组件迁进来；
@@ -1686,11 +1727,15 @@ func (a *App) checkFontSource(ctx context.Context, resourceDir, gameDir string) 
 		return nil
 	}
 	if goruntime.GOOS != "windows" {
-		return errors.New("「自定义方案」需要 Windows 版字体编译组件，当前平台无法现场编译字体；请把字体来源改为「内置字体包」")
+		return errors.New("自定义方案需在 Windows 上编译字体，当前系统不支持，请改用「内置字体包」")
 	}
 	a.syncFontEngineDirs(ctx, resourceDir, gameDir)
 	if err := a.ensureFontCompiler(ctx, resourceDir); err != nil {
-		return fmt.Errorf("字体来源是「自定义方案」，但字体编译组件不可用：%w；可改用「内置字体包」", err)
+		return fmt.Errorf("字体来源为「自定义方案」，但编译组件不可用：%w。请改用「内置字体包」", err)
+	}
+	// 「编译」时已产出并校验贴图，这里再次确认，避免方案变更后直接开始汉化。
+	if _, err := a.requireFontBuild(resourceDir); err != nil {
+		return err
 	}
 	return nil
 }
@@ -1731,33 +1776,20 @@ func localFontPackage(resourceDir string) (string, bool) {
 // maxFontTextureSize 读字体目录里每个 .tex 的宽高，返回最大边长。
 // 1024 与原版字体一致，不需要游戏开启高分辨率贴图；更大的才需要。
 func maxFontTextureSize(dir string) int {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return 0
+	_, side := fontTextureStats(dir)
+	return side
+}
+
+// constrainPresetForCompile 只固定用户方案的贴图边长。
+//
+// 内置方案的边长是设计好的：主集 4096、大厅 2048。大厅用 2048 是上游 FFXIV-FontChanger
+// 验证过的规格，跟着改会凭空多出一组没验证过的配置；用户自带方案则来源不可控，
+// 1024/2048 装不下中文字形，只会在替换阶段失败。
+func constrainPresetForCompile(presetID, configJson string) (string, int, error) {
+	if _, builtin := fontengine.BuiltinPresetMap[presetID]; builtin {
+		return configJson, 0, nil
 	}
-	maxSide := 0
-	for _, entry := range entries {
-		if entry.IsDir() || !strings.HasSuffix(strings.ToLower(entry.Name()), ".tex") {
-			continue
-		}
-		f, err := os.Open(filepath.Join(dir, entry.Name()))
-		if err != nil {
-			continue
-		}
-		var head [16]byte
-		_, err = io.ReadFull(f, head[:])
-		_ = f.Close()
-		if err != nil {
-			continue
-		}
-		if w := int(binary.LittleEndian.Uint16(head[8:])); w > maxSide {
-			maxSide = w
-		}
-		if h := int(binary.LittleEndian.Uint16(head[10:])); h > maxSide {
-			maxSide = h
-		}
-	}
-	return maxSide
+	return fontengine.ConstrainSideLength(configJson)
 }
 
 // StartPatch 执行完整的校验与汉化流程。
@@ -1804,7 +1836,7 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 
 	targetReg := region.Of(lang)
 	if actualReg, err := verifier.DetectClientRegion(req.GameDir); err == nil && actualReg != "" && actualReg != targetReg {
-		return resp, fmt.Errorf("客户端区服不匹配：当前目录检测为【%s】客户端，与目标区服【%s】不一致；已中止汉化以防止损坏客户端数据，请切换区服或重新选择目录",
+		return resp, fmt.Errorf("区服不匹配：目录为【%s】客户端，目标区服为【%s】，已停止汉化。请切换区服或重新选择目录",
 			region.DisplayName(actualReg), region.DisplayName(targetReg))
 	}
 
@@ -2014,27 +2046,10 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 	}
 	cfg.ApplyFont = func(ctx context.Context) error {
 		a.emitPatchLog("[字体] 开始处理字体...")
-		targetReg := region.Of(lang)
-		presetID := a.getActiveFontPreset(regionKey)
-		configJson, err := fontengine.GetPresetContent(presetID, presetsDirFor(resourceDir))
+		presetID, configJson, _, err := a.resolveFontPresetContent(resourceDir, regionKey, region.Of(lang))
 		if err != nil {
-			defaultID := defaultPresetForRegionWithDirs(targetReg, a.loadConfig(resourceDir).GameDirs)
-			a.emitPatchLog(fmt.Sprintf("[字体] 方案 %s 不可用（%v），改用默认方案 %s", presetID, err, defaultID))
-			configJson, err = fontengine.GetPresetContent(defaultID, "")
-			if err != nil {
-				return fmt.Errorf("读取字体配置失败: %w", err)
-			}
+			return err
 		}
-
-		if err := fontengine.ValidatePresetForRegion(configJson, targetReg); err != nil {
-			return fmt.Errorf("字体配置与当前客户端区服不匹配: %w", err)
-		}
-
-		tempFontDir, err := os.MkdirTemp("", "patched-font-*")
-		if err != nil {
-			return fmt.Errorf("创建字体临时目录失败: %w", err)
-		}
-		defer os.RemoveAll(tempFontDir)
 
 		a.syncFontEngineDirs(ctx, resourceDir, req.GameDir)
 		fontDir := ""
@@ -2042,22 +2057,16 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 		// 不会自动换成另一种来源，否则用户无法判断最终生效的到底是哪一套字体。
 		if a.fontSourceMode(resourceDir) == "compile" {
 			if goruntime.GOOS != "windows" {
-				return errors.New("「自定义方案」需要 Windows 版字体编译组件，当前平台无法现场编译字体；请把字体来源改为「内置字体包」")
+				return errors.New("自定义方案需在 Windows 上编译字体，当前系统不支持，请改用「内置字体包」")
 			}
-			if err := a.ensureFontCompiler(ctx, resourceDir); err != nil {
-				return fmt.Errorf("字体编译组件不可用：%w", err)
+			// 贴图在「编译」时已产出并校验，这里只确认它与当前方案一致。
+			// 不一致时停止，让用户重新编译；不在汉化流程中临时补编，避免中途才发现问题。
+			info := a.fontBuildInfoFor(resourceDir, presetID, configJson, a.fontTexture16Bit(resourceDir))
+			if !info.Ready {
+				return fmt.Errorf("字体方案尚未编译完成：%s。请回到工作台，在字体来源处执行「编译」，通过后再开始汉化", info.Reason)
 			}
-			use16Bit := a.fontTexture16Bit(resourceDir)
-			a.emitPatchLog("[字体] 正在用 FFXIV-FontChanger 编译编辑器里的方案...")
-			if err := a.fontEngine.CompileRaw(ctx, configJson, tempFontDir, use16Bit, func(pct int, msg string) {
-				a.emitProgress("font", msg, int64(pct), 100)
-			}); err != nil {
-				return fmt.Errorf("字体编译失败：%w", err)
-			}
-			if !hasFontTexture(tempFontDir) {
-				return errors.New("字体编译没有产出字体贴图（.tex），已中止")
-			}
-			fontDir = tempFontDir
+			a.emitPatchLog(fmt.Sprintf("[字体] 使用已编译的方案（%d 张贴图，边长 %dpx）", info.TexCount, info.SideLength))
+			fontDir = fontBuildDir(resourceDir)
 		} else {
 			// 内置字体包：本地已有 resource/font 就直接用，不联网、不覆盖。
 			if dir, ok := localFontPackage(resourceDir); ok {
@@ -2089,8 +2098,13 @@ func (a *App) StartPatch(req PatchRequest) (PatchResponse, error) {
 			}
 		}
 
-		a.emitPatchLog("[字体] 正在写入客户端数据包...")
 		fontIndexPath := filepath.Join(sqpackDir, "000000.win32.index")
+		a.emitPatchLog("[字体] 正在校验贴图数量...")
+		if err := replace.CheckFontFiles(fontIndexPath, fontDir); err != nil {
+			return err
+		}
+
+		a.emitPatchLog("[字体] 正在写入客户端数据包...")
 		undo, undoErr := replace.NewUndo(fontIndexPath)
 		if undoErr != nil {
 			return undoErr
@@ -2243,7 +2257,7 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 
 	targetReg := region.Of(lang)
 	if actualReg, err := verifier.DetectClientRegion(gameDir); err == nil && actualReg != "" && actualReg != targetReg {
-		return resp, fmt.Errorf("客户端区服不匹配：当前目录检测为【%s】客户端，但尝试以【%s】进行还原；已中止操作以防止覆盖错误的原文件",
+		return resp, fmt.Errorf("区服不匹配：目录为【%s】客户端，目标区服为【%s】，已停止还原",
 			region.DisplayName(actualReg), region.DisplayName(targetReg))
 	}
 
@@ -2429,6 +2443,11 @@ func (a *App) InstallAppUpdate() error {
 // RestartApp 启动已安装的新版本并退出当前进程。
 // 更新完成后由用户确认再调用，避免程序在用户没准备好的时候直接关闭。
 func (a *App) RestartApp() error {
+	// macOS 发布包是 .app，直接拉起包内二进制会绕过 LaunchServices，
+	// 自更新本来就走手动下载，这里挡住误调用。
+	if !updater.SelfUpdateSupported() {
+		return updater.ErrSelfUpdateUnsupported
+	}
 	if a.isBusy() {
 		return errors.New("有任务正在进行，无法重启")
 	}
@@ -2649,7 +2668,7 @@ func (a *App) RenameFontPreset(language string, presetId string, newName string)
 }
 
 // SelectFontPreset 记录该区服选中的方案。只接受当前区服可用的方案，
-// 免得配置里留下一个后来会因为区服不匹配而编译失败的 id。
+// 避免配置中留下会因区服不匹配而编译失败的 id。
 func (a *App) SelectFontPreset(language string, presetId string) error {
 	resourceDir := a.resourceDir()
 	a.cfgMu.Lock()
@@ -2748,7 +2767,11 @@ func (a *App) ExportFontTTMP(configJson string, savePath string) error {
 	if err := a.ensureFontCompiler(ctx, a.resourceDir()); err != nil {
 		return fmt.Errorf("导出 TTMP 需要字体编译组件：%w", err)
 	}
-	return a.fontEngine.CompileTTMP(ctx, configJson, savePath, nil)
+	constrained, _, err := fontengine.ConstrainSideLength(configJson)
+	if err != nil {
+		return err
+	}
+	return a.fontEngine.CompileTTMP(ctx, constrained, savePath, nil)
 }
 
 func (a *App) fontTexture16Bit(resourceDir string) bool {
@@ -2783,7 +2806,11 @@ func (a *App) ExportFontRaw(configJson string, outDir string) error {
 		return fmt.Errorf("导出原始文件需要字体编译组件：%w", err)
 	}
 	use16Bit := a.fontTexture16Bit(a.resourceDir())
-	return a.fontEngine.CompileRaw(ctx, configJson, outDir, use16Bit, nil)
+	constrained, _, err := fontengine.ConstrainSideLength(configJson)
+	if err != nil {
+		return err
+	}
+	return a.fontEngine.CompileRaw(ctx, constrained, outDir, use16Bit, nil)
 }
 
 // SelectRawExportDir 弹出原生目录选择框供用户指定原始文件导出目录
