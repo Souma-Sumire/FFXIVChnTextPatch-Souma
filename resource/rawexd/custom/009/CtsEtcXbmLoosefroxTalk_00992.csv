@@ -22,7 +22,7 @@ Int32,String,String
 17,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_000_010,关于“咒具纲”
 18,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_000_011,关于“妖异纲”
 19,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_000_012,关于“妖灵纲”
-20,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_000_013,关于“合成兽”
+20,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_000_013,关于“合成生物”
 21,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_100_013,关于原种和亚种
 22,TEXT_CTSETCXBMLOOSEFROXTALK_00992_A2_000_014,返回
 23,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_010,“百兽纲”主要指那些依靠自己的四肢在地面活动的魔兽，<hex:02100103>胎生也是其重要特征之一哥布。
@@ -54,13 +54,13 @@ Int32,String,String
 49,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_062,虽说通过魔法“契约”可以驱使它们做事……<hex:02100103>但这种交易有很大的风险，是那些厉害魔法师的独门绝技哥布。<hex:02100103>我们驯兽师一般不会找它们做搭档哥布。
 50,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_065,“妖灵纲”分类下的生物更接近以太本身哥布。<hex:02100103>其中有汇集了特定属性的元精，<hex:02100103>也有形态更复杂的阿帕斯及阿那罗之类的生物。
 51,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_066,除此之外，水晶生命体以及部分魔法师抽取以太创造的使魔<hex:02100103>也在此分类下哥布。
-52,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_070,“合成兽”，其外观看上去由多种生物的特征融合而成哥布。<hex:02100103>以前人们曾认为合成兽天生便是那副模样的，但最近的研究表明，<hex:02100103>它们其实是古代亚拉戈帝国制造的人造生物哥布！
-53,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_071,在古亚拉戈帝国末期，发展到极致的魔科学<hex:02100103>逐渐从军用领域过渡到民用领域，亚拉戈开发制造了各种合成兽，<hex:02100103>来满足各种需要……都是些很残酷的事哥布。
-54,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_072,但做这些事的并不只有那个帝国哥布。<hex:02100103>听说我的同胞……一个哥布林族科学家组织就利用同胞的身体，<hex:02100103>制作了合成兽……真是太糟糕了哥布。
+52,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_070,“合成生物”，其外观看上去由多种生物的特征融合而成哥布。<hex:02100103>以前人们曾认为合成生物天生便是那副模样的，但最近的研究表明，<hex:02100103>它们其实是古代亚拉戈帝国制造的人造生物哥布！
+53,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_071,在古亚拉戈帝国末期，发展到极致的魔科学<hex:02100103>逐渐从军用领域过渡到民用领域，亚拉戈开发制造了各种合成生物，<hex:02100103>来满足各种需要……都是些很残酷的事哥布。
+54,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_072,但做这些事的并不只有那个帝国哥布。<hex:02100103>听说我的同胞……一个哥布林族科学家组织就利用同胞的身体，<hex:02100103>制作了合成生物……真是太糟糕了哥布。
 55,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_080,在博物学中，<hex:02100103>人们一般将同一物种中最广泛的类型称为“原种”哥布。
 56,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_081,在魔兽图鉴中，<hex:02100103>一般也以原种的名称来为该物种的分类命名。
 57,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_082,与之相对的，与原种为同一物种，<hex:02100103>但体色或其他特征略有不同的近亲则被称为“亚种”哥布。
-58,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_083,也有些驯兽师太过喜爱自己的搭档，<hex:02100103>专门用幻影术将搭档的外观该为更有特点的亚种模样哥布。<hex:02100103>不过唯有感情深，这种幻影术才能生效，有自信的话请务必试试！
+58,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_083,也有些驯兽师太过喜爱自己的搭档，<hex:02100103>专门用幻影术将搭档的外观改为更有特点的亚种模样哥布。<hex:02100103>不过唯有感情深，这种幻影术才能生效，有自信的话请务必试试！
 59,TEXT_CTSETCXBMLOOSEFROXTALK_00992_SYSTEM_000_084,无论捕获的魔兽是原种还是亚种，<hex:02100103>结下契约后，都可以以原种的外观召唤。
 60,TEXT_CTSETCXBMLOOSEFROXTALK_00992_SYSTEM_000_085,在斗兽奇弈将魔兽的兽级提升到25级后，<hex:02100103>可以将魔兽的外观设置为亚种的外观，请务必一试！<hex:02100103>另外，改变外观需要在魔兽图鉴内进行。
 61,TEXT_CTSETCXBMLOOSEFROXTALK_00992_LOOSEFROX_000_100,驱使魔兽的想法自古以来就在世界各地遍地开花，<hex:02100103>所以无法追溯一个特定的源头哥布。
