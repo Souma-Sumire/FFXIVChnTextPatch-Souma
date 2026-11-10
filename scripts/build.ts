@@ -143,7 +143,35 @@ if (isMac) {
       process.exit(1);
     }
   }
-  const ldflags = `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
-  run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
-  console.log(`\n构建成功: ${outExe}`);
+
+  const normalSyso = path.join(patcherDir, "icon_windows_amd64.syso");
+  const elevatedSyso = path.join(patcherDir, "icon_elevated.syso.bin");
+  const backupSyso = path.join(patcherDir, "icon_windows_amd64.syso.bak");
+  let restored = false;
+
+  const restoreSyso = () => {
+    if (restored) return;
+    restored = true;
+    if (fs.existsSync(backupSyso)) {
+      try {
+        fs.copyFileSync(backupSyso, normalSyso);
+        fs.unlinkSync(backupSyso);
+      } catch (err) {
+        console.warn(`[警告] 恢复默认 syso 失败: ${err}`);
+      }
+    }
+  };
+
+  if (fs.existsSync(elevatedSyso) && fs.existsSync(normalSyso)) {
+    fs.copyFileSync(normalSyso, backupSyso);
+    fs.copyFileSync(elevatedSyso, normalSyso);
+  }
+
+  try {
+    const ldflags = `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
+    run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
+    console.log(`\n构建成功: ${outExe}`);
+  } finally {
+    restoreSyso();
+  }
 }
