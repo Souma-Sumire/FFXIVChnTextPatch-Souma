@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func prepareStampTree(t *testing.T) (string, *Manifest) {
@@ -66,6 +67,8 @@ func TestVerifyStampDetectsChanges(t *testing.T) {
 	if err := os.WriteFile(target, []byte("key,0\n1,BBBB\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
+	future := time.Now().Add(2 * time.Second)
+	_ = os.Chtimes(target, future, future)
 	if stamp.matches(res, remote) {
 		t.Fatal("CSV 大小相同但内容变化后不应匹配")
 	}
