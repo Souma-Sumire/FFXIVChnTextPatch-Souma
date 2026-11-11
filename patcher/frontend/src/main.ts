@@ -751,7 +751,7 @@ function parseLogKind(message: string, explicitKind?: LogLevel): LogLevel {
   if (message.includes("警告") || message.includes("注意") || message.includes("跳过")) {
     return "warn";
   }
-  if (message.includes("成功") || message.includes("已是最新") || message.includes("已还原") || message.includes("已更新") || message.includes("[完成]")) {
+  if (message.includes("成功") || message.includes("已是最新") || message.includes("已还原") || message.includes("已更新") || message.includes("编译完成") || message.includes("已就绪") || message.includes("[完成]")) {
     return "ok";
   }
   return "info";
@@ -1235,10 +1235,7 @@ async function detectGameDir(silent: boolean): Promise<void> {
     }
     const detectedDir = list[0]!;
     setGameDir(detectedDir);
-    log(`${DIAG_PREFIX}探测到游戏目录：${detectedDir}`, "diag");
-    if (!silent) {
-      log(`[探测] 已定位游戏目录：${detectedDir}`);
-    }
+    log(`[探测] 已定位游戏目录：${detectedDir}`);
     await refreshGameInfo();
     if (detectedDir !== prevDir) {
       void checkClientEnvironment();
@@ -1682,6 +1679,9 @@ async function bootstrapApp(): Promise<void> {
 
     if (currentGameDir()) {
       await refreshGameInfo();
+      if (gameInfo?.valid) {
+        log(`[环境] 已加载${getRegionShortName(getCurrentFontRegion())}客户端（v${gameInfo.version || "未知"}）`);
+      }
       void checkClientEnvironment();
       if (isGlobalLanguage(config.language) && !config.gameDirs?.["CHS"]) {
         runWhenIdle(() => {
@@ -2974,8 +2974,17 @@ async function checkClientEnvironment(): Promise<void> {
     }
     clientStatus = status;
     const summary = formatClientStatusSummary(status);
+    const changed = summary !== lastClientCheckLog;
     lastClientCheckLog = summary;
-    log(`${DIAG_PREFIX}客户端校验：${summary}`, "diag");
+    if (changed) {
+      const kind: LogLevel =
+        status.status === "original" ? "ok" : status.status === "mismatch" ? "warn" : "info";
+      const parts: string[] = [];
+      if (status.text?.label) parts.push(`文本：${status.text.label}`);
+      if (status.font?.label) parts.push(`字体：${status.font.label}`);
+      const detail = parts.length > 0 ? `（${parts.join("，")}）` : "";
+      log(`[校验] 客户端状态：${status.label}${detail}`, kind);
+    }
   } catch (err) {
     if (gen !== checkClientGeneration || config.language !== currentLang || currentGameDir() !== currentDir) {
       return;
@@ -6806,12 +6815,9 @@ function wireEvents(): void {
     el.fontBuildBar.style.width = "0%";
     el.btnPatch.disabled = true;
     updateFontUiAssetState();
-    log("[字体] 开始编译…");
     try {
       fontBuild = await call("CompileFontPreset");
-      if (fontBuild.ready) {
-        log(`[字体] 编译完成：${fontBuild.texCount} 张贴图，${fontBuild.sideLength}px`, "ok");
-      } else {
+      if (!fontBuild.ready) {
         log(`[字体] 编译未通过：${fontBuild.reason}`, "warn");
       }
     } catch (err) {

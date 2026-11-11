@@ -835,13 +835,20 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 		if len(updates) == 0 {
 			updates = append(updates, "规则")
 		}
-		a.emitPatchLog(fmt.Sprintf("[资源] 已更新%s", strings.Join(updates, "、")))
+		a.emitPatchLog(fmt.Sprintf("[资源] 已更新%s（%d 个文件）", strings.Join(updates, "、"), status.DownloadedFiles))
 	} else if status.Updated {
 		a.emitDiag("资源同步：已校验补齐本地资源 | csv=%s", shortHash(status.CSVHash))
+		a.emitPatchLog("[资源] 已校验并补齐本地内置词条")
 	} else if a.updater.LocalOnly {
 		a.emitDiag("资源同步：使用工作区本地资源")
+		a.emitPatchLog("[资源] 已加载本地内置词条")
 	} else {
 		a.emitDiag("资源同步：已是最新 (csv=%s, 清单=%s)", shortHash(status.CSVHash), status.GeneratedAt)
+		if ts := formatResourceTime(status.GeneratedAt); ts != "" {
+			a.emitPatchLog(fmt.Sprintf("[资源] 内置词条已是最新（%s）", ts))
+		} else {
+			a.emitPatchLog("[资源] 内置词条已是最新")
+		}
 	}
 	a.builtinSynced.Store(true)
 	return nil
@@ -909,6 +916,7 @@ func (a *App) EnsureTableDoc() (bool, error) {
 	}
 	if updated {
 		a.emitDiag("已更新表清单 tables.json")
+		a.emitPatchLog("[资源] 已更新表清单")
 	}
 	return updated, nil
 }
@@ -1842,7 +1850,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 		}
 	}()
 
-	a.emitDiag("下载字体编译组件")
+	a.emitPatchLog("[字体] 正在下载字体编译组件...")
 	var lastErr error
 	for _, url := range updater.FontCompilerURLs() {
 		if ctx.Err() != nil {
@@ -1870,7 +1878,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 		}
 		ready = true
 		a.fontEngine.SetBinPath(path)
-		a.emitDiag("字体编译组件已就绪")
+		a.emitPatchLog("[字体] 字体编译组件已就绪")
 		return nil
 	}
 	if lastErr == nil {
@@ -2192,8 +2200,13 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		}
 	}
 	ruleStates := make([]string, 0, len(registry.List()))
+	var enabledRuleNames []string
 	for _, meta := range registry.List() {
-		ruleStates = append(ruleStates, fmt.Sprintf("%s=%t", meta.ID, registry.Enabled(meta.ID)))
+		enabled := registry.Enabled(meta.ID)
+		ruleStates = append(ruleStates, fmt.Sprintf("%s=%t", meta.ID, enabled))
+		if enabled && meta.Name != "" {
+			enabledRuleNames = append(enabledRuleNames, meta.Name)
+		}
 	}
 
 	// 目标语言：非国际服固定为该区服唯一语言；国际服使用用户勾选列表，
@@ -2216,6 +2229,25 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 
 	if req.ReplaceText && len(req.SelectedTables) == 0 {
 		return resp, errors.New("未选择任何需要汉化的文本数据表")
+	}
+
+	switch {
+	case req.ReplaceText && req.ReplaceFont:
+		ruleNote := ""
+		if len(enabledRuleNames) > 0 {
+			ruleNote = fmt.Sprintf("，规则：%s", strings.Join(enabledRuleNames, "、"))
+		}
+		a.emitPatchLog(fmt.Sprintf("[配置] 区服：%s，目标语言：%s，数据表：%d 张%s",
+			region.DisplayName(targetReg), strings.Join(targetLangs, "/"), len(req.SelectedTables), ruleNote))
+	case req.ReplaceText:
+		ruleNote := ""
+		if len(enabledRuleNames) > 0 {
+			ruleNote = fmt.Sprintf("，规则：%s", strings.Join(enabledRuleNames, "、"))
+		}
+		a.emitPatchLog(fmt.Sprintf("[配置] 区服：%s，仅文本，目标语言：%s，数据表：%d 张%s",
+			region.DisplayName(targetReg), strings.Join(targetLangs, "/"), len(req.SelectedTables), ruleNote))
+	default:
+		a.emitPatchLog(fmt.Sprintf("[配置] 区服：%s，仅替换字体", region.DisplayName(targetReg)))
 	}
 
 	include := map[string]bool{}
@@ -2250,6 +2282,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		}
 		textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
 		a.emitDiag("文本写入：索引=%s｜包含表=%d", textIndexPath, len(include))
+		a.emitPatchLog(fmt.Sprintf("[文本] 正在写入 %d 张数据表（%s）...", len(include), strings.Join(targetLangs, "/")))
 		undo, undoErr := replace.NewUndo(textIndexPath)
 		if undoErr != nil {
 			return undoErr
@@ -2316,6 +2349,11 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		a.emitDiag("字体：方案=%s(%s) | 来源=%s | 16位=%t | 目录=%s | %d张/%dpx | 游戏配置=%s",
 			presetID, shortHash(hashText(configJson)), a.fontSourceMode(resourceDir), a.fontTexture16Bit(resourceDir),
 			fontDir, fontCount, fontSide, cfgFileDesc)
+		fontSourceLabel := "内置字体包"
+		if a.fontSourceMode(resourceDir) == "compile" {
+			fontSourceLabel = "自定义编译字体"
+		}
+		a.emitPatchLog(fmt.Sprintf("[字体] 使用%s（方案：%s，%d 张贴图，%dpx）", fontSourceLabel, presetID, fontCount, fontSide))
 
 		// 4096 的字体贴图需要游戏开启「高分辨率 UI 贴图」（FFXIV-FontChanger 的
 		// Wiki 也是这么要求的），否则大厅/界面会闪退。1024 的原版规格不需要。
@@ -2410,7 +2448,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		return resp, err
 	}
 	if !result.Cancelled {
-		a.emitPatchLog("[完成] 汉化完成")
+		a.emitPatchLog(fmt.Sprintf("[完成] 汉化完成（耗时 %s）", time.Since(started).Round(100*time.Millisecond)))
 	}
 	resp.Plan = result.Plan
 	resp.Cancelled = result.Cancelled
@@ -2560,7 +2598,7 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 	if len(restored) == 0 {
 		a.emitPatchLog("[完成] 已是原版，无需还原")
 	} else {
-		a.emitPatchLog("[完成] 已还原为原版")
+		a.emitPatchLog(fmt.Sprintf("[完成] 已还原 %d 个原版文件（耗时 %s）", len(restored), time.Since(started).Round(100*time.Millisecond)))
 	}
 	return resp, nil
 }
