@@ -120,7 +120,7 @@ const (
 	probeTimeout = 8 * time.Second
 	// apiStageTimeout 限定 API 阶段的耗时：API 不通时要尽快回退到网页端解析，
 	// 不能把调用方（如启动时的静默检查）的整个预算耗在 API 上。
-	apiStageTimeout = 6 * time.Second
+	apiStageTimeout = 4 * time.Second
 	// apiBodyLimit 是 API 响应体上限；网页端页面体积更小，单独限制。
 	apiBodyLimit  = 8 << 20
 	htmlBodyLimit = 4 << 20
@@ -155,8 +155,16 @@ type GitHubClient struct {
 	// directFast 表示实测过直连下载速度可接受，用于决定是否还需要提供镜像入口。
 	directFast bool
 	// nodeHook 在每次尝试下载节点前回调，用于让界面显示当前正在使用哪个镜像。
-	nodeHook func(node string)
-	mu       sync.RWMutex
+	nodeHook        func(node string)
+	apiStageTimeout time.Duration
+	mu              sync.RWMutex
+}
+
+func (c *GitHubClient) apiTimeout() time.Duration {
+	if c.apiStageTimeout > 0 {
+		return c.apiStageTimeout
+	}
+	return apiStageTimeout
 }
 
 // NewGitHubClient 创建默认 GitHub API 客户端。
@@ -370,7 +378,7 @@ func fetchBody(ctx context.Context, client *http.Client, u string, headers map[s
 // raceGet 并发请求直连地址与全部镜像候选，返回首个通过 accept 的响应体及其来源。
 // 之所以并发而不是依次重试：直连被阻断时通常要等到超时才会失败，
 // 串行重试会把整个预算耗在第一个不可达的地址上。
-// 全部失败时只有直连明确返回 404 才认定资源不存在——镜像对不支持的路径同样回 404。
+// 直连明确返回 404 时立即认定资源不存在（镜像对不支持的路径同样回 404），不等待慢镜像超时。
 func raceGet(ctx context.Context, client *http.Client, direct string, mirrors []string, headers map[string]string, maxBytes int64, accept func([]byte) bool) ([]byte, string, error) {
 	urls := append([]string{direct}, mirrors...)
 	raceCtx, cancel := context.WithCancel(ctx)
@@ -393,7 +401,6 @@ func raceGet(ctx context.Context, client *http.Client, direct string, mirrors []
 	}
 
 	var lastErr error
-	notFound := false
 	for range urls {
 		select {
 		case <-ctx.Done():
@@ -404,7 +411,8 @@ func raceGet(ctx context.Context, client *http.Client, direct string, mirrors []
 				return r.body, r.url, nil
 			}
 			if r.url == direct && r.status == http.StatusNotFound {
-				notFound = true
+				cancel()
+				return nil, "", ErrNotFound
 			}
 			if r.err != nil {
 				lastErr = r.err
@@ -412,9 +420,6 @@ func raceGet(ctx context.Context, client *http.Client, direct string, mirrors []
 				lastErr = fmt.Errorf("%s 返回内容无法识别", r.url)
 			}
 		}
-	}
-	if notFound {
-		return nil, "", ErrNotFound
 	}
 	if lastErr == nil {
 		lastErr = errors.New("没有可用的下载节点")
@@ -527,7 +532,15 @@ func (c *GitHubClient) fetchReleaseInternal(ctx context.Context, repo, tag strin
 	customAPI := c.APIBase != "" && c.APIBase != defaultAPIBase
 
 	var raw githubRelease
-	apiErr := c.getJSON(ctx, path, &raw)
+	var apiErr error
+	if customAPI {
+		apiErr = c.getJSON(ctx, path, &raw)
+	} else {
+		// 给 API 阶段单独限时，避免挂起的第三方镜像把外层 ctx 耗干，导致无法降级网页端。
+		apiCtx, cancelAPI := context.WithTimeout(ctx, c.apiTimeout())
+		apiErr = c.getJSON(apiCtx, path, &raw)
+		cancelAPI()
+	}
 	if apiErr == nil {
 		return toRelease(raw), nil
 	}
@@ -627,7 +640,7 @@ func (c *GitHubClient) RecentReleases(ctx context.Context, repo string, limit in
 
 	// API 阶段单独限时：直连与镜像都不通时要尽快回退到网页端解析，
 	// 否则调用方（启动时的静默检查）会把整个预算耗在 API 上。
-	apiCtx, cancelAPI := context.WithTimeout(ctx, apiStageTimeout)
+	apiCtx, cancelAPI := context.WithTimeout(ctx, c.apiTimeout())
 	err := c.getJSON(apiCtx, path, &raw)
 	cancelAPI()
 

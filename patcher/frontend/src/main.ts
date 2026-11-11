@@ -682,6 +682,12 @@ const el = {
   modalOptions: byId("modal-options"),
   restoreTextCheck: byId<HTMLInputElement>("restore-text-check"),
   restoreFontCheck: byId<HTMLInputElement>("restore-font-check"),
+
+  toast: byId("app-toast"),
+  toastTitle: byId("app-toast-title"),
+  toastDesc: byId("app-toast-desc"),
+  toastAction: byId<HTMLButtonElement>("app-toast-action"),
+  toastClose: byId<HTMLButtonElement>("app-toast-close"),
 };
 
 const FONT_EDITOR_MIN_WIDTH = 1160;
@@ -830,74 +836,134 @@ function redactText(text: string): string {
 // 反馈页地址：模板里第一栏写现象，第二栏粘调试信息。
 const FEEDBACK_ISSUE_URL = "https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/issues/new?template=bug_report.yml";
 
+let lastClientCheckLog = "";
+let copyFlashTimer = 0;
+let toastTimer = 0;
+let toastActionHandler: (() => void) | null = null;
+let toastHovered = false;
+let toastDuration = 0;
+
 function partStatusText(part?: ClientPartStatus): string {
   if (!part) return "无";
-  return `${part.label}（${part.status}）`;
+  return `${part.label}(${part.status})`;
 }
 
-// 界面状态只附在复制文本末尾。表清单可能有上千条，只留数量和前几项示例，
-// 否则整段日志最扎眼的就是一行几万个表名。
+function formatClientStatusSummary(status: ClientStatusResult): string {
+  const detail = status.description ? ` | 说明=${status.description}` : "";
+  return `${status.label}(${status.status}) | 文本=${partStatusText(status.text)} | 字体=${partStatusText(status.font)}${detail}`;
+}
+
+function formatReplaceState(): string {
+  if (config.replaceText && config.replaceFont) return "文本+字体";
+  if (config.replaceText) return "仅文本";
+  if (config.replaceFont) return "仅字体";
+  return "全关";
+}
+
+function formatEnabledRules(rules?: Record<string, boolean>): string {
+  if (!rules) return "默认";
+  const enabled = Object.keys(rules)
+    .filter((k) => Boolean(rules[k]))
+    .sort();
+  return enabled.length > 0 ? enabled.join(",") : "全关";
+}
+
 function diagnosticAppendix(): string[] {
-  const tables = Array.from(selected).sort();
-  const tablePart = tables.length === 0
-    ? "已选数据表 0 项"
-    : `已选数据表 ${tables.length} 项（前 ${Math.min(tables.length, APPENDIX_TABLE_SAMPLE)} 项：${tables.slice(0, APPENDIX_TABLE_SAMPLE).join("、")}）`;
-  const clientPart = clientStatus
-    ? `客户端状态=${clientStatus.label}（${clientStatus.status}）｜文本=${partStatusText(clientStatus.text)}｜字体=${partStatusText(clientStatus.font)}｜说明=${clientStatus.description || "无"}`
-    : "客户端状态=本次会话尚未检查";
-  // 具体路径在会话快照的「客户端」一行里，这里只报有没有设置。
-  const gameDirPart = Object.entries(config.gameDirs ?? {})
-    .map(([key, dir]) => `${key}=${dir ? "已设置" : "未设置"}`)
-    .join("、");
-  return [
-    "=== 复制时的界面状态 ===",
-    `区服=${config.language}，词条目录=${bootstrap?.csv?.selected || "内置"}，预设=${config.preset}，字体来源=${config.fontSource || "package"}，16 位贴图=${fontTexture16BitEnabled}，目标语言=${targetLangs.join(",")}`,
-    `规则开关=${JSON.stringify(config.rules)}，字体方案=${JSON.stringify(config.fontPresets ?? {})}，游戏目录=${gameDirPart || "未设置"}`,
-    clientPart,
-    tablePart,
+  const fontReg = getCurrentFontRegion();
+  const fontPreset = config.fontPresets?.[fontReg] || config.fontPresets?.[fontReg.toLowerCase()] || "默认";
+  const presetPart = config.preset === "custom" && selected.size > 0
+    ? `custom(${selected.size}表, 示例=${Array.from(selected).sort().slice(0, APPENDIX_TABLE_SAMPLE).join(",")})`
+    : `${config.preset}(${selected.size}表)`;
+  const lines: string[] = [
+    `当前界面：区服=${config.language} | 替换=${formatReplaceState()} | 预设=${presetPart} | 语言=${targetLangs.join(",") || "默认"} | 词条=${bootstrap?.csv?.selected || "内置"} | 字体=${config.fontSource || "package"}/${fontPreset}/16位=${fontTexture16BitEnabled} | 规则=${formatEnabledRules(config.rules)}`,
   ];
+  if (!clientStatus) {
+    lines.push("当前客户端：尚未校验");
+  } else {
+    const summary = formatClientStatusSummary(clientStatus);
+    if (summary !== lastClientCheckLog) {
+      lines.push(`当前客户端：${summary}`);
+    }
+  }
+  return lines;
 }
 
 function formatLogEntry(entry: LogEntry): string {
-  // 级别标签已经标明是诊断行，正文里的前缀去掉，免得一行出现两个 [诊断]。
-  const message = entry.level === "diag" && entry.message.startsWith(DIAG_PREFIX)
+  let message = entry.level === "diag" && entry.message.startsWith(DIAG_PREFIX)
     ? entry.message.slice(DIAG_PREFIX.length)
     : entry.message;
+  if (entry.level === "warn" && message.startsWith("[警告] ")) {
+    message = message.slice("[警告] ".length);
+  } else if (entry.level === "error" && message.startsWith("[错误] ")) {
+    message = message.slice("[错误] ".length);
+  }
   return `[${entry.stamp}] [${entry.level.toUpperCase()}] ${entry.tag ? `[${entry.tag}] ` : ""}${message}`;
 }
 
 function buildLogText(): string {
   const lines = [...headerEntries, ...logEntries].map((entry) => redactText(formatLogEntry(entry)));
   const stamp = logStamp();
-  // 用户名已经换成占位符，剩下的信息仍值得用户扫一眼再外发。
-  lines.unshift(`${stamp} [DIAG] 以下内容中的用户名与代理地址已隐去，粘贴前请再确认没有其他个人信息。`);
   for (const line of diagnosticAppendix()) {
-    lines.push(`${stamp} [DIAG] ${redactText(line)}`);
+    lines.push(`[${stamp}] [DIAG] ${redactText(line)}`);
   }
-  return lines.join("\n");
+  const safeLines = lines.map((line) => line.replace(/```/g, "` ` `"));
+  return ["```text", ...safeLines, "```"].join("\n");
 }
 
-function flashCopyButton(text: string): void {
-  const target = el.btnCopyLogText ?? el.btnCopyLog;
-  const orig = target.textContent;
-  target.textContent = text;
-  setTimeout(() => {
-    target.textContent = orig;
-  }, 1500);
+function flashCopyButton(): void {
+  window.clearTimeout(copyFlashTimer);
+  el.btnCopyLog.classList.add("is-copied");
+  if (el.btnCopyLogText) {
+    el.btnCopyLogText.textContent = "已复制";
+  }
+  copyFlashTimer = window.setTimeout(() => {
+    el.btnCopyLog.classList.remove("is-copied");
+    if (el.btnCopyLogText) {
+      el.btnCopyLogText.textContent = "复制调试信息";
+    }
+    copyFlashTimer = 0;
+  }, 2500);
 }
 
-// 复制完顺手把用户送到反馈页：只给剪贴板不给去向，多数人还是会来问「贴哪」。
-async function promptFeedback(): Promise<void> {
-  const choice = openModal(
-    "调试信息已复制",
-    "已复制本次会话的完整信息：系统环境、配置、客户端状态与全部日志。"
-      + "路径中的用户名已隐去。\n\n"
-      + "打开反馈页后，先写清问题现象，再把剪贴板内容粘贴到「调试信息」一栏。",
-    "打开反馈页",
-    "",
-  );
-  el.modalCancel.textContent = "关闭";
-  if ((await choice) !== "ok") return;
+function hideToast(): void {
+  window.clearTimeout(toastTimer);
+  toastTimer = 0;
+  toastActionHandler = null;
+  el.toast.classList.add("hidden");
+}
+
+function scheduleToastHide(durationMs: number): void {
+  window.clearTimeout(toastTimer);
+  if (durationMs <= 0 || toastHovered) return;
+  toastTimer = window.setTimeout(() => hideToast(), durationMs);
+}
+
+function showToast(opts: {
+  kind: "ok" | "error";
+  title: string;
+  description?: string;
+  actionText?: string;
+  onAction?: () => void;
+  durationMs?: number;
+}): void {
+  el.toast.classList.toggle("is-error", opts.kind === "error");
+  el.toastTitle.textContent = opts.title;
+  el.toastDesc.textContent = opts.description ?? "";
+  el.toastDesc.classList.toggle("hidden", !opts.description);
+  if (opts.actionText && opts.onAction) {
+    toastActionHandler = opts.onAction;
+    el.toastAction.textContent = opts.actionText;
+    el.toastAction.classList.remove("hidden");
+  } else {
+    toastActionHandler = null;
+    el.toastAction.classList.add("hidden");
+  }
+  toastDuration = opts.durationMs ?? 4500;
+  el.toast.classList.remove("hidden");
+  scheduleToastHide(toastDuration);
+}
+
+async function openFeedbackPage(): Promise<void> {
   try {
     await call("OpenLink", FEEDBACK_ISSUE_URL);
   } catch (error) {
@@ -910,17 +976,30 @@ async function copyDiagnostics(): Promise<void> {
   try {
     text = buildLogText();
   } catch (error) {
-    log(`[错误] 生成调试信息失败: ${describeError(error)}`, "error");
+    const msg = describeError(error);
+    log(`[错误] 生成调试信息失败: ${msg}`, "error");
+    showToast({ kind: "error", title: "生成调试信息失败", description: msg });
     return;
   }
   try {
     await navigator.clipboard.writeText(text);
   } catch {
     log("[错误] 复制调试信息失败：剪贴板不可用", "error");
+    showToast({ kind: "error", title: "复制失败", description: "剪贴板不可用，请检查系统权限" });
     return;
   }
-  flashCopyButton("已复制");
-  await promptFeedback();
+  flashCopyButton();
+  showToast({
+    kind: "ok",
+    title: "已复制调试信息",
+    description: "可直接粘贴到反馈页面",
+    actionText: "打开反馈页",
+    onAction: () => {
+      hideToast();
+      void openFeedbackPage();
+    },
+    durationMs: 5000,
+  });
 }
 
 function wireErrorCapture(): void {
@@ -932,13 +1011,22 @@ function wireErrorCapture(): void {
   });
 }
 
+function extractBrowserTag(ua: string): string {
+  const edge = ua.match(/Edg\/(\d+)/);
+  if (edge) return `Edge/${edge[1]}`;
+  const chrome = ua.match(/Chrome\/(\d+)/);
+  if (chrome) return `Chrome/${chrome[1]}`;
+  return ua;
+}
+
 function frontendDiagnostics(): string[] {
   const offset = -new Date().getTimezoneOffset();
   const sign = offset >= 0 ? "+" : "-";
-  const tz = `${Intl.DateTimeFormat().resolvedOptions().timeZone} (UTC${sign}${Math.floor(Math.abs(offset) / 60)}:${String(Math.abs(offset) % 60).padStart(2, "0")})`;
+  const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, "0");
+  const mins = String(Math.abs(offset) % 60).padStart(2, "0");
+  const tz = `${Intl.DateTimeFormat().resolvedOptions().timeZone} (UTC${sign}${hours}:${mins})`;
   return [
-    `${DIAG_PREFIX}界面环境：${navigator.userAgent}｜平台=${navigator.platform || "未知"}｜语言=${navigator.language}｜时区=${tz}`,
-    `${DIAG_PREFIX}显示：窗口=${window.innerWidth}×${window.innerHeight}｜屏幕=${screen.width}×${screen.height}｜缩放=${window.devicePixelRatio}`,
+    `${DIAG_PREFIX}界面：${extractBrowserTag(navigator.userAgent)} | 窗口=${window.innerWidth}×${window.innerHeight}@${window.devicePixelRatio}x | 时区=${tz}`,
   ];
 }
 
@@ -1133,13 +1221,12 @@ async function detectGameDir(silent: boolean): Promise<void> {
   try {
     const list = await call("DetectGamePaths", config.language);
     if (detectCanceled) {
-      log("[探测] 已停止搜索。", "info");
       return;
     }
     const prevDir = currentGameDir();
     if (list.length === 0) {
       if (!silent) {
-        log("[探测] 未在常用位置找到该区服的客户端，请使用「浏览」手动指定。", "info");
+        log("[探测] 未找到客户端目录，请手动「浏览」选择", "info");
       }
       return;
     }
@@ -1148,7 +1235,10 @@ async function detectGameDir(silent: boolean): Promise<void> {
     }
     const detectedDir = list[0]!;
     setGameDir(detectedDir);
-    log(silent ? `[配置] 自动探测并定位到游戏目录：${detectedDir}` : `[探测] 自动探测到客户端：${detectedDir}`);
+    log(`${DIAG_PREFIX}探测到游戏目录：${detectedDir}`, "diag");
+    if (!silent) {
+      log(`[探测] 已定位游戏目录：${detectedDir}`);
+    }
     await refreshGameInfo();
     if (detectedDir !== prevDir) {
       void checkClientEnvironment();
@@ -1249,7 +1339,6 @@ function openModal(
       el.modalAlt.classList.add("hidden");
     }
     el.modalCancel.classList.toggle("hidden", hideCancel);
-    // 个别流程（如复制调试信息后引导反馈）需要换个说法，先复位成本义再让它覆盖。
     el.modalCancel.textContent = "取消";
     if (showOptions) {
       el.restoreTextCheck.checked = true;
@@ -1463,6 +1552,13 @@ function runWhenIdle(task: () => void, fallbackDelay = 300): void {
   window.setTimeout(task, fallbackDelay);
 }
 
+const PRESET_ID_CHNAXIS = "chnaxis";
+const PRESET_ID_CHNAXIS_SYSTEM = "chnaxis_system";
+
+function isSystemFallbackGlobalPreset(id?: string): boolean {
+  return !id || id === PRESET_ID_CHNAXIS_SYSTEM || id === "builtin:global:chnaxis_system";
+}
+
 async function detectChsGameDirForFontInBackground(): Promise<void> {
   if (config.gameDirs?.["CHS"]) return;
   try {
@@ -1470,12 +1566,12 @@ async function detectChsGameDirForFontInBackground(): Promise<void> {
     if (list.length > 0 && list[0] && !config.gameDirs?.["CHS"]) {
       if (!config.gameDirs) config.gameDirs = {};
       config.gameDirs["CHS"] = list[0];
-      if (!config.fontPresets?.["GLOBAL"] || config.fontPresets["GLOBAL"] === "builtin:global:chnaxis_system") {
+      if (isSystemFallbackGlobalPreset(config.fontPresets?.["GLOBAL"])) {
         if (!config.fontPresets) config.fontPresets = {};
-        config.fontPresets["GLOBAL"] = "builtin:global:chnaxis";
+        config.fontPresets["GLOBAL"] = PRESET_ID_CHNAXIS;
       }
       await persistConfig();
-      log(`[配置] 已自动探测到国服客户端目录：${list[0]}`);
+      log(`${DIAG_PREFIX}后台探测到国服客户端目录：${list[0]}`, "diag");
       if (isGlobalLanguage(config.language)) {
         await loadFontPresetsForCurrentRegion();
       }
@@ -1562,7 +1658,7 @@ async function bootstrapApp(): Promise<void> {
 
     try {
       const diagnostics = await call("GetDiagnostics");
-      logHeader([`${DIAG_PREFIX}=== 会话开始 ===`, ...diagnostics, ...frontendDiagnostics()]);
+      logHeader([...diagnostics, ...frontendDiagnostics()]);
     } catch (error) {
       log(`[警告] 读取诊断信息失败: ${describeError(error)}`, "warn");
       logHeader(frontendDiagnostics());
@@ -1572,9 +1668,6 @@ async function bootstrapApp(): Promise<void> {
       const ver = await call("GetAppVersion");
       if (ver && el.versionBadge) {
         el.versionBadge.textContent = `v${ver}`;
-      }
-      if (ver) {
-        log(`[程序] 汉化器版本：v${ver}`);
       }
     } catch {
       // 容错防御
@@ -1611,9 +1704,6 @@ async function bootstrapApp(): Promise<void> {
       const ver = await call("GetAppVersion");
       if (ver && el.versionBadge) {
         el.versionBadge.textContent = `v${ver}`;
-      }
-      if (ver) {
-        log(`[程序] 汉化器版本：v${ver}`);
       }
     } catch {
       // 容错防御
@@ -2778,7 +2868,6 @@ async function syncBuiltinResource(): Promise<void> {
   if (showOnPicker) {
     beginCSVBusy("内置词条 同步中…");
   }
-  log("[资源] 正在同步内置词条资源…");
   try {
     await call("SyncBuiltinResource");
     builtinSyncFailed = false;
@@ -2788,7 +2877,7 @@ async function syncBuiltinResource(): Promise<void> {
     builtinSyncFailed = true;
     log(`[警告] 内置词条同步失败: ${describeError(err)}`, "warn");
     if (!showOnPicker) {
-      log("[提示] 当前使用自定义词条目录，不受影响；改用内置词条时会在开始汉化前重试", "warn");
+      log("[提示] 当前使用自定义词条，不受影响；改回内置词条时会重试同步", "warn");
     }
   } finally {
     setResourceSyncing(false);
@@ -2884,24 +2973,9 @@ async function checkClientEnvironment(): Promise<void> {
       return;
     }
     clientStatus = status;
-    log(`${DIAG_PREFIX}客户端校验：状态=${status.status}/${status.label}，文本=${status.text?.status ?? "无"}/${status.text?.label ?? "无"}，字体=${status.font?.status ?? "无"}/${status.font?.label ?? "无"}，说明=${status.description || "无"}`, "diag");
-    let logKind: "ok" | "warn" | "error" | "info" = "info";
-    if (clientStatus.status === "original") {
-      logKind = "ok";
-    } else if (clientStatus.status === "modified" || clientStatus.status === "mismatch" || clientStatus.status === "unknown") {
-      logKind = "warn";
-    } else if (clientStatus.label === "文件缺失") {
-      logKind = "error";
-    }
-    const textLabel = clientStatus.text?.label ?? clientStatus.label;
-    const fontLabel = clientStatus.font?.label ?? clientStatus.label;
-    if (clientStatus.status === "unknown") {
-      const label = textLabel === fontLabel ? `【${textLabel}】` : `文本【${textLabel}】、字体【${fontLabel}】`;
-      const desc = clientStatus.description ? `（${clientStatus.description}）` : "";
-      log(`[警告] 客户端状态：${label}${desc}`, "warn");
-    } else {
-      log(`[状态] 文本：${textLabel}；字体：${fontLabel}`, logKind);
-    }
+    const summary = formatClientStatusSummary(status);
+    lastClientCheckLog = summary;
+    log(`${DIAG_PREFIX}客户端校验：${summary}`, "diag");
   } catch (err) {
     if (gen !== checkClientGeneration || config.language !== currentLang || currentGameDir() !== currentDir) {
       return;
@@ -3004,12 +3078,12 @@ function refreshPatchButtonGate(): void {
   if (fontBuildNeeded()) {
     if (!fontCompilerReady) {
       el.btnPatch.disabled = true;
-      setTip(el.btnPatch, busy ? null : "自定义方案组件未就绪，请先进入「编辑方案」准备组件");
+      setTip(el.btnPatch, busy ? null : "请先进入「编辑方案」准备字体编译组件");
       return;
     }
     if (!fontBuildReady()) {
       el.btnPatch.disabled = true;
-      setTip(el.btnPatch, busy ? null : "自定义方案尚未编译，请在字体来源处执行「编译」");
+      setTip(el.btnPatch, busy ? null : "请先编译字体方案");
       return;
     }
   }
@@ -3393,7 +3467,6 @@ function addEmptyFontElement(openEditor: boolean): void {
   const face = getCurrentFace();
   if (!face) return;
   insertFontElements([makeDefaultFontElement(defaultElementSize(face))]);
-  log(`[字体] 已为 ${face.name} 添加空白图层`, "ok");
   if (openEditor) openElementEditorModal();
 }
 
@@ -3402,12 +3475,12 @@ async function addFontElementFromSystemFont(): Promise<void> {
   if (!face) return;
   await ensureSystemFonts();
   if (systemFontsList.length === 0) {
-    log("[提示] 尚未获取到系统字体列表，请稍后重试", "warn");
+    log("[提示] 未获取到系统字体列表，请稍后重试", "warn");
     return;
   }
   const family = await promptModalSelect(
     "从字体添加元素",
-    `为 ${face.name} 添加一个来自系统字体的图层：`,
+    `为 ${face.name} 添加系统字体图层：`,
     systemFontsList,
     el.propFontFamily.value || systemFontsList[0],
   );
@@ -3418,7 +3491,6 @@ async function addFontElementFromSystemFont(): Promise<void> {
     elem.lookup.familyName = family;
   }
   insertFontElements([elem]);
-  log(`[字体] 已从系统字体「${family}」添加图层`, "ok");
   openElementEditorModal();
 }
 
@@ -3429,7 +3501,6 @@ function cloneSelectedFontElements(): void {
   if (indices.length === 0) return;
   const clones = indices.map((i) => JSON.parse(JSON.stringify(face.elements[i])) as FontElement);
   insertFontElements(clones);
-  log(`[字体] 已克隆 ${clones.length} 个图层`, "ok");
 }
 
 function deleteSelectedFontElements(): void {
@@ -3438,7 +3509,7 @@ function deleteSelectedFontElements(): void {
   const indices = getSelectedElementIndices();
   if (indices.length === 0) return;
   if (face.elements.length - indices.length < 1) {
-    log("[提示] 每个字体至少保留一个元素图层", "warn");
+    log("[提示] 每个字体至少保留一个图层", "warn");
     return;
   }
   for (const index of [...indices].sort((a, b) => b - a)) {
@@ -3458,7 +3529,6 @@ function copySelectedFontElements(): boolean {
   if (navigator.clipboard) {
     void navigator.clipboard.writeText(JSON.stringify(copiedFontElements)).catch(() => undefined);
   }
-  log(`[字体] 已复制 ${copiedFontElements.length} 个图层`, "ok");
   return true;
 }
 
@@ -3481,12 +3551,10 @@ async function pasteFontElements(): Promise<void> {
     }
   }
   if (copiedFontElements.length === 0) {
-    log("[提示] 剪贴板里没有可粘贴的字体元素", "warn");
     return;
   }
   const clones = copiedFontElements.map((e) => JSON.parse(JSON.stringify(e)) as FontElement);
   insertFontElements(clones);
-  log(`[字体] 已粘贴 ${clones.length} 个图层`, "ok");
 }
 
 function moveSelectedFontElements(direction: -1 | 1): void {
@@ -3578,7 +3646,6 @@ async function autoFit(allSizes: boolean, useSelection: boolean): Promise<void> 
     }
   }
   refreshAfterElementChange();
-  log(`[字体] 已自动适配 ${face.name}${allSizes ? "（含同系列其它字号）" : ""}`, "ok");
 }
 
 // addSystemFontToFamily 复刻原版「从字体添加…(F)」：
@@ -3588,7 +3655,7 @@ async function addSystemFontToFamily(): Promise<void> {
   if (!srcFace || !currentMultiFont) return;
   await ensureSystemFonts();
   if (systemFontsList.length === 0) {
-    log("[提示] 没有取到系统字体列表，无法从字体添加", "warn");
+    log("[提示] 未获取到系统字体列表，请稍后重试", "warn");
     return;
   }
   const family = await promptModalSelect(
@@ -3600,7 +3667,6 @@ async function addSystemFontToFamily(): Promise<void> {
   if (!family) return;
 
   const targets = [srcFace, ...sameFamilyFaces(srcFace.name)];
-  let added = 0;
   for (const face of targets) {
     const elem = makeDefaultFontElement(parseFaceNominalSize(face.name));
     if (elem.lookup) {
@@ -3608,11 +3674,9 @@ async function addSystemFontToFamily(): Promise<void> {
       elem.lookup.familyName = family;
     }
     face.elements.push(elem);
-    added++;
   }
   for (const face of targets) await autoFitFace(face.name, null);
   refreshAfterElementChange();
-  log(`[字体] 已把系统字体「${family}」添加到 ${added} 个字号`, "ok");
 }
 
 // ---------- 字体面导航与预览开关 ----------
@@ -3755,14 +3819,13 @@ async function openFontJsonFile(): Promise<void> {
   renderPropsPanel();
   schedulePreviewRender(true);
   syncFontMenuChecks();
-  log(`[方案] 已打开 JSON 方案：${path}（按 Ctrl+S 保存为方案）`, "ok");
 }
 
 async function saveFontPresetAsNew(): Promise<void> {
   if (!currentMultiFont) return;
   const preset = availableFontPresets.find((p) => p.id === activePresetId);
   const defaultName = preset ? `${preset.name}_副本` : `字体方案_${new Date().toISOString().slice(0, 10)}`;
-  const name = await promptModalInput("保存为方案", "请输入字体方案名称：", defaultName);
+  const name = await promptModalInput("保存为方案", "方案名称：", defaultName);
   if (!name?.trim()) return;
   const saved = await call(
     "SaveFontPreset",
@@ -3774,7 +3837,6 @@ async function saveFontPresetAsNew(): Promise<void> {
   markPresetSelected(saved.id);
   await loadFontPresetsForCurrentRegion();
   updateCurrentPresetBadge();
-  log(`[方案] 已保存字体方案：${saved.name}`, "ok");
 }
 
 async function saveFontPresetCurrent(): Promise<void> {
@@ -3789,7 +3851,6 @@ async function saveFontPresetCurrent(): Promise<void> {
   markPresetSelected(saved.id);
   await loadFontPresetsForCurrentRegion();
   updateCurrentPresetBadge();
-  log(`[方案] 已保存字体方案：${saved.name}`, "ok");
 }
 
 // 后端 SaveFontPreset 会写 config，但前端这份 config 也要同步，否则随后的
@@ -3804,7 +3865,6 @@ async function exportFontJsonFile(): Promise<void> {
   const path = await call("SelectFontJsonSavePath", `ffxiv_font_${getCurrentFontRegion().toLowerCase()}.json`);
   if (!path) return;
   await call("WriteTextFile", path, JSON.stringify(currentMultiFont, null, "\t"));
-  log(`[方案] 已导出方案 JSON：${path}`, "ok");
 }
 
 function buildEmptyAxisMultiFont(source: MultiFontSet): MultiFontSet {
@@ -3856,7 +3916,6 @@ async function createNewEmptyAxisPreset(): Promise<void> {
     await loadFontPresetsForCurrentRegion();
     await applyFontPreset(saved.id);
     closePresetManager();
-    log(`[方案] 已创建并启用空 AXIS 方案：${saved.name}`, "ok");
   } catch (err) {
     log(`[错误] 创建空 AXIS 方案失败: ${describeError(err)}`, "error");
     await showConfirm("创建失败", describeError(err), "知道了");
@@ -3874,7 +3933,7 @@ async function duplicateCurrentPreset(): Promise<void> {
 
 async function resetCurrentFontPreset(): Promise<void> {
   if (!activePresetId) {
-    log("[提示] 当前内容不是方案（来自打开的 JSON），没有可重置的来源", "warn");
+    log("[提示] 当前打开的是外部 JSON 文件，没有可重置的方案", "warn");
     return;
   }
   const preset = availableFontPresets.find((p) => p.id === activePresetId);
@@ -4019,7 +4078,6 @@ function renderPresetManager(): void {
 async function applyPresetFromManager(preset: PresetSummary): Promise<void> {
   try {
     await applyFontPreset(preset.id);
-    log(`[方案] 已选用字体方案：${preset.name}`, "ok");
     closePresetManager();
   } catch (err) {
     log(`[错误] 切换字体方案失败: ${describeError(err)}`, "error");
@@ -4042,7 +4100,6 @@ async function duplicatePreset(preset: PresetSummary): Promise<void> {
     // 后端 SaveFontPreset 会顺手选中新方案，前端配置同步，别让后续加载退回旧方案。
     activePresetId = saved.id;
     markPresetSelected(saved.id);
-    log(`[方案] 已复制为：${saved.name}`, "ok");
     await loadFontPresetsForCurrentRegion();
     await applyFontPreset(saved.id);
     closePresetManager();
@@ -4061,7 +4118,6 @@ async function renamePreset(preset: PresetSummary): Promise<void> {
     const renamed = await call("RenameFontPreset", reg, preset.id, name.trim());
     // 后端改的是配置文件，前端这份 config 不跟着改的话，重新加载会退回默认方案。
     if (wasActive) markPresetSelected(renamed.id);
-    log(`[方案] 已重命名：${preset.name} → ${renamed.name}`, "ok");
     await loadFontPresetsForCurrentRegion();
   } catch (err) {
     log(`[错误] 重命名字体方案失败: ${describeError(err)}`, "error");
@@ -4079,7 +4135,6 @@ async function deletePreset(preset: PresetSummary): Promise<void> {
   if (!ok) return;
   try {
     await call("DeleteFontPreset", reg, preset.id);
-    log(`[方案] 已删除字体方案：${preset.name}`, "ok");
     if (activePresetId === preset.id) activePresetId = "";
     await loadFontPresetsForCurrentRegion();
     // 删的是当前方案时后端已回退到默认方案，这里让前端配置跟上同一结果。
@@ -4119,7 +4174,6 @@ async function scaleCurrentFace(): Promise<void> {
   renderElementList();
   renderPropsPanel();
   schedulePreviewRender();
-  log(`[字体] 已将 ${face.name} 按比例 (${ratio.toFixed(2)}x) 缩放至 ${targetSize}px`, "ok");
 }
 
 // 复刻原版「将 X 的其他尺寸替换为 Y 的缩放副本」：确认后清空目标字号，
@@ -4130,7 +4184,6 @@ async function propagateCurrentFamily(): Promise<void> {
   const family = getFaceFamilyPrefix(srcFace.name);
   const siblings = sameFamilyFaces(srcFace.name);
   if (siblings.length === 0) {
-    log(`[提示] 未找到与 ${srcFace.name} 同系列（${family}）的其他字号`, "warn");
     return;
   }
   const srcSize = parseFaceNominalSize(srcFace.name);
@@ -4149,7 +4202,6 @@ async function propagateCurrentFamily(): Promise<void> {
     target.verticalAlignment = srcFace.verticalAlignment;
   }
   refreshAfterElementChange();
-  log(`[字体] 已用 ${srcFace.name} 的缩放副本替换 ${siblings.length} 个同系列字号`, "ok");
 }
 
 async function exportFontTtmp(): Promise<void> {
@@ -4159,10 +4211,9 @@ async function exportFontTtmp(): Promise<void> {
     if (!savePath) return;
     const configJson = JSON.stringify(currentMultiFont);
     await call("ExportFontTTMP", configJson, savePath);
-    log(`[完成] 已成功导出 Penumbra TTMP2 模组包：${savePath}`, "ok");
-    await showConfirm("导出成功", `已导出：\n${savePath}\n可在 Penumbra 里直接导入`, "确定");
+    await showConfirm("导出成功", `已导出到：\n${savePath}`, "确定");
   } catch (err) {
-    log(`[错误] 导出 Mod 包失败: ${describeError(err)}`, "error");
+    log(`[错误] 导出 TTMP 失败: ${describeError(err)}`, "error");
   }
 }
 
@@ -4312,7 +4363,6 @@ async function runFontCommand(command: string): Promise<void> {
           if (!outDir) return;
           const configJson = JSON.stringify(currentMultiFont);
           await call("ExportFontRaw", configJson, outDir);
-          log(`[字体] 已成功导出原始字体文件至：${outDir}`, "ok");
           await showConfirm("导出成功", `已导出到：\n${outDir}`, "确定");
         } catch (err) {
           log(`[字体] 导出原始文件失败: ${describeError(err)}`, "error");
@@ -4324,7 +4374,6 @@ async function runFontCommand(command: string): Promise<void> {
         await call("SetFontTexture16Bit", fontTexture16BitEnabled).catch(() => {});
         syncFontMenuChecks();
         void refreshFontBuild();
-        log(`[字体] ${fontTexture16BitEnabled ? "16 位贴图已启用，单张 32MB" : "16 位贴图已关闭，生成 32 位贴图，单张 64MB"}`, "info");
         return;
       }
       default:
@@ -4830,10 +4879,10 @@ async function loadFontPresetsForCurrentRegion(): Promise<void> {
   }
   availableFontPresets = presets;
 
-  const chnAxisPreset = availableFontPresets.find((p) => p.id === "builtin:global:chnaxis");
+  const chnAxisPreset = availableFontPresets.find((p) => p.id === PRESET_ID_CHNAXIS);
   const savedId = config.fontPresets?.[reg] || config.fontPresets?.[reg.toLowerCase()];
   let targetId = "";
-  if (chnAxisPreset && (!savedId || savedId === "builtin:global:chnaxis_system")) {
+  if (chnAxisPreset && isSystemFallbackGlobalPreset(savedId)) {
     targetId = chnAxisPreset.id;
     if (!config.fontPresets) config.fontPresets = {};
     config.fontPresets[reg] = targetId;
@@ -6344,7 +6393,6 @@ function wireEvents(): void {
       void call("CancelDetect").catch(() => {
         // 忽略停止失败：后端会在扫描结束后自然返回
       });
-      log("[探测] 正在停止搜索…", "info");
       return;
     }
     if (busy) {
@@ -6387,7 +6435,7 @@ function wireEvents(): void {
         if (detected.length > 0 && detected[0] && !currentGameDir()) {
           config.gameDirs[newLang] = detected[0];
           el.gamePath.value = detected[0];
-          log(`[探测] 自动定位到该区服客户端目录：${detected[0]}`);
+          log(`${DIAG_PREFIX}切区探测到目录：${detected[0]}`, "diag");
           renderGameInfo();
         }
       } catch (err) {
@@ -6438,9 +6486,6 @@ function wireEvents(): void {
   el.fontSource.addEventListener("change", () => {
     config.fontSource = el.fontSource.value === "compile" ? "compile" : "package";
     updateFontUiAssetState();
-    if (fontSourceMode() === "compile") {
-      log("[字体] 自定义方案需先编译贴图，请执行「编译」，通过后方可开始汉化", "warn");
-    }
     void refreshFontBuild();
     void persistConfig();
   });
@@ -6552,12 +6597,26 @@ function wireEvents(): void {
   el.btnClearLog.addEventListener("click", () => {
     el.log.replaceChildren();
     logEntries = [];
+    lastClientCheckLog = "";
   });
 
   el.btnCopyLog.addEventListener("click", (e) => {
     // 折叠时日志头本身是「展开」的点击区，别让复制顺带把面板拉起来。
     e.stopPropagation();
     void copyDiagnostics();
+  });
+
+  el.toastClose.addEventListener("click", () => hideToast());
+  el.toastAction.addEventListener("click", () => toastActionHandler?.());
+  el.toast.addEventListener("pointerenter", () => {
+    toastHovered = true;
+    window.clearTimeout(toastTimer);
+  });
+  el.toast.addEventListener("pointerleave", () => {
+    toastHovered = false;
+    if (!el.toast.classList.contains("hidden")) {
+      scheduleToastHide(toastDuration);
+    }
   });
 
   initLogResizer();
@@ -6588,21 +6647,21 @@ function wireEvents(): void {
       gameInfo.version !== gameInfo.backupVersion
     );
     if (!isGlobal && !gameInfo?.backupExists) {
-      log("[警告] 本地没有原版备份，这个区服的云端也不提供，只能先用官方启动器修复客户端。", "warn");
+      log("[警告] 本地没有备份，只能先用官方启动器修复客户端", "warn");
       return;
     }
     if (!isGlobal && versionMismatch) {
-      log(`[警告] 游戏版本 v${gameInfo?.version} 与备份版本 v${gameInfo?.backupVersion} 不一致，无法还原。请先用官方启动器修复客户端。`, "warn");
+      log(`[警告] 游戏版本 v${gameInfo?.version} 与备份 v${gameInfo?.backupVersion} 不一致，请先用官方启动器修复`, "warn");
       return;
     }
     if (!currentGameDir()) {
-      log("[错误] 请先指定游戏目录。", "error");
+      log("[错误] 请先选择游戏目录", "error");
       return;
     }
     const confirmMsg = isGlobal && !gameInfo?.backupExists
-      ? "本地暂无原版备份，将从云端下载官方原版并恢复。"
-      : "确定将客户端恢复为官方原版吗？";
-    const result = await openModal("还原官方原版文件", confirmMsg, "确认还原", "", false, true);
+      ? "本地没有备份，将从云端下载原版并恢复。"
+      : "确定将客户端还原为官方原版？";
+    const result = await openModal("还原官方原版", confirmMsg, "还原", "", false, true);
     if (result !== "ok") {
       return;
     }
@@ -6653,31 +6712,31 @@ function wireEvents(): void {
       return;
     }
     if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
-      log("[错误] 客户端区服与当前选择的目标区服不匹配，请核对后重试。", "error");
+      log("[错误] 客户端区服与当前选择不匹配", "error");
       return;
     }
     if (!currentGameDir()) {
-      log("[错误] 请先指定游戏目录。", "error");
+      log("[错误] 请先选择游戏目录", "error");
       return;
     }
     if (!config.replaceText && !config.replaceFont) {
-      log("[错误] 请至少勾选“替换文本”或“替换游戏字体”。", "error");
+      log("[错误] 请至少勾选文本或字体", "error");
       return;
     }
     if (config.replaceText && !csvSelectionValid()) {
       if ((bootstrap?.csv.tableList.length ?? 0) === 0) {
-        log("[错误] 本地缺少表清单（tables.json），请联网后重试。", "error");
+        log("[错误] 缺少表清单，请联网后重试", "error");
       } else {
-        log("[错误] 当前词条目录已失效，请重新选择或删除后再开始汉化。", "error");
+        log("[错误] 当前词条目录无效，请重新选择", "error");
       }
       return;
     }
     if (config.replaceText && selected.size === 0) {
-      log("[错误] 已勾选“替换文本”，但汉化范围中未选择任何数据表。", "error");
+      log("[错误] 未选择任何数据表", "error");
       return;
     }
     if (config.replaceText && regionLanguageOptions().length > 1 && targetLangs.length === 0) {
-      log("[错误] 请至少勾选一种汉化语言。", "error");
+      log("[错误] 请至少勾选一种汉化语言", "error");
       return;
     }
 
@@ -6689,7 +6748,7 @@ function wireEvents(): void {
 
     try {
       toggleConsole(true);
-      setBusy(true, "正在执行安全校验与汉化流程…");
+      setBusy(true, "正在汉化…");
       el.progressBar.style.width = "0%";
       log("[补丁] 开始汉化…");
 
@@ -6747,11 +6806,11 @@ function wireEvents(): void {
     el.fontBuildBar.style.width = "0%";
     el.btnPatch.disabled = true;
     updateFontUiAssetState();
-    log("[字体] 开始编译方案…");
+    log("[字体] 开始编译…");
     try {
       fontBuild = await call("CompileFontPreset");
       if (fontBuild.ready) {
-        log(`[字体] 编译通过：${fontBuild.texCount} 张贴图，边长 ${fontBuild.sideLength}px，可以开始汉化`, "ok");
+        log(`[字体] 编译完成：${fontBuild.texCount} 张贴图，${fontBuild.sideLength}px`, "ok");
       } else {
         log(`[字体] 编译未通过：${fontBuild.reason}`, "warn");
       }
@@ -6768,7 +6827,7 @@ function wireEvents(): void {
     if (busy || el.btnOpenFontEditor.disabled || openingFontEditor) return;
     const gameDir = currentGameDir();
     if (!gameDir) {
-      log("[字体] 无法打开字体定制：请先选择当前区服有效的游戏安装目录", "warn");
+      log("[字体] 请先选择游戏目录", "warn");
       return;
     }
     const originalText = "编辑方案";
@@ -6783,14 +6842,14 @@ function wireEvents(): void {
         const status = await call("CheckClientStatus", gameDir, config.language);
         clientStatus = status;
         if (status.font?.status === "modified") {
-          log("[字体] 字体文件已被修改，此时打开定制可能提取到错误字形。请先在主界面执行「还原原版」，再进行定制。", "error");
+          log("[字体] 字体文件已被修改，请先「还原原版」再编辑方案", "error");
           return;
         }
         if (status.font?.status === "unknown") {
-          log("[字体] 无法验证字体文件是否为官方原版，继续编辑若字形已被修改可能有误。", "warn");
+          log("[字体] 无法核对字体是否为原版，提取到的字形可能有误", "warn");
         }
       } else {
-        log("[字体] 此区服无法自动检查文件是否被修改。若客户端不是官方原版，提取的字形可能有误。", "warn");
+        log("[字体] 此区服无法检查原版状态，若已打补丁提取字形可能有误", "warn");
       }
 
       await call("EnsureFontCompiler");
@@ -6872,7 +6931,7 @@ function wireEvents(): void {
       const saved = await call("SaveFontPreset", curReg, name.trim(), JSON.stringify(parsed, null, "\t"));
       if (!config.fontPresets) config.fontPresets = {};
       config.fontPresets[curReg] = saved.id;
-      log(`[方案] 成功导入并选用自定义字体方案：${saved.name}`, "ok");
+      log(`[方案] 已导入并选用方案：${saved.name}`, "ok");
       await loadFontPresetsForCurrentRegion();
       await loadFontPreset(saved.id);
     } catch (err) {
@@ -7696,8 +7755,8 @@ function wireRuntimeEvents(): void {
     const text =
       typeof event.data === "string"
         ? event.data
-        : "游戏版本过新，云端尚无对应原版文件。继续汉化可能出现异常，是否继续？";
-    const ok = await showConfirm("未知版本提示", text, "仍要继续汉化");
+        : "云端暂未收录当前游戏版本，无法核对是否为原版，确定继续？";
+    const ok = await showConfirm("未知版本", text, "继续汉化");
     try {
       await call("AnswerUnknownConfirm", ok);
     } catch (error) {
@@ -7709,8 +7768,8 @@ function wireRuntimeEvents(): void {
     const text =
       typeof event.data === "string"
         ? event.data
-        : "检测到游戏启动器正在运行，是否强制结束启动器并继续？";
-    const ok = await showConfirm("启动器运行提示", text, "强制结束启动器并继续");
+        : "游戏启动器正在运行，是否强制关闭并继续？";
+    const ok = await showConfirm("启动器正在运行", text, "强制关闭并继续");
     try {
       await call("AnswerLauncherConfirm", ok);
     } catch (error) {

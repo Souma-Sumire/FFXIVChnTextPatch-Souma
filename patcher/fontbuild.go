@@ -158,7 +158,7 @@ func (a *App) GetFontBuildInfo() FontBuildInfo {
 func (a *App) requireFontBuild(resourceDir string) (string, error) {
 	info := a.currentFontBuild(resourceDir)
 	if !info.Ready {
-		return "", fmt.Errorf("字体方案尚未编译完成：%s。请回到工作台，在字体来源处执行「编译」，通过后再开始汉化", info.Reason)
+		return "", fmt.Errorf("自定义字体未编译（%s），请先点击「编译」", info.Reason)
 	}
 	return fontBuildDir(resourceDir), nil
 }
@@ -196,7 +196,7 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		return info, err
 	}
 	if changed > 0 {
-		a.emitPatchLog(fmt.Sprintf("[字体] 方案里有 %d 处贴图边长不是 %dpx，已统一为 %dpx", changed, fontengine.SideLength, fontengine.SideLength))
+		a.emitDiag("方案中有 %d 处贴图边长已调整为 %dpx", changed, fontengine.SideLength)
 	}
 
 	use16Bit := a.fontTexture16Bit(resourceDir)
@@ -209,7 +209,7 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		return info, fmt.Errorf("创建编译目录失败: %w", err)
 	}
 
-	a.emitPatchLog("[字体] 正在编译方案...")
+	a.emitDiag("开始编译字体方案 %s", presetID)
 	if err := a.fontEngine.CompileRaw(ctx, configJson, tmpDir, use16Bit, func(pct int, msg string) {
 		a.emitFontBuildProgress(int64(pct), msg)
 	}); err != nil {
@@ -263,7 +263,7 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		return info, fmt.Errorf("写入编译记录失败: %w", err)
 	}
 
-	a.emitPatchLog(fmt.Sprintf("[字体] 编译完成：%d 张贴图，边长 %dpx", texCount, side))
+	a.emitDiag("字体编译完成：%d 张贴图，%dpx", texCount, side)
 	return a.fontBuildInfoFor(resourceDir, presetID, configJson, use16Bit), nil
 }
 

@@ -12,8 +12,7 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: 完整日志
-      description: 点日志栏右上角的「复制调试信息」，粘贴到这里，不用删减。
-      render: text
+      label: 调试信息
+      description: 点日志栏右上角的「复制调试信息」，粘贴到这里即可。
     validations:
       required: true

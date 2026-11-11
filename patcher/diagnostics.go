@@ -26,8 +26,6 @@ import (
 
 const diagPrefix = verifier.DiagPrefix
 
-var sessionStartedAt = time.Now()
-
 // 调试信息会贴到公开 issue。路径里的用户名先按已知的用户目录精确替换，
 // 再用正则兜底其他写法（配置 JSON 里的转义路径、其他盘符下的用户目录等）。
 var (
@@ -97,7 +95,7 @@ func (a *App) GetDiagnostics() []string {
 	return lines
 }
 
-// diagnosticsLines 不改变业务状态；同类信息合并成一行，避免刷屏。
+// diagnosticsLines 不改变业务状态；同类信息按固定顺序精简输出，只保留排障所需字段。
 // 副作用只有 isWritableDir 的写探测，它命中启动时的缓存，不会重复落盘。
 func (a *App) diagnosticsLines() []string {
 	var lines []string
@@ -107,43 +105,66 @@ func (a *App) diagnosticsLines() []string {
 
 	resourceDir := a.resourceDir()
 	dataRoot := dataRootFor(resourceDir)
-	cfgPath := configPathFor(resourceDir)
 	backupRoot := backupRootFor(resourceDir)
 
 	buildMode := "release"
 	if localResourceOnly {
-		buildMode = "development"
+		buildMode = "dev"
 	}
-	add("=== 会话快照 %s ===", time.Now().Format("2006-01-02 15:04:05 -07:00"))
-	add("环境：%s（%s）｜Go %s｜%s/%s｜%d 核｜权限 %s｜PID %d｜启动 %s",
-		updater.DisplayAppVersion(appVersion), buildMode, goruntime.Version(), goruntime.GOOS, goruntime.GOARCH,
-		goruntime.NumCPU(), processPrivilege(), os.Getpid(), sessionStartedAt.Format("2006-01-02 15:04:05"))
+	add("--- 会话快照 (%s) ---", time.Now().Format("-07:00"))
+	add("环境：%s (%s) | %s/%s | 权限=%s",
+		updater.DisplayAppVersion(appVersion), buildMode, goruntime.GOOS, goruntime.GOARCH, processPrivilege())
 
 	exe, exeErr := os.Executable()
 	cwd, cwdErr := os.Getwd()
-	add("路径：exe=%s｜cwd=%s｜resource=%s（%s，可写 %t）｜config=%s（%s）｜backup=%s（%s）｜data=%s",
-		pathOrError(exe, exeErr), pathOrError(cwd, cwdErr), resourceDir, briefPath(resourceDir), isWritableDir(resourceDir),
-		cfgPath, briefPath(cfgPath), backupRoot, briefPath(backupRoot), dataRoot)
-
-	fileParts := make([]string, 0, 6)
-	for _, p := range []string{
-		filepath.Join(resourceDir, "manifest.json"),
-		filepath.Join(resourceDir, "tables.json"),
-		filepath.Join(resourceDir, "rules.json"),
-		filepath.Join(resourceDir, "rawexd.zip"),
-		filepath.Join(resourceDir, ".verify.json"),
-		fontBuildMetaPath(resourceDir),
-	} {
-		fileParts = append(fileParts, fmt.Sprintf("%s=%s", filepath.Base(p), briefPath(p)))
+	pathParts := []string{fmt.Sprintf("exe=%s", pathOrError(exe, exeErr))}
+	if cwdErr != nil || (exeErr == nil && !strings.EqualFold(cwd, filepath.Dir(exe))) {
+		pathParts = append(pathParts, fmt.Sprintf("cwd=%s", pathOrError(cwd, cwdErr)))
 	}
-	add("资源文件：%s", strings.Join(fileParts, "｜"))
+	writeState := "可写"
+	if !isWritableDir(resourceDir) {
+		writeState = "只读"
+	}
+	pathParts = append(pathParts, fmt.Sprintf("resource=%s(%s)", resourceDir, writeState))
+	if dataRoot != "." {
+		pathParts = append(pathParts, fmt.Sprintf("data=%s", dataRoot))
+	}
+	add("路径：%s", strings.Join(pathParts, " | "))
 
 	cfg := a.loadConfig(resourceDir)
-	if data, err := json.Marshal(cfg); err == nil {
-		add("配置：%s", data)
-	} else {
-		add("配置：序列化失败 %v", err)
+	regionKey := normalizeRegionCode(cfg.Language)
+	lang, langErr := region.ParseLanguage(cfg.Language)
+	if langErr != nil {
+		lang = region.GLOBAL
 	}
+	targetLangs := cfg.TargetLanguages[regionKey]
+	targetDesc := strings.Join(targetLangs, ",")
+	if targetDesc == "" {
+		targetDesc = "默认"
+	}
+	csvDirDesc := "内置"
+	if dir := a.csvSelectedDir(resourceDir, regionKey); dir != "" {
+		csvDirDesc = dir
+	}
+	presetDesc := cfg.Preset
+	if presetDesc == "" {
+		presetDesc = "recommended"
+	}
+	fontMode := a.fontSourceMode(resourceDir)
+	font16Bit := a.fontTexture16Bit(resourceDir)
+	cfgParts := []string{
+		fmt.Sprintf("区服=%s", cfg.Language),
+		fmt.Sprintf("替换=%s", formatReplaceSwitches(cfg.ReplaceText, cfg.ReplaceFont)),
+		fmt.Sprintf("预设=%s", presetDesc),
+		fmt.Sprintf("语言=%s", targetDesc),
+		fmt.Sprintf("词条=%s", csvDirDesc),
+		fmt.Sprintf("字体=%s/%s/16位=%t", fontMode, a.getActiveFontPreset(regionKey), font16Bit),
+		fmt.Sprintf("规则=%s", formatRuleSwitches(cfg.Rules)),
+	}
+	if dirs := configuredGameRegions(cfg.GameDirs); len(dirs) > 0 {
+		cfgParts = append(cfgParts, fmt.Sprintf("已设目录=%s", strings.Join(dirs, ",")))
+	}
+	add("配置：%s", strings.Join(cfgParts, " | "))
 
 	// 首次启动时这些文件本来就不存在，要报"未生成"而不是"读取失败"，
 	// 否则用户和排查者会把正常状态当成故障。
@@ -151,9 +172,9 @@ func (a *App) diagnosticsLines() []string {
 	manifestDesc := "未生成"
 	switch {
 	case manifestErr == nil && manifest != nil:
-		manifestDesc = fmt.Sprintf("%s rootHash=%s rawexd=%s/%dB/%d font=%s/%dB rules=%s/%dB tables=%s/%dB",
-			manifest.GeneratedAt, manifest.RootHash, manifest.RawEXD.SHA256, manifest.RawEXD.Size, manifest.RawEXD.Count,
-			manifest.Font.SHA256, manifest.Font.Size, manifest.Rules.SHA256, manifest.Rules.Size, manifest.Tables.SHA256, manifest.Tables.Size)
+		manifestDesc = fmt.Sprintf("%s (root=%s rawexd=%s font=%s rules=%s tables=%s)",
+			manifest.GeneratedAt, shortHash(manifest.RootHash), shortHash(manifest.RawEXD.SHA256),
+			shortHash(manifest.Font.SHA256), shortHash(manifest.Rules.SHA256), shortHash(manifest.Tables.SHA256))
 	case manifestErr != nil && !errors.Is(manifestErr, fs.ErrNotExist):
 		manifestDesc = "读取失败: " + manifestErr.Error()
 	}
@@ -165,7 +186,7 @@ func (a *App) diagnosticsLines() []string {
 		case manifest == nil || manifest.RawEXD.Count == 0:
 			csvDesc = fmt.Sprintf("%d", count)
 		case manifest.RawEXD.Count == count:
-			csvDesc = fmt.Sprintf("%d（与清单一致）", count)
+			csvDesc = fmt.Sprintf("%d/%d", count, manifest.RawEXD.Count)
 		default:
 			csvDesc = fmt.Sprintf("%d（清单 %d，不一致）", count, manifest.RawEXD.Count)
 		}
@@ -177,7 +198,7 @@ func (a *App) diagnosticsLines() []string {
 	if data, err := os.ReadFile(filepath.Join(resourceDir, "tables.json")); err == nil {
 		var doc TablesDoc
 		if err := json.Unmarshal(data, &doc); err == nil {
-			tablesDesc = fmt.Sprintf("%d 表/%d 目录/%d 文件", len(doc.Tables), len(doc.Folders), len(doc.Files))
+			tablesDesc = fmt.Sprintf("%d表/%d文件", len(doc.Tables), len(doc.Files))
 		} else {
 			tablesDesc = "解析失败: " + err.Error()
 		}
@@ -188,89 +209,108 @@ func (a *App) diagnosticsLines() []string {
 	if rules, err := loadRules(resourceDir); err != nil {
 		rulesDesc = err.Error()
 	} else if len(rules) == 0 {
-		rulesDesc = "0 项"
+		rulesDesc = "0项"
 	} else {
-		parts := make([]string, 0, len(rules))
+		var bad []string
 		for _, rule := range rules {
 			meta := rule.Meta()
-			parts = append(parts, fmt.Sprintf("%s:%s/默认%t", meta.ID, meta.Status, meta.DefaultOn))
+			if meta.Status != "ok" {
+				bad = append(bad, fmt.Sprintf("%s=%s", meta.ID, meta.Status))
+			}
 		}
-		rulesDesc = fmt.Sprintf("%d 项（%s）", len(rules), strings.Join(parts, "、"))
+		if len(bad) == 0 {
+			rulesDesc = fmt.Sprintf("%d项(ok)", len(rules))
+		} else {
+			rulesDesc = fmt.Sprintf("%d项(异常: %s)", len(rules), strings.Join(bad, ","))
+		}
 	}
-	add("资源：字体来源=%s｜16 位=%t｜就绪=%t｜CSV=%s｜表清单=%s｜规则=%s｜清单=%s",
-		a.fontSourceMode(resourceDir), a.fontTexture16Bit(resourceDir), updater.HasLocalResource(resourceDir),
-		csvDesc, tablesDesc, rulesDesc, manifestDesc)
+	add("资源：就绪=%t | CSV=%s | 表清单=%s | 规则=%s",
+		updater.HasLocalResource(resourceDir), csvDesc, tablesDesc, rulesDesc)
+	add("清单：%s", manifestDesc)
 
 	fontPkg := "未安装"
 	if dir, ok := localFontPackage(resourceDir); ok {
 		count, side := fontTextureStats(dir)
-		fontPkg = fmt.Sprintf("%s（%d 张/%dpx）", dir, count, side)
+		fontPkg = fmt.Sprintf("%s(%d张/%dpx)", dir, count, side)
 	}
 	buildDesc := "无"
 	if count, side := fontTextureStats(fontBuildDir(resourceDir)); count > 0 {
-		buildDesc = fmt.Sprintf("%d 张/%dpx", count, side)
+		buildDesc = fmt.Sprintf("%d张/%dpx", count, side)
 	}
 	compilerPath := filepath.Join(dataRoot, "fontchanger", fontengine.CLIBinaryName)
-	add("字体：包=%s｜编译产物=%s｜编译组件=%t（%s %s）", fontPkg, buildDesc,
-		a.HasFontCompiler(), compilerPath, briefPath(compilerPath))
-
-	regionKey := normalizeRegionCode(cfg.Language)
-	lang, langErr := region.ParseLanguage(cfg.Language)
-	if langErr != nil {
-		lang = region.GLOBAL
+	compilerDesc := "未安装"
+	if a.HasFontCompiler() {
+		compilerDesc = "就绪"
+	} else if fontMode == "compile" {
+		compilerDesc = fmt.Sprintf("缺失(%s)", compilerPath)
 	}
-	targetLangs := cfg.TargetLanguages[regionKey]
-	targetDesc := strings.Join(targetLangs, "、")
-	if targetDesc == "" {
-		targetDesc = "默认"
-	}
-	csvDirDesc := "未指定"
-	if dir := a.csvSelectedDir(resourceDir, regionKey); dir != "" {
-		csvDirDesc = dir
-	}
-	add("区服：%s（语言 %s）｜目标语言=%s｜字体方案=%s｜自定义词条目录=%s",
-		region.Of(lang), cfg.Language, targetDesc, a.getActiveFontPreset(regionKey), csvDirDesc)
+	add("字体：内置包=%s | 编译产物=%s | 编译组件=%s", fontPkg, buildDesc, compilerDesc)
 
 	gameDir := cfg.GameDirs[regionKey]
 	if gameDir == "" {
-		add("客户端：游戏目录未设置，文件与备份状态无法检查")
+		add("客户端：未设置游戏目录")
 	} else if info, infoErr := a.GetGameInfo(gameDir, cfg.Language); infoErr != nil {
-		add("客户端：读取失败 %v", infoErr)
+		add("客户端：读取失败 (%v)", infoErr)
 	} else {
-		add("客户端：目录=%s｜版本=%s｜有效=%t｜区服=%s｜检测=%s｜不匹配=%t｜备份版本=%s｜备份存在=%t｜高分辨率=%d｜资源=%s/%s",
-			info.GameDir, info.Version, info.Valid, info.Region, info.DetectedRegion, info.RegionMismatch,
-			info.BackupVersion, info.BackupExists, info.UiAssetType, info.ResourceTime, info.ResourceHash)
-		fileParts := make([]string, 0, len(info.Files))
-		for _, f := range info.Files {
-			if f.Exists {
-				fileParts = append(fileParts, fmt.Sprintf("%s=%dB", f.Name, f.Size))
-			} else {
-				fileParts = append(fileParts, f.Name+"=缺失")
-			}
+		clientParts := []string{
+			fmt.Sprintf("目录=%s", info.GameDir),
+			fmt.Sprintf("版本=%s", info.Version),
 		}
-		add("客户端文件：%s", strings.Join(fileParts, "｜"))
+		if !info.Valid {
+			clientParts = append(clientParts, "有效=false")
+		}
+		if info.RegionMismatch {
+			clientParts = append(clientParts, fmt.Sprintf("区服不匹配(目标=%s,实际=%s)", info.Region, info.DetectedRegion))
+		} else {
+			clientParts = append(clientParts, fmt.Sprintf("区服=%s", info.DetectedRegion))
+		}
+		clientParts = append(clientParts, fmt.Sprintf("高分辨率=%d", info.UiAssetType))
+		if info.BackupExists {
+			clientParts = append(clientParts, fmt.Sprintf("备份=%s", info.BackupVersion))
+		} else {
+			clientParts = append(clientParts, "备份=无")
+		}
+		add("客户端：%s", strings.Join(clientParts, " | "))
+
 		sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
-		hashParts := make([]string, 0, 4)
-		for _, name := range []string{"0a0000.win32.index", "0a0000.win32.index2", "000000.win32.index", "000000.win32.index2"} {
-			hash, hashErr := verifier.HashFile(filepath.Join(sqpackDir, name))
-			if hashErr != nil {
-				hashParts = append(hashParts, fmt.Sprintf("%s=失败(%v)", name, hashErr))
-			} else {
-				hashParts = append(hashParts, fmt.Sprintf("%s=%s", name, hash.SHA256))
-			}
+		fileMap := make(map[string]FileStatus, len(info.Files))
+		for _, f := range info.Files {
+			fileMap[f.Name] = f
 		}
-		add("客户端索引哈希：%s", strings.Join(hashParts, "｜"))
+		formatGroup := func(prefix string) string {
+			parts := make([]string, 0, 3)
+			for _, suffix := range []string{"dat0", "index", "index2"} {
+				name := fmt.Sprintf("%s.win32.%s", prefix, suffix)
+				f, ok := fileMap[name]
+				if !ok || !f.Exists {
+					parts = append(parts, suffix+"=缺失")
+					continue
+				}
+				if suffix == "dat0" {
+					parts = append(parts, fmt.Sprintf("%s=%dB", suffix, f.Size))
+					continue
+				}
+				hash, hashErr := verifier.HashFile(filepath.Join(sqpackDir, name))
+				if hashErr != nil {
+					parts = append(parts, fmt.Sprintf("%s=%dB(哈希失败:%v)", suffix, f.Size, hashErr))
+				} else {
+					parts = append(parts, fmt.Sprintf("%s=%dB(%s)", suffix, f.Size, diagHash(hash.SHA256)))
+				}
+			}
+			return strings.Join(parts, " | ")
+		}
+		add("文本文件(0a0000)：%s", formatGroup("0a0000"))
+		add("字体文件(000000)：%s", formatGroup("000000"))
 	}
 
-	// 四个区服各一行概览；当前区服额外逐文件列出，方便核对被改过的文件。
 	currentReg := region.Of(lang)
 	regions := []region.Region{region.Global, region.China, region.Taiwan, region.Korea}
-	backupSummary := make([]string, 0, len(regions))
+	var backupSummary []string
+	var currentBackupDetail string
 	for _, reg := range regions {
 		data, err := os.ReadFile(filepath.Join(backupRoot, string(reg), "meta.json"))
 		switch {
 		case errors.Is(err, fs.ErrNotExist):
-			backupSummary = append(backupSummary, fmt.Sprintf("%s=无", reg))
 			continue
 		case err != nil:
 			backupSummary = append(backupSummary, fmt.Sprintf("%s=读取失败", reg))
@@ -281,51 +321,70 @@ func (a *App) diagnosticsLines() []string {
 			backupSummary = append(backupSummary, fmt.Sprintf("%s=解析失败", reg))
 			continue
 		}
-		backupSummary = append(backupSummary, fmt.Sprintf("%s=%s/%d 文件", reg, meta.Version, len(meta.Files)))
-		if reg != currentReg {
-			continue
+		backupSummary = append(backupSummary, fmt.Sprintf("%s=%s/%d文件", reg, meta.Version, len(meta.Files)))
+		if reg == currentReg {
+			names := make([]string, 0, len(meta.Files))
+			for name := range meta.Files {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			parts := make([]string, 0, len(names))
+			for _, name := range names {
+				h := meta.Files[name]
+				parts = append(parts, fmt.Sprintf("%s=%s/%dB", name, diagHash(h.SHA256), h.Size))
+			}
+			currentBackupDetail = fmt.Sprintf("备份详情(%s)：版本=%s | 更新=%s | %s",
+				reg, meta.Version, meta.UpdatedAt, strings.Join(parts, " | "))
 		}
-		names := make([]string, 0, len(meta.Files))
-		for name := range meta.Files {
-			names = append(names, name)
-		}
-		sort.Strings(names)
-		parts := make([]string, 0, len(names))
-		for _, name := range names {
-			h := meta.Files[name]
-			parts = append(parts, fmt.Sprintf("%s=%s/%dB", name, h.SHA256, h.Size))
-		}
-		add("备份 %s：版本=%s｜更新=%s｜%s", reg, meta.Version, meta.UpdatedAt, strings.Join(parts, "｜"))
 	}
-	add("备份概览：%s", strings.Join(backupSummary, "｜"))
+	if len(backupSummary) == 0 {
+		add("本地备份：无")
+	} else {
+		add("本地备份：%s", strings.Join(backupSummary, " | "))
+		if currentBackupDetail != "" {
+			add("%s", currentBackupDetail)
+		}
+	}
 
 	var envSet []string
+	seenEnv := make(map[string]bool)
 	for _, key := range []string{"HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy", "NO_PROXY", "no_proxy"} {
 		if strings.TrimSpace(os.Getenv(key)) != "" {
-			envSet = append(envSet, key)
+			upper := strings.ToUpper(key)
+			if !seenEnv[upper] {
+				seenEnv[upper] = true
+				envSet = append(envSet, upper)
+			}
 		}
 	}
-	envDesc := "未设置"
+	envDesc := "无"
 	if len(envSet) > 0 {
-		envDesc = strings.Join(envSet, ",") + " 已设置（值不记录）"
+		envDesc = strings.Join(envSet, ",")
 	}
 	egress := "直连"
 	if req, err := http.NewRequest(http.MethodGet, "https://github.com", nil); err == nil {
 		proxyURL, proxyErr := netproxy.Func()(req)
 		switch {
 		case proxyErr != nil:
-			egress = "探测失败: " + proxyErr.Error()
+			egress = "探测失败:" + proxyErr.Error()
 		case proxyURL != nil:
 			// 只记协议，代理主机可能是内网地址。
-			egress = fmt.Sprintf("代理已启用（%s）", proxyURL.Scheme)
+			egress = fmt.Sprintf("代理(%s)", proxyURL.Scheme)
 		}
 	}
 	cloudDesc := "未初始化"
 	if cloud, ok := a.getCloud().(*verifier.GitHubClient); ok {
 		node, directFast := cloud.NetworkState()
-		cloudDesc = fmt.Sprintf("首选镜像=%s/直连足够快=%t", node, directFast)
+		switch {
+		case node != "":
+			cloudDesc = fmt.Sprintf("镜像=%s(直连快=%t)", node, directFast)
+		case directFast:
+			cloudDesc = "直连快=true"
+		default:
+			cloudDesc = "镜像=未选"
+		}
 	}
-	add("网络：代理变量=%s｜出口=%s｜%s", envDesc, egress, cloudDesc)
+	add("网络：出口=%s | 环境变量=%s | %s", egress, envDesc, cloudDesc)
 
 	return lines
 }
@@ -337,18 +396,59 @@ func pathOrError(path string, err error) string {
 	return path
 }
 
-func briefPath(path string) string {
-	st, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return "缺失"
+func diagHash(h string) string {
+	if len(h) > 12 {
+		return h[:12]
+	}
+	return h
+}
+
+func formatReplaceSwitches(textOn, fontOn bool) string {
+	switch {
+	case textOn && fontOn:
+		return "文本+字体"
+	case textOn:
+		return "仅文本"
+	case fontOn:
+		return "仅字体"
+	default:
+		return "全关"
+	}
+}
+
+func formatRuleSwitches(rules map[string]bool) string {
+	if len(rules) == 0 {
+		return "默认"
+	}
+	keys := make([]string, 0, len(rules))
+	for k := range rules {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var enabled []string
+	for _, k := range keys {
+		if rules[k] {
+			enabled = append(enabled, k)
 		}
-		return "读取失败"
 	}
-	if st.IsDir() {
-		return "目录"
+	if len(enabled) == 0 {
+		return "全关"
 	}
-	return fmt.Sprintf("%dB", st.Size())
+	return strings.Join(enabled, ",")
+}
+
+func configuredGameRegions(dirs map[string]string) []string {
+	if len(dirs) == 0 {
+		return nil
+	}
+	keys := make([]string, 0, len(dirs))
+	for k, v := range dirs {
+		if strings.TrimSpace(v) != "" {
+			keys = append(keys, k)
+		}
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 func countFilesWithExt(dir, ext string) (int, error) {

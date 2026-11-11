@@ -872,8 +872,8 @@ func TestCheckClientStatusCloudNetworkErrorWarnsUnknown(t *testing.T) {
 	if status.Label != "未知版本" {
 		t.Fatalf("网络失败时标签应为 未知版本，实际 %q", status.Label)
 	}
-	if !strings.Contains(status.Description, "获取云端原版信息失败") || !strings.Contains(status.Description, "继续汉化可能出错") {
-		t.Fatalf("网络失败时描述应包含明确警告与可能出错提示，实际 %q", status.Description)
+	if !strings.Contains(status.Description, "获取云端原版信息失败") || !strings.Contains(status.Description, "网络超时") {
+		t.Fatalf("网络失败时描述应说明失败原因，实际 %q", status.Description)
 	}
 }
 
