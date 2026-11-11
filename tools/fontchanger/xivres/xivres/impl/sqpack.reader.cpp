@@ -1,8 +1,112 @@
 #include "../include/xivres/sqpack.reader.h"
 
 #include <algorithm>
+#include <array>
+#include <atomic>
 #include <functional>
+#include <map>
 #include <utility>
+
+#include <zlib.h>
+
+namespace {
+	// The length of the entry at offset in strm, from its own header, or limit if the header doesn't tell.
+	uint64_t ReadEntryLength(const xivres::stream& strm, std::streamoff offset, uint64_t limit) {
+		xivres::packed::file_header header;
+		if (limit < sizeof header || strm.read(offset, &header, sizeof header) != sizeof header || *header.HeaderSize < sizeof header)
+			return limit;
+		return (std::min)(limit, header.occupied_size());
+	}
+
+	// For crc32_combine_op, by the length of what is appended.
+	const std::array<uLong, 256>& CombineOps() {
+		static const auto s_ops = [] {
+			std::array<uLong, 256> ops{};
+			for (size_t i = 0; i < ops.size(); i++)
+				ops[i] = crc32_combine_gen(static_cast<z_off_t>(i));
+			return ops;
+		}();
+		return s_ops;
+	}
+
+	// Entries sharing a location sort in any order in either index, so those of the second are put in the order of the first, by which
+	// full path hash can be of which pair of hashes.
+	template<typename TOffsets1, typename TOffsets2>
+	void PairSharedLocations(const TOffsets1& offsets1, TOffsets2& offsets2) {
+		const auto& ops = CombineOps();
+		for (size_t begin = 0, end; begin < offsets1.size(); begin = end) {
+			end = begin + 1;
+			while (end < offsets1.size() && offsets1[end].first == offsets1[begin].first)
+				++end;
+			if (end - begin < 2 || end > offsets2.size() || offsets2[begin].first != offsets1[begin].first || offsets2[end - 1].first != offsets1[begin].first)
+				continue;
+
+			std::multimap<uint32_t, size_t> byFullPathHash;
+			for (auto i = begin; i < end; ++i)
+				byFullPathHash.emplace(std::get<0>(offsets2[i].second), i);
+
+			std::vector<size_t> order(end - begin, SIZE_MAX);
+			for (auto i = begin; i < end; ++i) {
+				// The hash of the folder and a slash, to which a name of each length is appended in turn.
+				const auto folder = crc32_combine_op(~std::get<0>(offsets1[i].second), ~xivres::path_spec::SlashHashValue, ops[1]);
+				const auto name = ~std::get<1>(offsets1[i].second);
+				auto found = byFullPathHash.end();
+				for (size_t length = 0; length < ops.size() && found == byFullPathHash.end(); ++length)
+					found = byFullPathHash.find(~static_cast<uint32_t>(crc32_combine_op(folder, name, ops[length])));
+				if (found == byFullPathHash.end())
+					continue;
+				order[i - begin] = found->second;
+				byFullPathHash.erase(found);
+			}
+
+			auto rest = byFullPathHash.begin();
+			std::vector<typename TOffsets2::value_type> ordered;
+			ordered.reserve(order.size());
+			for (const auto index : order)
+				ordered.emplace_back(offsets2[index != SIZE_MAX ? index : (rest++)->second]);
+			std::ranges::copy(ordered, offsets2.begin() + static_cast<std::ptrdiff_t>(begin));
+		}
+	}
+
+	// An entry in a .dat file. Its size is read from its header on first use, as the space up to the next entry of the index may hold
+	// entries the index doesn't refer to.
+	class entry_view_stream : public xivres::default_base_stream {
+		const std::shared_ptr<const xivres::stream> m_stream;
+		const std::streamoff m_offset;
+		const std::streamsize m_limit;
+		mutable std::atomic<std::streamsize> m_size = -1;
+
+	public:
+		entry_view_stream(std::shared_ptr<const xivres::stream> strm, std::streamoff offset, std::streamsize limit)
+			: m_stream(std::move(strm))
+			, m_offset(offset)
+			, m_limit(limit) {
+		}
+
+		[[nodiscard]] std::streamsize size() const override {
+			auto size = m_size.load(std::memory_order_relaxed);
+			if (size < 0) {
+				size = static_cast<std::streamsize>(ReadEntryLength(*m_stream, m_offset, static_cast<uint64_t>(m_limit)));
+				m_size.store(size, std::memory_order_relaxed);
+			}
+			return size;
+		}
+
+		std::streamsize read(std::streamoff offset, void* buf, std::streamsize length) const override {
+			const auto available = size();
+			if (offset >= available)
+				return 0;
+			return m_stream->read(m_offset + offset, buf, (std::min)(length, available - offset));
+		}
+
+	protected:
+		[[nodiscard]] xivres::stream_source source_impl() const override {
+			auto result = m_stream->source();
+			result.Offset += m_offset;
+			return result;
+		}
+	};
+}
 
 std::span<const xivres::sqpack::sqindex::path_hash_locator> xivres::sqpack::reader::sqindex_1_type::pair_hash_locators() const {
 	return util::span_cast<sqindex::path_hash_locator>(Data, index_header().PathHashLocatorSegment.Offset, index_header().PathHashLocatorSegment.Size, 1);
@@ -168,6 +272,22 @@ xivres::sqpack::reader::reader(const std::string& fileName, const stream& indexS
 	std::ranges::sort(offsets1, Comparator());
 	std::ranges::sort(offsets2, Comparator());
 	Entries.reserve(offsets1.size());
+	if (offsets1.size() == offsets2.size())
+		PairSharedLocations(offsets1, offsets2);
+
+	// The space up to the next location in the same .dat file. Entries may share a location, and then share the space.
+	const auto spacesOf = [](const auto& offsets) {
+		std::vector<uint64_t> spaces(offsets.size());
+		for (auto i = offsets.size(); i-- > 1;) {
+			const auto& prev = offsets[i - 1].first;
+			const auto& curr = offsets[i].first;
+			if (prev.DatFileIndex != curr.DatFileIndex)
+				continue;
+			spaces[i - 1] = prev.offset() == curr.offset() ? spaces[i] : curr.offset() - prev.offset();
+		}
+		return spaces;
+	};
+	const auto spaces = offsets1.empty() ? spacesOf(offsets2) : spacesOf(offsets1);
 
 	if (strictVerify && !offsets1.empty() && !offsets2.empty()) {
 		for (size_t i = 0; i < offsets1.size(); ++i) {
@@ -185,7 +305,7 @@ xivres::sqpack::reader::reader(const std::string& fileName, const stream& indexS
 			if (offsets1[prev].first.DatFileIndex != offsets1[curr].first.DatFileIndex)
 				continue;
 
-			Entries.emplace_back(entry_info{.Locator = offsets1[prev].first, .PathSpec = {}, .Allocation = offsets1[curr].first.offset() - offsets1[prev].first.offset()});
+			Entries.emplace_back(entry_info{.Locator = offsets1[prev].first, .PathSpec = {}, .Allocation = spaces[prev]});
 			if (std::get<2>(offsets1[prev].second))
 				Entries.back().PathSpec = path_spec(std::get<2>(offsets1[prev].second));
 			else if (std::get<1>(offsets2[prev].second))
@@ -206,7 +326,7 @@ xivres::sqpack::reader::reader(const std::string& fileName, const stream& indexS
 			if (offsets1[prev].first.DatFileIndex != offsets1[curr].first.DatFileIndex)
 				continue;
 
-			Entries.emplace_back(entry_info{.Locator = offsets1[prev].first, .PathSpec = {}, .Allocation = offsets1[curr].first.offset() - offsets1[prev].first.offset()});
+			Entries.emplace_back(entry_info{.Locator = offsets1[prev].first, .PathSpec = {}, .Allocation = spaces[prev]});
 			if (std::get<2>(offsets1[prev].second))
 				Entries.back().PathSpec = path_spec(std::get<2>(offsets1[prev].second));
 			else
@@ -225,7 +345,7 @@ xivres::sqpack::reader::reader(const std::string& fileName, const stream& indexS
 			if (offsets2[prev].first.DatFileIndex != offsets2[curr].first.DatFileIndex)
 				continue;
 
-			Entries.emplace_back(entry_info{.Locator = offsets2[prev].first, .PathSpec = {}, .Allocation = offsets2[curr].first.offset() - offsets2[prev].first.offset()});
+			Entries.emplace_back(entry_info{.Locator = offsets2[prev].first, .PathSpec = {}, .Allocation = spaces[prev]});
 			if (std::get<1>(offsets2[prev].second))
 				Entries.back().PathSpec = path_spec(std::get<1>(offsets2[prev].second));
 			else
@@ -296,7 +416,15 @@ size_t xivres::sqpack::reader::find_entry_index(const path_spec& pathSpec) const
 	if (!locator)
 		return (std::numeric_limits<size_t>::max)();
 
-	const auto entryInfo = std::ranges::lower_bound(Entries, *locator, std::less(), &entry_info::Locator);
+	auto entryInfo = std::ranges::lower_bound(Entries, *locator, std::less(), &entry_info::Locator);
+
+	// Of the entries sharing the location, the one of this path.
+	for (auto same = entryInfo; same != Entries.end() && same->Locator == *locator; ++same) {
+		if (same->PathSpec == pathSpec) {
+			entryInfo = same;
+			break;
+		}
+	}
 	return static_cast<size_t>(std::distance(Entries.begin(), entryInfo));
 }
 
@@ -308,11 +436,16 @@ size_t xivres::sqpack::reader::get_entry_index(const path_spec& pathSpec) const 
 }
 
 std::shared_ptr<xivres::packed_stream> xivres::sqpack::reader::packed_at(const entry_info& info) const {
-	return std::make_unique<stream_as_packed_stream>(info.PathSpec, std::make_shared<partial_view_stream>(Data.at(info.Locator.DatFileIndex).Stream, info.Locator.offset(), info.Allocation));
+	return packed_at(info, info.PathSpec);
 }
 
 std::shared_ptr<xivres::packed_stream> xivres::sqpack::reader::packed_at(const path_spec& pathSpec) const {
-	return packed_at(Entries[get_entry_index(pathSpec)]);
+	// The path asked for may have its text, which the entry's doesn't.
+	return packed_at(Entries[get_entry_index(pathSpec)], pathSpec);
+}
+
+std::shared_ptr<xivres::packed_stream> xivres::sqpack::reader::packed_at(const entry_info& info, const path_spec& pathSpec) const {
+	return std::make_unique<stream_as_packed_stream>(pathSpec, std::make_shared<entry_view_stream>(Data.at(info.Locator.DatFileIndex).Stream, static_cast<std::streamoff>(info.Locator.offset()), static_cast<std::streamsize>(info.Allocation)));
 }
 
 std::shared_ptr<xivres::unpacked_stream> xivres::sqpack::reader::at(const entry_info& info, std::span<uint8_t> obfuscatedHeaderRewrite) const {

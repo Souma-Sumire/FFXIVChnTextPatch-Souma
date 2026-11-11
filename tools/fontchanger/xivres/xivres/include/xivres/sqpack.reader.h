@@ -105,6 +105,8 @@ namespace xivres::sqpack {
 		struct entry_info {
 			sqindex::data_locator Locator;
 			path_spec PathSpec;
+
+			// The space up to the next location the index refers to, which the entry may not fill. Entries sharing a location share it.
 			uint64_t Allocation;
 		};
 
@@ -140,6 +142,8 @@ namespace xivres::sqpack {
 		[[nodiscard]] std::shared_ptr<packed_stream> packed_at(const entry_info& info) const;
 
 		[[nodiscard]] std::shared_ptr<packed_stream> packed_at(const path_spec& pathSpec) const;
+
+		[[nodiscard]] std::shared_ptr<packed_stream> packed_at(const entry_info& info, const path_spec& pathSpec) const;
 
 		[[nodiscard]] std::shared_ptr<unpacked_stream> at(const entry_info& info, std::span<uint8_t> obfuscatedHeaderRewrite = {}) const;
 

@@ -45,8 +45,8 @@ xivres::sqpack::generator::entry_info& xivres::sqpack::generator::sqpack_views::
 }
 
 std::shared_ptr<const xivres::packed_stream> xivres::sqpack::generator::entry_info::swap_stream(std::shared_ptr<const packed_stream> newStream) {
-	if (newStream && newStream->size() > m_entrySize)
-		throw std::invalid_argument("Provided strm requires more space than reserved size");
+	if (newStream && !can_take(newStream->size()))
+		throw std::invalid_argument("Provided strm requires more space than reserved size, or another entry is at the same place");
 	const auto lock = std::scoped_lock(m_streamMtx);
 	auto oldStream{std::move(m_stream)};
 	m_stream = std::move(newStream);
@@ -74,7 +74,8 @@ bool xivres::sqpack::generator::entry_info::try_keep_original_place() {
 		return false;
 
 	const auto& [locator, allocation] = *m_originalPlace;
-	if (allocation > UINT32_MAX || m_entrySize > allocation || std::cmp_greater(m_baseStream->size(), allocation))
+	// The base stream is the original, which fits. Its size isn't asked for, as that reads the entry's header.
+	if (allocation > UINT32_MAX || m_entrySize > allocation)
 		return false;
 
 	m_entrySize = static_cast<uint32_t>(allocation);
@@ -697,6 +698,13 @@ xivres::sqpack::generator::sqpack_views xivres::sqpack::generator::export_to_vie
 				return l->locator().offset() < r->locator().offset();
 			return l->entry_size() < r->entry_size();
 		});
+		for (size_t j = 1; j < entries.size(); ++j) {
+			if (entries[j - 1]->locator().offset() != entries[j]->locator().offset())
+				continue;
+			entries[j - 1]->shares_place(true);
+			entries[j]->shares_place(true);
+		}
+
 		dataEntryRanges.emplace_back(res.Entries.size(), entries.size());
 		res.Entries.insert(res.Entries.end(), entries.begin(), entries.end());
 

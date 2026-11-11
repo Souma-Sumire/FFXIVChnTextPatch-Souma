@@ -28,6 +28,7 @@ namespace xivres::sqpack {
 
 			std::optional<std::pair<sqindex::data_locator, uint64_t>> m_originalPlace;
 			bool m_keepsOriginalPlace = false;
+			bool m_sharesPlace = false;
 
 			[[nodiscard]] std::shared_ptr<const packed_stream> current_stream() const;
 
@@ -47,6 +48,12 @@ namespace xivres::sqpack {
 			void original_place(sqindex::data_locator locator, uint64_t allocation) { m_originalPlace.emplace(locator, allocation); }
 			bool try_keep_original_place();
 			[[nodiscard]] bool keeps_original_place() const { return m_keepsOriginalPlace; }
+
+			// Another entry is at the same place, so the stream can't be swapped.
+			void shares_place(bool v) { m_sharesPlace = v; }
+
+			// Whether swap_stream takes a stream of this size.
+			[[nodiscard]] bool can_take(std::streamsize size) const { return !m_sharesPlace && std::cmp_less_equal(size, m_entrySize); }
 
 			[[nodiscard]] std::shared_ptr<const packed_stream> base_stream() const {
 				const auto lock = std::scoped_lock(m_streamMtx);
