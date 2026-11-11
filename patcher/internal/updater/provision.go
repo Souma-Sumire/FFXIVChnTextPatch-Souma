@@ -21,6 +21,9 @@ type ResourceStatus struct {
 	DownloadedBytes int64  `json:"downloadedBytes"`
 	CSVHash         string `json:"csvHash,omitempty"`
 	CSVUpdated      bool   `json:"csvUpdated,omitempty"`
+	CSVCount        int    `json:"csvCount,omitempty"`
+	RulesUpdated    bool   `json:"rulesUpdated,omitempty"`
+	TablesUpdated   bool   `json:"tablesUpdated,omitempty"`
 	GeneratedAt     string `json:"generatedAt,omitempty"`
 }
 
@@ -51,7 +54,7 @@ func throttleProgress(p ProgressFunc) ProgressFunc {
 			mu.Unlock()
 			return
 		}
-		if !finished && now.Sub(last) < 60*time.Millisecond {
+		if key == lastKey && !finished && now.Sub(last) < 60*time.Millisecond {
 			mu.Unlock()
 			return
 		}
@@ -112,14 +115,20 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		zipPath := filepath.Join(resourceDir, "rawexd.zip")
 		if zipMatches(resourceDir, "rawexd.zip", remote.RawEXD) {
 			// 快照包本身可信，只是解压目录被改动或缺失：直接重新解压，无需重新下载。
-			progress("rawexd", "修复 CSV 快照", 0, 0)
-			if err := ExtractZip(zipPath, resourceDir); err != nil {
+			progress("rawexd", "解压 CSV 文件", 0, 0)
+			if err := ExtractZipWithProgress(zipPath, resourceDir, func(done, total int64) {
+				progress("rawexd", "解压 CSV 文件", done, total)
+			}); err != nil {
 				return st, fmt.Errorf("解压 rawexd.zip 失败: %w", err)
 			}
 		} else {
 			progress("rawexd", "下载 CSV 快照包", 0, 0)
-			if err := u.downloadZip(ctx, resourceDir, "rawexd.zip", remote.RawEXD, true, func(done, total int64) {
-				progress("rawexd", "下载 CSV 快照包", done, total)
+			if err := u.downloadZip(ctx, resourceDir, "rawexd.zip", remote.RawEXD, true, zipProgress{
+				stage:   "rawexd",
+				dl:      "下载 CSV 快照包",
+				verify:  "校验 CSV 快照包",
+				extract: "解压 CSV 文件",
+				emit:    progress,
 			}); err != nil {
 				return st, err
 			}
@@ -127,6 +136,7 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 			st.DownloadedBytes += remote.RawEXD.Size
 		}
 		st.CSVUpdated = true
+		st.CSVCount = remote.RawEXD.Count
 	}
 
 	metas := []struct {
@@ -150,6 +160,12 @@ func (u *Updater) Provision(ctx context.Context, resourceDir string, progress Pr
 		}
 		st.DownloadedFiles++
 		st.DownloadedBytes += meta.want.Size
+		switch meta.name {
+		case "rules.json":
+			st.RulesUpdated = true
+		case "tables.json":
+			st.TablesUpdated = true
+		}
 	}
 
 	if err := writeManifest(resourceDir, remote); err != nil {
@@ -216,14 +232,20 @@ func (u *Updater) EnsureFontPack(ctx context.Context, resourceDir string, progre
 	if zipMatches(resourceDir, "font.zip", remote.Font) {
 		// 包本身可信，只是解压目录缺失或被改动：重新解压即可。
 		progress("font", "解压字体包", 0, 0)
-		if err := ExtractZip(filepath.Join(resourceDir, "font.zip"), resourceDir); err != nil {
+		if err := ExtractZipWithProgress(filepath.Join(resourceDir, "font.zip"), resourceDir, func(done, total int64) {
+			progress("font", "解压字体包", done, total)
+		}); err != nil {
 			return fmt.Errorf("解压 font.zip 失败: %w", err)
 		}
 		return nil
 	}
 	progress("font", "下载字体包", 0, 0)
-	if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, true, func(done, total int64) {
-		progress("font", "下载字体包", done, total)
+	if err := u.downloadZip(ctx, resourceDir, "font.zip", remote.Font, true, zipProgress{
+		stage:   "font",
+		dl:      "下载字体包",
+		verify:  "校验字体包",
+		extract: "解压字体包",
+		emit:    progress,
 	}); err != nil {
 		return err
 	}
@@ -269,15 +291,32 @@ func shortHash(h string) string {
 	return h
 }
 
-func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, want BundleInfo, keep bool, progress func(done, total int64)) error {
+type zipProgress struct {
+	stage   string
+	dl      string
+	verify  string
+	extract string
+	emit    ProgressFunc
+}
+
+func (zp zipProgress) report(detail string, done, total int64) {
+	if zp.emit != nil {
+		zp.emit(zp.stage, detail, done, total)
+	}
+}
+
+func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, want BundleInfo, keep bool, zp zipProgress) error {
 	var lastErr error
 	for _, node := range u.nodes() {
 		url := strings.TrimRight(node, "/") + "/" + zipName
 		tmp := filepath.Join(resourceDir, zipName+".part")
-		if err := u.fetchToFile(ctx, url, tmp, progress); err != nil {
+		if err := u.fetchToFile(ctx, url, tmp, func(done, total int64) {
+			zp.report(zp.dl, done, total)
+		}); err != nil {
 			lastErr = err
 			continue
 		}
+		zp.report(zp.verify, 0, 0)
 		got, err := HashFile(tmp)
 		if err != nil {
 			lastErr = fmt.Errorf("计算 %s 哈希失败: %w", tmp, err)
@@ -301,7 +340,10 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 				continue
 			}
 		}
-		if err := ExtractZip(zipPath, resourceDir); err != nil {
+		zp.report(zp.extract, 0, 0)
+		if err := ExtractZipWithProgress(zipPath, resourceDir, func(done, total int64) {
+			zp.report(zp.extract, done, total)
+		}); err != nil {
 			lastErr = fmt.Errorf("解压 %s 失败: %w", zipName, err)
 			_ = os.Remove(tmp)
 			continue

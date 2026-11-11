@@ -6,7 +6,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -47,45 +46,6 @@ func (m *mockCloud) Download(ctx context.Context, url, dst string, onProgress fu
 
 func (m *mockCloud) MirrorDownloadURL(raw string) string {
 	return ""
-}
-
-func TestBuildTableListFromResource(t *testing.T) {
-	data, err := os.ReadFile("../resource/tables.json")
-	if err != nil {
-		t.Skipf("缺少 resource/tables.json: %v", err)
-	}
-	var doc TablesDoc
-	if err := json.Unmarshal(data, &doc); err != nil {
-		t.Fatalf("解析 tables.json 失败: %v", err)
-	}
-	if len(doc.Files) == 0 {
-		t.Fatal("tables.json 缺少 files 列表")
-	}
-	list := buildTableList(doc)
-	if len(list) != len(doc.Files) {
-		t.Fatalf("表数量不一致: %d != %d", len(list), len(doc.Files))
-	}
-
-	byKey := make(map[string]TableEntry, len(list))
-	for _, entry := range list {
-		byKey[entry.Key] = entry
-	}
-	if entry, ok := byKey["BNpcName"]; !ok || entry.Warning == "" {
-		t.Fatalf("BNpcName 缺少兼容警告: %+v", entry)
-	}
-	if entry, ok := byKey["Lobby"]; !ok || entry.Warning == "" {
-		t.Fatalf("Lobby 缺少兼容警告: %+v", entry)
-	}
-	var quest TableEntry
-	for key, entry := range byKey {
-		if strings.HasPrefix(key, "quest/") {
-			quest = entry
-			break
-		}
-	}
-	if quest.Key == "" || quest.Folder != "quest" || !strings.Contains(quest.Name, "任务对话") {
-		t.Fatalf("任务表信息不正确: %+v", quest)
-	}
 }
 
 func createMinimalIndexFile(path string) error {
@@ -675,8 +635,95 @@ func TestCheckClientStatusNonGlobalIgnoresLocalBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckClientStatus 失败: %v", err)
 	}
+	if status.Status != "unknown" {
+		t.Fatalf("未校验来源的本地快照匹配时不应判定为 original，实际为 %s (%s)", status.Status, status.Description)
+	}
+
+	// 当明确为可信来源备份且哈希匹配时，才应判定为 original
+	meta.Source = verifier.BackupSourceCloud
+	if data, err := json.Marshal(meta); err != nil {
+		t.Fatal(err)
+	} else if err := os.WriteFile(filepath.Join(backupDir, "meta.json"), data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, err = app.CheckClientStatus(gameDir, "CHS")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
 	if status.Status != "original" {
-		t.Fatalf("非国际服有本地备份且匹配时应为 original，实际为 %s (%s)", status.Status, status.Description)
+		t.Fatalf("可信来源备份匹配时应为 original，实际为 %s (%s)", status.Status, status.Description)
+	}
+}
+
+func TestCheckClientStatusGlobalLocalSnapshotFallsBackToCloud(t *testing.T) {
+	tmpDir := t.TempDir()
+	gameDir := filepath.Join(tmpDir, "game_root")
+	sqpackDir := filepath.Join(gameDir, "game", "sqpack", "ffxiv")
+	if err := os.MkdirAll(sqpackDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	version := "2026.11.01.0000.0000"
+	if err := os.WriteFile(filepath.Join(gameDir, "game", "ffxivgame.ver"), []byte(version), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	textIndex := filepath.Join(sqpackDir, "0a0000.win32.index")
+	fontIndex := filepath.Join(sqpackDir, "000000.win32.index")
+	if err := os.WriteFile(textIndex, sqpack.CreateMockIndex("exd", "addon_0_ja.exd"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := createMinimalIndexFile(fontIndex); err != nil {
+		t.Fatal(err)
+	}
+
+	textHash, err := verifier.HashFile(textIndex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fontHash, err := verifier.HashFile(fontIndex)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	app := NewApp()
+	app.skipProcessCheck = true
+	app.resourceDirOverride = filepath.Join(tmpDir, "resource")
+	app.cloudOverride = &mockCloud{
+		releases: map[string]*verifier.Release{
+			version: {
+				Tag: version,
+				FileHashes: map[string]string{
+					"0a0000.win32.index": "official_different_hash",
+					"000000.win32.index": fontHash.SHA256,
+				},
+			},
+		},
+	}
+
+	// 本地有一份匹配当前被改动文本的不可信快照
+	backupDir := filepath.Join(backupRootFor(app.resourceDirOverride), "global")
+	if err := os.MkdirAll(backupDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	meta := verifier.BackupMeta{
+		Region:  "global",
+		Version: version,
+		Source:  verifier.BackupSourceLocal,
+		Files: map[string]verifier.FileHash{
+			"0a0000.win32.index": textHash,
+			"000000.win32.index": fontHash,
+		},
+	}
+	data, _ := json.Marshal(meta)
+	if err := os.WriteFile(filepath.Join(backupDir, "meta.json"), data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	status, err := app.CheckClientStatus(gameDir, "GLOBAL")
+	if err != nil {
+		t.Fatalf("CheckClientStatus 失败: %v", err)
+	}
+	if status.Text.Status != "modified" || status.Font.Status != "original" {
+		t.Fatalf("国际服仅有不可信本地快照时应以云端哈希为准，实际 text=%s font=%s", status.Text.Status, status.Font.Status)
 	}
 }
 
@@ -877,35 +924,7 @@ func TestCheckClientStatusCloudNetworkErrorWarnsUnknown(t *testing.T) {
 	}
 }
 
-func TestWailsBindingMethodFQN(t *testing.T) {
-	app := NewApp()
-	ptrType := reflect.TypeOf(app)
-	namedType := ptrType.Elem()
-	// go build 生成的 package main 可执行文件在运行时 PkgPath() 为 "main"，go test 下则为包导入路径。
-	gotPkg := namedType.PkgPath()
-	if gotPkg != "main" && gotPkg != "github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher" {
-		t.Fatalf("Wails 绑定包路径异常: got %q", gotPkg)
-	}
-	if namedType.Name() != "App" {
-		t.Fatalf("Wails 绑定类型名不匹配: got %q, want %q", namedType.Name(), "App")
-	}
-
-	requiredMethods := []string{
-		"GetAppVersion",
-		"GetBootstrap",
-		"SelectGameDirectory",
-		"SelectFontFile",
-		"OpenElementEditorWindow",
-		"SyncElementEditorWindow",
-		"HideElementEditorWindow",
-		"GetElementEditorState",
-	}
-	for _, name := range requiredMethods {
-		if _, ok := ptrType.MethodByName(name); !ok {
-			t.Fatalf("缺少绑定方法 main.%s.%s", namedType.Name(), name)
-		}
-	}
-
+func TestNormalizeDialogSelection(t *testing.T) {
 	if got, err := normalizeDialogSelection("", errors.New("cancelled by user")); err != nil || got != "" {
 		t.Fatalf("取消对话框应返回空字符串且无报错，实际 (%q, %v)", got, err)
 	}

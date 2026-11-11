@@ -1,10 +1,42 @@
 package fontengine
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func TestMain(m *testing.M) {
+	if os.Getenv("FC_TEST_HELPER") == "1" {
+		runHelperCLI(os.Args[1:])
+		os.Exit(0)
+	}
+	os.Exit(m.Run())
+}
+
+func runHelperCLI(args []string) {
+	for i := 0; i < len(args)-1; i++ {
+		switch args[i] {
+		case "--export-raw":
+			outDir := args[i+1]
+			if !filepath.IsAbs(outDir) {
+				os.Exit(2)
+			}
+			if err := os.WriteFile(filepath.Join(outDir, "AXIS_12.fdt"), []byte("fdt"), 0o644); err != nil {
+				os.Exit(3)
+			}
+		case "--export-ttmp":
+			outPath := args[i+1]
+			if !filepath.IsAbs(outPath) {
+				os.Exit(2)
+			}
+			if err := os.WriteFile(outPath, []byte("ttmp"), 0o644); err != nil {
+				os.Exit(3)
+			}
+		}
+	}
+}
 
 func TestResolveBinaryInvalidOrSmallFilesIgnored(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -64,5 +96,44 @@ func TestPromoteToFontchangerDir(t *testing.T) {
 	}
 	if got := promoteToFontchangerDir(base, want); got != want {
 		t.Fatalf("重复调用应保持幂等，实际: %s", got)
+	}
+}
+
+func TestCompileRelativeOutputPathsResolvedBeforeTempDirExec(t *testing.T) {
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !isValidCLI(exe) {
+		t.Skipf("当前测试二进制小于 1MB，跳过子进程测试: %s", exe)
+	}
+
+	workDir := t.TempDir()
+	origWd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(workDir); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(origWd)
+	})
+
+	t.Setenv("FC_TEST_HELPER", "1")
+	engine := NewEngine(exe)
+
+	if err := engine.CompileRaw(context.Background(), `{}`, "fontbuild.tmp", false, nil); err != nil {
+		t.Fatalf("CompileRaw 传相对输出目录应成功: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(workDir, "fontbuild.tmp", "AXIS_12.fdt")); err != nil {
+		t.Fatalf("未在工作目录找到 CompileRaw 产物: %v", err)
+	}
+
+	if err := engine.CompileTTMP(context.Background(), `{}`, filepath.Join("dist", "out.ttmp2"), nil); err != nil {
+		t.Fatalf("CompileTTMP 传相对输出路径应成功: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(workDir, "dist", "out.ttmp2")); err != nil {
+		t.Fatalf("未在工作目录找到 CompileTTMP 产物: %v", err)
 	}
 }

@@ -524,9 +524,12 @@ const el = {
   btnOpenFontEditor: byId<HTMLButtonElement>("btn-open-font-editor"),
   btnOpenFontEditorText: byId("btn-open-font-editor-text"),
   fontCompilerBar: byId("font-compiler-bar"),
+  fontCompileGroup: byId("font-compile-group"),
   btnCompileFont: byId<HTMLButtonElement>("btn-compile-font"),
+  btnCompileFontText: byId("btn-compile-font-text"),
   fontBuildProgress: byId("font-build-progress"),
   fontBuildBar: byId("font-build-bar"),
+  fontBuildStatus: byId("font-build-status"),
   fontPresetSummary: byId("font-preset-summary"),
   fontSource: byId<HTMLSelectElement>("font-source"),
   fontEditorAlert: byId("font-editor-alert"),
@@ -1204,7 +1207,7 @@ function updateRestoreButtonState(): void {
     }
   }
   el.btnRestore.disabled = busy || Boolean(reason);
-  setTip(el.btnRestore, reason || null);
+  setTip(el.btnRestore, null);
   el.restoreReason.textContent = reason;
   el.restoreReason.classList.toggle("hidden", !reason);
 }
@@ -1307,6 +1310,10 @@ function setWindowTitle(): void {
 
 function showConfirm(title: string, text: string, okText = "确定继续"): Promise<boolean> {
   return openModal(title, text, okText, "").then((result) => result === "ok");
+}
+
+function showAlert(title: string, text: string, okText = "知道了"): Promise<void> {
+  return openModal(title, text, okText, "", true).then(() => undefined);
 }
 
 // openModal 支持一个可选的次要操作按钮（如「手动下载」），确认/次要/取消三态返回。
@@ -1449,12 +1456,15 @@ async function checkAppUpdate(mode: UpdateCheckMode = {}): Promise<void> {
       }
     } else if (interactive) {
       log("[检查] 当前汉化器已是最新版本。", "ok");
-      await showConfirm("检查更新", `当前已是最新版本 (v${info.currentVersion})。`, "确定");
+      await showAlert("检查更新", `当前已是最新版本 (v${info.currentVersion})。`);
     }
   } catch (err) {
     if (interactive) {
       log(`[错误] 检查主程序更新失败: ${describeError(err)}`, "error");
-      await showConfirm("检查更新失败", `无法连接到更新服务器: ${describeError(err)}`, "确定");
+      await showAlert(
+        "检查更新失败",
+        `无法连接到更新服务器，请检查网络或代理设置后重试。\n\n详情：${describeError(err)}`,
+      );
     }
   } finally {
     checkingAppUpdate = false;
@@ -1874,7 +1884,7 @@ function renderRules(): void {
     if (syncingResource) {
       notice.textContent = `规则数据同步中（${unavailable.map((rule) => rule.name).join("、")}），请稍候…`;
     } else {
-      notice.textContent = `不可用规则：${unavailable.map((rule) => rule.name).join("、")}。请同步资源后重试`;
+      notice.textContent = `当前有规则不可用（${unavailable.map((rule) => rule.name).join("、")}），请同步内置资源后重试`;
     }
     el.rules.append(notice);
   }
@@ -1964,23 +1974,45 @@ function setGameDir(dir: string): void {
   void persistConfig();
 }
 
+const DIAG_ICON_REFRESH =
+  '<path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/>';
+
+function createDiagActionButton(
+  icon: string,
+  label: string,
+  onClick: () => void,
+  tip = "",
+): HTMLButtonElement {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn-diag-action";
+  btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg><span>${label}</span>`;
+  if (tip) {
+    setTip(btn, tip);
+  }
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    onClick();
+  });
+  return btn;
+}
+
 function createDiagItem(label: string, value: string, cls = "", action?: HTMLElement): HTMLDivElement {
   const item = document.createElement("div");
   item.className = "diag-item";
+  const head = document.createElement("div");
+  head.className = "diag-head";
   const k = document.createElement("span");
   k.className = "diag-k";
   k.textContent = label;
+  head.append(k);
+  if (action) {
+    head.append(action);
+  }
   const v = document.createElement("span");
   v.className = `diag-v ${cls}`.trim();
   v.textContent = value;
-  if (action) {
-    const row = document.createElement("div");
-    row.className = "diag-value-row";
-    row.append(v, action);
-    item.append(k, row);
-  } else {
-    item.append(k, v);
-  }
+  item.append(head, v);
   return item;
 }
 
@@ -2066,7 +2098,7 @@ function renderTargetLangs(): void {
   el.targetLangMenu.replaceChildren();
   el.targetLangMenu.classList.add("hidden");
   el.targetLangTrigger.setAttribute("aria-expanded", "false");
-  setTip(el.targetLangTrigger, locked && opts.length === 1 ? "该区服只有一种语言" : null);
+  setTip(el.targetLangTrigger, null);
 
   for (const opt of opts) {
     const item = document.createElement("label");
@@ -2179,13 +2211,7 @@ function renderCSVTrigger(): void {
         : "内置词条";
   setTip(
     el.csvTrigger,
-    ctx.selected
-      ? ctx.selected
-      : syncFailed
-        ? "上次同步失败，汉化时会重试"
-        : pending
-          ? "词条同步中"
-          : null,
+    !ctx.selected && syncFailed ? "上次同步失败，点击「开始汉化」时将自动重试" : null,
   );
   el.csvTrigger.classList.toggle("is-invalid", invalid || syncFailed);
 }
@@ -2206,10 +2232,10 @@ function renderCSVMenu(): void {
   el.csvMenu.replaceChildren();
 
   const builtinDetail = bootstrap?.devMode
-    ? "开发构建：直接读 resource/rawexd，不联网"
+    ? "开发构建：直接读取 resource/rawexd，不联网"
     : builtinSyncFailed
-      ? "云端资源，始终最新，不可手动修改。上次同步失败，开始汉化时将重试"
-      : "云端资源，始终最新，不可手动修改";
+      ? "云端维护，每次启动自动同步，不可直接修改。上次同步失败，开始汉化时将重试"
+      : "云端维护，每次启动自动同步，不可直接修改";
   const options: {
     path: string;
     label: string;
@@ -2272,9 +2298,6 @@ function renderCSVMenu(): void {
     const main = document.createElement("button");
     main.type = "button";
     main.className = "csv-option-main";
-    if (opt.path) {
-      setTip(main, opt.path);
-    }
 
     // 名字后跟一小段时间，标明这份词条最后更新的时刻。
     const head = document.createElement("span");
@@ -2294,7 +2317,6 @@ function renderCSVMenu(): void {
       const hash = document.createElement("span");
       hash.className = "csv-option-hash";
       hash.textContent = `#${opt.hash.slice(0, 8)}`;
-      setTip(hash, `内置词条哈希 ${opt.hash}`);
       head.append(hash);
     }
 
@@ -2309,7 +2331,6 @@ function renderCSVMenu(): void {
       });
     } else {
       main.disabled = true;
-      setTip(main, `${opt.path}（目录已失效）`);
     }
     row.append(main);
 
@@ -2376,7 +2397,6 @@ function buildCSVMetaEditor(path: string, title: string, desc: string): HTMLElem
   confirmBtn.type = "button";
   confirmBtn.className = "btn btn-primary btn-xs csv-option-confirm-btn";
   confirmBtn.textContent = "确定";
-  setTip(confirmBtn, "保存修改");
 
   wrap.append(fields, confirmBtn);
 
@@ -2476,16 +2496,23 @@ function openCSVDeletePopover(
 
   const title = document.createElement("div");
   title.className = "popconfirm-title";
-  title.textContent = `删除词条目录「${label}」？`;
 
   const hint = document.createElement("div");
   hint.className = "popconfirm-hint";
 
+  const actions = document.createElement("div");
+  actions.className = "popconfirm-actions";
+  const okBtn = document.createElement("button");
+  okBtn.type = "button";
+  okBtn.className = "btn btn-xs btn-danger";
+
   let deleteFiles = canDeleteFiles;
   const syncHint = (): void => {
+    title.textContent = deleteFiles ? `永久删除词条目录「${label}」？` : `移除词条目录「${label}」？`;
     hint.textContent = deleteFiles
-      ? "目录文件会被永久删除，无法恢复。"
-      : "仅从列表中移除，目录文件保留在磁盘上。";
+      ? "目录及其中所有文件会被永久删除，无法恢复。"
+      : "仅从列表中移除，磁盘上的目录与文件会保留。";
+    okBtn.textContent = deleteFiles ? "永久删除" : "移出列表";
   };
   syncHint();
 
@@ -2501,18 +2528,12 @@ function openCSVDeletePopover(
       syncHint();
     });
     const checkText = document.createElement("span");
-    checkText.textContent = "同时删除目录文件";
+    checkText.textContent = "同时删除磁盘上的目录文件";
     checkLabel.append(check, checkText);
     bubble.append(checkLabel);
   }
   bubble.append(hint);
 
-  const actions = document.createElement("div");
-  actions.className = "popconfirm-actions";
-  const okBtn = document.createElement("button");
-  okBtn.type = "button";
-  okBtn.className = "btn btn-xs btn-danger";
-  okBtn.textContent = "删除";
   okBtn.addEventListener("click", () => void removeCSV(path, label, deleteFiles));
   const cancelBtn = document.createElement("button");
   cancelBtn.type = "button";
@@ -2596,7 +2617,7 @@ function buildCSVCopyPanel(): HTMLElement {
   text.className = "csv-copy-text";
   const title = document.createElement("span");
   title.className = "csv-copy-title";
-  title.textContent = "想自己改 CSV？";
+  title.textContent = "自定义词条";
   const desc = document.createElement("span");
   desc.className = "csv-copy-desc";
   desc.textContent = "制作一份可自由编辑的内置词条副本";
@@ -2607,7 +2628,6 @@ function buildCSVCopyPanel(): HTMLElement {
   if (!hasCopy) {
     const checkLabel = document.createElement("label");
     checkLabel.className = "csv-copy-check";
-    setTip(checkLabel, "OpenCC 转换副本简繁");
     const check = document.createElement("input");
     check.type = "checkbox";
     const checkText = document.createElement("span");
@@ -2902,27 +2922,22 @@ function partStatusClass(status: string | undefined): string {
   return "";
 }
 
-// createClientStatusItem 第一行只有「客户端状态」和重测按钮，
-// 第二行左右并排「文本 / 字体」，中间一条细分隔线。
 function createClientStatusItem(): HTMLDivElement {
   const item = document.createElement("div");
   item.className = "diag-item diag-item-actionable";
 
   const head = document.createElement("div");
-  head.className = "diag-line diag-head";
+  head.className = "diag-head";
   const k = document.createElement("span");
   k.className = "diag-k";
   k.textContent = "客户端状态";
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn btn-quiet btn-xs btn-chip diag-mini-btn diag-check-btn";
-  btn.textContent = checkingClient ? "校验中" : clientStatus ? "重测" : "检测";
+  const btn = createDiagActionButton(
+    DIAG_ICON_REFRESH,
+    checkingClient ? "检测中" : clientStatus ? "重新检测" : "检测",
+    () => void checkClientEnvironment(),
+  );
+  btn.classList.toggle("is-busy", checkingClient);
   btn.disabled = checkingClient;
-  setTip(btn, clientStatus?.description || "");
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    void checkClientEnvironment();
-  });
   head.append(k, btn);
 
   const makePair = (label: string, part: ClientPartStatus | undefined): HTMLSpanElement => {
@@ -2933,10 +2948,10 @@ function createClientStatusItem(): HTMLDivElement {
     pk.textContent = label;
     const pv = document.createElement("span");
     pv.className = `diag-v ${checkingClient ? "" : partStatusClass(part?.status)}`.trim();
-    pv.textContent = checkingClient ? "校验中…" : part?.label ?? "未检测";
+    pv.textContent = checkingClient ? "检测中…" : part?.label ?? "未检测";
     pair.append(pk, pv);
-    if (part?.description) {
-      setTip(pair, part.description);
+    if (part?.description && (part.status === "missing" || part.status === "unknown")) {
+      setTip(pair, part.description, "bottom");
     }
     return pair;
   };
@@ -2948,9 +2963,6 @@ function createClientStatusItem(): HTMLDivElement {
   sub.append(makePair("文本", clientStatus?.text), sep, makePair("字体", clientStatus?.font));
 
   item.append(head, sub);
-  if (clientStatus?.description) {
-    setTip(item, clientStatus.description);
-  }
   return item;
 }
 let checkClientGeneration = 0;
@@ -3026,14 +3038,16 @@ function renderFontAlert(): void {
   if (fontSourceMode() === "compile") {
     if (fontEditorHint) reasons.push(fontEditorHint);
     if (fontCompilerReady && !busy && !fontCompiling && fontBuildNeeded() && !fontBuildReady() && fontBuild?.reason) {
-      reasons.push(`${fontBuild.reason}，请先执行「编译」生成字体贴图。`);
+      const msg = fontBuild.reason.includes("请重新编译")
+        ? `${fontBuild.reason}。`
+        : `${fontBuild.reason}，请先执行「编译」生成字体贴图。`;
+      reasons.push(msg);
     }
   }
   const text = reasons.join("；");
   if (el.fontEditorAlertText.textContent !== text) {
     el.fontEditorAlertText.textContent = text;
   }
-  el.fontEditorAlert.title = text;
   el.fontEditorAlert.classList.toggle("hidden", !text || !fontCompilerReady);
 }
 
@@ -3061,19 +3075,22 @@ async function refreshFontBuild(): Promise<void> {
 
 function renderFontBuildState(): void {
   const ready = fontBuildReady();
-  el.btnCompileFont.textContent = fontCompiling ? "编译中…" : ready ? "重新编译" : "编译";
-  el.btnCompileFont.classList.toggle("hidden", !fontCompilerReady);
+  const isEnabled = el.replaceFont.checked && !busy;
+  const presetEnabled = isEnabled && !fontEditorHint;
+  const needsCompile = fontCompilerReady && presetEnabled && fontBuildNeeded() && !ready && !fontCompiling;
+  const showReadyBadge = fontCompilerReady && presetEnabled && ready && !fontCompiling;
+
+  el.btnCompileFontText.textContent = fontCompiling ? "编译中…" : ready ? "重新编译" : "编译";
+  el.fontCompileGroup.classList.toggle("hidden", !fontCompilerReady);
+  el.btnCompileFont.classList.toggle("is-compile-needed", needsCompile);
+  el.btnCompileFont.classList.toggle("is-compiling", fontCompiling);
+  el.btnCompileFont.classList.toggle("btn-quiet", ready && !fontCompiling);
   el.fontBuildProgress.classList.toggle("hidden", !fontCompiling);
+  el.fontBuildStatus.classList.toggle("hidden", !showReadyBadge);
   if (!fontCompiling) {
     el.fontBuildBar.style.width = "0%";
   }
-  let tip: string | null = null;
-  if (fontCompiling) {
-    tip = "正在编译字体贴图";
-  } else if (fontBuildNeeded() && !ready && fontBuild?.reason) {
-    tip = `${fontBuild.reason}，请先执行「编译」生成字体贴图`;
-  }
-  setTip(el.btnCompileFont, tip);
+  setTip(el.btnCompileFont, null);
   renderFontAlert();
   refreshPatchButtonGate();
 }
@@ -3092,7 +3109,7 @@ function refreshPatchButtonGate(): void {
     }
     if (!fontBuildReady()) {
       el.btnPatch.disabled = true;
-      setTip(el.btnPatch, busy ? null : "请先编译字体方案");
+      setTip(el.btnPatch, busy ? null : "请先点击「编译」生成字体贴图");
       return;
     }
   }
@@ -3118,27 +3135,27 @@ function updateFontUiAssetState(): void {
 
   let hint = "";
   if (busy) {
-    hint = "正在执行任务，请等待完成后再编辑方案";
+    hint = "任务执行中，请等待完成后再编辑方案";
   } else if (fontCompiling) {
-    hint = "正在编译字体贴图，等编译完成后再编辑方案";
+    hint = "正在编译字体贴图，请等待编译完成后再编辑方案";
   } else if (!el.replaceFont.checked) {
     hint = "请先开启「游戏字体」，再编辑自定义方案";
   } else if (!hasGameDir) {
     hint = "请先选择当前区服有效的游戏安装目录";
   } else if (isMismatch) {
-    hint = "客户端区服不匹配，无法进行字体定制";
+    hint = "客户端区服不匹配，请切换区服或重新选择游戏目录";
   } else if (isFontModified) {
     hint = "客户端字体文件已被修改，请先用「还原原版」恢复官方字体，再编辑方案";
   } else if (isFontMissing) {
-    hint = "客户端字体文件缺失，无法进行字体定制";
+    hint = "客户端缺少原版字体文件，请先点击「还原原版」或通过官方启动器修复客户端";
   }
 
   fontEditorHint = hint;
-  setTip(el.btnOpenFontEditor, hint || null);
+  setTip(el.btnOpenFontEditor, null);
   const presetControl = el.btnOpenFontEditor.closest(".font-preset-control") as HTMLElement | null;
   if (presetControl) {
     presetControl.classList.toggle("disabled", !isEnabled || !presetEnabled);
-    setTip(presetControl, !presetEnabled && hint ? hint : null);
+    setTip(presetControl, null);
     presetControl.classList.toggle("hidden", !isCompile);
   }
   renderFontAlert();
@@ -3807,10 +3824,10 @@ async function openFontJsonFile(): Promise<void> {
   try {
     parsed = JSON.parse(content) as MultiFontSet;
   } catch {
-    throw new Error("文件不是合法的 JSON");
+    throw new Error("无法解析所选文件：不是有效的 JSON 格式");
   }
   const faces = getFacesList(parsed);
-  if (faces.length === 0) throw new Error("文件里没有可用的字体面");
+  if (faces.length === 0) throw new Error("该 JSON 文件中未包含可用的字体定义");
   currentMultiFont = parsed;
   // 打开的 JSON 还没有对应的方案，Ctrl+S 会走"另存为方案"。
   activePresetId = "";
@@ -3927,7 +3944,7 @@ async function createNewEmptyAxisPreset(): Promise<void> {
     closePresetManager();
   } catch (err) {
     log(`[错误] 创建空 AXIS 方案失败: ${describeError(err)}`, "error");
-    await showConfirm("创建失败", describeError(err), "知道了");
+    await showAlert("创建失败", describeError(err));
   }
 }
 
@@ -3947,9 +3964,9 @@ async function resetCurrentFontPreset(): Promise<void> {
   }
   const preset = availableFontPresets.find((p) => p.id === activePresetId);
   const ok = await showConfirm(
+    "放弃未保存修改",
+    `要把「${preset?.name ?? activePresetId}」还原到上次保存时的状态吗？未保存的调整将会丢失。`,
     "放弃修改",
-    `确定把「${preset?.name ?? activePresetId}」恢复为保存时的内容吗？未保存的修改会丢失。`,
-    "确认重置",
   );
   if (ok) await loadFontPreset(activePresetId);
 }
@@ -4114,7 +4131,7 @@ async function duplicatePreset(preset: PresetSummary): Promise<void> {
     closePresetManager();
   } catch (err) {
     log(`[错误] 复制字体方案失败: ${describeError(err)}`, "error");
-    await showConfirm("复制失败", describeError(err), "知道了");
+    await showAlert("复制失败", describeError(err));
   }
 }
 
@@ -4130,7 +4147,7 @@ async function renamePreset(preset: PresetSummary): Promise<void> {
     await loadFontPresetsForCurrentRegion();
   } catch (err) {
     log(`[错误] 重命名字体方案失败: ${describeError(err)}`, "error");
-    await showConfirm("重命名失败", describeError(err), "知道了");
+    await showAlert("重命名失败", describeError(err));
   }
 }
 
@@ -4138,8 +4155,8 @@ async function deletePreset(preset: PresetSummary): Promise<void> {
   const reg = getCurrentFontRegion();
   const ok = await showConfirm(
     "删除字体方案",
-    `确定删除自定义方案「${preset.name}」吗？删除后不可恢复。`,
-    "删除",
+    `确定要永久删除自定义方案「${preset.name}」吗？此操作无法撤销。`,
+    "删除方案",
   );
   if (!ok) return;
   try {
@@ -4150,7 +4167,7 @@ async function deletePreset(preset: PresetSummary): Promise<void> {
     if (activePresetId) markPresetSelected(activePresetId);
   } catch (err) {
     log(`[错误] 删除字体方案失败: ${describeError(err)}`, "error");
-    await showConfirm("删除失败", describeError(err), "知道了");
+    await showAlert("删除失败", describeError(err));
   }
 }
 
@@ -4198,9 +4215,9 @@ async function propagateCurrentFamily(): Promise<void> {
   const srcSize = parseFaceNominalSize(srcFace.name);
   const listing = siblings.map((f) => `${f.name}（${parseFaceNominalSize(f.name)}px）`).join("、");
   const ok = await showConfirm(
-    `把 ${family} 的其他字号替换为 ${srcFace.name} 的缩放副本`,
-    `目标：${listing}\n这些字号原有的图层会被覆盖。`,
-    "替换",
+    `同步「${srcFace.name}」的图层到 ${family} 其他字号？`,
+    `目标字号：${listing}\n这些字号原有的图层配置会被覆盖。`,
+    "确认同步",
   );
   if (!ok) return;
 
@@ -4220,7 +4237,7 @@ async function exportFontTtmp(): Promise<void> {
     if (!savePath) return;
     const configJson = JSON.stringify(currentMultiFont);
     await call("ExportFontTTMP", configJson, savePath);
-    await showConfirm("导出成功", `已导出到：\n${savePath}`, "确定");
+    await showAlert("导出成功", `已导出到：\n${savePath}`);
   } catch (err) {
     log(`[错误] 导出 TTMP 失败: ${describeError(err)}`, "error");
   }
@@ -4372,7 +4389,7 @@ async function runFontCommand(command: string): Promise<void> {
           if (!outDir) return;
           const configJson = JSON.stringify(currentMultiFont);
           await call("ExportFontRaw", configJson, outDir);
-          await showConfirm("导出成功", `已导出到：\n${outDir}`, "确定");
+          await showAlert("导出成功", `已导出到：\n${outDir}`);
         } catch (err) {
           log(`[字体] 导出原始文件失败: ${describeError(err)}`, "error");
         }
@@ -5046,7 +5063,6 @@ function renderFaceItemLabel(faceName: string): HTMLElement {
   const container = document.createElement("span");
   container.className = "fc-font-item-name";
   container.textContent = faceName;
-  setTip(container, faceName);
   return container;
 }
 
@@ -5073,7 +5089,6 @@ function renderFaceTabs(): void {
     header.className = "fc-font-group-header";
     header.setAttribute("role", "button");
     header.setAttribute("aria-expanded", String(!isCollapsed));
-    header.title = `${title}（共 ${groupFaces.length} 项）`;
 
     const titleWrap = document.createElement("div");
     titleWrap.className = "fc-group-title";
@@ -5218,7 +5233,7 @@ function formatSourceLabel(elem: FontElement): { text: string; title: string } {
       return { text: "游戏字库", title: "游戏内置预渲染字库 (Prerendered)" };
     case 3: {
       const ft = elem.renderSpecific?.freetype;
-      const rMode = ft?.renderMode === 1 ? "轻度" : ft?.renderMode === 2 ? "单色" : "标准";
+      const rMode = ft?.renderMode === 1 ? "轻量" : ft?.renderMode === 2 ? "单色" : "标准";
       return {
         text: `FreeType · ${rMode}`,
         title: `FreeType (${rMode}抗锯齿)`,
@@ -5230,11 +5245,11 @@ function formatSourceLabel(elem: FontElement): { text: string; title: string } {
     default: {
       const dw = elem.renderSpecific?.directwrite;
       const rMode = dw?.renderMode === 5 ? "自然对称" : dw?.renderMode === 4 ? "自然" : "默认";
-      const mMode = dw?.measureMode === 2 ? "GDI 自然" : dw?.measureMode === 1 ? "GDI 经典" : "自然度量";
-      const gMode = dw?.gridFitMode === 2 ? "网格拟合" : dw?.gridFitMode === 1 ? "禁用拟合" : "默认拟合";
+      const mMode = dw?.measureMode === 2 ? "GDI 自然" : dw?.measureMode === 1 ? "GDI 传统" : "自然度量";
+      const gMode = dw?.gridFitMode === 2 ? "启用" : dw?.gridFitMode === 1 ? "停用" : "默认";
       return {
         text: `DirectWrite · ${rMode}`,
-        title: `DirectWrite (${rMode} / ${mMode} / ${gMode})`,
+        title: `DirectWrite (${rMode} / ${mMode} / 像素对齐：${gMode})`,
       };
     }
   }
@@ -5245,8 +5260,8 @@ function formatLookupLabel(elem: FontElement): { text: string; title: string } {
   if (r === 0 || r === 1 || r === 4) return { text: "-", title: "不使用系统字体匹配" };
   const fam = getElementFamily(elem) || "Segoe UI";
   const w = elem.lookup?.weight ?? 400;
-  const wName = w >= 700 ? "粗体" : w >= 500 ? "中等" : "常规";
-  const st = elem.lookup?.style === 2 ? "斜体" : elem.lookup?.style === 1 ? "倾斜" : "正体";
+  const wName = w >= 700 ? "粗体" : w >= 500 ? "中黑" : "常规";
+  const st = elem.lookup?.style === 2 ? "斜体" : elem.lookup?.style === 1 ? "倾斜" : "常规";
   return {
     text: `${wName} · ${st}`,
     title: `${fam} (${w} / ${wName} / ${st})`,
@@ -5262,7 +5277,7 @@ function renderElementList(): void {
     const td = document.createElement("td");
     td.colSpan = 13;
     td.className = "preview-empty-tip";
-    td.textContent = "当前字体暂无元素图层";
+    td.textContent = "当前字体还没有图层，可右键或从顶部「编辑」菜单添加图层";
     tr.append(td);
     el.fontElementList.append(tr);
     return;
@@ -5694,8 +5709,8 @@ function renderReplacementsVisualList(elem: FontElement): void {
     empty.style.padding = "14px";
     empty.style.textAlign = "center";
     empty.style.color = "var(--text-3)";
-    empty.style.fontSize = "11.5px";
-    empty.textContent = "暂无字符替换规则，可点击下方「添加」或从上方填入预设。";
+    empty.style.fontSize = "var(--fs-label)";
+    empty.textContent = "暂无字符替换规则，可点击下方「+ 添加映射规则」或从上方填入预设。";
     el.mergeReplacementsList.append(empty);
     return;
   }
@@ -5802,7 +5817,7 @@ function renderPropsPanel(): void {
   el.propFontFamily.replaceChildren();
   const optDefault = document.createElement("option");
   optDefault.value = "";
-  optDefault.textContent = "-- 选择系统已安装字体或在下方输入 --";
+  optDefault.textContent = "-- 选择系统已安装字体，或在右侧输入名称/路径 --";
   el.propFontFamily.append(optDefault);
 
   const seenFonts = new Set<string>();
@@ -5957,16 +5972,12 @@ async function doPreviewRender(): Promise<void> {
 }
 
 function createOpenBackupButton(): HTMLButtonElement {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn btn-quiet btn-xs btn-chip diag-mini-btn";
-  btn.textContent = "打开目录";
-  setTip(btn, "在文件管理器中打开原版备份目录");
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    void openBackupDir();
-  });
-  return btn;
+  return createDiagActionButton(
+    CSV_ICON_FOLDER,
+    "打开目录",
+    () => void openBackupDir(),
+    "在文件管理器中打开原版备份目录",
+  );
 }
 
 async function openBackupDir(): Promise<void> {
@@ -6094,7 +6105,6 @@ function applyPreset(name: string, rerender = true): void {
 // 进入详情页统一交给旁边的按钮，避免下拉项同时承担导航职责。
 function setSummaryText(node: HTMLElement, text: string): void {
   node.textContent = text;
-  setTip(node, text);
 }
 
 function renderScopeSummary(): void {
@@ -6311,6 +6321,27 @@ function renderTables(): void {
 
   for (const entry of filteredRootEntries) {
     fragment.append(createTableDataRow(entry));
+  }
+
+  if (fragment.childNodes.length === 0) {
+    const trEmpty = document.createElement("tr");
+    const tdEmpty = document.createElement("td");
+    tdEmpty.colSpan = 4;
+    tdEmpty.className = "table-empty-cell";
+    const rawTerm = el.search.value.trim();
+    if (tableList().length === 0) {
+      tdEmpty.textContent = "表清单尚未加载，请先同步资源或检查网络连接";
+    } else if (rawTerm && filterOnlyUnselected) {
+      tdEmpty.textContent = `未找到同时匹配「${rawTerm}」且未选中的数据表`;
+    } else if (rawTerm) {
+      tdEmpty.textContent = `未找到匹配「${rawTerm}」的数据表`;
+    } else if (filterOnlyUnselected) {
+      tdEmpty.textContent = "所有数据表均已选中，暂无未选项";
+    } else {
+      tdEmpty.textContent = "暂无可显示的数据表";
+    }
+    trEmpty.append(tdEmpty);
+    fragment.append(trEmpty);
   }
 
   el.tableList.append(fragment);
@@ -6668,9 +6699,9 @@ function wireEvents(): void {
       return;
     }
     const confirmMsg = isGlobal && !gameInfo?.backupExists
-      ? "本地没有备份，将从云端下载原版并恢复。"
-      : "确定将客户端还原为官方原版？";
-    const result = await openModal("还原官方原版", confirmMsg, "还原", "", false, true);
+      ? "本地没有原版备份，将从云端下载官方原版文件并覆盖当前已修改的文件。"
+      : "将用原版备份覆盖当前已汉化的文件，恢复为官方未修改状态。";
+    const result = await openModal("还原官方原版", confirmMsg, "开始还原", "", false, true);
     if (result !== "ok") {
       return;
     }
@@ -6721,31 +6752,41 @@ function wireEvents(): void {
       return;
     }
     if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
-      log("[错误] 客户端区服与当前选择不匹配", "error");
+      const msg = "当前选择的目录与所选区服不匹配，请切换区服或重新选择游戏目录";
+      log(`[错误] ${msg}`, "error");
+      showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (!currentGameDir()) {
-      log("[错误] 请先选择游戏目录", "error");
+      const msg = "请先选择或自动探测有效的游戏安装目录";
+      log(`[错误] ${msg}`, "error");
+      showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (!config.replaceText && !config.replaceFont) {
-      log("[错误] 请至少勾选文本或字体", "error");
+      const msg = "请至少开启「文本数据」或「游戏字体」其中一项";
+      log(`[错误] ${msg}`, "error");
+      showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (config.replaceText && !csvSelectionValid()) {
-      if ((bootstrap?.csv.tableList.length ?? 0) === 0) {
-        log("[错误] 缺少表清单，请联网后重试", "error");
-      } else {
-        log("[错误] 当前词条目录无效，请重新选择", "error");
-      }
+      const msg = (bootstrap?.csv.tableList.length ?? 0) === 0
+        ? "缺少数据表清单，请检查网络或代理后重试"
+        : "当前选中的词条目录已失效，请切换到内置词条或其他有效目录";
+      log(`[错误] ${msg}`, "error");
+      showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (config.replaceText && selected.size === 0) {
-      log("[错误] 未选择任何数据表", "error");
+      const msg = "尚未选择任何要汉化的数据表，请在「修改范围」中至少勾选一项";
+      log(`[错误] ${msg}`, "error");
+      showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (config.replaceText && regionLanguageOptions().length > 1 && targetLangs.length === 0) {
-      log("[错误] 请至少勾选一种汉化语言", "error");
+      const msg = "请至少勾选一种要替换的目标语言";
+      log(`[错误] ${msg}`, "error");
+      showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
 
@@ -6839,10 +6880,6 @@ function wireEvents(): void {
     const originalText = "编辑方案";
     openingFontEditor = true;
     el.btnOpenFontEditor.disabled = true;
-    el.btnOpenFontEditor.classList.add("is-syncing");
-    el.fontCompilerBar.classList.add("is-pending");
-    el.fontCompilerBar.style.width = "100%";
-    el.btnOpenFontEditorText.textContent = "准备组件中...";
     try {
       if (isGlobalLanguage(config.language)) {
         const status = await call("CheckClientStatus", gameDir, config.language);
@@ -6858,6 +6895,12 @@ function wireEvents(): void {
         log("[字体] 此区服无法检查原版状态，若已打补丁提取字形可能有误", "warn");
       }
 
+      if (!fontCompilerReady) {
+        el.btnOpenFontEditor.classList.add("is-syncing");
+        el.fontCompilerBar.classList.add("is-pending");
+        el.fontCompilerBar.style.width = "100%";
+        el.btnOpenFontEditorText.textContent = "准备组件中…";
+      }
       await call("EnsureFontCompiler");
       fontCompilerReady = true;
       switchView("font-editor");
@@ -6943,7 +6986,7 @@ function wireEvents(): void {
     } catch (err) {
       const msg = describeError(err);
       log(`[错误] 导入方案失败: ${msg}`, "error");
-      await showConfirm("导入方案失败", msg, "知道了");
+      await showAlert("导入方案失败", msg);
     }
   });
 
@@ -7560,7 +7603,7 @@ function wireElementEditorEvents(): void {
 
   el.btnMergeToggleRaw.addEventListener("click", () => {
     const isHidden = el.mergeRawContainer.classList.toggle("hidden");
-    el.btnMergeToggleRaw.textContent = isHidden ? "展开批量纯文本编辑" : "收起批量纯文本编辑";
+    el.btnMergeToggleRaw.textContent = isHidden ? "展开批量文本编辑" : "收起批量文本编辑";
   });
 
   el.btnMergeAddRule.addEventListener("click", () => {
@@ -7595,6 +7638,7 @@ function wireRuntimeEvents(): void {
       return;
     }
     el.busyIndicator.textContent = ev.detail ? `${ev.detail}…` : "正在更新…";
+    el.actionProgressPercent.textContent = "";
   });
 
   // 制作副本要逐个创建 7114 个 CSV（约 2.7 秒），进度同样压在选择器上。
@@ -7644,7 +7688,7 @@ function wireRuntimeEvents(): void {
         if (!current) return;
         if (!isPatching && !syncingResource) return;
         // 内置词条的同步进度直接压在选择器文字上，文案用后端给的当前阶段。
-        if (!bootstrap?.csv.selected) {
+        if (!bootstrap?.csv.selected && current.stage !== "font") {
           el.csvTrigger.classList.add("is-syncing");
           const detail = current.detail || "同步词条";
           if (current.total > 0) {
@@ -7664,7 +7708,9 @@ function wireRuntimeEvents(): void {
           el.busyIndicator.textContent = `同步资源：${current.detail || "请稍候"} ${pct.toFixed(0)}%`;
           el.actionProgressPercent.textContent = `${pct.toFixed(0)}%`;
         } else {
+          el.progressBar.style.width = "0%";
           el.busyIndicator.textContent = `同步资源：${current.detail || "请稍候…"}`;
+          el.actionProgressPercent.textContent = "";
         }
       });
     }

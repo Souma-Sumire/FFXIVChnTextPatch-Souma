@@ -366,3 +366,73 @@ func TestEnsureFontPackDownloadsOnDemand(t *testing.T) {
 		t.Fatalf("已校验通过时不应重新下载，新增请求 %d", node.hits.Load()-before)
 	}
 }
+
+func TestProvisionAndFontPackReportVerifyAndExtractProgress(t *testing.T) {
+	files := map[string]string{
+		"rules.json":  `{"specialWord":{}}`,
+		"tables.json": `{"folders":{},"tables":{},"files":[]}`,
+		"font/A.fdt":  "font-a",
+		"font/B.tex":  "font-b",
+	}
+	node := newMockNode(t, files, map[string]string{
+		"rawexd/A.csv": "csv-a",
+		"rawexd/B.csv": "csv-b",
+	})
+	dir := t.TempDir()
+
+	var csvDetails []string
+	var sawExtractTotal bool
+	status, err := node.updater().Provision(context.Background(), dir, func(stage, detail string, done, total int64) {
+		csvDetails = append(csvDetails, detail)
+		if detail == "解压 CSV 文件" && total > 0 && done == total {
+			sawExtractTotal = true
+		}
+	})
+	if err != nil {
+		t.Fatalf("Provision 失败: %v", err)
+	}
+	if status.CSVCount != 2 || !status.CSVUpdated || !status.RulesUpdated || !status.TablesUpdated {
+		t.Fatalf("状态字段不符合预期: %+v", status)
+	}
+	for _, want := range []string{"下载 CSV 快照包", "校验 CSV 快照包", "解压 CSV 文件"} {
+		found := false
+		for _, got := range csvDetails {
+			if got == want {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("Provision 缺少阶段 %q，实际序列: %v", want, csvDetails)
+		}
+	}
+	if !sawExtractTotal {
+		t.Fatalf("解压 CSV 文件未报告完成总量，实际序列: %v", csvDetails)
+	}
+
+	var fontDetails []string
+	var sawFontExtractTotal bool
+	if err := node.updater().EnsureFontPack(context.Background(), dir, func(stage, detail string, done, total int64) {
+		fontDetails = append(fontDetails, detail)
+		if detail == "解压字体包" && total > 0 && done == total {
+			sawFontExtractTotal = true
+		}
+	}); err != nil {
+		t.Fatalf("EnsureFontPack 失败: %v", err)
+	}
+	for _, want := range []string{"下载字体包", "校验字体包", "解压字体包"} {
+		found := false
+		for _, got := range fontDetails {
+			if got == want {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("EnsureFontPack 缺少阶段 %q，实际序列: %v", want, fontDetails)
+		}
+	}
+	if !sawFontExtractTotal {
+		t.Fatalf("解压字体包未报告完成总量，实际序列: %v", fontDetails)
+	}
+}

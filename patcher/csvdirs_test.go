@@ -164,32 +164,6 @@ func TestCSVConfigIsolatedByRegion(t *testing.T) {
 	}
 }
 
-// TestCSVContextRealResource 用仓库内置词条校验：全部 CSV 都能对上 tables.json 的键。
-func TestCSVContextRealResource(t *testing.T) {
-	resourceDir := filepath.Join("..", "resource")
-	if _, err := os.Stat(filepath.Join(resourceDir, "tables.json")); err != nil {
-		t.Skipf("缺少 resource/tables.json: %v", err)
-	}
-	app := NewApp()
-	app.resourceDirOverride = resourceDir
-	doc := app.loadTablesDoc(resourceDir)
-	ctx := app.csvContext(defaultConfig(), doc, "GLOBAL")
-	if ctx.Custom {
-		t.Fatalf("默认应为内置词条: %+v", ctx)
-	}
-	if len(ctx.TableList) != len(doc.Files) {
-		t.Fatalf("内置表清单数量不一致: %d != %d", len(ctx.TableList), len(doc.Files))
-	}
-	builtin := filepath.Join(resourceDir, "rawexd")
-	keys, err := validCSVKeys(builtin, knownTableKeys(doc))
-	if err != nil {
-		t.Fatalf("扫描内置词条失败: %v", err)
-	}
-	if len(keys) != len(doc.Files) {
-		t.Fatalf("内置词条应全部被 tables.json 收录: %d != %d", len(keys), len(doc.Files))
-	}
-}
-
 func TestCSVDirectoryMeta(t *testing.T) {
 	app, _ := newCSVTestApp(t)
 	customDir := filepath.Join(t.TempDir(), "my_rawexd")

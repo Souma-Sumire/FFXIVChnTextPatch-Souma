@@ -158,6 +158,7 @@ type GitHubClient struct {
 	nodeHook        func(node string)
 	apiStageTimeout time.Duration
 	mu              sync.RWMutex
+	releaseCache    map[string]*Release
 }
 
 func (c *GitHubClient) apiTimeout() time.Duration {
@@ -519,11 +520,26 @@ var (
 // ReleaseByTag 获取指定 tag 的 Release。优先走 REST API（一次请求即含完整附件列表），
 // 被限流或阻断时才解析网页端附件列表。
 func (c *GitHubClient) ReleaseByTag(ctx context.Context, repo, tag string) (*Release, error) {
+	cacheKey := repo + "\x00" + tag
+	c.mu.RLock()
+	cached := c.releaseCache[cacheKey]
+	c.mu.RUnlock()
+	if cached != nil {
+		return cached, nil
+	}
+
 	rel, err := c.fetchReleaseInternal(ctx, repo, tag)
 	if err != nil {
 		return nil, err
 	}
 	c.loadHashesJSON(ctx, rel)
+
+	c.mu.Lock()
+	if c.releaseCache == nil {
+		c.releaseCache = make(map[string]*Release)
+	}
+	c.releaseCache[cacheKey] = rel
+	c.mu.Unlock()
 	return rel, nil
 }
 

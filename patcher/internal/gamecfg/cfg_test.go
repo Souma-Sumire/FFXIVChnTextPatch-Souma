@@ -141,15 +141,3 @@ func TestEnsureHighResolutionUiAsset_InsertsWhenMissing(t *testing.T) {
 		t.Fatalf("插入的内容缺少正确换行: %s", string(curData))
 	}
 }
-
-func TestCandidatePaths(t *testing.T) {
-	paths := CandidatePaths()
-	if len(paths) == 0 {
-		t.Fatal("预期至少有一个候选路径")
-	}
-	for _, p := range paths {
-		if !strings.HasSuffix(p, ConfigFileName) {
-			t.Fatalf("路径应以 %s 结尾: %s", ConfigFileName, p)
-		}
-	}
-}

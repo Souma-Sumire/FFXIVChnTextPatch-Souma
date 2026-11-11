@@ -828,14 +828,24 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 	if status.Updated && status.DownloadedFiles > 0 {
 		a.emitDiag("资源同步：已更新 %d 文件 (%dB) | csv=%s | 清单=%s",
 			status.DownloadedFiles, status.DownloadedBytes, shortHash(status.CSVHash), status.GeneratedAt)
-		updates := make([]string, 0, 2)
+		updates := make([]string, 0, 3)
 		if status.CSVUpdated {
-			updates = append(updates, "词条")
+			if status.CSVCount > 0 {
+				updates = append(updates, fmt.Sprintf("内置词条（%d 个文件）", status.CSVCount))
+			} else {
+				updates = append(updates, "内置词条")
+			}
 		}
-		if len(updates) == 0 {
+		if status.RulesUpdated {
 			updates = append(updates, "规则")
 		}
-		a.emitPatchLog(fmt.Sprintf("[资源] 已更新%s（%d 个文件）", strings.Join(updates, "、"), status.DownloadedFiles))
+		if status.TablesUpdated {
+			updates = append(updates, "表清单")
+		}
+		if len(updates) == 0 {
+			updates = append(updates, "内置资源")
+		}
+		a.emitPatchLog(fmt.Sprintf("[资源] 已更新%s", strings.Join(updates, "、")))
 	} else if status.Updated {
 		a.emitDiag("资源同步：已校验补齐本地资源 | csv=%s", shortHash(status.CSVHash))
 		a.emitPatchLog("[资源] 已校验并补齐本地内置词条")
@@ -1517,23 +1527,25 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		return ClientStatusResult{Status: "unknown", Label: "文件缺失", Description: missing.Description, Text: missing, Font: missing}, nil
 	}
 
-	// 本地原版备份（同版本才有效）
+	// 本地备份（同版本才有效），并区分是否为云端校验过的可信原版基准
 	var meta verifier.BackupMeta
 	hasBackupMeta := false
+	hasVerifiedBackup := false
 	backupDir := a.backupDirFor(reg)
 	if data, err := os.ReadFile(filepath.Join(backupDir, "meta.json")); err == nil {
 		if json.Unmarshal(data, &meta) == nil && versionErr == nil && meta.Version == version && len(meta.Files) > 0 {
 			hasBackupMeta = true
+			hasVerifiedBackup = meta.IsVerifiedOriginal()
 		}
 	}
 
-	// 国际服且本地没有备份时，用云端 Release 作为比对基准
+	// 国际服且本地没有可信原版备份时，仍用云端 Release 作为校验基准
 	var cloudAsset func(string) (string, bool)
-	cloudDesc := "本地没有该版本的原版备份"
+	cloudDesc := "尚无该版本的原版记录，无法确认是否被修改"
 	if reg == region.Global {
 		cloudDesc = "云端暂未收录该版本"
 	}
-	if reg == region.Global && !hasBackupMeta && versionErr == nil {
+	if reg == region.Global && !hasVerifiedBackup && versionErr == nil {
 		cloud := a.getCloud()
 		parentCtx := a.ctx
 		if parentCtx == nil {
@@ -1555,7 +1567,7 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		if hashErr != nil {
 			return ClientPartStatus{Status: "missing", Label: "文件缺失", Description: hashErr.Error()}
 		}
-		if hasBackupMeta {
+		if hasVerifiedBackup {
 			if want, ok := meta.Files[index]; ok {
 				if strings.EqualFold(hash.SHA256, want.SHA256) {
 					return ClientPartStatus{Status: "original", Label: "原版", Description: version}
@@ -1569,6 +1581,11 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 					return ClientPartStatus{Status: "original", Label: "原版", Description: version}
 				}
 				return ClientPartStatus{Status: "modified", Label: "已修改", Description: "与云端原版不一致"}
+			}
+		}
+		if hasBackupMeta {
+			if want, ok := meta.Files[index]; ok && !strings.EqualFold(hash.SHA256, want.SHA256) {
+				return ClientPartStatus{Status: "modified", Label: "已修改", Description: "与操作前快照不一致"}
 			}
 		}
 		return ClientPartStatus{Status: "unknown", Label: "未知版本", Description: cloudDesc}
