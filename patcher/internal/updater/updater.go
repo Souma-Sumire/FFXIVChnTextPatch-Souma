@@ -316,11 +316,37 @@ func (u *Updater) get(ctx context.Context, url string) ([]byte, error) {
 
 // ExtractZip 把 zip 解压到目标目录，并阻止 Zip Slip 路径穿越。
 func ExtractZip(zipPath, destDir string) error {
+	return ExtractZipWithProgress(zipPath, destDir, nil)
+}
+
+// ExtractZipWithProgress 把 zip 解压到目标目录并回调解压进度，同时阻止 Zip Slip 路径穿越。
+func ExtractZipWithProgress(zipPath, destDir string, progress func(done, total int64)) error {
 	reader, err := zip.OpenReader(zipPath)
 	if err != nil {
 		return fmt.Errorf("打开快照包 %s 失败: %w", zipPath, err)
 	}
 	defer reader.Close()
+
+	var totalBytes int64
+	var totalFiles int64
+	for _, f := range reader.File {
+		if f.FileInfo().IsDir() {
+			continue
+		}
+		totalFiles++
+		totalBytes += int64(f.UncompressedSize64)
+	}
+	byBytes := totalBytes > 0
+	total := totalBytes
+	if !byBytes {
+		total = totalFiles
+	}
+	var done int64
+	if progress != nil && total > 0 {
+		progress(0, total)
+	}
+
+	buf := make([]byte, 256*1024)
 	cleanDest := filepath.Clean(destDir)
 	for _, f := range reader.File {
 		name := filepath.FromSlash(f.Name)
@@ -348,11 +374,39 @@ func ExtractZip(zipPath, destDir string) error {
 			_ = src.Close()
 			return fmt.Errorf("创建临时文件 %s 失败: %w", tmp, err)
 		}
-		if _, err := io.Copy(dst, src); err != nil {
-			_ = src.Close()
-			_ = dst.Close()
-			_ = os.Remove(tmp)
-			return fmt.Errorf("解压写入 %s 失败: %w", target, err)
+		for {
+			nr, readErr := src.Read(buf)
+			if nr > 0 {
+				nw, writeErr := dst.Write(buf[:nr])
+				if writeErr != nil {
+					_ = src.Close()
+					_ = dst.Close()
+					_ = os.Remove(tmp)
+					return fmt.Errorf("解压写入 %s 失败: %w", target, writeErr)
+				}
+				if nw != nr {
+					_ = src.Close()
+					_ = dst.Close()
+					_ = os.Remove(tmp)
+					return fmt.Errorf("解压写入 %s 失败: %w", target, io.ErrShortWrite)
+				}
+				if byBytes && progress != nil && total > 0 {
+					done += int64(nw)
+					if done > total {
+						done = total
+					}
+					progress(done, total)
+				}
+			}
+			if readErr == io.EOF {
+				break
+			}
+			if readErr != nil {
+				_ = src.Close()
+				_ = dst.Close()
+				_ = os.Remove(tmp)
+				return fmt.Errorf("解压读取 %s 失败: %w", f.Name, readErr)
+			}
 		}
 		_ = src.Close()
 		if err := dst.Close(); err != nil {
@@ -363,6 +417,13 @@ func ExtractZip(zipPath, destDir string) error {
 			_ = os.Remove(tmp)
 			return fmt.Errorf("覆盖目标文件 %s 失败: %w", target, err)
 		}
+		if !byBytes && progress != nil && total > 0 {
+			done++
+			progress(done, total)
+		}
+	}
+	if progress != nil && total > 0 {
+		progress(total, total)
 	}
 	return nil
 }

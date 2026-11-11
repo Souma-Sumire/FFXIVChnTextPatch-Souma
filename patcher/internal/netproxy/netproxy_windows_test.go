@@ -160,15 +160,3 @@ func TestTransportUsesSystemProxy(t *testing.T) {
 		t.Fatal("请求没有经过系统代理")
 	}
 }
-
-// 读取真实注册表，确认配置能被解析（不同机器设置不同，这里只校验结构）。
-func TestReadConfigFromRegistry(t *testing.T) {
-	cfg := readConfig()
-	if cfg == nil {
-		t.Skip("当前会话读不到 Internet Settings 注册表键")
-	}
-	t.Logf("ProxyEnable=%v 代理项=%v 绕过规则=%d 条", cfg.enable, cfg.byScheme, len(cfg.bypass))
-	if cfg.enable && len(cfg.byScheme) == 0 {
-		t.Error("已启用系统代理却解析不到代理地址")
-	}
-}

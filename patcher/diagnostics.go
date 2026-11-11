@@ -333,8 +333,12 @@ func (a *App) diagnosticsLines() []string {
 				h := meta.Files[name]
 				parts = append(parts, fmt.Sprintf("%s=%s/%dB", name, diagHash(h.SHA256), h.Size))
 			}
-			currentBackupDetail = fmt.Sprintf("备份详情(%s)：版本=%s | 更新=%s | %s",
-				reg, meta.Version, meta.UpdatedAt, strings.Join(parts, " | "))
+			source := meta.Source
+			if source == "" {
+				source = "legacy"
+			}
+			currentBackupDetail = fmt.Sprintf("备份详情(%s)：版本=%s | 来源=%s | 更新=%s | %s",
+				reg, meta.Version, source, meta.UpdatedAt, strings.Join(parts, " | "))
 		}
 	}
 	if len(backupSummary) == 0 {

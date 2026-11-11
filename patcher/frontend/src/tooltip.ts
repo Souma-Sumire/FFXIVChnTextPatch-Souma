@@ -23,6 +23,8 @@ function hideTip(): void {
   layer?.classList.add("hidden");
 }
 
+export type TipPlacement = "top" | "bottom";
+
 function showTip(target: HTMLElement): void {
   const text = target.dataset.tip;
   if (!text) {
@@ -42,20 +44,38 @@ function showTip(target: HTMLElement): void {
     Math.min(anchor.left + anchor.width / 2 - size.width / 2, window.innerWidth - size.width - GAP),
   );
   const above = anchor.top - size.height - GAP;
-  const top = above >= GAP ? above : Math.min(anchor.bottom + GAP, window.innerHeight - size.height - GAP);
+  const below = anchor.bottom + GAP;
+  const top =
+    target.dataset.tipPlacement === "bottom"
+      ? below + size.height <= window.innerHeight - GAP
+        ? below
+        : Math.max(GAP, above)
+      : above >= GAP
+        ? above
+        : Math.min(below, window.innerHeight - size.height - GAP);
   box.style.left = `${left}px`;
   box.style.top = `${Math.max(GAP, top)}px`;
   current = target;
 }
 
-export function setTip(element: HTMLElement, text: string | null | undefined): void {
+export function setTip(
+  element: HTMLElement,
+  text: string | null | undefined,
+  placement?: TipPlacement,
+): void {
   if (text) {
     element.dataset.tip = text;
+    if (placement === "bottom") {
+      element.dataset.tipPlacement = "bottom";
+    } else {
+      delete element.dataset.tipPlacement;
+    }
     if (current === element && layer && !layer.classList.contains("hidden")) {
       showTip(element);
     }
   } else {
     delete element.dataset.tip;
+    delete element.dataset.tipPlacement;
     if (current === element) hideTip();
   }
 }

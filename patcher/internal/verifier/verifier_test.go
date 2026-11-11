@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -142,7 +143,7 @@ func newTestEnv(t *testing.T, version string, files map[string]string) *testEnv 
 func (e *testEnv) seedBackup(t *testing.T, lang region.Language, version string, files map[string]string) {
 	t.Helper()
 	dir := filepath.Join(e.backupRoot, string(region.Of(lang)))
-	meta := &BackupMeta{Region: string(region.Of(lang)), Version: version, Files: map[string]FileHash{}}
+	meta := &BackupMeta{Region: string(region.Of(lang)), Version: version, Source: BackupSourceCloud, Files: map[string]FileHash{}}
 	for name, content := range files {
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			t.Fatal(err)
@@ -295,6 +296,9 @@ func TestRun_NoBackup_CloudAvailable(t *testing.T) {
 	if err != nil || meta == nil || meta.Version != "2026.10.16.0000.0000" {
 		t.Fatalf("本地备份清单未正确生成: %+v, err=%v", meta, err)
 	}
+	if !meta.IsVerifiedOriginal() {
+		t.Fatalf("云端下载创建的备份应标记为可信来源 (%s)，实际 source=%q", BackupSourceCloud, meta.Source)
+	}
 	if !IsBackupComplete(meta, backupDir, "2026.10.16.0000.0000") {
 		t.Fatalf("生成的本地备份应为完整有效备份")
 	}
@@ -342,6 +346,167 @@ func TestRun_UnknownVersion_ConfirmYes(t *testing.T) {
 	meta, _ := readBackupMeta(backupDir)
 	if meta == nil || len(meta.Files) != len(AllFiles) {
 		t.Fatalf("未知版本继续汉化时应创建本地还原基线备份，实际备份清单: %+v", meta)
+	}
+	if meta.Source != BackupSourceLocal || meta.IsVerifiedOriginal() {
+		t.Fatalf("未知版本创建的本地备份不应标记为可信原版，实际 source=%q", meta.Source)
+	}
+}
+
+func TestRun_LocalSnapshotReusedWithoutClobbering(t *testing.T) {
+	srv := newMockServer(t, map[string]map[string]string{})
+	initial := canonicalFiles("before-patch")
+	env := newTestEnv(t, "2026.11.01.0000.0000", initial)
+
+	confirmCalls := 0
+	_, err := Run(context.Background(), Config{
+		GameDir:     env.gameDir,
+		BackupRoot:  env.backupRoot,
+		Language:    region.CHS,
+		ReplaceText: true,
+		Cloud:       srv.client(),
+		Repo:        testRepo,
+		ConfirmUnknown: func(ctx context.Context, version string) (bool, error) {
+			confirmCalls++
+			return true, nil
+		},
+		ApplyText: func(ctx context.Context) error {
+			return os.WriteFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"), []byte("patched-once"), 0o644)
+		},
+	})
+	if err != nil {
+		t.Fatalf("首次 Run 失败: %v", err)
+	}
+
+	var logs []string
+	res2, err := Run(context.Background(), Config{
+		GameDir:     env.gameDir,
+		BackupRoot:  env.backupRoot,
+		Language:    region.CHS,
+		ReplaceText: true,
+		Cloud:       srv.client(),
+		Repo:        testRepo,
+		Log:         func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+		ConfirmUnknown: func(ctx context.Context, version string) (bool, error) {
+			confirmCalls++
+			return true, nil
+		},
+		ApplyText: func(ctx context.Context) error {
+			cur, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
+			if string(cur) != initial["0a0000.win32.index"] {
+				t.Fatalf("二次打补丁前应先从初次快照恢复，当前内容=%q", string(cur))
+			}
+			return nil
+		},
+	})
+	if err != nil {
+		t.Fatalf("第二次 Run 失败: %v", err)
+	}
+	if confirmCalls != 1 {
+		t.Fatalf("复用同版本操作前快照时不应重复弹窗，confirmCalls=%d", confirmCalls)
+	}
+	if !res2.RestoredText {
+		t.Fatalf("第二次 Run 应从本地快照恢复被修改的文本文件")
+	}
+	if !logContains(logs, "命中本地操作前快照") {
+		t.Fatalf("日志应明确说明使用操作前快照，实际日志=%v", logs)
+	}
+}
+
+func TestRun_GlobalLocalSnapshotUpgradesToCloudWhenAvailable(t *testing.T) {
+	cloudOrig := canonicalFiles("official-global-v1")
+	srv := newMockServer(t, map[string]map[string]string{
+		"2026.11.01.0000.0000": cloudOrig,
+	})
+	localModified := canonicalFiles("preexisting-mod")
+	env := newTestEnv(t, "2026.11.01.0000.0000", localModified)
+
+	// 预先放一份未知版本时期保存的不可信本地快照
+	backupDir := filepath.Join(env.backupRoot, "global")
+	if _, err := createLocalBackupFromGameDir(context.Background(), Config{}, env.sqpackDir, backupDir, "2026.11.01.0000.0000", "global"); err != nil {
+		t.Fatalf("创建本地快照失败: %v", err)
+	}
+
+	res, err := Run(context.Background(), Config{
+		GameDir:     env.gameDir,
+		BackupRoot:  env.backupRoot,
+		Language:    region.GLOBAL,
+		ReplaceText: true,
+		Cloud:       srv.client(),
+		Repo:        testRepo,
+		ApplyText: func(ctx context.Context) error {
+			cur, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
+			if string(cur) != cloudOrig["0a0000.win32.index"] {
+				t.Fatalf("云端已收录后应下载并恢复到云端原版，当前=%q", string(cur))
+			}
+			return nil
+		},
+	})
+	if err != nil {
+		t.Fatalf("Run 失败: %v", err)
+	}
+	if len(res.Downloaded) != len(AllFiles) {
+		t.Fatalf("云端已收录时应自动下载升级全部原版文件，实际=%d", len(res.Downloaded))
+	}
+	meta, err := readBackupMeta(backupDir)
+	if err != nil || !meta.IsVerifiedOriginal() {
+		t.Fatalf("升级后的备份应标记为 %s，实际=%+v, err=%v", BackupSourceCloud, meta, err)
+	}
+}
+
+func TestRestore_LocalSnapshotFallbackAndCloudUpgrade(t *testing.T) {
+	cloudOrig := canonicalFiles("official-global-restore")
+	srv := newMockServer(t, map[string]map[string]string{
+		"2026.11.01.0000.0000": cloudOrig,
+	})
+	localSnap := canonicalFiles("local-snap")
+	env := newTestEnv(t, "2026.11.01.0000.0000", localSnap)
+
+	globalBackup := filepath.Join(env.backupRoot, "global")
+	if _, err := createLocalBackupFromGameDir(context.Background(), Config{}, env.sqpackDir, globalBackup, "2026.11.01.0000.0000", "global"); err != nil {
+		t.Fatal(err)
+	}
+	chsBackup := filepath.Join(env.backupRoot, "chs")
+	if _, err := createLocalBackupFromGameDir(context.Background(), Config{}, env.sqpackDir, chsBackup, "2026.11.01.0000.0000", "chs"); err != nil {
+		t.Fatal(err)
+	}
+
+	// 先改脏游戏文件
+	_ = os.WriteFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"), []byte("patched"), 0o644)
+
+	// 国服无云端基准，使用本地快照兜底还原
+	restoredCHS, err := Restore(context.Background(), RestoreConfig{
+		GameDir:    env.gameDir,
+		BackupRoot: env.backupRoot,
+		Language:   region.CHS,
+		Text:       true,
+	})
+	if err != nil || len(restoredCHS) == 0 {
+		t.Fatalf("国服应可用本地快照还原: restored=%v err=%v", restoredCHS, err)
+	}
+	cur, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
+	if string(cur) != localSnap["0a0000.win32.index"] {
+		t.Fatalf("国服还原结果应匹配本地快照，实际=%q", string(cur))
+	}
+
+	// 国际服有云端收录时，应自动升级到云端官方原版还原
+	restoredGlobal, err := Restore(context.Background(), RestoreConfig{
+		GameDir:    env.gameDir,
+		BackupRoot: env.backupRoot,
+		Language:   region.GLOBAL,
+		Cloud:      srv.client(),
+		Repo:       testRepo,
+		Text:       true,
+	})
+	if err != nil || len(restoredGlobal) == 0 {
+		t.Fatalf("国际服应从云端升级并还原: restored=%v err=%v", restoredGlobal, err)
+	}
+	curGlobal, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
+	if string(curGlobal) != cloudOrig["0a0000.win32.index"] {
+		t.Fatalf("国际服应还原为云端官方原版，实际=%q", string(curGlobal))
+	}
+	meta, _ := readBackupMeta(globalBackup)
+	if meta == nil || !meta.IsVerifiedOriginal() {
+		t.Fatalf("国际服备份应升级为 %s，实际=%+v", BackupSourceCloud, meta)
 	}
 }
 
@@ -739,5 +904,43 @@ func TestReleaseByTagAPITimeoutFallsBackToExpandedAssets(t *testing.T) {
 	got, ok := rel.AssetSHA256("000000.win32.index")
 	if !ok || got != digest {
 		t.Fatalf("解析资产哈希不匹配: ok=%v got=%q want=%q", ok, got, digest)
+	}
+}
+
+func TestReleaseByTagCachesSuccessResponse(t *testing.T) {
+	const digest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	var apiHits int
+	c := &GitHubClient{
+		APIBase: "https://api.example.invalid",
+		HTTP: &http.Client{
+			Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				apiHits++
+				payload := fmt.Sprintf(
+					`{"tag_name":"2026.11.03.0000.0000","assets":[{"name":"000000.win32.index","browser_download_url":"https://example.invalid/000000.win32.index","digest":"sha256:%s"}]}`,
+					digest,
+				)
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Header:     http.Header{"Content-Type": []string{"application/json"}},
+					Body:       io.NopCloser(strings.NewReader(payload)),
+				}, nil
+			}),
+		},
+	}
+
+	ctx := context.Background()
+	rel1, err := c.ReleaseByTag(ctx, "owner/repo", "2026.11.03.0000.0000")
+	if err != nil {
+		t.Fatalf("首次 ReleaseByTag 失败: %v", err)
+	}
+	rel2, err := c.ReleaseByTag(ctx, "owner/repo", "2026.11.03.0000.0000")
+	if err != nil {
+		t.Fatalf("第二次 ReleaseByTag 失败: %v", err)
+	}
+	if apiHits != 1 {
+		t.Fatalf("ReleaseByTag 应命中缓存，期望请求 1 次，实际 %d 次", apiHits)
+	}
+	if rel1 != rel2 {
+		t.Fatalf("缓存命中应返回同一 Release 对象")
 	}
 }

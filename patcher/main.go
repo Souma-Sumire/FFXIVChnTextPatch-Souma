@@ -12,10 +12,12 @@ import (
 var assets embed.FS
 
 func main() {
+	appIcon, _ := assets.ReadFile("frontend/dist/appicon.png")
 	app := NewApp()
 	wailsApp := application.New(application.Options{
 		Name:        "FFXIV 汉化器",
 		Description: "最终幻想14 国际服汉化器",
+		Icon:        appIcon,
 		Services: []application.Service{
 			application.NewService(app),
 		},
@@ -41,6 +43,7 @@ func main() {
 			DisableMenu: true,
 		},
 	})
+	setupWindowIcon(mainWin, appIcon)
 
 	mainWin.RegisterHook(events.Common.WindowClosing, func(_ *application.WindowEvent) {
 		app.BeginQuit()

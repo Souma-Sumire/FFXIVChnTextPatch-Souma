@@ -15,7 +15,6 @@
     <section id="view-workbench" class="fullscreen-view view-workbench">
       <div class="workbench-body">
         <main class="workbench-main">
-
           <section class="form-section">
             <div class="form-row">
               <span class="row-label">游戏客户端</span>
@@ -113,9 +112,20 @@
                   <span id="btn-open-font-editor-text">编辑方案</span>
                   <span id="font-compiler-bar" class="csv-sync-bar" aria-hidden="true"></span>
                 </button>
-                <button type="button" id="btn-compile-font" class="btn scope-action">编译</button>
-                <div id="font-build-progress" class="font-build-progress hidden" aria-hidden="true">
-                  <div id="font-build-bar" class="font-build-bar"></div>
+                <div id="font-compile-group" class="font-compile-group">
+                  <button type="button" id="btn-compile-font" class="btn font-compile-btn">
+                    <span id="btn-compile-font-text">编译</span>
+                    <span id="font-build-progress" class="csv-sync-bar font-build-progress hidden" aria-hidden="true">
+                      <span id="font-build-bar" class="font-build-bar"></span>
+                    </span>
+                  </button>
+                  <span id="font-build-status" class="font-build-status hidden" aria-live="polite">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>已编译</span>
+                  </span>
                 </div>
               </div>
 
@@ -145,7 +155,7 @@
               </button>
             </div>
             <div class="log-head-right">
-              <button id="btn-copy-log" class="btn btn-quiet btn-xs btn-plain btn-copy-log" type="button" data-tip="复制调试信息，反馈问题时粘贴到 GitHub Issues">
+              <button id="btn-copy-log" class="btn btn-quiet btn-xs btn-plain btn-copy-log" type="button">
                 <svg class="copy-icon-default" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                 <svg class="copy-icon-done" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                 <span id="btn-copy-log-text">复制调试信息</span>
@@ -223,8 +233,10 @@
 
           <button id="btn-filter-unselected" class="btn filter-toggle" type="button">
             <span class="filter-dot" aria-hidden="true"></span>
-            <span>仅看未选</span>
-            <span id="count-unselected" class="filter-count">0</span>
+            <span class="filter-label">
+              <span>仅看未选</span>
+              <span id="count-unselected" class="filter-count">0</span>
+            </span>
           </button>
         </div>
 
@@ -374,7 +386,7 @@
           <span class="bar-sep" aria-hidden="true"></span>
 
           <!-- 方案下拉切换选择器 -->
-          <div class="fc-preset-picker" title="选择字体方案">
+          <div class="fc-preset-picker">
             <svg class="fc-preset-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
             </svg>
@@ -428,7 +440,7 @@
 
           <!-- 2. 中部：测试文本输入区 -->
           <div class="fc-preview-edit-wrap" id="fc-preview-edit-wrap">
-            <textarea id="preview-custom-text" class="fc-preview-edit" spellcheck="false" placeholder="输入预览文本"></textarea>
+            <textarea id="preview-custom-text" class="fc-preview-edit" spellcheck="false" placeholder="输入任意文本以实时预览游戏内渲染效果"></textarea>
           </div>
 
           <div class="fc-splitter-h" id="fc-splitter-2"></div>
@@ -543,7 +555,7 @@
                 <!-- 基础策略：渲染引擎与覆盖模式 -->
                 <div class="elem-inspector-section">
                   <div class="elem-inspector-header">
-                    <span class="elem-inspector-title">图层源与合成模式</span>
+                    <span class="elem-inspector-title">渲染来源与覆盖模式</span>
                   </div>
                   <div class="props-grid-2">
                     <div class="props-field">
@@ -556,7 +568,7 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-merge-mode">图层合成覆盖策略</label>
+                      <label for="prop-merge-mode">覆盖模式</label>
                       <select id="prop-merge-mode" class="select">
                         <option value="0">仅添加新字符</option>
                         <option value="1">添加全部字符</option>
@@ -567,12 +579,12 @@
 
                   <!-- 游戏字库提示 -->
                   <div id="props-game-font-notice" class="elem-notice-box hidden">
-                    使用客户端原版提取字形，图层无需外部字体文件，已自动保持原始排印度量。
+                    直接使用客户端原版字库字形，无需外部字体文件，自动沿用原版排版尺寸。
                   </div>
 
                   <!-- 空白字体提示 -->
                   <div id="props-empty-font-notice" class="elem-notice-box hidden">
-                    空白占位图层，不包含实际笔画字形，主要用于修正字体的基线高度与行高结构。
+                    空白占位图层不包含字形，仅用于调整字体的基线高度与行高。
                   </div>
 
                   <!-- 外部字体选择栏（DirectWrite / FreeType） -->
@@ -582,9 +594,9 @@
                       <select id="prop-font-family" class="select"></select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-font-file">指定家族名称或文件路径</label>
+                      <label for="prop-font-file">字体名称或文件路径</label>
                       <div class="file-pick-row">
-                        <input id="prop-font-file" class="input input-mono flex-1" placeholder="字体名（如 Microsoft YaHei）或本地 TTF/OTF 路径" />
+                        <input id="prop-font-file" class="input input-mono flex-1" placeholder="如 Microsoft YaHei，或本地 .ttf / .otf 路径" />
                         <button id="btn-browse-font-file" class="btn btn-quiet btn-xs" type="button">浏览本地文件…</button>
                       </div>
                     </div>
@@ -594,7 +606,7 @@
                 <!-- 排印度量与字型规格 -->
                 <div class="elem-inspector-section">
                   <div class="elem-inspector-header">
-                    <span class="elem-inspector-title">字型规格与排印度量</span>
+                    <span class="elem-inspector-title">字形规格与排版微调</span>
                   </div>
                   <div class="props-grid-4">
                     <div class="props-field">
@@ -654,7 +666,7 @@
                       <input type="number" step="0.5" id="prop-letter-spacing" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-gamma">伽马对比校正 (γ)</label>
+                      <label for="prop-gamma">伽马校正 (γ)</label>
                       <input type="number" step="0.05" id="prop-gamma" class="input" />
                     </div>
                   </div>
@@ -675,11 +687,11 @@
                       <input type="number" step="0.05" id="prop-scale-y" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-skew">水平倾斜角 (°)</label>
+                      <label for="prop-skew">倾斜角度 (°)</label>
                       <input type="number" step="0.5" id="prop-skew" class="input" />
                     </div>
                     <div class="props-field">
-                      <label for="prop-rotation">平面旋转角 (°)</label>
+                      <label for="prop-rotation">旋转角度 (°)</label>
                       <input type="number" step="0.5" id="prop-rotation" class="input" />
                     </div>
                   </div>
@@ -688,7 +700,7 @@
                 <!-- DirectWrite 光栅化参数 -->
                 <div class="elem-inspector-section" id="props-directwrite-group">
                   <div class="elem-inspector-header">
-                    <span class="elem-inspector-title">DirectWrite 光栅化细节</span>
+                    <span class="elem-inspector-title">DirectWrite 渲染参数</span>
                   </div>
                   <div class="props-grid-3">
                     <div class="props-field">
@@ -712,7 +724,7 @@
                       </select>
                     </div>
                     <div class="props-field">
-                      <label for="prop-dw-gridfit">像素网格贴靠 (Grid Fit)</label>
+                      <label for="prop-dw-gridfit">像素网格对齐 (Grid Fit)</label>
                       <select id="prop-dw-gridfit" class="select">
                         <option value="0">默认 (Default)</option>
                         <option value="1">停用 (Disabled)</option>
@@ -725,7 +737,7 @@
                 <!-- FreeType 光栅化参数 -->
                 <div class="elem-inspector-section hidden" id="props-freetype-group">
                   <div class="elem-inspector-header">
-                    <span class="elem-inspector-title">FreeType 光栅化细节</span>
+                    <span class="elem-inspector-title">FreeType 渲染参数</span>
                   </div>
                   <div class="props-grid-4">
                     <div class="props-field">
@@ -751,7 +763,7 @@
                 <!-- 空白字体度量 -->
                 <div class="elem-inspector-section hidden" id="props-empty-group">
                   <div class="elem-inspector-header">
-                    <span class="elem-inspector-title">空白字体度量定义</span>
+                    <span class="elem-inspector-title">空白字体尺寸参数</span>
                   </div>
                   <div class="props-grid-2">
                     <div class="props-field">
@@ -791,7 +803,7 @@
                     </div>
                     <div class="chars-raw-toggle-wrap">
                       <details class="chars-raw-details">
-                        <summary>十进制区间表达式</summary>
+                        <summary>十进制码点区间（原始格式）</summary>
                         <input id="prop-codepoints-text" class="input input-mono" placeholder="0-127, 19968-40959" />
                       </details>
                     </div>
@@ -976,7 +988,7 @@
                 <!-- 东亚与字宽特性 -->
                 <div class="elem-inspector-section">
                   <div class="elem-inspector-header">
-                    <span class="elem-inspector-title">东亚排印 (East Asian Metrics)</span>
+                    <span class="elem-inspector-title">东亚排版 (East Asian)</span>
                   </div>
                   <div class="ot-feature-matrix">
                     <label class="ot-feature-cell">
@@ -1023,7 +1035,7 @@
                     <span class="elem-inspector-title">自定义 OpenType 特性标签</span>
                   </div>
                   <div class="props-row">
-                    <label class="props-label" for="prop-ot-custom">逗号分隔的 4 字符 Tag（实时与上方开关双向同步）</label>
+                    <label class="props-label" for="prop-ot-custom">以逗号分隔的 4 字母特性标签（与上方开关双向同步）</label>
                     <input id="prop-ot-custom" class="input input-mono" placeholder="kern, liga, tnum" />
                   </div>
                 </div>
@@ -1049,12 +1061,12 @@
 
                 <div class="replacements-add-row">
                   <button type="button" id="btn-merge-add-rule" class="btn btn-xs btn-primary">+ 添加映射规则</button>
-                  <button type="button" id="btn-merge-toggle-raw" class="btn btn-quiet btn-xs">批量文本编辑</button>
+                  <button type="button" id="btn-merge-toggle-raw" class="btn btn-quiet btn-xs">展开批量文本编辑</button>
                 </div>
 
                 <!-- 批量模式折叠容器 -->
                 <div id="merge-raw-container" class="merge-raw-box hidden" style="margin-top: 8px;">
-                  <label class="props-label" for="prop-replacements-json">每行一条规则：源字符/U+XXXX = 目标文本</label>
+                  <label class="props-label" for="prop-replacements-json">每行一条：源字符或 U+XXXX = 替换文本</label>
                   <textarea id="prop-replacements-json" class="input input-mono" rows="5" style="height: auto; padding: 8px; width: 100%; resize: vertical;" placeholder="U+E0B0 = 艾&#10;U+E0B1 = 本&#10;U+E0B2 = 服"></textarea>
                 </div>
               </div>
@@ -1067,7 +1079,7 @@
                 <span class="lever-track"><span class="lever-thumb"></span></span>
                 <span class="lever-text">按住临时禁用</span>
               </button>
-              <button type="button" id="btn-lever-compare" class="elem-lever-btn" title="按住临时对比打开时的数值，松开恢复现有值">
+              <button type="button" id="btn-lever-compare" class="elem-lever-btn" title="按住预览打开窗口前的参数效果，松开恢复当前修改">
                 <span class="lever-track"><span class="lever-thumb"></span></span>
                 <span class="lever-text">按住对比调整前</span>
               </button>
@@ -1105,7 +1117,7 @@
           <button id="btn-preset-new-empty" class="btn btn-quiet btn-xs" type="button">新建空 AXIS 方案…</button>
         </div>
         <div class="preset-manager-actions">
-          <button id="btn-preset-import" class="btn btn-xs" type="button">导入 JSON…</button>
+          <button id="btn-preset-import" class="btn btn-xs" type="button">导入 JSON 方案…</button>
           <button id="btn-preset-close-foot" class="btn btn-xs btn-done" type="button">完成</button>
         </div>
       </footer>
@@ -1142,8 +1154,8 @@
       </div>
       <div class="modal-body" id="modal-text"></div>
       <div class="modal-options hidden" id="modal-options">
-        <label class="modal-check"><input type="checkbox" id="restore-text-check" checked /><span>文本（0a0000）</span></label>
-        <label class="modal-check"><input type="checkbox" id="restore-font-check" checked /><span>字体（000000）</span></label>
+        <label class="modal-check"><input type="checkbox" id="restore-text-check" checked /><span>文本数据</span></label>
+        <label class="modal-check"><input type="checkbox" id="restore-font-check" checked /><span>游戏字体</span></label>
       </div>
       <div class="modal-foot">
         <button id="modal-alt" class="btn hidden" type="button">镜像下载</button>

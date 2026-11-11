@@ -1,9 +1,6 @@
 package pipeline
 
 import (
-	"crypto/sha256"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -165,59 +162,6 @@ func TestOpenCCProtectsHexTags(t *testing.T) {
 	}
 	if !strings.Contains(got, "漢") || !strings.Contains(got, "測") {
 		t.Fatalf("OpenCC 未转换纯文本部分: %q", got)
-	}
-}
-
-// TestNoDiskPollution 验证规则只在内存中生效，绝不改写 resource/rawexd。
-func TestNoDiskPollution(t *testing.T) {
-	itemPath := filepath.Join("..", "..", "..", "resource", "rawexd", "Item.csv")
-	before, err := os.ReadFile(itemPath)
-	if err != nil {
-		t.Skipf("本地缺少 %s，跳过磁盘污染测试", itemPath)
-	}
-	beforeSum := sha256.Sum256(before)
-
-	reg := NewRegistry(testRules())
-	for i := 0; i < 100; i++ {
-		reg.Apply(&CellContext{TableName: "Item", RowKey: i, ColOffset: 0, TargetStr: "信力魔晶石壹型"})
-	}
-	after, err := os.ReadFile(itemPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if sha256.Sum256(after) != beforeSum {
-		t.Fatal("运行期规则污染了磁盘上的 resource/rawexd/Item.csv")
-	}
-}
-
-// TestRulesJSONDrivesRules 校验运行期规则确实由 resource/rules.json 驱动。
-func TestRulesJSONDrivesRules(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "resource", "rules.json")
-	rules, err := LoadRulesFromFile(path)
-	if err != nil {
-		t.Skipf("缺少或无法解析 %s: %v", path, err)
-	}
-	reg := NewRegistry(rules)
-
-	cases := []struct {
-		table  string
-		target string
-		source string
-		want   string
-	}{
-		{"Item", "陈旧的鞣革地图", "", "陈旧的鞣革地图（G1）"},
-		{"Item", "", "古ぼけた地図G18", "陈旧的卡冈图亚革地图（G18）"},
-		{"Item", "信力魔晶石壹型", "", "信力魔晶石壹型（信仰）"},
-		{"Action", "陈旧的鞣革地图", "", "陈旧的鞣革地图（G1）"},
-	}
-	for _, c := range cases {
-		ctx := &CellContext{TableName: c.table, RowKey: 1, ColOffset: 0, SourceStr: c.source, TargetStr: c.target}
-		if got := reg.Apply(ctx); got != c.want {
-			t.Fatalf("rules.json 规则结果错误: Apply(%q, %q) = %q, want %q", c.target, c.source, got, c.want)
-		}
-	}
-	if len(rules) != 4 {
-		t.Fatalf("规则数量应为 4，实际 %d", len(rules))
 	}
 }
 

@@ -120,6 +120,9 @@ func expandClientGameSubdirs(dirs ...string) []string {
 		if d == "" {
 			continue
 		}
+		if abs, err := filepath.Abs(d); err == nil {
+			d = abs
+		}
 		if strings.EqualFold(filepath.Base(d), "game") {
 			add(d)
 			continue
@@ -186,6 +189,9 @@ func (e *Engine) prepareGamePathArgs(binPath string) []string {
 		return nil
 	}
 	if gd := e.getGameDir(); gd != "" {
+		if abs, err := filepath.Abs(gd); err == nil {
+			gd = abs
+		}
 		return []string{"--game-path", gd}
 	}
 	return nil
@@ -381,9 +387,14 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 		return err
 	}
 
+	absOutDir, err := filepath.Abs(outDir)
+	if err != nil {
+		return fmt.Errorf("解析字体输出目录失败: %w", err)
+	}
+
 	// 贴图边长由调用方决定：内置方案的边长是设计好的（主集 4096、大厅 2048），
 	// 不能在这里一刀切，需要固定边长的只有用户自己带来的方案。
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
+	if err := os.MkdirAll(absOutDir, 0o755); err != nil {
 		return fmt.Errorf("创建字体输出目录失败: %w", err)
 	}
 
@@ -400,7 +411,7 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 
 	args := []string{
 		configPath,
-		"--export-raw", outDir,
+		"--export-raw", absOutDir,
 	}
 	args = append(args, e.prepareGamePathArgs(binPath)...)
 
@@ -445,12 +456,12 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 		if progressFn != nil {
 			progressFn(95, "正在执行 16 位贴图压缩...")
 		}
-		if err := ConvertTexDirTo16Bit(outDir); err != nil {
+		if err := ConvertTexDirTo16Bit(absOutDir); err != nil {
 			return fmt.Errorf("16 位贴图转换失败: %w", err)
 		}
 	}
 
-	entries, err := os.ReadDir(outDir)
+	entries, err := os.ReadDir(absOutDir)
 	if err != nil || len(entries) == 0 {
 		return fmt.Errorf("导出原始字体失败：产物目录为空")
 	}
@@ -464,7 +475,12 @@ func (e *Engine) CompileTTMP(ctx context.Context, configJson string, outPath str
 		return err
 	}
 
-	if err := os.MkdirAll(filepath.Dir(outPath), 0o755); err != nil {
+	absOutPath, err := filepath.Abs(outPath)
+	if err != nil {
+		return fmt.Errorf("解析目标路径失败: %w", err)
+	}
+
+	if err := os.MkdirAll(filepath.Dir(absOutPath), 0o755); err != nil {
 		return fmt.Errorf("创建目标目录失败: %w", err)
 	}
 
@@ -481,7 +497,7 @@ func (e *Engine) CompileTTMP(ctx context.Context, configJson string, outPath str
 
 	args := []string{
 		configPath,
-		"--export-ttmp", outPath,
+		"--export-ttmp", absOutPath,
 	}
 	args = append(args, e.prepareGamePathArgs(binPath)...)
 
