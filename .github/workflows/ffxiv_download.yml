@@ -19,11 +19,63 @@ jobs:
     steps:
       - name: Check Remote Version
         id: check
-        uses: WorkingRobot/ffxiv-downloader@main
-        with:
-          output-path: exd-version
-          regex: "^$"
-          use-cache: false
+        run: |
+          python3 - << 'EOF'
+          import json, os, time, urllib.request
+
+          query = """
+          {
+            repository(slug: "4e9a232b") {
+              slug
+              name
+              latestVersion {
+                versionString
+              }
+              versions {
+                versionString
+                prerequisiteVersions {
+                  versionString
+                }
+                patches {
+                  url
+                  size
+                  versionString
+                }
+              }
+            }
+          }
+          """
+          req = urllib.request.Request(
+              "https://thaliak.xiv.dev/graphql/",
+              data=json.dumps({"query": query}).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "User-Agent": "FFXIVChnTextPatch-Souma/1.0",
+              },
+          )
+          last_err = None
+          for attempt in range(3):
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      payload = json.loads(resp.read().decode("utf-8"))
+                  break
+              except Exception as e:
+                  last_err = e
+                  time.sleep(3)
+          else:
+              raise RuntimeError(f"Thaliak request failed: {last_err}")
+
+          if "errors" in payload:
+              raise RuntimeError(f"Thaliak GraphQL error: {payload['errors']}")
+
+          repo = payload["data"]["repository"]
+          version = repo["latestVersion"]["versionString"]
+          with open("thaliak.json", "w", encoding="utf-8") as f:
+              json.dump(repo, f)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"version={version}\n")
+          EOF
 
       - name: Check if already released
         id: release_check
@@ -64,15 +116,161 @@ jobs:
       - name: Debug release_check output
         run: echo "exists=${{ steps.release_check.outputs.exists }}"
 
+      - name: Prepare local index and CLUT
+        if: steps.release_check.outputs.exists == 'false'
+        id: prep
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          git clone --depth 1 --branch clut-state "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" clut-state || true
+
+          python3 - << 'EOF'
+          import collections, datetime, json, os, shutil, urllib.error, urllib.request
+
+          SLUG = "4e9a232b"
+          SCHEMA = "https://raw.githubusercontent.com/WorkingRobot/ffxiv-patches/main/schema/repository.schema.json"
+          UPSTREAM_CLUT_BASE = f"https://raw.githubusercontent.com/WorkingRobot/ffxiv-lut/refs/heads/main/cluts/{SLUG}"
+
+          target_version = os.environ["TARGET_VERSION"]
+          with open("thaliak.json", "r", encoding="utf-8") as f:
+              repo = json.load(f)
+
+          versions = {v["versionString"]: v for v in repo["versions"]}
+          if target_version not in versions:
+              raise RuntimeError(f"Target version {target_version} not found in Thaliak response")
+
+          def pick_patch(v_obj):
+              patches = v_obj.get("patches") or []
+              if not patches:
+                  return None
+              for p in patches:
+                  name = p["url"].rstrip("/").rsplit("/", 1)[-1]
+                  if name.startswith("D"):
+                      return p
+              return patches[0]
+
+          def has_upstream_clut(ver):
+              req = urllib.request.Request(f"{UPSTREAM_CLUT_BASE}/{ver}.clut", method="HEAD")
+              try:
+                  with urllib.request.urlopen(req, timeout=15) as resp:
+                      return resp.status == 200
+              except urllib.error.HTTPError as e:
+                  if e.code == 404:
+                      return False
+                  raise
+
+          # 沿 prerequisiteVersions 反向 BFS，优先命中本地缓存或上游最近可用的基准 CLUT
+          queue = collections.deque([(target_version, [])])
+          visited = {target_version}
+          base_version = None
+          base_source = None
+          chain_after_base = None
+
+          while queue:
+              ver, path_after = queue.popleft()
+              local_clut = os.path.join("clut-state", SLUG, f"{ver}.clut")
+              if os.path.isfile(local_clut):
+                  base_version = ver
+                  base_source = ("local", local_clut)
+                  chain_after_base = path_after
+                  break
+              if has_upstream_clut(ver):
+                  base_version = ver
+                  base_source = ("remote", f"{UPSTREAM_CLUT_BASE}/{ver}.clut")
+                  chain_after_base = path_after
+                  break
+
+              v_obj = versions.get(ver)
+              if not v_obj:
+                  continue
+              for prereq in v_obj.get("prerequisiteVersions") or []:
+                  pver = prereq["versionString"]
+                  if pver.startswith("H") or pver in visited:
+                      continue
+                  p_obj = versions.get(pver)
+                  if not p_obj or not pick_patch(p_obj):
+                      continue
+                  visited.add(pver)
+                  queue.append((pver, [ver] + path_after))
+
+          if not base_version:
+              raise RuntimeError(f"No usable base CLUT found in lineage for {target_version}")
+
+          print(f"Base CLUT: {base_version} ({base_source[0]})")
+          print(f"Incremental patches to fold: {chain_after_base}")
+
+          os.makedirs(f"local-cluts/{SLUG}", exist_ok=True)
+          os.makedirs("local-index/repos", exist_ok=True)
+
+          if base_source[0] == "local":
+              shutil.copyfile(base_source[1], "base.clut")
+          else:
+              with urllib.request.urlopen(base_source[1], timeout=60) as resp, open("base.clut", "wb") as out:
+                  shutil.copyfileobj(resp, out)
+
+          now_iso = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          index_versions = chain_after_base if chain_after_base else [target_version]
+          patches_map = {}
+          prev = None
+          for ver in index_versions:
+              p = pick_patch(versions[ver])
+              if not p:
+                  raise RuntimeError(f"No patch URL found for {ver}")
+              patches_map[ver] = {
+                  "prev": prev,
+                  "size": int(p["size"]),
+                  "header": None,
+                  "sources": {
+                      "cdn": {
+                          "url": p["url"],
+                          "status": "alive",
+                          "checked": now_iso,
+                      }
+                  },
+                  "discovered": {
+                      "at": now_iso,
+                      "method": "thaliak_seed",
+                  },
+                  "verified": None,
+              }
+              prev = ver
+
+          repo_doc = {
+              "$schema": SCHEMA,
+              "slug": SLUG,
+              "name": repo["name"],
+              "region": "global",
+              "latest": target_version,
+              "patches": patches_map,
+          }
+          with open(f"local-index/repos/{SLUG}.json", "w", encoding="utf-8") as f:
+              json.dump(repo_doc, f, indent=2)
+
+          need_build = len(chain_after_base) > 0
+          if not need_build:
+              shutil.copyfile("base.clut", f"local-cluts/{SLUG}/{target_version}.clut")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"need_build={'true' if need_build else 'false'}\n")
+          EOF
+
+      - name: Build incremental LUT and CLUT
+        if: steps.release_check.outputs.exists == 'false' && steps.prep.outputs.need_build == 'true'
+        run: |
+          mkdir -p local-luts local-cluts/4e9a232b
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/workingrobot/ffxiv-downloader:v23.0.0 \
+            --index-path local-index lut -s 4e9a232b -o local-luts -c Brotli
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/workingrobot/ffxiv-downloader:v23.0.0 \
+            --index-path local-index clut -s 4e9a232b --base-clut base.clut --base-path local-luts --base-patch-url http://patch-dl.ffxiv.com/game/4e9a232b -o local-cluts/4e9a232b
+
       - name: Download EXD Files
         if: steps.release_check.outputs.exists == 'false'
         id: download
-        uses: WorkingRobot/ffxiv-downloader@main
-        with:
-          output-path: exd-data
-          version: ${{ steps.check.outputs.version }}
-          regex: '^sqpack\/ffxiv\/0[0a]0000\.win32\.(dat0|index|index2)$'
-          use-cache: false
+        run: |
+          mkdir -p exd-data
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/workingrobot/ffxiv-downloader:v23.0.0 \
+            --index-path local-index download -s 4e9a232b -c local-cluts -o exd-data -v "${{ steps.check.outputs.version }}" -f '^sqpack\/ffxiv\/0[0a]0000\.win32\.(dat0|index|index2)$' -p 4 -u false
 
       - name: Compress backup files and compute hashes
         if: steps.release_check.outputs.exists == 'false'
@@ -129,3 +327,20 @@ jobs:
           name: ffxiv-exd-files
           path: exd-data
           retention-days: 7
+
+      - name: Save CLUT state
+        if: steps.release_check.outputs.exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          mkdir -p clut-push/4e9a232b
+          cp "local-cluts/4e9a232b/${TARGET_VERSION}.clut" "clut-push/4e9a232b/${TARGET_VERSION}.clut"
+          cd clut-push
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan clut-state
+          git add -A
+          git commit -m "chore: 更新 CLUT 基准快照 (${TARGET_VERSION})"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" clut-state:refs/heads/clut-state --force
