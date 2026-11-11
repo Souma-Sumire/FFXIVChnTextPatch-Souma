@@ -129,6 +129,7 @@ jobs:
         if: steps.release_check.outputs.exists == 'false'
         uses: actions/checkout@v5
         with:
+          path: repo
           sparse-checkout: |
             patcher
 
@@ -138,7 +139,7 @@ jobs:
         with:
           go-version: "1.26.x"
           cache: true
-          cache-dependency-path: patcher/go.sum
+          cache-dependency-path: repo/patcher/go.sum
 
       - name: Prepare base files and patch chain
         if: steps.release_check.outputs.exists == 'false'
@@ -249,9 +250,9 @@ jobs:
 
       - name: Apply ZiPatch updates
         if: steps.release_check.outputs.exists == 'false'
-        working-directory: patcher
+        working-directory: repo/patcher
         run: |
-          go run ./cmd/ffxiv-sync -dir ../exd-data -patches-json ../patch_urls.json -normalize-empty-blocks=true
+          go run ./cmd/ffxiv-sync -dir ../../exd-data -patches-json ../../patch_urls.json -normalize-empty-blocks=true
 
       - name: Compress backup files and compute hashes
         if: steps.release_check.outputs.exists == 'false'
