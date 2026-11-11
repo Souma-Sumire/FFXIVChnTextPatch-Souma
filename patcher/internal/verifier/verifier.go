@@ -121,7 +121,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		return result, err
 	}
 	result.Plan.GameVersion = version
-	cfg.log(DiagPrefix+"校验客户端版本 %s 与原版备份", version)
+	cfg.log("[校验] 客户端版本 %s（%s），核对原版备份...", version, region.DisplayName(reg))
 
 	meta, err := readBackupMeta(backupDir)
 	if err != nil {
@@ -131,10 +131,13 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	hasBackup := IsBackupComplete(meta, backupDir, version)
 
 	if hasBackup {
-		cfg.log(DiagPrefix+"命中本地原版备份 (%s)", version)
+		cfg.log("[备份] 命中本地原版备份 (%s)", version)
 		result.RestoredText, result.RestoredFont, err = restoreOriginals(ctx, &cfg, backupDir, sqpackDir, meta)
 		if err != nil {
 			return result, err
+		}
+		if !result.RestoredText && !result.RestoredFont && (cfg.ReplaceText || cfg.ReplaceFont) {
+			cfg.log("[校验] 客户端当前为官方原版，无需恢复")
 		}
 	} else {
 		// 本地没有当前版本的可信备份，尝试云端
@@ -160,6 +163,9 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 			result.RestoredText, result.RestoredFont, err = restoreOriginals(ctx, &cfg, backupDir, sqpackDir, meta)
 			if err != nil {
 				return result, err
+			}
+			if !result.RestoredText && !result.RestoredFont && (cfg.ReplaceText || cfg.ReplaceFont) {
+				cfg.log("[校验] 客户端当前为官方原版，无需恢复")
 			}
 		} else {
 			// 云端未收录 或 网络失败 + 游戏已更新 = 未知版本
@@ -651,6 +657,8 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 			return nil, fmt.Errorf("下载原版备份失败: %w", dlErr)
 		}
 		meta = downloadedMeta
+	} else {
+		cfg.log("[备份] 使用本地原版备份 (%s)", version)
 	}
 
 	// 只还原用户勾选的那一组：两个都没勾时按"全部还原"处理（旧调用方兼容）。

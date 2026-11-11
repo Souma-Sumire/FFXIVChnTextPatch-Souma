@@ -19,11 +19,63 @@ jobs:
     steps:
       - name: Check Remote Version
         id: check
-        uses: WorkingRobot/ffxiv-downloader@main
-        with:
-          output-path: exd-version
-          regex: "^$"
-          use-cache: false
+        run: |
+          python3 - << 'EOF'
+          import json, os, time, urllib.request
+
+          query = """
+          {
+            repository(slug: "4e9a232b") {
+              slug
+              name
+              latestVersion {
+                versionString
+              }
+              versions {
+                versionString
+                prerequisiteVersions {
+                  versionString
+                }
+                patches {
+                  url
+                  size
+                  versionString
+                }
+              }
+            }
+          }
+          """
+          req = urllib.request.Request(
+              "https://thaliak.xiv.dev/graphql/",
+              data=json.dumps({"query": query}).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "User-Agent": "FFXIVChnTextPatch-Souma/1.0",
+              },
+          )
+          last_err = None
+          for attempt in range(3):
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      payload = json.loads(resp.read().decode("utf-8"))
+                  break
+              except Exception as e:
+                  last_err = e
+                  time.sleep(3)
+          else:
+              raise RuntimeError(f"Thaliak request failed: {last_err}")
+
+          if "errors" in payload:
+              raise RuntimeError(f"Thaliak GraphQL error: {payload['errors']}")
+
+          repo = payload["data"]["repository"]
+          version = repo["latestVersion"]["versionString"]
+          with open("thaliak.json", "w", encoding="utf-8") as f:
+              json.dump(repo, f)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"version={version}\n")
+          EOF
 
       - name: Check if already released
         id: release_check
@@ -64,15 +116,133 @@ jobs:
       - name: Debug release_check output
         run: echo "exists=${{ steps.release_check.outputs.exists }}"
 
-      - name: Download EXD Files
+      - name: Checkout patcher source
         if: steps.release_check.outputs.exists == 'false'
-        id: download
-        uses: WorkingRobot/ffxiv-downloader@main
+        uses: actions/checkout@v5
         with:
-          output-path: exd-data
-          version: ${{ steps.check.outputs.version }}
-          regex: '^sqpack\/ffxiv\/0[0a]0000\.win32\.(dat0|index|index2)$'
-          use-cache: false
+          sparse-checkout: |
+            patcher
+
+      - name: Setup Go
+        if: steps.release_check.outputs.exists == 'false'
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.26.x"
+          cache: true
+          cache-dependency-path: patcher/go.sum
+
+      - name: Prepare base files and patch chain
+        if: steps.release_check.outputs.exists == 'false'
+        id: prep
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' > existing_releases.txt || true
+
+          python3 - << 'EOF'
+          import collections, json, os, subprocess, zipfile
+
+          REQUIRED_ZIPS = [
+              "000000.win32.dat0.zip", "000000.win32.index.zip", "000000.win32.index2.zip",
+              "0a0000.win32.dat0.zip", "0a0000.win32.index.zip", "0a0000.win32.index2.zip",
+          ]
+
+          target_version = os.environ["TARGET_VERSION"]
+          with open("thaliak.json", "r", encoding="utf-8") as f:
+              repo = json.load(f)
+
+          existing_releases = set()
+          if os.path.isfile("existing_releases.txt"):
+              with open("existing_releases.txt", "r", encoding="utf-8") as f:
+                  existing_releases = {line.strip() for line in f if line.strip()}
+
+          versions = {v["versionString"]: v for v in repo["versions"]}
+          if target_version not in versions:
+              raise RuntimeError(f"Target version {target_version} not found in Thaliak response")
+
+          def pick_patch(v_obj):
+              patches = v_obj.get("patches") or []
+              if not patches:
+                  return None
+              for p in patches:
+                  name = p["url"].rstrip("/").rsplit("/", 1)[-1]
+                  if name.startswith("D"):
+                      return p
+              return patches[0]
+
+          def release_has_all_zips(ver):
+              if ver not in existing_releases:
+                  return False
+              res = subprocess.run(
+                  ["gh", "release", "view", ver, "--repo", os.environ["GITHUB_REPOSITORY"], "--json", "assets", "-q", ".assets[].name"],
+                  capture_output=True, text=True, check=False,
+              )
+              if res.returncode != 0:
+                  return False
+              assets = {line.strip() for line in res.stdout.splitlines() if line.strip()}
+              return all(name in assets for name in REQUIRED_ZIPS)
+
+          # 沿 prerequisiteVersions 反向 BFS，查找距目标版本最近且具备完整 6 个压缩包的基准 Release
+          queue = collections.deque([(target_version, [])])
+          visited = {target_version}
+          selected = None
+
+          while queue:
+              ver, path_after = queue.popleft()
+              if ver != target_version and release_has_all_zips(ver):
+                  selected = (ver, path_after)
+                  break
+
+              v_obj = versions.get(ver)
+              if not v_obj:
+                  continue
+              for prereq in v_obj.get("prerequisiteVersions") or []:
+                  pver = prereq["versionString"]
+                  if pver.startswith("H") or pver in visited:
+                      continue
+                  p_obj = versions.get(pver)
+                  if not p_obj or not pick_patch(p_obj):
+                      continue
+                  visited.add(pver)
+                  queue.append((pver, [ver] + path_after))
+
+          if not selected:
+              raise RuntimeError(f"No usable baseline release with all 6 zip assets found in lineage for {target_version}")
+
+          base_version, chain_after_base = selected
+          print(f"Base release: {base_version}")
+          print(f"Incremental patches ({len(chain_after_base)}): {chain_after_base}")
+
+          os.makedirs("base-zips", exist_ok=True)
+          os.makedirs("exd-data/sqpack/ffxiv", exist_ok=True)
+          dl_cmd = ["gh", "release", "download", base_version, "--repo", os.environ["GITHUB_REPOSITORY"], "-D", "base-zips"]
+          for zname in REQUIRED_ZIPS:
+              dl_cmd.extend(["-p", zname])
+          subprocess.run(dl_cmd, check=True)
+
+          for zname in REQUIRED_ZIPS:
+              raw_name = zname[:-4]
+              with zipfile.ZipFile(os.path.join("base-zips", zname), "r") as zf:
+                  with open(os.path.join("exd-data/sqpack/ffxiv", raw_name), "wb") as out:
+                      out.write(zf.read(zf.namelist()[0]))
+
+          patch_urls = []
+          for ver in chain_after_base:
+              p = pick_patch(versions[ver])
+              if not p:
+                  raise RuntimeError(f"No patch URL found for {ver}")
+              patch_urls.append(p["url"])
+
+          with open("patch_urls.json", "w", encoding="utf-8") as f:
+              json.dump(patch_urls, f, indent=2)
+          EOF
+
+      - name: Apply ZiPatch updates
+        if: steps.release_check.outputs.exists == 'false'
+        working-directory: patcher
+        run: |
+          go run ./cmd/ffxiv-sync -dir ../exd-data -patches-json ../patch_urls.json -normalize-empty-blocks=true
 
       - name: Compress backup files and compute hashes
         if: steps.release_check.outputs.exists == 'false'
