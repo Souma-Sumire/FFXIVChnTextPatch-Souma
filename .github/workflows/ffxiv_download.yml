@@ -2,6 +2,12 @@ name: FFXIV Data Downloader
 
 on:
   workflow_dispatch:
+    inputs:
+      force:
+        description: "强制重新构建并覆盖已发布的当前版本 Release"
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: "17,47 * * * *"
 
@@ -90,7 +96,10 @@ jobs:
           REQUIRED_FILES=("000000.win32.dat0.zip" "000000.win32.index.zip" "000000.win32.index2.zip" "0a0000.win32.dat0.zip" "0a0000.win32.index.zip" "0a0000.win32.index2.zip" "hashes.json")
           ALL_EXISTS=true
 
-          if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+          if [ "${{ inputs.force }}" = "true" ]; then
+            ALL_EXISTS=false
+            echo "已启用 force 参数，将强制重新构建并覆盖 Release $VERSION。"
+          elif gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             ASSETS=$(gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" --json assets -q ".assets[].name")
             for file in "${REQUIRED_FILES[@]}"; do
               if ! echo "$ASSETS" | grep -qx "$file"; then
