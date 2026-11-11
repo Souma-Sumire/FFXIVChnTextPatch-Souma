@@ -245,11 +245,11 @@ func TestRun_WithExistingValidBackup(t *testing.T) {
 	if !textPatched || !fontPatched {
 		t.Fatalf("汉化替换函数未被调用: text=%v, font=%v", textPatched, fontPatched)
 	}
-	if !logContains(logs, "0a0000.win32.index 不是官方原版，正在从本地备份还原") {
-		t.Fatalf("被改动的文本文件应提示正在还原，实际日志: %v", logs)
+	if !logContains(logs, "[文本] 还原 0a0000.win32.index") {
+		t.Fatalf("被改动的文本文件应记录还原动作，实际日志: %v", logs)
 	}
-	if !logContains(logs, "[字体] 客户端字体已是官方原版，无需还原") {
-		t.Fatalf("字体未改动时应说明无需还原，实际日志: %v", logs)
+	if !logContains(logs, DiagPrefix+"[字体] 客户端字体已是原版，无需还原") {
+		t.Fatalf("字体未改动时应记录无需还原，实际日志: %v", logs)
 	}
 }
 
@@ -517,12 +517,12 @@ func TestRun_AlreadyOriginal_SkipsRestore(t *testing.T) {
 	}
 	requireModTime(t, env.sqpackDir, old)
 
-	if !logContains(logs, "[文本] 客户端文本已是官方原版，无需还原") ||
-		!logContains(logs, "[字体] 客户端字体已是官方原版，无需还原") {
-		t.Fatalf("日志应说明文本与字体已是官方原版，实际: %v", logs)
+	if !logContains(logs, DiagPrefix+"[文本] 客户端文本已是原版，无需还原") ||
+		!logContains(logs, DiagPrefix+"[字体] 客户端字体已是原版，无需还原") {
+		t.Fatalf("日志应记录文本与字体已是原版，实际: %v", logs)
 	}
 	for _, line := range logs {
-		if strings.Contains(line, "正在从本地备份还原") || strings.Contains(line, "正在还原官方原版") {
+		if strings.Contains(line, "] 还原 ") || strings.Contains(line, "已从备份还原") {
 			t.Fatalf("客户端已是原版时不应提示正在还原，实际: %s", line)
 		}
 	}
@@ -550,8 +550,8 @@ func TestRestore_AlreadyOriginal(t *testing.T) {
 		t.Fatalf("客户端已是原版时不应还原任何文件，实际: %v", restored)
 	}
 	requireModTime(t, env.sqpackDir, old)
-	if logContains(logs, "正在覆盖为官方原版") {
-		t.Fatalf("没有文件被改动时不应提示正在还原，实际: %v", logs)
+	if logContains(logs, "[还原] 覆盖") {
+		t.Fatalf("没有文件被改动时不应提示覆盖还原，实际: %v", logs)
 	}
 }
 
@@ -616,5 +616,128 @@ func TestIsValidReleaseJSON(t *testing.T) {
 				t.Fatalf("isValidReleaseJSON(%s) = %v, want %v", tc.input, got, tc.want)
 			}
 		})
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
+	return f(r)
+}
+
+func httpStringResponse(status int, body string) *http.Response {
+	return &http.Response{
+		StatusCode: status,
+		Body:       httpStringBody(body),
+		Header:     make(http.Header),
+	}
+}
+
+func httpStringBody(s string) *nopReadCloser {
+	return &nopReadCloser{Reader: strings.NewReader(s)}
+}
+
+type nopReadCloser struct {
+	*strings.Reader
+}
+
+func (nopReadCloser) Close() error { return nil }
+
+func TestRaceGetDirectNotFoundSkipsSlowMirror(t *testing.T) {
+	client := &http.Client{
+		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			if r.URL.Host == "api.github.com" {
+				return httpStringResponse(http.StatusNotFound, `{"message":"Not Found"}`), nil
+			}
+			<-r.Context().Done()
+			return nil, r.Context().Err()
+		}),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+
+	start := time.Now()
+	_, _, err := raceGet(
+		ctx,
+		client,
+		"https://api.github.com/repos/owner/repo/releases/tags/2026.11.03.0000.0000",
+		[]string{"https://slow.mirror/https://api.github.com/repos/owner/repo/releases/tags/2026.11.03.0000.0000"},
+		nil,
+		1<<20,
+		isValidReleaseJSON,
+	)
+	if !errors.Is(err, ErrNotFound) {
+		t.Fatalf("期望返回 ErrNotFound，实际: %v", err)
+	}
+	if elapsed := time.Since(start); elapsed > 250*time.Millisecond {
+		t.Fatalf("直连已返回 404 不应等待慢镜像超时，耗时 %v", elapsed)
+	}
+}
+
+func TestRaceGetMirrorNotFoundWaitsForDirectSuccess(t *testing.T) {
+	client := &http.Client{
+		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			if r.URL.Host == "mirror.example" {
+				return httpStringResponse(http.StatusNotFound, "not found"), nil
+			}
+			time.Sleep(30 * time.Millisecond)
+			return httpStringResponse(http.StatusOK, `{"tag_name":"2026.10.16.0000.0000"}`), nil
+		}),
+	}
+
+	body, source, err := raceGet(
+		context.Background(),
+		client,
+		"https://api.github.com/repos/owner/repo/releases/tags/2026.10.16.0000.0000",
+		[]string{"https://mirror.example/api"},
+		nil,
+		1<<20,
+		isValidReleaseJSON,
+	)
+	if err != nil {
+		t.Fatalf("镜像返回 404 不应影响直连成功: %v", err)
+	}
+	if !strings.Contains(string(body), "2026.10.16.0000.0000") || !strings.HasPrefix(source, "https://api.github.com/") {
+		t.Fatalf("意外结果: source=%s body=%s", source, body)
+	}
+}
+
+func TestReleaseByTagAPITimeoutFallsBackToExpandedAssets(t *testing.T) {
+	const digest = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	c := &GitHubClient{
+		APIBase:         defaultAPIBase,
+		AssetMirrors:    []string{"https://slow.mirror/", "https://fast.mirror/"},
+		apiStageTimeout: 80 * time.Millisecond,
+		HTTP: &http.Client{
+			Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				full := r.URL.String()
+				if strings.Contains(full, "api.github.com") {
+					if r.URL.Host == "slow.mirror" {
+						<-r.Context().Done()
+						return nil, r.Context().Err()
+					}
+					return httpStringResponse(http.StatusForbidden, `{"message":"API rate limit exceeded"}`), nil
+				}
+				if strings.Contains(full, "/releases/expanded_assets/") && r.URL.Host == "fast.mirror" {
+					html := fmt.Sprintf(`<li><a href="/owner/repo/releases/download/2026.10.16.0000.0000/000000.win32.index">000000.win32.index</a><span>sha256:%s</span></li>`, digest)
+					return httpStringResponse(http.StatusOK, html), nil
+				}
+				<-r.Context().Done()
+				return nil, r.Context().Err()
+			}),
+		},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	rel, err := c.ReleaseByTag(ctx, "owner/repo", "2026.10.16.0000.0000")
+	if err != nil {
+		t.Fatalf("API 阶段超时后应成功降级网页端: %v", err)
+	}
+	got, ok := rel.AssetSHA256("000000.win32.index")
+	if !ok || got != digest {
+		t.Fatalf("解析资产哈希不匹配: ok=%v got=%q want=%q", ok, got, digest)
 	}
 }

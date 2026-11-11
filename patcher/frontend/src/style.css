@@ -254,6 +254,31 @@ svg {
   background-color: var(--bg-active);
 }
 
+.btn-copy-log .copy-icon-done {
+  display: none;
+}
+
+.btn-copy-log.is-copied {
+  color: var(--ok);
+  background-color: var(--ok-soft);
+  border-color: rgba(76, 195, 138, 0.36);
+}
+
+.btn-copy-log.is-copied:hover:not(:disabled),
+.btn-copy-log.is-copied:active:not(:disabled) {
+  color: var(--ok);
+  background-color: rgba(76, 195, 138, 0.18);
+  border-color: rgba(76, 195, 138, 0.48);
+}
+
+.btn-copy-log.is-copied .copy-icon-default {
+  display: none;
+}
+
+.btn-copy-log.is-copied .copy-icon-done {
+  display: block;
+}
+
 /* 主按钮回到这一版之前的蓝底白字：整屏最亮的一块就该是「开始汉化」。
    填充比 #3b78e7 暗不到一档，只为让白字过 4.5:1（原来的 4.18:1 偏灰）。 */
 .btn-primary {
@@ -4202,4 +4227,106 @@ body.row-resizing * {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   pointer-events: none;
+}
+
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 68px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px 10px 14px;
+  background-color: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  transition: opacity 0.16s var(--ease), transform 0.16s var(--ease);
+}
+
+.app-toast.hidden {
+  display: flex;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(6px);
+}
+
+.app-toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: var(--ok-soft);
+  color: var(--ok);
+}
+
+.app-toast .toast-icon-err {
+  display: none;
+}
+
+.app-toast.is-error .app-toast-icon {
+  background-color: var(--err-soft);
+  color: var(--err);
+}
+
+.app-toast.is-error .toast-icon-ok {
+  display: none;
+}
+
+.app-toast.is-error .toast-icon-err {
+  display: block;
+}
+
+.app-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-toast-title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.app-toast-desc {
+  font-size: var(--fs-meta);
+  color: var(--text-3);
+  line-height: 1.35;
+}
+
+.app-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.app-toast-close {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background-color 0.12s var(--ease), color 0.12s var(--ease);
+}
+
+.app-toast-close:hover {
+  background-color: var(--bg-hover);
+  color: var(--text);
 }

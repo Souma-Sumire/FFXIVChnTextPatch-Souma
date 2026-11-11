@@ -145,8 +145,9 @@
               </button>
             </div>
             <div class="log-head-right">
-              <button id="btn-copy-log" class="btn btn-quiet btn-xs btn-plain" type="button" data-tip="汇总环境、配置、客户端状态与全部日志，粘贴到 GitHub Issues 即可">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <button id="btn-copy-log" class="btn btn-quiet btn-xs btn-plain btn-copy-log" type="button" data-tip="复制调试信息，反馈问题时粘贴到 GitHub Issues">
+                <svg class="copy-icon-default" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <svg class="copy-icon-done" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                 <span id="btn-copy-log-text">复制调试信息</span>
               </button>
               <button id="btn-clear-log" class="btn btn-quiet btn-xs btn-plain" type="button">
@@ -363,7 +364,7 @@
                 <span class="fc-menu-label">导出原始字库文件 (fdt / tex)…</span>
               </button>
               <div class="fc-menu-divider"></div>
-              <button type="button" class="fc-menu-entry has-check" data-menu="export-toggle-16bit" data-tip="默认开启，贴图体积减半、节省显存；关闭后将生成 32 位贴图，体积翻倍">
+              <button type="button" class="fc-menu-entry has-check" data-menu="export-toggle-16bit" data-tip="默认开启，贴图体积减半；关闭生成 32 位贴图">
                 <span class="fc-menu-check" id="fc-check-16bit" aria-hidden="true"></span>
                 <span class="fc-menu-label">16 位贴图压缩</span>
               </button>
@@ -383,7 +384,7 @@
 
         <!-- 顶栏右侧：仅保留区服状态芯片 -->
         <div class="fc-menubar-right">
-          <span id="font-region-warning" class="fc-warn-chip hidden" data-tip="此区服无法自动检查客户端状态，定制前请确认客户端为官方原版">需使用原版客户端</span>
+          <span id="font-region-warning" class="fc-warn-chip hidden" data-tip="无法自动检查此区服状态，编辑前请先确认客户端为原版">需使用原版客户端</span>
           <span id="font-region-badge" class="hidden" aria-hidden="true"></span>
         </div>
       </header>
@@ -1108,6 +1109,23 @@
           <button id="btn-preset-close-foot" class="btn btn-xs btn-done" type="button">完成</button>
         </div>
       </footer>
+    </div>
+  </div>
+
+  <div id="app-toast" class="app-toast hidden" role="status" aria-live="polite">
+    <span class="app-toast-icon" aria-hidden="true">
+      <svg class="toast-icon-ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <svg class="toast-icon-err" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    </span>
+    <div class="app-toast-content">
+      <div id="app-toast-title" class="app-toast-title"></div>
+      <div id="app-toast-desc" class="app-toast-desc"></div>
+    </div>
+    <div class="app-toast-actions">
+      <button id="app-toast-action" class="btn btn-xs btn-chip hidden" type="button"></button>
+      <button id="app-toast-close" class="app-toast-close" type="button" aria-label="关闭提示">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
   </div>
 

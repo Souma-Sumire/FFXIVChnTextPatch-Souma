@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -28,6 +28,21 @@ function run(cmd: string, args: string[], cwd: string, extraEnv?: Record<string,
       env,
     });
   }
+}
+
+function runAsync(cmd: string, args: string[], cwd: string, extraEnv?: Record<string, string>): Promise<void> {
+  const env = extraEnv ? { ...buildEnv, ...extraEnv } : buildEnv;
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, { cwd, stdio: "inherit", env });
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`命令退出码 ${code ?? "unknown"}: ${cmd} ${args.join(" ")}`));
+      }
+    });
+  });
 }
 
 function resolveAppVersion(): string {
@@ -88,7 +103,7 @@ function buildFrontend(): void {
   run("pnpm", ["run", "build"], frontendDir);
 }
 
-function buildMacOS(appVersion: string, goTags: string, releaseBuild: boolean): void {
+async function buildMacOS(appVersion: string, goTags: string, releaseBuild: boolean): Promise<void> {
   const appName = "FFXIVChnTextPatch-SM-v2";
   const binDir = path.join(patcherDir, "build", "bin");
   const appPath = path.join(binDir, `${appName}.app`);
@@ -121,18 +136,20 @@ function buildMacOS(appVersion: string, goTags: string, releaseBuild: boolean): 
     if (releaseBuild) {
       const amd64Bin = path.join(tmpArchDir, `${appName}-amd64`);
       const arm64Bin = path.join(tmpArchDir, `${appName}-arm64`);
-      run(
-        "go",
-        ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", amd64Bin, "."],
-        patcherDir,
-        { ...macCommonEnv, GOARCH: "amd64" },
-      );
-      run(
-        "go",
-        ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", arm64Bin, "."],
-        patcherDir,
-        { ...macCommonEnv, GOARCH: "arm64" },
-      );
+      await Promise.all([
+        runAsync(
+          "go",
+          ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", amd64Bin, "."],
+          patcherDir,
+          { ...macCommonEnv, GOARCH: "amd64" },
+        ),
+        runAsync(
+          "go",
+          ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", arm64Bin, "."],
+          patcherDir,
+          { ...macCommonEnv, GOARCH: "arm64" },
+        ),
+      ]);
       run("lipo", ["-create", "-output", universalBin, amd64Bin, arm64Bin], patcherDir);
     } else {
       const localArch = process.arch === "arm64" ? "arm64" : "amd64";
@@ -262,7 +279,7 @@ function buildWindows(appVersion: string, goTags: string): void {
   }
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const appVersion = resolveAppVersion();
   const releaseBuild = process.argv.includes("--release") || process.env.PATCHER_RELEASE === "1";
   console.log(`\n构建版本: ${appVersion}（${releaseBuild ? "发布构建" : "本地开发构建"}）`);
@@ -275,16 +292,14 @@ function main(): void {
 
   buildFrontend();
   if (isMac) {
-    buildMacOS(appVersion, goTags, releaseBuild);
+    await buildMacOS(appVersion, goTags, releaseBuild);
   } else {
     buildWindows(appVersion, goTags);
   }
 }
 
-try {
-  main();
-} catch (err) {
+main().catch((err) => {
   const message = err instanceof Error ? err.message : String(err);
   console.error(`\n构建失败: ${message}`);
   process.exit(1);
-}
+});

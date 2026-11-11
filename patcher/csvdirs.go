@@ -606,11 +606,11 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 	created := len(entries) == 0
 	if !created {
 		if convert {
-			return current, errors.New("已存在内置词条副本，如需繁體副本请先删除现有副本目录")
+			return current, errors.New("已存在内置词条副本，请先删除旧副本再生成繁体副本")
 		}
-		a.emitPatchLog("[词条] 已存在内置词条副本，直接使用其中的 CSV（不会覆盖你的修改）")
+		a.emitPatchLog("[词条] 已选用现有副本")
 		if missing := missingCopyCount(dstDir, srcDir, knownTableKeys(doc)); missing > 0 {
-			a.emitPatchLog(fmt.Sprintf("[词条] 副本比内置词条少 %d 份 CSV（上次复制可能被打断），缺失的表将使用原文。如需完整副本，请删除现有副本后重新制作", missing))
+			a.emitPatchLog(fmt.Sprintf("[警告] 副本缺少 %d 份 CSV（缺失的表将使用原文），建议删除后重做", missing))
 		}
 	} else {
 		transform := func(data []byte) ([]byte, error) { return data, nil }
@@ -657,9 +657,9 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 			return current, fmt.Errorf("提交自定义词条目录失败: %w", err)
 		}
 		if convert {
-			a.emitPatchLog("[词条] 已生成内置词条副本（已简繁转换），可直接编辑其中的 CSV")
+			a.emitPatchLog("[词条] 已生成繁体词条副本")
 		} else {
-			a.emitPatchLog("[词条] 已生成内置词条副本，可直接编辑其中的 CSV")
+			a.emitPatchLog("[词条] 已生成词条副本")
 		}
 	}
 

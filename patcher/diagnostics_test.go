@@ -25,11 +25,16 @@ func TestDiagnosticsSnapshotContainsSessionState(t *testing.T) {
 	}
 	joined := strings.Join(lines, "\n")
 	for _, want := range []string{
-		"会话快照", "环境：", "路径：", "资源文件：", "配置：", "资源：", "字体：", "区服：",
-		"游戏目录未设置", "备份概览：", "网络：", "权限", "代理变量", "出口=",
+		"会话快照", "环境：", "路径：", "配置：", "资源：", "清单：", "字体：",
+		"客户端：未设置游戏目录", "本地备份：无", "网络：", "镜像=未选", "权限=", "环境变量=", "出口=",
 	} {
 		if !strings.Contains(joined, want) {
 			t.Fatalf("诊断信息缺少 %q\n%s", want, joined)
+		}
+	}
+	for _, unwanted := range []string{"<nil>", "Go go", "16 核", "PID "} {
+		if strings.Contains(joined, unwanted) {
+			t.Fatalf("诊断信息不应包含冗余内容 %q\n%s", unwanted, joined)
 		}
 	}
 }
@@ -41,7 +46,7 @@ func TestDiagnosticsReportsMissingResourceAsAbsent(t *testing.T) {
 	app.resourceDirOverride = t.TempDir()
 
 	joined := strings.Join(app.GetDiagnostics(), "\n")
-	for _, want := range []string{"清单=未生成", "表清单=未生成", "CSV=目录缺失"} {
+	for _, want := range []string{"清单：未生成", "表清单=未生成", "CSV=目录缺失"} {
 		if !strings.Contains(joined, want) {
 			t.Fatalf("诊断信息缺少 %q\n%s", want, joined)
 		}

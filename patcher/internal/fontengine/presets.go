@@ -47,32 +47,32 @@ const (
 var BuiltinPresetMap = map[string]PresetSummary{
 	BuiltinChnAXISPresetID: {
 		ID:          BuiltinChnAXISPresetID,
-		Name:        "国际服 ChnAXIS 方案 (国服原版字形)",
-		Description: "从国服客户端提取官方 ChnAXIS 字形，需在电脑上安装国服",
+		Name:        "国际服 ChnAXIS 方案 (国服字形)",
+		Description: "从本地国服客户端提取 ChnAXIS 字形",
 		Builtin:     true,
 	},
 	BuiltinChnAXISSystemPresetID: {
 		ID:          BuiltinChnAXISSystemPresetID,
 		Name:        "国际服 微软雅黑 方案 (系统字体)",
-		Description: "使用 Windows 自带的微软雅黑渲染中文字形，仅需国际服客户端",
+		Description: "使用系统微软雅黑字体，无需国服客户端",
 		Builtin:     true,
 	},
 	BuiltinChnPresetID: {
 		ID:          BuiltinChnPresetID,
 		Name:        "国服默认方案",
-		Description: "国服原生字体方案（ChnAXIS 系列）",
+		Description: "国服 ChnAXIS 字体",
 		Builtin:     true,
 	},
 	BuiltinKrnPresetID: {
 		ID:          BuiltinKrnPresetID,
 		Name:        "韩服默认方案",
-		Description: "韩服原生字体方案（KrnAXIS 系列）",
+		Description: "韩服 KrnAXIS 字体",
 		Builtin:     true,
 	},
 	BuiltinTcPresetID: {
 		ID:          BuiltinTcPresetID,
 		Name:        "繁中默认方案",
-		Description: "繁体中文原生字体方案（tcaxis 系列）",
+		Description: "繁中 tcaxis 字体",
 		Builtin:     true,
 	},
 }

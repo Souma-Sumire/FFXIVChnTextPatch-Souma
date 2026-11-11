@@ -17,12 +17,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            patcher
+            scripts
+            .github
 
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
-          cache-dependency-path: patcher/go.sum
+          cache: false
+
+      - name: Resolve Go cache paths
+        id: go-env
+        shell: bash
+        run: |
+          echo "gocache=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+          echo "gomodcache=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Go modules and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.go-env.outputs.gomodcache }}
+            ${{ steps.go-env.outputs.gocache }}
+          key: go-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('patcher/go.sum') }}
+          restore-keys: |
+            go-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
@@ -36,7 +58,7 @@ jobs:
 
       - name: Run Go tests
         working-directory: patcher
-        run: go test -short ./... -count=1
+        run: go test -short -tags "desktop,production" ./... -count=1
 
       - name: Build Windows executable
         run: pnpm run build:release
@@ -54,12 +76,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            patcher
+            scripts
+            .github
 
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
-          cache-dependency-path: patcher/go.sum
+          cache: false
+
+      - name: Resolve Go cache paths
+        id: go-env
+        shell: bash
+        run: |
+          echo "gocache=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+          echo "gomodcache=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Go modules and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.go-env.outputs.gomodcache }}
+            ${{ steps.go-env.outputs.gocache }}
+          key: go-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('patcher/go.sum') }}
+          restore-keys: |
+            go-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Install pnpm
         uses: pnpm/action-setup@v5
@@ -73,7 +117,7 @@ jobs:
 
       - name: Run Go tests
         working-directory: patcher
-        run: go test -short ./... -count=1
+        run: go test -short -tags "desktop,production" ./... -count=1
 
       - name: Build macOS Universal App Bundle
         run: pnpm run build:release
