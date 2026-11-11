@@ -124,17 +124,27 @@ jobs:
           TARGET_VERSION: ${{ steps.check.outputs.version }}
         run: |
           git clone --depth 1 --branch clut-state "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" clut-state || true
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 30 --json tagName -q '.[].tagName' > existing_releases.txt || true
 
           python3 - << 'EOF'
-          import collections, datetime, json, os, shutil, urllib.error, urllib.request
+          import collections, datetime, json, os, shutil, subprocess, urllib.error, urllib.request, zipfile
 
           SLUG = "4e9a232b"
           SCHEMA = "https://raw.githubusercontent.com/WorkingRobot/ffxiv-patches/main/schema/repository.schema.json"
           UPSTREAM_CLUT_BASE = f"https://raw.githubusercontent.com/WorkingRobot/ffxiv-lut/refs/heads/main/cluts/{SLUG}"
+          REQUIRED_ZIPS = [
+              "000000.win32.dat0.zip", "000000.win32.index.zip", "000000.win32.index2.zip",
+              "0a0000.win32.dat0.zip", "0a0000.win32.index.zip", "0a0000.win32.index2.zip",
+          ]
 
           target_version = os.environ["TARGET_VERSION"]
           with open("thaliak.json", "r", encoding="utf-8") as f:
               repo = json.load(f)
+
+          existing_releases = set()
+          if os.path.isfile("existing_releases.txt"):
+              with open("existing_releases.txt", "r", encoding="utf-8") as f:
+                  existing_releases = {line.strip() for line in f if line.strip()}
 
           versions = {v["versionString"]: v for v in repo["versions"]}
           if target_version not in versions:
@@ -160,26 +170,40 @@ jobs:
                       return False
                   raise
 
-          # 沿 prerequisiteVersions 反向 BFS，优先命中本地缓存或上游最近可用的基准 CLUT
+          def release_has_all_zips(ver):
+              if ver not in existing_releases:
+                  return False
+              res = subprocess.run(
+                  ["gh", "release", "view", ver, "--repo", os.environ["GITHUB_REPOSITORY"], "--json", "assets", "-q", ".assets[].name"],
+                  capture_output=True, text=True, check=False,
+              )
+              if res.returncode != 0:
+                  return False
+              assets = {line.strip() for line in res.stdout.splitlines() if line.strip()}
+              return all(name in assets for name in REQUIRED_ZIPS)
+
+          # 沿 prerequisiteVersions 反向 BFS，优先选择同时具备基准 CLUT 与历史 Release 压缩包的节点以跳过失效的远古补丁
           queue = collections.deque([(target_version, [])])
           visited = {target_version}
-          base_version = None
-          base_source = None
-          chain_after_base = None
+          fallback = None
+          selected = None
 
           while queue:
               ver, path_after = queue.popleft()
               local_clut = os.path.join("clut-state", SLUG, f"{ver}.clut")
+              source = None
               if os.path.isfile(local_clut):
-                  base_version = ver
-                  base_source = ("local", local_clut)
-                  chain_after_base = path_after
-                  break
-              if has_upstream_clut(ver):
-                  base_version = ver
-                  base_source = ("remote", f"{UPSTREAM_CLUT_BASE}/{ver}.clut")
-                  chain_after_base = path_after
-                  break
+                  source = ("local", local_clut)
+              elif has_upstream_clut(ver):
+                  source = ("remote", f"{UPSTREAM_CLUT_BASE}/{ver}.clut")
+
+              if source is not None:
+                  has_rel = release_has_all_zips(ver)
+                  if has_rel:
+                      selected = (ver, source, path_after, True)
+                      break
+                  if fallback is None:
+                      fallback = (ver, source, path_after, False)
 
               v_obj = versions.get(ver)
               if not v_obj:
@@ -194,10 +218,12 @@ jobs:
                   visited.add(pver)
                   queue.append((pver, [ver] + path_after))
 
-          if not base_version:
+          chosen = selected or fallback
+          if not chosen:
               raise RuntimeError(f"No usable base CLUT found in lineage for {target_version}")
 
-          print(f"Base CLUT: {base_version} ({base_source[0]})")
+          base_version, base_source, chain_after_base, use_cache = chosen
+          print(f"Base CLUT: {base_version} ({base_source[0]}, use_cache={use_cache})")
           print(f"Incremental patches to fold: {chain_after_base}")
 
           os.makedirs(f"local-cluts/{SLUG}", exist_ok=True)
@@ -208,6 +234,22 @@ jobs:
           else:
               with urllib.request.urlopen(base_source[1], timeout=60) as resp, open("base.clut", "wb") as out:
                   shutil.copyfileobj(resp, out)
+
+          if use_cache:
+              shutil.copyfile("base.clut", f"local-cluts/{SLUG}/{base_version}.clut")
+              os.makedirs("base-zips", exist_ok=True)
+              os.makedirs("exd-data/sqpack/ffxiv", exist_ok=True)
+              dl_cmd = ["gh", "release", "download", base_version, "--repo", os.environ["GITHUB_REPOSITORY"], "-D", "base-zips"]
+              for zname in REQUIRED_ZIPS:
+                  dl_cmd.extend(["-p", zname])
+              subprocess.run(dl_cmd, check=True)
+              for zname in REQUIRED_ZIPS:
+                  raw_name = zname[:-4]
+                  with zipfile.ZipFile(os.path.join("base-zips", zname), "r") as zf:
+                      with open(os.path.join("exd-data/sqpack/ffxiv", raw_name), "wb") as out:
+                          out.write(zf.read(zf.namelist()[0]))
+              with open("exd-data/.cachemeta.json", "w", encoding="utf-8") as f:
+                  json.dump({"slug": SLUG, "version": base_version, "filtered_files": []}, f)
 
           now_iso = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
           index_versions = chain_after_base if chain_after_base else [target_version]
@@ -253,6 +295,7 @@ jobs:
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               out.write(f"need_build={'true' if need_build else 'false'}\n")
+              out.write(f"use_cache={'true' if use_cache else 'false'}\n")
           EOF
 
       - name: Build incremental LUT and CLUT
@@ -270,7 +313,8 @@ jobs:
         run: |
           mkdir -p exd-data
           docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work ghcr.io/workingrobot/ffxiv-downloader:v23.0.0 \
-            --index-path local-index download -s 4e9a232b -c local-cluts -o exd-data -v "${{ steps.check.outputs.version }}" -f '^sqpack\/ffxiv\/0[0a]0000\.win32\.(dat0|index|index2)$' -p 4 -u false
+            --verbose --index-path local-index download -s 4e9a232b -c local-cluts -o exd-data -v "${{ steps.check.outputs.version }}" -f '^sqpack\/ffxiv\/0[0a]0000\.win32\.(dat0|index|index2)$' -p 4 -u "${{ steps.prep.outputs.use_cache }}"
+          rm -f exd-data/.cachemeta.json
 
       - name: Compress backup files and compute hashes
         if: steps.release_check.outputs.exists == 'false'
