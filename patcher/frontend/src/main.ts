@@ -191,9 +191,21 @@ interface CSVContext {
   custom: boolean;
   defaultDir: string;
   tableList: TableEntry[];
+  folders?: Record<string, string>;
   resourceReady: boolean;
   resourceUpdatedAt?: string;
   resourceHash?: string;
+}
+
+interface CSVPreviewResult {
+  tableKey: string;
+  headers: string[];
+  rows: string[][];
+  totalRows: number;
+  allRows: number;
+  offset: number;
+  limit: number;
+  hasMore: boolean;
 }
 
 interface BootstrapInfo {
@@ -344,6 +356,7 @@ interface GoApp {
   SetCSVSelection(language: string, path: string): Promise<CSVContext>;
   RemoveCSVDirectory(language: string, path: string, deleteFiles: boolean): Promise<CSVContext>;
   SetCSVDirectoryMeta(language: string, path: string, title: string, desc: string): Promise<CSVContext>;
+  PreviewCSVTable(language: string, tableKey: string, query: string, offset: number, limit: number): Promise<CSVPreviewResult>;
   OpenCSVDirectory(language: string, path: string): Promise<void>;
   OpenBackupDirectory(language: string): Promise<void>;
   DetectGamePaths(language: string): Promise<string[]>;
@@ -578,6 +591,21 @@ const el = {
   btnSelectAll: byId<HTMLButtonElement>("btn-select-all"),
   btnSelectNone: byId<HTMLButtonElement>("btn-select-none"),
   tableList: byId<HTMLTableSectionElement>("table-list"),
+
+  csvPreviewModal: byId("csv-preview-modal"),
+  csvPreviewTitle: byId("csv-preview-title"),
+  csvPreviewName: byId("csv-preview-name"),
+  csvPreviewCount: byId("csv-preview-count"),
+  btnCsvPreviewClose: byId<HTMLButtonElement>("btn-csv-preview-close"),
+  csvPreviewSearch: byId<HTMLInputElement>("csv-preview-search"),
+  csvPreviewRange: byId("csv-preview-range"),
+  csvPreviewState: byId("csv-preview-state"),
+  csvPreviewScroll: byId("csv-preview-scroll"),
+  csvPreviewThead: byId<HTMLTableSectionElement>("csv-preview-thead"),
+  csvPreviewTbody: byId<HTMLTableSectionElement>("csv-preview-tbody"),
+  btnCsvPreviewPrev: byId<HTMLButtonElement>("btn-csv-preview-prev"),
+  btnCsvPreviewNext: byId<HTMLButtonElement>("btn-csv-preview-next"),
+  btnCsvPreviewDone: byId<HTMLButtonElement>("btn-csv-preview-done"),
 
   // 字体定制工作台节点 (复刻 FFXIV-FontChanger)
   viewFontEditor: byId("view-font-editor"),
@@ -2730,6 +2758,9 @@ function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?
   }
   const prevKeys = previousKeys ?? tableList().map((entry) => entry.key).join("\n");
   bootstrap.csv = ctx;
+  if (ctx.folders) {
+    bootstrap.folders = ctx.folders;
+  }
   bootstrap.resourceReady = ctx.resourceReady;
 
   if (!config.csvDirs) {
@@ -6132,27 +6163,41 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
 
   const tdCheck = document.createElement("td");
   tdCheck.className = "col-sel";
+  const checkLabel = document.createElement("label");
+  checkLabel.className = "table-check-label";
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.checked = isEntrySel;
-  checkbox.addEventListener("change", (e) => {
-    e.stopPropagation();
+  checkbox.addEventListener("change", () => {
     setSelected(entry.key, checkbox.checked);
     tr.classList.toggle("selected", checkbox.checked);
     tr.classList.toggle("unselected", !checkbox.checked);
     syncPresetWithSelection();
     updateScopeCount();
   });
-  tdCheck.append(checkbox);
+  checkLabel.append(checkbox);
+  tdCheck.append(checkLabel);
 
   const tdKey = document.createElement("td");
   tdKey.className = `col-filename ${isChild ? "sub-filename" : ""}`.trim();
   tdKey.textContent = entry.key;
 
+  const tdPreview = document.createElement("td");
+  tdPreview.className = "col-preview";
+  const previewBtn = document.createElement("button");
+  previewBtn.type = "button";
+  previewBtn.className = "btn-table-preview";
+  previewBtn.textContent = "预览";
+  previewBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    void openCSVPreview(entry);
+  });
+  tdPreview.append(previewBtn);
+
   const tdName = document.createElement("td");
   tdName.className = "col-chs";
   const hideRepeatName = isChild && (entry.name === folderChs || !entry.name || entry.name === "-");
-  const displayName = hideRepeatName ? "" : (entry.name || "-");
+  const displayName = hideRepeatName ? "-" : (entry.name || "-");
   tdName.textContent = displayName;
 
   const tdStatus = document.createElement("td");
@@ -6164,17 +6209,7 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
     tdStatus.append(tag);
   }
 
-  tr.addEventListener("click", () => {
-    const next = !selected.has(entry.key);
-    checkbox.checked = next;
-    setSelected(entry.key, next);
-    tr.classList.toggle("selected", next);
-    tr.classList.toggle("unselected", !next);
-    syncPresetWithSelection();
-    updateScopeCount();
-  });
-
-  tr.append(tdCheck, tdKey, tdName, tdStatus);
+  tr.append(tdCheck, tdKey, tdPreview, tdName, tdStatus);
   return tr;
 }
 
@@ -6272,7 +6307,13 @@ function renderTables(): void {
     tdKey.className = "col-filename folder-name-cell";
     tdKey.textContent = fKey;
 
-    const folderChs = bootstrap?.folders ? bootstrap.folders[fKey] || "" : "";
+    const tdPreview = document.createElement("td");
+    tdPreview.className = "col-preview folder-preview-cell";
+
+    const folderChs =
+      (bootstrap?.folders && bootstrap.folders[fKey]) ||
+      allEntriesInFolder.find((e) => e.name && e.name !== "-")?.name ||
+      "";
     const tdName = document.createElement("td");
     tdName.className = "col-chs folder-chs-cell";
     tdName.textContent = folderChs || "-";
@@ -6280,7 +6321,7 @@ function renderTables(): void {
     const tdStatus = document.createElement("td");
     tdStatus.className = "col-status folder-status-cell";
 
-    trGroup.append(tdSel, tdKey, tdName, tdStatus);
+    trGroup.append(tdSel, tdKey, tdPreview, tdName, tdStatus);
 
     trGroup.addEventListener("click", () => {
       if (isExpanded) {
@@ -6323,7 +6364,7 @@ function renderTables(): void {
   if (fragment.childNodes.length === 0) {
     const trEmpty = document.createElement("tr");
     const tdEmpty = document.createElement("td");
-    tdEmpty.colSpan = 4;
+    tdEmpty.colSpan = 5;
     tdEmpty.className = "table-empty-cell";
     const rawTerm = el.search.value.trim();
     if (tableList().length === 0) {
@@ -6343,6 +6384,126 @@ function renderTables(): void {
 
   el.tableList.append(fragment);
   updateScopeCount();
+}
+
+const CSV_PREVIEW_PAGE_SIZE = 100;
+let csvPreviewEntry: TableEntry | null = null;
+let csvPreviewOffset = 0;
+let csvPreviewGeneration = 0;
+let csvPreviewSearchTimer = 0;
+
+function closeCSVPreview(): void {
+  csvPreviewGeneration++;
+  csvPreviewEntry = null;
+  if (csvPreviewSearchTimer) {
+    window.clearTimeout(csvPreviewSearchTimer);
+    csvPreviewSearchTimer = 0;
+  }
+  el.csvPreviewModal.classList.add("hidden");
+  el.csvPreviewThead.replaceChildren();
+  el.csvPreviewTbody.replaceChildren();
+}
+
+async function openCSVPreview(entry: TableEntry): Promise<void> {
+  csvPreviewEntry = entry;
+  csvPreviewOffset = 0;
+  el.csvPreviewTitle.textContent = entry.key;
+  if (entry.name && entry.name !== "-") {
+    el.csvPreviewName.textContent = entry.name;
+    el.csvPreviewName.classList.remove("hidden");
+  } else {
+    el.csvPreviewName.textContent = "";
+    el.csvPreviewName.classList.add("hidden");
+  }
+  el.csvPreviewCount.textContent = "";
+  el.csvPreviewRange.textContent = "";
+  el.csvPreviewSearch.value = "";
+  el.csvPreviewModal.classList.remove("hidden");
+  await loadCSVPreviewPage();
+}
+
+async function loadCSVPreviewPage(): Promise<void> {
+  if (!csvPreviewEntry) {
+    return;
+  }
+  const gen = ++csvPreviewGeneration;
+  const query = el.csvPreviewSearch.value.trim();
+  el.csvPreviewState.textContent = "正在读取 CSV 内容…";
+  el.csvPreviewState.classList.remove("hidden");
+  el.csvPreviewScroll.classList.add("hidden");
+  el.btnCsvPreviewPrev.disabled = true;
+  el.btnCsvPreviewNext.disabled = true;
+
+  try {
+    const res = await call(
+      "PreviewCSVTable",
+      config.language,
+      csvPreviewEntry.key,
+      query,
+      csvPreviewOffset,
+      CSV_PREVIEW_PAGE_SIZE,
+    );
+    if (gen !== csvPreviewGeneration) {
+      return;
+    }
+
+    el.csvPreviewCount.textContent = query
+      ? `匹配 ${res.totalRows} / 共 ${res.allRows} 行`
+      : `共 ${res.allRows} 行`;
+
+    el.csvPreviewThead.replaceChildren();
+    el.csvPreviewTbody.replaceChildren();
+
+    const headRow = document.createElement("tr");
+    for (const h of res.headers) {
+      const th = document.createElement("th");
+      th.textContent = h;
+      headRow.append(th);
+    }
+    el.csvPreviewThead.append(headRow);
+
+    if (res.rows.length === 0) {
+      el.csvPreviewState.textContent = query ? `未找到包含「${query}」的数据行` : "该 CSV 表暂无数据行";
+      el.csvPreviewState.classList.remove("hidden");
+      el.csvPreviewScroll.classList.add("hidden");
+      el.csvPreviewRange.textContent = "0 条";
+      return;
+    }
+
+    const colCount = res.headers.length;
+    const frag = document.createDocumentFragment();
+    for (const row of res.rows) {
+      const tr = document.createElement("tr");
+      for (let i = 0; i < colCount; i++) {
+        const td = document.createElement("td");
+        if (i === 0) {
+          td.className = "csv-preview-key-cell";
+        }
+        td.textContent = row[i] ?? "";
+        tr.append(td);
+      }
+      frag.append(tr);
+    }
+    el.csvPreviewTbody.append(frag);
+
+    el.csvPreviewState.classList.add("hidden");
+    el.csvPreviewScroll.classList.remove("hidden");
+    el.csvPreviewScroll.scrollTop = 0;
+
+    const start = res.offset + 1;
+    const end = res.offset + res.rows.length;
+    el.csvPreviewRange.textContent = `第 ${start} - ${end} 条 / 共 ${res.totalRows} 条`;
+    el.btnCsvPreviewPrev.disabled = res.offset <= 0;
+    el.btnCsvPreviewNext.disabled = !res.hasMore;
+  } catch (err) {
+    if (gen !== csvPreviewGeneration) {
+      return;
+    }
+    el.csvPreviewState.textContent = `预览失败：${describeError(err)}`;
+    el.csvPreviewState.classList.remove("hidden");
+    el.csvPreviewScroll.classList.add("hidden");
+    el.csvPreviewRange.textContent = "";
+  }
 }
 
 // syncPresetWithSelection 让预设跟随实际勾选结果：
@@ -6949,9 +7110,35 @@ function wireEvents(): void {
   });
   el.btnPresetNewEmpty.addEventListener("click", () => void createNewEmptyAxisPreset());
   el.btnPresetCloseFoot.addEventListener("click", () => closePresetManager());
+  el.btnCsvPreviewClose.addEventListener("click", () => closeCSVPreview());
+  el.btnCsvPreviewDone.addEventListener("click", () => closeCSVPreview());
+  el.csvPreviewModal.addEventListener("mousedown", (ev) => {
+    if (ev.target === el.csvPreviewModal) closeCSVPreview();
+  });
+  el.csvPreviewSearch.addEventListener("input", () => {
+    if (csvPreviewSearchTimer) {
+      window.clearTimeout(csvPreviewSearchTimer);
+    }
+    csvPreviewSearchTimer = window.setTimeout(() => {
+      csvPreviewOffset = 0;
+      void loadCSVPreviewPage();
+    }, 180);
+  });
+  el.btnCsvPreviewPrev.addEventListener("click", () => {
+    if (csvPreviewOffset <= 0) return;
+    csvPreviewOffset = Math.max(0, csvPreviewOffset - CSV_PREVIEW_PAGE_SIZE);
+    void loadCSVPreviewPage();
+  });
+  el.btnCsvPreviewNext.addEventListener("click", () => {
+    csvPreviewOffset += CSV_PREVIEW_PAGE_SIZE;
+    void loadCSVPreviewPage();
+  });
   document.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape") {
-      if (!el.rulesMenu.classList.contains("hidden")) {
+      if (!el.csvPreviewModal.classList.contains("hidden")) {
+        ev.preventDefault();
+        closeCSVPreview();
+      } else if (!el.rulesMenu.classList.contains("hidden")) {
         ev.preventDefault();
         toggleRulesMenu(false);
       } else if (subEditorOpen || !el.fontElementModal.classList.contains("hidden")) {

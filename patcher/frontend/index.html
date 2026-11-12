@@ -268,6 +268,7 @@
             <tr>
               <th class="col-sel"><span class="sr-only">选择</span></th>
               <th class="col-filename">表文件名 / 目录</th>
+              <th class="col-preview">预览</th>
               <th class="col-chs">中文名称</th>
               <th class="col-status">兼容说明</th>
             </tr>
@@ -1126,6 +1127,52 @@
       <button id="app-toast-close" class="app-toast-close" type="button" aria-label="关闭提示">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+    </div>
+  </div>
+
+  <div id="csv-preview-modal" class="modal-overlay hidden">
+    <div class="modal-window csv-preview-window" role="dialog" aria-modal="true" aria-labelledby="csv-preview-title">
+      <header class="csv-preview-head">
+        <div class="csv-preview-title-wrap">
+          <h2 id="csv-preview-title" class="csv-preview-title"></h2>
+          <span id="csv-preview-name" class="csv-preview-name hidden"></span>
+          <span id="csv-preview-count" class="csv-preview-count"></span>
+        </div>
+        <button id="btn-csv-preview-close" class="btn btn-quiet btn-icon-only" type="button" aria-label="关闭">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </header>
+      <div class="csv-preview-toolbar">
+        <div class="search-field csv-preview-search-field">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input id="csv-preview-search" placeholder="搜索当前表内容…" aria-label="搜索当前表内容" />
+        </div>
+        <span id="csv-preview-range" class="csv-preview-range"></span>
+      </div>
+      <div class="csv-preview-body-wrap">
+        <div id="csv-preview-state" class="csv-preview-state hidden"></div>
+        <div id="csv-preview-scroll" class="csv-preview-scroll">
+          <table class="csv-preview-table">
+            <thead id="csv-preview-thead"></thead>
+            <tbody id="csv-preview-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <footer class="csv-preview-foot">
+        <div class="csv-preview-pager">
+          <button id="btn-csv-preview-prev" class="btn btn-quiet btn-xs" type="button">上一页</button>
+          <button id="btn-csv-preview-next" class="btn btn-quiet btn-xs" type="button">下一页</button>
+        </div>
+        <button id="btn-csv-preview-done" class="btn btn-xs btn-done" type="button">关闭</button>
+      </footer>
     </div>
   </div>
 

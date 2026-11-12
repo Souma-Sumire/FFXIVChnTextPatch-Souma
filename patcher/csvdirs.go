@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/longbridgeapp/opencc"
 
+	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/csvx"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/text"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/updater"
 )
@@ -51,9 +53,10 @@ type CSVContext struct {
 	Dirs              []CSVDirOption `json:"dirs"`
 	Selected          string         `json:"selected"`
 	Custom            bool           `json:"custom"`
-	DefaultDir        string         `json:"defaultDir"`
-	TableList         []TableEntry   `json:"tableList"`
-	ResourceReady     bool           `json:"resourceReady"`
+	DefaultDir        string            `json:"defaultDir"`
+	TableList         []TableEntry      `json:"tableList"`
+	Folders           map[string]string `json:"folders,omitempty"`
+	ResourceReady     bool              `json:"resourceReady"`
 	ResourceUpdatedAt string         `json:"resourceUpdatedAt,omitempty"`
 	// ResourceHash 是内置词条包（rawexd.zip）的 SHA256，用于标识副本基于哪份快照。
 	ResourceHash string `json:"resourceHash,omitempty"`
@@ -399,6 +402,7 @@ func (a *App) csvContext(cfg AppConfig, doc TablesDoc, regionKey string) CSVCont
 	ctx := CSVContext{
 		Dirs:          make([]CSVDirOption, 0, len(conf.Dirs)),
 		DefaultDir:    filepath.Join(resourceDir, "rawexd"),
+		Folders:       doc.Folders,
 		ResourceReady: updater.HasLocalResource(resourceDir),
 	}
 	if ctx.ResourceReady {
@@ -830,4 +834,151 @@ func (a *App) RemoveCSVDirectory(language, path string, deleteFiles bool) (CSVCo
 		return a.csvContext(cfg, doc, regionKey), err
 	}
 	return a.csvContext(cfg, doc, regionKey), nil
+}
+
+// CSVPreviewResult 是前端小窗预览单个 CSV 表的返回结果。
+type CSVPreviewResult struct {
+	TableKey  string     `json:"tableKey"`
+	Headers   []string   `json:"headers"`
+	Rows      [][]string `json:"rows"`
+	TotalRows int        `json:"totalRows"`
+	AllRows   int        `json:"allRows"`
+	Offset    int        `json:"offset"`
+	Limit     int        `json:"limit"`
+	HasMore   bool       `json:"hasMore"`
+}
+
+// PreviewCSVTable 读取当前词条目录中指定表的内容片段供前端小窗预览。
+func (a *App) PreviewCSVTable(language, tableKey, query string, offset, limit int) (CSVPreviewResult, error) {
+	trimmedKey := strings.TrimSpace(strings.ReplaceAll(tableKey, "\\", "/"))
+	trimmedKey = strings.TrimPrefix(trimmedKey, "/")
+	if trimmedKey == "" || strings.Contains(trimmedKey, "..") {
+		return CSVPreviewResult{}, errors.New("无效的表文件名")
+	}
+	if limit <= 0 {
+		limit = 100
+	} else if limit > 500 {
+		limit = 500
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	resourceDir := a.resourceDir()
+	csvDir, _, err := a.resolveCSVDir(resourceDir, normalizeRegionCode(language))
+	if err != nil {
+		return CSVPreviewResult{}, err
+	}
+	csvPath := filepath.Clean(filepath.Join(csvDir, filepath.FromSlash(trimmedKey)+".csv"))
+	rel, relErr := filepath.Rel(filepath.Clean(csvDir), csvPath)
+	if relErr != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return CSVPreviewResult{}, errors.New("无效的表文件路径")
+	}
+
+	data, err := os.ReadFile(csvPath)
+	if err != nil {
+		return CSVPreviewResult{}, fmt.Errorf("读取 CSV 文件失败: %w", err)
+	}
+
+	headers := extractEXDHeaders(data)
+	allParsed := csvx.Parse(data)
+	dataStart := exdDataStartIndex(allParsed)
+	dataRows := allParsed[dataStart:]
+
+	if len(headers) == 0 && len(dataRows) > 0 {
+		headers = make([]string, len(dataRows[0]))
+		for i := range headers {
+			headers[i] = fmt.Sprintf("列 %d", i+1)
+		}
+	}
+
+	q := strings.ToLower(strings.TrimSpace(query))
+	var matched [][]string
+	if q == "" {
+		matched = dataRows
+	} else {
+		matched = make([][]string, 0, min(len(dataRows), limit))
+		for _, row := range dataRows {
+			for _, cell := range row {
+				if strings.Contains(strings.ToLower(cell), q) {
+					matched = append(matched, row)
+					break
+				}
+			}
+		}
+	}
+
+	total := len(matched)
+	if offset > total {
+		offset = total
+	}
+	end := min(offset+limit, total)
+	page := matched[offset:end]
+
+	return CSVPreviewResult{
+		TableKey:  trimmedKey,
+		Headers:   headers,
+		Rows:      page,
+		TotalRows: total,
+		AllRows:   len(dataRows),
+		Offset:    offset,
+		Limit:     limit,
+		HasMore:   end < total,
+	}, nil
+}
+
+// extractEXDHeaders 从 EXD CSV 的前两行（key,... 与 #,...）提取列名，优先使用 # 行的语义名称。
+func extractEXDHeaders(data []byte) []string {
+	cleaned := bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF})
+	lines := strings.SplitN(string(cleaned), "\n", 4)
+	if len(lines) == 0 {
+		return nil
+	}
+	firstRows := csvx.Parse([]byte(lines[0]))
+	if len(firstRows) == 0 || len(firstRows[0]) == 0 {
+		return nil
+	}
+	indexRow := firstRows[0]
+	var nameRow []string
+	if len(lines) > 1 {
+		line2 := strings.TrimSpace(strings.TrimSuffix(lines[1], "\r"))
+		if strings.HasPrefix(line2, "#") {
+			// 去掉开头的 '#' 后复用 csvx.Parse 解析列名（首列保持空位，与 key 列对齐）。
+			parsedNames := csvx.Parse([]byte(line2[1:]))
+			if len(parsedNames) > 0 {
+				nameRow = parsedNames[0]
+			}
+		}
+	}
+	colCount := max(len(indexRow), len(nameRow))
+	headers := make([]string, colCount)
+	for i := 0; i < colCount; i++ {
+		if i == 0 && indexRow[0] == "key" {
+			headers[i] = "key"
+			continue
+		}
+		if i < len(nameRow) && strings.TrimSpace(nameRow[i]) != "" {
+			headers[i] = strings.TrimSpace(nameRow[i])
+		} else if i < len(indexRow) && strings.TrimSpace(indexRow[i]) != "" {
+			headers[i] = strings.TrimSpace(indexRow[i])
+		} else {
+			headers[i] = fmt.Sprintf("列 %d", i)
+		}
+	}
+	return headers
+}
+
+// exdDataStartIndex 跳过 EXD CSV 顶部的 key / offset / 类型元数据行，返回数据行起始下标。
+func exdDataStartIndex(rows [][]string) int {
+	idx := 0
+	if idx < len(rows) && len(rows[idx]) > 0 && rows[idx][0] == "key" {
+		idx++
+		if idx < len(rows) && len(rows[idx]) > 0 && rows[idx][0] == "offset" {
+			idx++
+			if idx < len(rows) {
+				idx++
+			}
+		}
+	}
+	return idx
 }
