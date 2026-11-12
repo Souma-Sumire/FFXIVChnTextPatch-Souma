@@ -646,10 +646,6 @@ const el = {
 
   // 字体元素编辑器模态框节点 (IDD_FONTELEMENTEDITOR)
   fontElementModal: byId("font-element-modal"),
-  elemTabFont: byId("elem-tab-font"),
-  elemTabChars: byId("elem-tab-chars"),
-  elemTabTypo: byId("elem-tab-typo"),
-  elemTabMerge: byId("elem-tab-merge"),
   propsGameFontNotice: byId("props-game-font-notice"),
   propsEmptyFontNotice: byId("props-empty-font-notice"),
   propsExternalFontWrap: byId("props-external-font-wrap"),
@@ -1693,7 +1689,8 @@ async function bootstrapElementEditorSubWindow(): Promise<void> {
       document.title = `字体图层属性 - ${payload.faceName} · 图层 #${payload.elementIndex + 1}`;
       renderPropsPanel();
       if (resetTab) {
-        switchElementModalTab("font");
+        const bodyEl = document.querySelector<HTMLElement>(".elem-modal-body");
+        if (bodyEl) bodyEl.scrollTop = 0;
       }
     } catch {
       // 忽略无效状态数据
@@ -5532,21 +5529,6 @@ function buildSubEditorPayload(
   };
 }
 
-function switchElementModalTab(targetTab = "font"): void {
-  document.querySelectorAll<HTMLButtonElement>(".elem-modal-window .elem-tab-btn").forEach((b) => {
-    const tab = b.dataset.elemTab || "font";
-    b.classList.toggle("active", tab === targetTab);
-  });
-
-  el.elemTabFont.classList.toggle("hidden", targetTab !== "font");
-  el.elemTabChars.classList.toggle("hidden", targetTab !== "chars");
-  el.elemTabTypo.classList.toggle("hidden", targetTab !== "typo");
-  el.elemTabMerge.classList.toggle("hidden", targetTab !== "merge");
-
-  const bodyEl = document.querySelector<HTMLElement>(".elem-modal-body");
-  if (bodyEl) bodyEl.scrollTop = 0;
-}
-
 function activateBypass(faceName?: string, elementIndex?: number): void {
   if (isBypassActive) return;
   const hit = findFaceElement(faceName, elementIndex);
@@ -5926,12 +5908,44 @@ function renderPropsPanel(): void {
   el.propSkew.value = String(elem.transform?.skew ?? 0);
   el.propRotation.value = String(elem.transform?.rotation ?? 0);
 
-  el.propsDirectwriteGroup.classList.toggle("hidden", rendererVal !== 2);
-  el.propsFreetypeGroup.classList.toggle("hidden", rendererVal !== 3);
-  el.propsEmptyGroup.classList.toggle("hidden", rendererVal !== 0);
+  const isEmpty = rendererVal === 0;
+  const isDirectWrite = rendererVal === 2;
+  const isFreeType = rendererVal === 3;
+  const usesSystemFont = isDirectWrite || isFreeType;
+
+  const setGroupEnabled = (groupEl: HTMLElement | null, enabled: boolean) => {
+    if (!groupEl) return;
+    groupEl.classList.toggle("is-disabled", !enabled);
+    if (groupEl instanceof HTMLFieldSetElement) {
+      groupEl.disabled = !enabled;
+    }
+  };
+  const setControlEnabled = (ctrl: HTMLInputElement | HTMLSelectElement, enabled: boolean) => {
+    ctrl.disabled = !enabled;
+    ctrl.closest(".fc-form-row")?.classList.toggle("is-disabled", !enabled);
+  };
+
+  setControlEnabled(el.propWeight, usesSystemFont);
+  setControlEnabled(el.propStyle, usesSystemFont);
+  setControlEnabled(el.propStretch, usesSystemFont);
+  setControlEnabled(el.propBaselineShift, !isEmpty);
+  setControlEnabled(el.propLetterSpacing, !isEmpty);
+  setControlEnabled(el.propHorizontalOffset, !isEmpty);
+  setControlEnabled(el.propGamma, usesSystemFont);
+
+  setGroupEnabled(document.getElementById("props-ot-group"), usesSystemFont);
+  setGroupEnabled(el.propsDirectwriteGroup, isDirectWrite);
+  setGroupEnabled(el.propsFreetypeGroup, isFreeType);
+  setGroupEnabled(el.propsEmptyGroup, isEmpty);
+  setGroupEnabled(document.getElementById("props-transform-group"), usesSystemFont);
+  setGroupEnabled(document.getElementById("props-codepoints-group"), !isEmpty);
+  setGroupEnabled(document.getElementById("props-presets-group"), !isEmpty);
+  setGroupEnabled(document.getElementById("props-custom-range-group"), !isEmpty);
+  setGroupEnabled(document.getElementById("props-merge-group"), usesSystemFont);
+
   el.propsGameFontNotice.classList.toggle("hidden", rendererVal !== 1);
-  el.propsEmptyFontNotice.classList.toggle("hidden", rendererVal !== 0);
-  el.propsExternalFontWrap.classList.toggle("hidden", rendererVal === 1 || rendererVal === 0);
+  el.propsEmptyFontNotice.classList.toggle("hidden", !isEmpty);
+  el.propsExternalFontWrap.classList.toggle("hidden", !usesSystemFont);
 
   const dw = elem.renderSpecific?.directwrite;
   el.propDwGridfit.value = String(dw?.gridFitMode ?? 2);
@@ -7315,14 +7329,6 @@ function wireEvents(): void {
 }
 
 function wireElementEditorEvents(): void {
-  // 模态框四页签切换与底部控制
-  document.querySelectorAll<HTMLButtonElement>(".elem-modal-window .elem-tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetTab = btn.dataset.elemTab || "font";
-      switchElementModalTab(targetTab);
-    });
-  });
-
   const commitSubEditor = async () => {
     releaseSubEditorLevers(false);
     await Events.Emit("elem-editor:commit", {

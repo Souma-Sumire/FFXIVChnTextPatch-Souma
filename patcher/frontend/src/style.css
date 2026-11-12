@@ -3219,9 +3219,9 @@ body.row-resizing * {
 .elem-modal-window {
   position: relative;
   pointer-events: auto;
-  width: min(860px, 92vw);
-  height: auto;
-  max-height: min(680px, calc(100vh - 40px));
+  width: min(1060px, 95vw);
+  height: min(720px, calc(100vh - 24px));
+  max-height: calc(100vh - 24px);
   display: flex;
   flex-direction: column;
   background-color: var(--bg);
@@ -3244,81 +3244,279 @@ body.row-resizing * {
   box-shadow: none !important;
 }
 
-.elem-modal-window.subwindow-mode .elem-modal-body {
+.elem-modal-body {
   display: flex;
   flex-direction: column;
   flex: 1 1 0%;
   min-height: 0;
+  overflow: hidden;
+  padding: 10px 12px;
+  background-color: var(--bg);
 }
 
-.elem-modal-window.subwindow-mode .elem-tab-pane:not(.hidden) {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 0%;
-  min-height: 0;
-  height: 100%;
-}
-
-.merge-tab-layout {
-  display: flex;
-  flex-direction: column;
+/* 复刻 FontChanger 三栏一屏布局 */
+.fc-editor-grid {
+  display: grid;
+  grid-template-columns: 280px 265px minmax(380px, 1fr);
   gap: 10px;
   flex: 1 1 0%;
   min-height: 0;
   height: 100%;
 }
 
-.elem-modal-header {
+.fc-col {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg);
-  border-bottom: 1px solid var(--line);
+  gap: 7px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fc-group-box {
+  margin: 0;
+  padding: 5px 9px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.015);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  min-height: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.fc-group-box.is-disabled,
+.fc-form-row.is-disabled {
+  opacity: 0.42;
+}
+
+.fc-group-grow {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.fc-group-codepoints {
+  flex: 1 1 0%;
+  min-height: 110px;
+}
+
+.fc-group-presets {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+.fc-group-merge {
+  flex: 0.9 1 0%;
+  min-height: 90px;
+}
+
+.fc-group-legend {
+  padding: 0 5px;
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.fc-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.fc-form-label {
+  width: 60px;
+  flex-shrink: 0;
+  font-size: var(--fs-meta);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.fc-ctrl {
+  flex: 1;
+  min-width: 0;
+}
+
+.fc-ctrl.input,
+.fc-ctrl.select,
+.fc-ctrl .input,
+.fc-ctrl .select {
+  height: 24px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-size: var(--fs-meta);
+}
+
+.fc-external-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fc-notice {
+  padding: 4px 8px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* 左下方字体特性列表 */
+.fc-ot-panel {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  background-color: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+}
+
+.fc-ot-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+.fc-ot-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--fs-meta);
+  min-width: 0;
+}
+
+.fc-ot-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.fc-ot-item input[type="checkbox"] {
+  margin: 0;
   flex-shrink: 0;
 }
 
-/* 顶部一体化下划线导航 */
-.elem-modal-nav {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 0 16px;
-  border-top: 1px solid var(--line);
-  background-color: rgba(255, 255, 255, 0.015);
+.fc-ot-item .ot-tag-badge {
+  min-width: 32px;
+  font-size: 11px;
 }
 
-.elem-tab-btn {
-  position: relative;
-  height: 34px;
-  padding: 0 14px;
-  font-size: var(--fs-label);
-  font-weight: 500;
-  color: var(--text-3);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
+.fc-ot-name {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-ot-custom-row {
+  margin-top: 2px;
+}
+
+/* 中栏 FreeType 复选框 & 几何变换矩阵 */
+.fc-ft-checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 10px;
+  padding: 2px 0;
+}
+
+.fc-ft-checks .checkbox-inline {
   display: inline-flex;
   align-items: center;
+  font-size: var(--fs-meta);
   gap: 6px;
-  transition: color 0.12s var(--ease), border-color 0.12s var(--ease);
 }
 
-.elem-tab-btn:hover {
-  color: var(--text);
+.fc-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 8px;
 }
 
-.elem-tab-btn.active {
-  color: var(--text);
-  font-weight: 500;
-  border-bottom-color: var(--accent);
+.fc-matrix-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.elem-modal-body {
-  flex: 1 1 auto;
+.fc-matrix-cell label {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.fc-matrix-cell .input {
+  height: 24px;
+  font-size: var(--fs-meta);
+}
+
+/* 右栏紧凑列表与工具行（使用后代选择器覆盖原有 min-height: 160px） */
+.fc-group-box .fc-cp-box {
+  flex: 1 1 0%;
   min-height: 0;
-  overflow-y: auto;
-  padding: 14px 18px;
-  background-color: var(--bg);
+}
+
+.fc-cp-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.fc-cp-actions-row .select,
+.fc-group-box .file-pick-row .input {
+  height: 24px;
+  font-size: var(--fs-meta);
+}
+
+.fc-group-box .fc-preset-list {
+  flex: 1 1 0%;
+  min-height: 0;
+  gap: 1px;
+}
+
+.fc-group-box .fc-preset-list .cp-preset-row {
+  padding: 2px 5px;
+}
+
+.fc-group-box .fc-preset-list .cp-preset-name {
+  font-size: var(--fs-meta);
+}
+
+.fc-group-box .fc-preset-list .cp-preset-range {
+  font-size: 11px;
+}
+
+.fc-group-box .fc-preset-list .cp-preset-actions .btn {
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+
+.fc-merge-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.fc-merge-tools .btn {
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+
+.fc-group-box .fc-merge-list {
+  flex: 1 1 0%;
+  min-height: 0;
 }
 
 .elem-tab-pane {
