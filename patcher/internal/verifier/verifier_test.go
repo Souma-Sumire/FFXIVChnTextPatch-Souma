@@ -283,8 +283,8 @@ func TestRun_NoBackup_CloudAvailable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Run 失败: %v", err)
 	}
-	if len(res.Downloaded) != 6 {
-		t.Fatalf("从云端建立备份应下载全部 6 个文件，实际下载: %d", len(res.Downloaded))
+	if len(res.Downloaded) != 0 {
+		t.Fatalf("客户端本身已是原版时应直接从客户端备份，不应下载，实际下载: %d", len(res.Downloaded))
 	}
 	if !textPatched {
 		t.Fatalf("文本替换未执行")
@@ -301,6 +301,34 @@ func TestRun_NoBackup_CloudAvailable(t *testing.T) {
 	}
 	if !IsBackupComplete(meta, backupDir, "2026.10.16.0000.0000") {
 		t.Fatalf("生成的本地备份应为完整有效备份")
+	}
+}
+
+// 场景 2b：本地无备份，且客户端已被修改（非原版），云端已收录。
+// 应从云端下载全部 6 个原版文件并覆盖还原。
+func TestRun_NoBackup_ModifiedClient_DownloadsFromCloud(t *testing.T) {
+	orig := canonicalFiles("cloud-original-v2")
+	modified := canonicalFiles("other-patch-modified")
+	srv := newMockServer(t, map[string]map[string]string{
+		"2026.10.16.0000.0000": orig,
+	})
+
+	env := newTestEnv(t, "2026.10.16.0000.0000", modified)
+	res, err := Run(context.Background(), Config{
+		GameDir:     env.gameDir,
+		BackupRoot:  env.backupRoot,
+		Language:    region.GLOBAL,
+		ReplaceText: true,
+		ReplaceFont: false,
+		Cloud:       srv.client(),
+		Repo:        testRepo,
+		ApplyText:   func(ctx context.Context) error { return nil },
+	})
+	if err != nil {
+		t.Fatalf("Run 失败: %v", err)
+	}
+	if len(res.Downloaded) != 6 {
+		t.Fatalf("客户端非原版且无备份时应从云端下载全部 6 个文件，实际下载: %d", len(res.Downloaded))
 	}
 }
 

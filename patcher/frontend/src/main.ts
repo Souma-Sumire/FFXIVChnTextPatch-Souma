@@ -239,6 +239,7 @@ interface GameInfo {
   files: FileStatus[];
   backupVersion: string;
   backupExists: boolean;
+  backupVerified?: boolean;
   region: string;
   detectedRegion?: string;
   regionMismatch?: boolean;
@@ -6077,15 +6078,33 @@ function renderGameInfo(): void {
     gameInfo.version !== gameInfo.backupVersion
   );
 
-  const backupReady = gameInfo.backupExists && (isGlobal || !versionMismatch);
   let backupText = "未备份";
   let backupCls = "";
+  let backupTip = "";
   if (gameInfo.backupExists) {
-    backupText = backupReady ? "已就绪" : "已失效";
-    backupCls = backupReady ? "ok" : "warn";
+    if (versionMismatch) {
+      backupText = "已失效";
+      backupCls = "warn";
+      backupTip = `当前客户端版本 v${gameInfo.version} 与备份版本 v${gameInfo.backupVersion} 不一致`;
+    } else if (isGlobal && !gameInfo.backupVerified) {
+      backupText = "本地快照";
+      backupCls = "warn";
+      backupTip = "当前仅为本地操作前快照，未经云端原版校验；汉化时若云端已收录将自动下载升级";
+    } else {
+      backupText = "已就绪";
+      backupCls = "ok";
+    }
   }
 
-  const backupItem = createDiagItem("本地备份", backupText, backupCls, backupReady ? createOpenBackupButton() : undefined);
+  const backupItem = createDiagItem(
+    "本地备份",
+    backupText,
+    backupCls,
+    gameInfo.backupExists ? createOpenBackupButton() : undefined,
+  );
+  if (backupTip) {
+    setTip(backupItem, backupTip, "bottom");
+  }
 
   const items = [
     createDiagItem("客户端版本", gameInfo.version || "未知", ""),

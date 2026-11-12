@@ -164,10 +164,10 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		}
 
 		if release != nil {
-			cfg.log("[备份] 下载 %s 原版文件...", version)
-			downloadedMeta, dlErr := downloadAndCreateBackup(ctx, cfg, release, backupDir, version, string(reg), result)
+			cfg.log("[备份] 核对 %s 原版文件...", version)
+			downloadedMeta, dlErr := downloadAndCreateBackup(ctx, cfg, release, sqpackDir, backupDir, version, string(reg), result)
 			if dlErr != nil {
-				return result, fmt.Errorf("从云端建立原版备份失败: %w", dlErr)
+				return result, fmt.Errorf("建立原版备份失败: %w", dlErr)
 			}
 			meta = downloadedMeta
 
@@ -396,12 +396,16 @@ func IsBackupComplete(meta *BackupMeta, backupDir string, version string) bool {
 	return true
 }
 
-func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, backupDir, version, regionName string, result *Result) (*BackupMeta, error) {
+func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, sqpackDir, backupDir, version, regionName string, result *Result) (*BackupMeta, error) {
 	meta := &BackupMeta{
 		Region:  regionName,
 		Version: version,
 		Source:  BackupSourceCloud,
 		Files:   make(map[string]FileHash),
+	}
+
+	if err := os.MkdirAll(backupDir, 0o755); err != nil {
+		return nil, fmt.Errorf("创建备份目录失败: %w", err)
 	}
 
 	for _, name := range AllFiles {
@@ -411,6 +415,26 @@ func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, 
 			return nil, fmt.Errorf("云端缺少文件 %s", name)
 		}
 		backupPath := filepath.Join(backupDir, name)
+		// 1. 本地备份已有且哈希与云端原版一致时直接复用，免去重复下载。
+		if got, err := HashFile(backupPath); err == nil && strings.EqualFold(got.SHA256, cloudSHA) {
+			cfg.log(DiagPrefix+"复用本地原版 %s", name)
+			meta.Files[name] = got
+			continue
+		}
+		// 2. 客户端当前文件本身就是官方原版时，直接从客户端复制到备份目录。
+		if sqpackDir != "" {
+			clientPath := filepath.Join(sqpackDir, name)
+			if got, err := HashFile(clientPath); err == nil && strings.EqualFold(got.SHA256, cloudSHA) {
+				cfg.event("backup", "正在备份 "+name, 0, 0)
+				cfg.log(DiagPrefix+"从客户端备份原版 %s", name)
+				copied, copyErr := copyFile(ctx, clientPath, backupPath, cloudSHA)
+				if copyErr == nil {
+					meta.Files[name] = copied
+					continue
+				}
+			}
+		}
+
 		cfg.event("download", name, 0, 0)
 		cfg.log(DiagPrefix+"下载原版 %s", name)
 
@@ -672,7 +696,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		}
 
 		if release != nil {
-			cfg.log("[还原] 从云端下载 %s 原版备份...", version)
+			cfg.log("[还原] 核对 %s 原版备份...", version)
 			downloadedMeta, dlErr := downloadAndCreateBackup(ctx, Config{
 				Cloud: cfg.Cloud,
 				Repo:  cfg.Repo,
@@ -682,7 +706,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 					}
 				},
 				Log: cfg.Log,
-			}, release, backupDir, version, string(reg), nil)
+			}, release, sqpackDir, backupDir, version, string(reg), nil)
 			if dlErr != nil {
 				return nil, fmt.Errorf("下载原版备份失败: %w", dlErr)
 			}

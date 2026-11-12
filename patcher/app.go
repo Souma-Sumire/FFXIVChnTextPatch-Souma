@@ -371,6 +371,7 @@ type GameInfo struct {
 	Files          []FileStatus `json:"files"`
 	BackupVersion  string       `json:"backupVersion"`
 	BackupExists   bool         `json:"backupExists"`
+	BackupVerified bool         `json:"backupVerified"`
 	Region         string       `json:"region"`
 	DetectedRegion string       `json:"detectedRegion,omitempty"`
 	RegionMismatch bool         `json:"regionMismatch"`
@@ -1422,17 +1423,12 @@ func (a *App) GetGameInfo(gameDir, language string) (GameInfo, error) {
 	}
 
 	metaPath := filepath.Join(a.backupDirFor(region.Of(lang)), "meta.json")
-	var meta struct {
-		Version string `json:"version"`
-		Files   map[string]struct {
-			SHA256 string `json:"sha256"`
-			Size   int64  `json:"size"`
-		} `json:"files"`
-	}
+	var meta verifier.BackupMeta
 	if data, err := os.ReadFile(metaPath); err == nil {
 		if json.Unmarshal(data, &meta) == nil {
 			info.BackupVersion = meta.Version
 			info.BackupExists = len(meta.Files) > 0
+			info.BackupVerified = info.BackupExists && meta.IsVerifiedOriginal()
 		}
 	}
 	info.UiAssetType = -1
