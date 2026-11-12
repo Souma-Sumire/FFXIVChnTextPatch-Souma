@@ -310,7 +310,7 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 	for _, node := range u.nodes() {
 		url := strings.TrimRight(node, "/") + "/" + zipName
 		tmp := filepath.Join(resourceDir, zipName+".part")
-		if err := u.fetchToFile(ctx, url, tmp, func(done, total int64) {
+		if err := u.fetchToFile(ctx, u.httpClient(), url, tmp, func(done, total int64) {
 			zp.report(zp.dl, done, total)
 		}); err != nil {
 			lastErr = err
@@ -364,7 +364,7 @@ func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want Fi
 	for _, node := range u.nodes() {
 		url := strings.TrimRight(node, "/") + "/" + strings.TrimLeft(key, "/")
 		tmp := dst + ".part"
-		if err := u.fetchToFile(ctx, url, tmp, progress); err != nil {
+		if err := u.fetchToFile(ctx, u.httpClient(), url, tmp, progress); err != nil {
 			lastErr = err
 			continue
 		}
@@ -413,7 +413,10 @@ func putIOBuffer(b *[]byte) {
 	}
 }
 
-func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress func(done, total int64)) error {
+func (u *Updater) fetchToFile(ctx context.Context, client *http.Client, url, dst string, progress func(done, total int64)) error {
+	if client == nil {
+		client = u.httpClient()
+	}
 	streamCtx, cancelStream := context.WithCancel(ctx)
 	defer cancelStream()
 
@@ -421,7 +424,7 @@ func (u *Updater) fetchToFile(ctx context.Context, url, dst string, progress fun
 	if err != nil {
 		return err
 	}
-	resp, err := u.httpClient().Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}

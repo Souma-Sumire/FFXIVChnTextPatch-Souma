@@ -81,13 +81,73 @@ func FontCompilerURLs() []string {
 
 // DownloadFile 把任意 URL 下载到 dst，用于字体编译组件这类不在清单里的文件。
 func (u *Updater) DownloadFile(ctx context.Context, url, dst string, progress func(done, total int64)) error {
-	return u.fetchToFile(ctx, url, dst, progress)
+	return u.fetchToFile(ctx, u.httpClient(), url, dst, progress)
+}
+
+// DownloadFromURLs 按顺序尝试多个节点下载文件到 dst，并在全部节点走代理失败时自动尝试无代理直连。
+func (u *Updater) DownloadFromURLs(ctx context.Context, subject string, urls []string, dst string, verify func(path string) error, progress func(done, total int64)) error {
+	if len(urls) == 0 {
+		return errors.New("没有可用的下载节点")
+	}
+	failures, ok, err := u.tryDownloadFromURLs(ctx, u.httpClient(), false, urls, dst, verify, progress)
+	if ok {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if u.usesProxyForAny(urls) {
+		directFailures, directOK, directErr := u.tryDownloadFromURLs(ctx, u.DirectHTTP, true, urls, dst, verify, progress)
+		if directOK {
+			return nil
+		}
+		if directErr != nil {
+			return directErr
+		}
+		failures = append(failures, directFailures...)
+	}
+	return DescribeNodeFailures(subject, failures)
+}
+
+func (u *Updater) tryDownloadFromURLs(ctx context.Context, client *http.Client, direct bool, urls []string, dst string, verify func(path string) error, progress func(done, total int64)) ([]NodeFailure, bool, error) {
+	failures := make([]NodeFailure, 0, len(urls))
+	for _, rawURL := range urls {
+		if ctx.Err() != nil {
+			return failures, false, ctx.Err()
+		}
+		tmp := dst + ".part"
+		_ = os.Remove(tmp)
+		if err := u.fetchToFile(ctx, client, rawURL, tmp, progress); err != nil {
+			failures = append(failures, NodeFailure{Node: rawURL, Err: err, Direct: direct})
+			_ = os.Remove(tmp)
+			continue
+		}
+		if verify != nil {
+			if err := verify(tmp); err != nil {
+				failures = append(failures, NodeFailure{Node: rawURL, Err: err, Direct: direct})
+				_ = os.Remove(tmp)
+				continue
+			}
+		}
+		if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+			_ = os.Remove(tmp)
+			return failures, false, err
+		}
+		if err := os.Rename(tmp, dst); err != nil {
+			failures = append(failures, NodeFailure{Node: rawURL, Err: err, Direct: direct})
+			_ = os.Remove(tmp)
+			continue
+		}
+		return failures, true, nil
+	}
+	return failures, false, nil
 }
 
 // Updater 负责清单拉取与资源下载。
 type Updater struct {
-	HTTP  *http.Client
-	Nodes []string
+	HTTP       *http.Client
+	DirectHTTP *http.Client
+	Nodes      []string
 	// LocalOnly 为 true 时只校验本地资源，不向云端发任何请求。
 	// 本地开发构建用它保住工作区里的 resource/；发布构建恒为 false。
 	LocalOnly     bool
@@ -104,10 +164,9 @@ type Updater struct {
 // 不做跨启动复用，保证每次运行都会向云端确认真实版本。
 const manifestCacheTTL = 30 * time.Second
 
-// New 创建默认同步器。
-func New() *Updater {
-	transport := &http.Transport{
-		Proxy: netproxy.Func(),
+func newHTTPTransport(proxyFn func(*http.Request) (*url.URL, error)) *http.Transport {
+	return &http.Transport{
+		Proxy: proxyFn,
 		DialContext: (&net.Dialer{
 			Timeout:   8 * time.Second,
 			KeepAlive: 30 * time.Second,
@@ -118,9 +177,14 @@ func New() *Updater {
 		TLSHandshakeTimeout:   8 * time.Second,
 		ResponseHeaderTimeout: 10 * time.Second,
 	}
+}
+
+// New 创建默认同步器。
+func New() *Updater {
 	return &Updater{
-		HTTP:  &http.Client{Timeout: 10 * time.Minute, Transport: transport},
-		Nodes: DefaultNodes(),
+		HTTP:       &http.Client{Timeout: 10 * time.Minute, Transport: newHTTPTransport(netproxy.Func())},
+		DirectHTTP: &http.Client{Timeout: 10 * time.Minute, Transport: newHTTPTransport(nil)},
+		Nodes:      DefaultNodes(),
 	}
 }
 
@@ -136,6 +200,28 @@ func (u *Updater) httpClient() *http.Client {
 		return u.HTTP
 	}
 	return http.DefaultClient
+}
+
+// usesProxyForAny 判断给定 URL 列表中是否有至少一个会经过当前 HTTP 客户端的代理。
+// 只有在确实走了代理且全部失败时，才有必要回退到无代理直连。
+func (u *Updater) usesProxyForAny(urls []string) bool {
+	if u.DirectHTTP == nil {
+		return false
+	}
+	tr, ok := u.httpClient().Transport.(*http.Transport)
+	if !ok || tr.Proxy == nil {
+		return false
+	}
+	for _, rawURL := range urls {
+		req, err := http.NewRequest(http.MethodGet, rawURL, nil)
+		if err != nil {
+			continue
+		}
+		if proxyURL, err := tr.Proxy(req); err == nil && proxyURL != nil {
+			return true
+		}
+	}
+	return false
 }
 
 func (u *Updater) cachedManifest() *Manifest {
@@ -178,7 +264,7 @@ func (u *Updater) nodes() []string {
 }
 
 // FetchManifest 并发向所有节点发起请求，首个成功且合法的清单直接胜出并返回。
-// 同一进程内 30 秒内重复调用会复用上一次的结果。
+// 同一进程内 30 秒内重复调用会复用上一次的结果；若经代理全失败，自动尝试无代理直连。
 func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 	if u.LocalOnly {
 		return nil, errors.New("本地开发构建不访问云端资源清单")
@@ -191,6 +277,33 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 		return nil, errors.New("没有可用的下载节点")
 	}
 
+	m, failures, err := u.fetchManifestWithClient(ctx, u.httpClient(), false, nodes)
+	if m != nil {
+		return m, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	manifestURLs := make([]string, 0, len(nodes))
+	for _, n := range nodes {
+		manifestURLs = append(manifestURLs, strings.TrimRight(n, "/")+"/manifest.json")
+	}
+	if u.usesProxyForAny(manifestURLs) {
+		dm, directFailures, directErr := u.fetchManifestWithClient(ctx, u.DirectHTTP, true, nodes)
+		if dm != nil {
+			return dm, nil
+		}
+		if directErr != nil {
+			return nil, directErr
+		}
+		failures = append(failures, directFailures...)
+	}
+
+	return nil, describeManifestFailures(failures)
+}
+
+func (u *Updater) fetchManifestWithClient(ctx context.Context, client *http.Client, direct bool, nodes []string) (*Manifest, []NodeFailure, error) {
 	raceCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -204,8 +317,8 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 
 	for _, node := range nodes {
 		go func(n string) {
-			url := strings.TrimRight(n, "/") + "/manifest.json"
-			data, err := u.get(raceCtx, url)
+			rawURL := strings.TrimRight(n, "/") + "/manifest.json"
+			data, err := u.getWithClient(raceCtx, client, rawURL)
 			if err != nil {
 				select {
 				case resCh <- response{node: n, err: err}:
@@ -235,57 +348,81 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 		}(node)
 	}
 
-	var failures []nodeFailure
+	var failures []NodeFailure
 	for i := 0; i < len(nodes); i++ {
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			return nil, failures, ctx.Err()
 		case res := <-resCh:
 			if res.manifest != nil {
 				cancel()
 				u.SetPreferredNode(res.node)
 				u.cacheManifest(res.manifest)
-				return res.manifest, nil
+				return res.manifest, nil, nil
 			}
-			failures = append(failures, nodeFailure{node: res.node, err: res.err})
+			failures = append(failures, NodeFailure{Node: res.node, Err: res.err, Direct: direct})
 		}
 	}
 
-	return nil, describeManifestFailures(failures)
+	return nil, failures, nil
 }
 
-// nodeFailure 记录某个节点这一轮的失败原因。
-type nodeFailure struct {
-	node string
-	err  error
+// NodeFailure 记录某个节点这一轮的失败原因。
+type NodeFailure struct {
+	Node   string
+	Err    error
+	Direct bool
 }
 
 // 错误信息里已经带了节点前缀，末尾的完整 URL 只是噪音，统一裁掉。
 var trailingURLErr = regexp.MustCompile(`:\s*https?://\S+$`)
 
-// describeManifestFailures 汇总整轮请求的结果。
-// 只抛最后一个节点的错误会让人以为没有换节点重试，这里把每个节点的结果都列出来。
-func describeManifestFailures(failures []nodeFailure) error {
+// DescribeNodeFailures 汇总整轮请求的结果，避免只抛出最后一个节点错误让人误以为没有重试。
+func DescribeNodeFailures(subject string, failures []NodeFailure) error {
+	return describeNodeFailures(subject, failures, "")
+}
+
+func describeNodeFailures(subject string, failures []NodeFailure, extraNote string) error {
 	if len(failures) == 0 {
 		return errors.New("没有可用的下载节点")
 	}
 	parts := make([]string, 0, len(failures))
-	all404 := true
 	for _, f := range failures {
-		msg := trailingURLErr.ReplaceAllString(f.err.Error(), "")
-		if !strings.Contains(msg, "404") {
-			all404 = false
+		msg := ""
+		if f.Err != nil {
+			msg = trailingURLErr.ReplaceAllString(f.Err.Error(), "")
 		}
-		parts = append(parts, shortNodeName(f.node)+": "+msg)
+		name := shortNodeName(f.Node)
+		if f.Direct {
+			name += "(直连)"
+		}
+		parts = append(parts, name+": "+msg)
 	}
 	var b strings.Builder
-	fmt.Fprintf(&b, "已向全部 %d 个下载节点请求资源清单，都失败了", len(failures))
-	if all404 {
-		b.WriteString("（所有节点都是 404，说明资源分支或路径不存在）")
-	}
-	b.WriteString("：")
+	fmt.Fprintf(&b, "已向全部 %d 个下载节点请求%s，都失败了%s：", len(failures), subject, extraNote)
 	b.WriteString(strings.Join(parts, "；"))
 	return errors.New(b.String())
+}
+
+// describeManifestFailures 汇总整轮清单请求的结果。
+func describeManifestFailures(failures []NodeFailure) error {
+	all404 := len(failures) > 0
+	for _, f := range failures {
+		if f.Err == nil {
+			all404 = false
+			break
+		}
+		msg := trailingURLErr.ReplaceAllString(f.Err.Error(), "")
+		if !strings.Contains(msg, "404") {
+			all404 = false
+			break
+		}
+	}
+	note := ""
+	if all404 {
+		note = "（所有节点都是 404，说明资源分支或路径不存在）"
+	}
+	return describeNodeFailures("资源清单", failures, note)
 }
 
 // shortNodeName 取节点的主机名，便于在错误信息里辨认是哪个加速节点。
@@ -297,13 +434,20 @@ func shortNodeName(node string) string {
 }
 
 func (u *Updater) get(ctx context.Context, url string) ([]byte, error) {
+	return u.getWithClient(ctx, u.httpClient(), url)
+}
+
+func (u *Updater) getWithClient(ctx context.Context, client *http.Client, url string) ([]byte, error) {
+	if client == nil {
+		client = u.httpClient()
+	}
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := u.httpClient().Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

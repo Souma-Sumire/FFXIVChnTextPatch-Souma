@@ -1868,40 +1868,16 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 	}()
 
 	a.emitPatchLog("[字体] 正在下载字体编译组件...")
-	var lastErr error
-	for _, url := range updater.FontCompilerURLs() {
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
-		tmp := path + ".part"
-		_ = os.Remove(tmp)
-		progressCb := func(done, total int64) {
-			a.emitFontCompilerProgress("downloading", "准备组件中", done, total)
-		}
-		if err := a.updater.DownloadFile(ctx, url, tmp, progressCb); err != nil {
-			lastErr = err
-			_ = os.Remove(tmp)
-			continue
-		}
-		if err := verifyExecutable(tmp); err != nil {
-			lastErr = err
-			_ = os.Remove(tmp)
-			continue
-		}
-		if err := os.Rename(tmp, path); err != nil {
-			lastErr = err
-			_ = os.Remove(tmp)
-			continue
-		}
-		ready = true
-		a.fontEngine.SetBinPath(path)
-		a.emitPatchLog("[字体] 字体编译组件已就绪")
-		return nil
+	progressCb := func(done, total int64) {
+		a.emitFontCompilerProgress("downloading", "准备组件中", done, total)
 	}
-	if lastErr == nil {
-		lastErr = errors.New("没有可用的下载节点")
+	if err := a.updater.DownloadFromURLs(ctx, "字体编译组件", updater.FontCompilerURLs(), path, verifyExecutable, progressCb); err != nil {
+		return fmt.Errorf("下载字体编译组件失败: %w", err)
 	}
-	return fmt.Errorf("下载字体编译组件失败: %w", lastErr)
+	ready = true
+	a.fontEngine.SetBinPath(path)
+	a.emitPatchLog("[字体] 字体编译组件已就绪")
+	return nil
 }
 
 // verifyExecutable 粗略确认下载到的是 Windows 可执行文件（MZ 头 + 合理体积）。
