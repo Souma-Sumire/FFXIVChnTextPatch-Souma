@@ -604,8 +604,7 @@ svg {
   box-sizing: border-box;
 }
 
-/* 章节标题就是面板的表头行：与下面的行同高、同左边缘，靠一条发丝线分开。
-   表头行比正文行浅一档，左侧以香槟金竖线锚定分区视觉重心。 */
+/* 章节标题就是面板的表头行：与下面的行同高、同左边缘，靠一条发丝线分开。 */
 .form-section > .section-title {
   height: 38px;
   margin: 0;
@@ -615,15 +614,6 @@ svg {
   background-color: rgba(255, 255, 255, 0.024);
   border-bottom: 1px solid var(--line);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.form-section > .section-title::before {
-  content: "";
-  width: 2px;
-  height: 14px;
-  border-radius: 1px;
-  background-color: var(--gold);
-  flex-shrink: 0;
 }
 
 /* 区服旁的汉化语言多选框 */
