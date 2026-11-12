@@ -411,7 +411,7 @@ async function call<K extends keyof GoApp>(
     return (await Call.ByName(`${WAILS_APP_SERVICE}.${String(name)}`, ...args)) as Awaited<ReturnType<GoApp[K]>>;
   } catch (error) {
     if (!quietCallFailures.has(String(name))) {
-      log(`${DIAG_PREFIX}调用 ${String(name)} 失败：${describeError(error)}；参数=${summarizeCallArgs(args)}`, "diag");
+      logDiag(`调用 ${String(name)} 失败：${describeError(error)}；参数=${summarizeCallArgs(args)}`);
     }
     throw error;
   }
@@ -436,9 +436,7 @@ function byId<T extends HTMLElement>(id: string): T {
 }
 
 type LogLevel = "info" | "ok" | "warn" | "error" | "diag";
-
-// 与后端 verifier.DiagPrefix 一致，改一处要同步另一处。
-const DIAG_PREFIX = "[诊断] ";
+type LogTag = "资源" | "词条" | "配置" | "校验" | "汉化" | "字体" | "更新" | "系统" | "";
 
 interface LogEntry {
   id: number;
@@ -446,9 +444,12 @@ interface LogEntry {
   time: string;
   stamp: string;
   level: LogLevel;
-  tag?: string;
+  tag: LogTag;
   message: string;
 }
+
+const VALID_LOG_LEVELS = new Set<LogLevel>(["info", "ok", "warn", "error", "diag"]);
+const VALID_LOG_TAGS = new Set<LogTag>(["资源", "词条", "配置", "校验", "汉化", "字体", "更新", "系统", ""]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -766,24 +767,33 @@ function switchView(view: "workbench" | "tables" | "font-editor"): void {
   void adjustWindowForView(view);
 }
 
-function parseLogKind(message: string, explicitKind?: LogLevel): LogLevel {
-  if (message.startsWith(DIAG_PREFIX)) {
-    return "diag";
+function normalizeLogLevel(value: unknown, fallback: LogLevel = "info"): LogLevel {
+  return typeof value === "string" && VALID_LOG_LEVELS.has(value as LogLevel) ? (value as LogLevel) : fallback;
+}
+
+function normalizeLogTag(value: unknown): LogTag {
+  return typeof value === "string" && VALID_LOG_TAGS.has(value as LogTag) ? (value as LogTag) : "";
+}
+
+function parseLegacyLogText(raw: string): { level: LogLevel; tag: LogTag; message: string } {
+  let msg = raw.trim();
+  if (msg.startsWith("[诊断] ")) {
+    return { level: "diag", tag: "", message: msg.slice("[诊断] ".length) };
   }
-  if (explicitKind && explicitKind !== "info") {
-    return explicitKind;
+  let level: LogLevel = "info";
+  if (msg.startsWith("[错误] ")) {
+    level = "error";
+    msg = msg.slice("[错误] ".length);
+  } else if (msg.startsWith("[警告] ")) {
+    level = "warn";
+    msg = msg.slice("[警告] ".length);
+  } else if (msg.startsWith("[完成] ")) {
+    level = "ok";
+    msg = msg.slice("[完成] ".length);
+  } else if (msg.startsWith("[提示] ")) {
+    msg = msg.slice("[提示] ".length);
   }
-  const lower = message.toLowerCase();
-  if (message.includes("失败") || message.includes("错误") || lower.includes("error") || lower.includes("failed") || message.includes("超时")) {
-    return "error";
-  }
-  if (message.includes("警告") || message.includes("注意") || message.includes("跳过")) {
-    return "warn";
-  }
-  if (message.includes("成功") || message.includes("已是最新") || message.includes("已还原") || message.includes("已更新") || message.includes("编译完成") || message.includes("已就绪") || message.includes("[完成]")) {
-    return "ok";
-  }
-  return "info";
+  return { level, tag: "", message: msg };
 }
 
 // 面板只显示时分秒：日期会把宽约 90px 的时间列占掉，正文跟着变窄；
@@ -799,14 +809,14 @@ function logStamp(date = new Date()): string {
   });
 }
 
-function makeLogEntry(message: string, kind?: LogLevel): LogEntry {
+function makeLogEntry(message: string, level: LogLevel = "info", tag: LogTag = ""): LogEntry {
   const now = new Date();
   return {
     id: nextLogId++,
     time: logClock(now),
     stamp: logStamp(now),
-    level: parseLogKind(message, kind),
-    tag: "",
+    level,
+    tag,
     message,
   };
 }
@@ -821,6 +831,14 @@ function appendLogLine(entry: LogEntry): void {
   timeEl.textContent = entry.time;
   line.append(timeEl);
 
+  if (entry.tag) {
+    const tagEl = document.createElement("span");
+    tagEl.className = "log-tag";
+    tagEl.dataset.level = entry.level;
+    tagEl.textContent = entry.tag;
+    line.append(tagEl);
+  }
+
   const textEl = document.createElement("span");
   textEl.className = "log-text";
   textEl.textContent = entry.message;
@@ -833,8 +851,10 @@ function appendLogLine(entry: LogEntry): void {
   el.log.scrollTop = el.log.scrollHeight;
 }
 
-function log(message: string, kind?: LogLevel): void {
-  const entry = makeLogEntry(message, kind);
+function log(message: string, level: LogLevel = "info", tag: LogTag = ""): void {
+  const clean = message.trim();
+  if (!clean) return;
+  const entry = makeLogEntry(clean, level, tag);
   logEntries.push(entry);
   if (logEntries.length > LOG_HISTORY_LIMIT) {
     logEntries.splice(0, logEntries.length - LOG_HISTORY_LIMIT);
@@ -842,6 +862,25 @@ function log(message: string, kind?: LogLevel): void {
   // 诊断行只进复制内容，平时不占日志窗口。
   if (entry.level !== "diag") {
     appendLogLine(entry);
+  }
+}
+
+function logDiag(message: string): void {
+  log(message, "diag");
+}
+
+function handleBackendLog(payload: unknown): void {
+  if (isRecord(payload) && typeof payload.message === "string") {
+    log(
+      payload.message,
+      normalizeLogLevel(payload.level),
+      normalizeLogTag(payload.tag),
+    );
+    return;
+  }
+  if (typeof payload === "string") {
+    const parsed = parseLegacyLogText(payload);
+    log(parsed.message, parsed.level, parsed.tag);
   }
 }
 
@@ -917,23 +956,22 @@ function diagnosticAppendix(): string[] {
   return lines;
 }
 
+function formatLogLevel(level: LogLevel): string {
+  return `[${level.toUpperCase()}]`.padEnd(7, " ");
+}
+
 function formatLogEntry(entry: LogEntry): string {
-  let message = entry.level === "diag" && entry.message.startsWith(DIAG_PREFIX)
-    ? entry.message.slice(DIAG_PREFIX.length)
+  const message = entry.level === "diag" && entry.message.startsWith("[诊断] ")
+    ? entry.message.slice("[诊断] ".length)
     : entry.message;
-  if (entry.level === "warn" && message.startsWith("[警告] ")) {
-    message = message.slice("[警告] ".length);
-  } else if (entry.level === "error" && message.startsWith("[错误] ")) {
-    message = message.slice("[错误] ".length);
-  }
-  return `[${entry.stamp}] [${entry.level.toUpperCase()}] ${entry.tag ? `[${entry.tag}] ` : ""}${message}`;
+  return `[${entry.stamp}] ${formatLogLevel(entry.level)} ${entry.tag ? `[${entry.tag}] ` : ""}${message}`;
 }
 
 function buildLogText(): string {
   const lines = [...headerEntries, ...logEntries].map((entry) => redactText(formatLogEntry(entry)));
   const stamp = logStamp();
   for (const line of diagnosticAppendix()) {
-    lines.push(`[${stamp}] [DIAG] ${redactText(line)}`);
+    lines.push(`[${stamp}] ${formatLogLevel("diag")} ${redactText(line)}`);
   }
   const safeLines = lines.map((line) => line.replace(/```/g, "` ` `"));
   return ["```text", ...safeLines, "```"].join("\n");
@@ -996,7 +1034,7 @@ async function openFeedbackPage(): Promise<void> {
   try {
     await call("OpenLink", FEEDBACK_ISSUE_URL);
   } catch (error) {
-    log(`[错误] 打开反馈页失败: ${describeError(error)}；可手动访问 ${FEEDBACK_ISSUE_URL}`, "error");
+    log(`打开反馈页失败：${describeError(error)}，可手动访问 ${FEEDBACK_ISSUE_URL}`, "error", "系统");
   }
 }
 
@@ -1006,14 +1044,14 @@ async function copyDiagnostics(): Promise<void> {
     text = buildLogText();
   } catch (error) {
     const msg = describeError(error);
-    log(`[错误] 生成调试信息失败: ${msg}`, "error");
+    log(`生成调试信息失败：${msg}`, "error", "系统");
     showToast({ kind: "error", title: "生成调试信息失败", description: msg });
     return;
   }
   try {
     await navigator.clipboard.writeText(text);
   } catch {
-    log("[错误] 复制调试信息失败：剪贴板不可用", "error");
+    log("复制调试信息失败：剪贴板不可用", "error", "系统");
     showToast({ kind: "error", title: "复制失败", description: "剪贴板不可用，请检查系统权限" });
     return;
   }
@@ -1033,10 +1071,10 @@ async function copyDiagnostics(): Promise<void> {
 
 function wireErrorCapture(): void {
   window.addEventListener("error", (event) => {
-    log(`${DIAG_PREFIX}界面异常：${event.message}（${event.filename}:${event.lineno}:${event.colno}）`, "diag");
+    logDiag(`界面异常：${event.message}（${event.filename}:${event.lineno}:${event.colno}）`);
   });
   window.addEventListener("unhandledrejection", (event) => {
-    log(`${DIAG_PREFIX}未处理的异步异常：${describeError(event.reason)}`, "diag");
+    logDiag(`未处理的异步异常：${describeError(event.reason)}`);
   });
 }
 
@@ -1055,7 +1093,7 @@ function frontendDiagnostics(): string[] {
   const mins = String(Math.abs(offset) % 60).padStart(2, "0");
   const tz = `${Intl.DateTimeFormat().resolvedOptions().timeZone} (UTC${sign}${hours}:${mins})`;
   return [
-    `${DIAG_PREFIX}界面：${extractBrowserTag(navigator.userAgent)} | 窗口=${window.innerWidth}×${window.innerHeight}@${window.devicePixelRatio}x | 时区=${tz}`,
+    `界面：${extractBrowserTag(navigator.userAgent)} | 窗口=${window.innerWidth}×${window.innerHeight}@${window.devicePixelRatio}x | 时区=${tz}`,
   ];
 }
 
@@ -1255,7 +1293,7 @@ async function detectGameDir(silent: boolean): Promise<void> {
     const prevDir = currentGameDir();
     if (list.length === 0) {
       if (!silent) {
-        log("[探测] 未找到客户端目录，请手动「浏览」选择", "info");
+        log("未找到客户端目录，请点击「浏览」手动选择", "info", "配置");
       }
       return;
     }
@@ -1264,7 +1302,7 @@ async function detectGameDir(silent: boolean): Promise<void> {
     }
     const detectedDir = list[0]!;
     setGameDir(detectedDir);
-    log(`[探测] 已定位游戏目录：${detectedDir}`);
+    log(`已定位游戏目录：${detectedDir}`, "info", "配置");
     await refreshGameInfo();
     if (detectedDir !== prevDir) {
       void checkClientEnvironment();
@@ -1275,7 +1313,7 @@ async function detectGameDir(silent: boolean): Promise<void> {
       }
     }
   } catch (error) {
-    log(`探测游戏目录失败: ${describeError(error)}`, "error");
+    log(`探测游戏目录失败：${describeError(error)}`, "error", "配置");
   } finally {
     isDetecting = false;
     renderDetectButton(false);
@@ -1418,7 +1456,7 @@ async function persistConfig(): Promise<void> {
   try {
     await call("SaveConfig", config);
   } catch (error) {
-    log(`保存本地配置失败: ${describeError(error)}`, "error");
+    log(`保存本地配置失败：${describeError(error)}`, "error", "配置");
   }
 }
 
@@ -1455,38 +1493,38 @@ async function checkAppUpdate(mode: UpdateCheckMode = {}): Promise<void> {
   const { interactive = false, prompt = false } = mode;
   if (bootstrap?.devMode) {
     if (interactive) {
-      log("[提示] 本地开发构建不检查主程序更新。", "warn");
+      log("本地开发构建不检查主程序更新", "warn", "更新");
     }
     return;
   }
   if (checkingAppUpdate) return;
   if (updateLocked()) {
     if (interactive) {
-      log("[提示] 汉化进行中，暂不能检查更新。", "warn");
+      log("汉化进行中，暂不能检查更新", "warn", "更新");
     }
     return;
   }
   checkingAppUpdate = true;
   if (interactive) {
-    log("[检查] 正在检查汉化器主程序更新...");
+    log("正在检查主程序更新…", "info", "更新");
   }
   try {
     const info = await call("CheckAppUpdate");
     latestUpdateInfo = info;
     refreshUpdateAffordance();
     if (info.hasUpdate) {
-      log(`[更新] 发现新版本 v${info.latestVersion}。`, "ok");
+      log(`发现新版本 v${info.latestVersion}`, "ok", "更新");
       // 结果返回时可能已开始汉化，此时不弹窗，只保留版本入口供任务结束后点击。
       if ((interactive || prompt) && !updateLocked()) {
         showUpdateDialog(info);
       }
     } else if (interactive) {
-      log("[检查] 当前汉化器已是最新版本。", "ok");
+      log("主程序已是最新版本", "ok", "更新");
       await showAlert("检查更新", `当前已是最新版本 (v${info.currentVersion})。`);
     }
   } catch (err) {
     if (interactive) {
-      log(`[错误] 检查主程序更新失败: ${describeError(err)}`, "error");
+      log(`检查主程序更新失败：${describeError(err)}`, "error", "更新");
       await showAlert(
         "检查更新失败",
         `无法连接到更新服务器，请检查网络或代理设置后重试。\n\n详情：${describeError(err)}`,
@@ -1527,18 +1565,18 @@ function manualDownloadUrl(info: AppUpdateInfo): string {
 // installAppUpdate 下载并替换当前程序。新版本启动后由后端退出当前进程。
 async function installAppUpdate(info: AppUpdateInfo): Promise<void> {
   if (updateLocked()) {
-    log("[提示] 汉化进行中，暂不能更新主程序。", "warn");
+    log("汉化进行中，暂不能更新主程序", "warn", "更新");
     return;
   }
   try {
     setBusy(true, `正在下载新版本 v${info.latestVersion}…`);
     refreshUpdateAffordance();
-    log(`[更新] 开始下载 v${info.latestVersion}…`);
+    log(`正在下载主程序 v${info.latestVersion}…`, "info", "更新");
     await call("InstallAppUpdate");
   } catch (err) {
     setBusy(false);
     refreshUpdateAffordance();
-    log(`[错误] 自动更新失败: ${describeError(err)}`, "error");
+    log(`自动更新失败：${describeError(err)}`, "error", "更新");
     const goManual = await showConfirm(
       "自动更新失败",
       `${describeError(err)}\n\n是否手动下载最新版本覆盖当前程序？`,
@@ -1562,14 +1600,14 @@ async function installAppUpdate(info: AppUpdateInfo): Promise<void> {
     true,
   );
   if (restart !== "ok") {
-    log("[更新] 已推迟重启，下次启动时生效。");
+    log("已推迟重启，下次启动时生效", "info", "更新");
     return;
   }
-  log("[更新] 正在重启…");
+  log("正在重启主程序…", "info", "更新");
   try {
     await call("RestartApp");
   } catch (err) {
-    log(`[错误] 重启失败: ${describeError(err)}`, "error");
+    log(`重启失败：${describeError(err)}`, "error", "更新");
   }
 }
 
@@ -1604,7 +1642,7 @@ async function detectChsGameDirForFontInBackground(): Promise<void> {
         config.fontPresets["GLOBAL"] = PRESET_ID_CHNAXIS;
       }
       await persistConfig();
-      log(`${DIAG_PREFIX}后台探测到国服客户端目录：${list[0]}`, "diag");
+      logDiag(`后台探测到国服客户端目录：${list[0]}`);
       if (isGlobalLanguage(config.language)) {
         await loadFontPresetsForCurrentRegion();
       }
@@ -1692,7 +1730,7 @@ async function bootstrapApp(): Promise<void> {
       const diagnostics = await call("GetDiagnostics");
       logHeader([...diagnostics, ...frontendDiagnostics()]);
     } catch (error) {
-      log(`[警告] 读取诊断信息失败: ${describeError(error)}`, "warn");
+      log(`读取诊断信息失败：${describeError(error)}`, "warn", "系统");
       logHeader(frontendDiagnostics());
     }
 
@@ -1715,7 +1753,7 @@ async function bootstrapApp(): Promise<void> {
     if (currentGameDir()) {
       await refreshGameInfo();
       if (gameInfo?.valid) {
-        log(`[环境] 已加载${getRegionShortName(getCurrentFontRegion())}客户端（v${gameInfo.version || "未知"}）`);
+        log(`已加载${getRegionShortName(getCurrentFontRegion())}客户端（v${gameInfo.version || "未知"}）`, "info", "配置");
       }
       void checkClientEnvironment();
       if (isGlobalLanguage(config.language) && !config.gameDirs?.["CHS"]) {
@@ -1743,7 +1781,7 @@ async function bootstrapApp(): Promise<void> {
     } catch {
       // 容错防御
     }
-    log(`初始化失败: ${describeError(error)}`, "error");
+    log(`初始化失败：${describeError(error)}`, "error", "系统");
     switchView("workbench");
   }
 }
@@ -1800,7 +1838,7 @@ async function syncBuiltinOnStart(): Promise<void> {
       await call("SyncBuiltinResource");
       await reloadRules();
     } catch (err) {
-      log(`[警告] 本地内置词条不可用: ${describeError(err)}`, "warn");
+      log(`本地内置词条不可用：${describeError(err)}`, "warn", "资源");
     }
     return;
   }
@@ -1816,7 +1854,7 @@ async function ensureTableDoc(): Promise<void> {
       await reloadCSVContext();
     }
   } catch (err) {
-    log(`[警告] 表清单同步失败: ${describeError(err)}`, "warn");
+    log(`表清单同步失败：${describeError(err)}`, "warn", "资源");
   }
   // 内置词条随后会走整包同步，这里只处理自定义目录，避免同步前误报缺清单。
   if (bootstrap?.csv.selected && !csvSelectionValid()) {
@@ -1892,7 +1930,7 @@ async function reloadRules(): Promise<void> {
     bootstrap.rules = rules;
     renderRules();
   } catch (err) {
-    log(`[警告] 刷新附加规则失败: ${describeError(err)}`, "warn");
+    log(`刷新附加规则失败：${describeError(err)}`, "warn", "资源");
   }
 }
 
@@ -2145,7 +2183,7 @@ function renderTargetLangs(): void {
         if (targetLangs.length === 0) {
           targetLangs = [opt.code];
           cb.checked = true;
-          log("[提示] 至少需要勾选一种汉化语言。", "warn");
+          log("至少需要勾选一种汉化语言", "warn", "配置");
         }
         targetLangs = opts.map((o) => o.code).filter((c) => targetLangs.includes(c));
         updateTargetLangView();
@@ -2693,7 +2731,7 @@ async function copyBuiltinCSV(): Promise<void> {
     startCSVMetaEdit(ctx.selected);
   } catch (err) {
     endCSVBusy();
-    log(`[错误] 制作内置词条副本失败: ${describeError(err)}`, "error");
+    log(`制作内置词条副本失败：${describeError(err)}`, "error", "词条");
     if (copyBtn?.isConnected) {
       copyBtn.disabled = false;
       copyBtn.textContent = "制作副本";
@@ -2706,7 +2744,7 @@ async function openCSVDir(path: string): Promise<void> {
   try {
     await call("OpenCSVDirectory", config.language, path);
   } catch (err) {
-    log(`[错误] 打开词条目录失败: ${describeError(err)}`, "error");
+    log(`打开词条目录失败：${describeError(err)}`, "error", "词条");
   }
 }
 
@@ -2726,9 +2764,9 @@ async function saveCSVMeta(path: string, title: string, desc: string): Promise<v
     const lang = config.language;
     const ctx = await call("SetCSVDirectoryMeta", lang, path, title, desc);
     applyCSVContextForLanguage(lang, ctx);
-    log(`[词条] 已更新词条目录信息：${title || csvDirName(path)}`);
+    log(`已更新词条目录信息：${title || csvDirName(path)}`, "info", "词条");
   } catch (err) {
-    log(`[错误] 更新词条目录信息失败: ${describeError(err)}`, "error");
+    log(`更新词条目录信息失败：${describeError(err)}`, "error", "词条");
     renderCSVMenu();
   }
 }
@@ -2813,10 +2851,10 @@ function notifyInvalidCSV(): void {
   }
   invalidCSVNotified = ctx.selected;
   if (ctx.tableList.length === 0) {
-    log("[警告] 本地表清单不可用，联网获取也失败了，请检查网络后重启程序。", "warn");
+    log("本地表清单不可用且联网获取失败，请检查网络后重启程序", "warn", "资源");
     return;
   }
-  log(`[警告] 词条目录已失效：${ctx.selected}。请重新选择或删除该目录。`, "warn");
+  log(`词条目录已失效（${ctx.selected}），请重新选择或移除该目录`, "warn", "词条");
 }
 
 // reloadCSVContext 按当前区服拉取词条目录上下文。
@@ -2834,7 +2872,7 @@ async function reloadCSVContext(): Promise<void> {
     }
     applyCSVContextForLanguage(langAtRequest, ctx);
   } catch (err) {
-    log(`[警告] 读取词条目录配置失败: ${describeError(err)}`, "warn");
+    log(`读取词条目录配置失败：${describeError(err)}`, "warn", "词条");
   }
 }
 
@@ -2853,13 +2891,13 @@ async function chooseCSV(path: string): Promise<void> {
     endCSVBusy();
     applyCSVContextForLanguage(lang, ctx);
     if (path) {
-      log(`[词条] 已切换到自定义词条目录：${csvDisplayName(path)}`);
+      log(`已切换到自定义词条目录：${csvDisplayName(path)}`, "info", "词条");
     } else {
-      log("[词条] 已切换到内置词条");
+      log("已切换到内置词条", "info", "词条");
     }
   } catch (err) {
     endCSVBusy();
-    log(`[错误] 切换词条目录失败: ${describeError(err)}`, "error");
+    log(`切换词条目录失败：${describeError(err)}`, "error", "词条");
     await reloadCSVContext();
   }
 }
@@ -2880,12 +2918,14 @@ async function removeCSV(path: string, label: string, deleteFiles: boolean): Pro
     applyCSVContextForLanguage(lang, ctx);
     log(
       deleteFiles
-        ? `[词条] 已移除词条目录并删除其中的文件：${label}`
-        : `[词条] 已移除词条目录（目录文件保留）：${label}`,
+        ? `已移除词条目录并删除文件：${label}`
+        : `已移除词条目录（本地文件已保留）：${label}`,
+      "info",
+      "词条",
     );
   } catch (err) {
     endCSVBusy();
-    log(`[错误] 移除词条目录失败: ${describeError(err)}`, "error");
+    log(`移除词条目录失败：${describeError(err)}`, "error", "词条");
   }
 }
 
@@ -2923,9 +2963,9 @@ async function syncBuiltinResource(): Promise<void> {
     await reloadRules();
   } catch (err) {
     builtinSyncFailed = true;
-    log(`[警告] 内置词条同步失败: ${describeError(err)}`, "warn");
+    log(`内置词条同步失败：${describeError(err)}`, "warn", "资源");
     if (!showOnPicker) {
-      log("[提示] 当前使用自定义词条，不受影响；改回内置词条时会重试同步", "warn");
+      log("当前使用自定义词条，不受本次同步失败影响；切回内置词条时会重试", "info", "词条");
     }
   } finally {
     setResourceSyncing(false);
@@ -3023,13 +3063,13 @@ async function checkClientEnvironment(): Promise<void> {
       if (status.text?.label) parts.push(`文本：${status.text.label}`);
       if (status.font?.label) parts.push(`字体：${status.font.label}`);
       const detail = parts.length > 0 ? `（${parts.join("，")}）` : "";
-      log(`[校验] 客户端状态：${status.label}${detail}`, kind);
+      log(`客户端状态：${status.label}${detail}`, kind, "校验");
     }
   } catch (err) {
     if (gen !== checkClientGeneration || config.language !== currentLang || currentGameDir() !== currentDir) {
       return;
     }
-    log(`[错误] 客户端校验失败: ${describeError(err)}`, "error");
+    log(`客户端校验失败：${describeError(err)}`, "error", "校验");
   } finally {
     if (gen === checkClientGeneration) {
       checkingClient = false;
@@ -3529,7 +3569,7 @@ async function addFontElementFromSystemFont(): Promise<void> {
   if (!face) return;
   await ensureSystemFonts();
   if (systemFontsList.length === 0) {
-    log("[提示] 未获取到系统字体列表，请稍后重试", "warn");
+    log("未获取到系统字体列表，请稍后重试", "warn", "字体");
     return;
   }
   const family = await promptModalSelect(
@@ -3563,7 +3603,7 @@ function deleteSelectedFontElements(): void {
   const indices = getSelectedElementIndices();
   if (indices.length === 0) return;
   if (face.elements.length - indices.length < 1) {
-    log("[提示] 每个字体至少保留一个图层", "warn");
+    log("每个字体至少保留一个图层", "warn", "字体");
     return;
   }
   for (const index of [...indices].sort((a, b) => b - a)) {
@@ -3676,7 +3716,7 @@ async function autoFitFace(faceName: string, indices: number[] | null): Promise<
     face.elements = elements;
     return true;
   } catch (err) {
-    log(`[字体] ${faceName} 自动适配失败: ${describeError(err)}`, "warn");
+    log(`${faceName} 自动适配失败：${describeError(err)}`, "warn", "字体");
     return false;
   }
 }
@@ -3709,7 +3749,7 @@ async function addSystemFontToFamily(): Promise<void> {
   if (!srcFace || !currentMultiFont) return;
   await ensureSystemFonts();
   if (systemFontsList.length === 0) {
-    log("[提示] 未获取到系统字体列表，请稍后重试", "warn");
+    log("未获取到系统字体列表，请稍后重试", "warn", "字体");
     return;
   }
   const family = await promptModalSelect(
@@ -3958,7 +3998,7 @@ async function createNewEmptyAxisPreset(): Promise<void> {
   }
 
   if (!baseTemplate) {
-    log("[错误] 未能获取 AXIS 方案基础模板", "error");
+    log("未能获取 AXIS 方案基础模板", "error", "字体");
     return;
   }
 
@@ -3971,7 +4011,7 @@ async function createNewEmptyAxisPreset(): Promise<void> {
     await applyFontPreset(saved.id);
     closePresetManager();
   } catch (err) {
-    log(`[错误] 创建空 AXIS 方案失败: ${describeError(err)}`, "error");
+    log(`创建空 AXIS 方案失败：${describeError(err)}`, "error", "字体");
     await showAlert("创建失败", describeError(err));
   }
 }
@@ -3987,7 +4027,7 @@ async function duplicateCurrentPreset(): Promise<void> {
 
 async function resetCurrentFontPreset(): Promise<void> {
   if (!activePresetId) {
-    log("[提示] 当前打开的是外部 JSON 文件，没有可重置的方案", "warn");
+    log("当前打开的是外部 JSON 文件，没有可重置的方案", "warn", "字体");
     return;
   }
   const preset = availableFontPresets.find((p) => p.id === activePresetId);
@@ -4134,7 +4174,7 @@ async function applyPresetFromManager(preset: PresetSummary): Promise<void> {
     await applyFontPreset(preset.id);
     closePresetManager();
   } catch (err) {
-    log(`[错误] 切换字体方案失败: ${describeError(err)}`, "error");
+    log(`切换字体方案失败：${describeError(err)}`, "error", "字体");
   }
 }
 
@@ -4158,7 +4198,7 @@ async function duplicatePreset(preset: PresetSummary): Promise<void> {
     await applyFontPreset(saved.id);
     closePresetManager();
   } catch (err) {
-    log(`[错误] 复制字体方案失败: ${describeError(err)}`, "error");
+    log(`复制字体方案失败：${describeError(err)}`, "error", "字体");
     await showAlert("复制失败", describeError(err));
   }
 }
@@ -4174,7 +4214,7 @@ async function renamePreset(preset: PresetSummary): Promise<void> {
     if (wasActive) markPresetSelected(renamed.id);
     await loadFontPresetsForCurrentRegion();
   } catch (err) {
-    log(`[错误] 重命名字体方案失败: ${describeError(err)}`, "error");
+    log(`重命名字体方案失败：${describeError(err)}`, "error", "字体");
     await showAlert("重命名失败", describeError(err));
   }
 }
@@ -4194,7 +4234,7 @@ async function deletePreset(preset: PresetSummary): Promise<void> {
     // 删的是当前方案时后端已回退到默认方案，这里让前端配置跟上同一结果。
     if (activePresetId) markPresetSelected(activePresetId);
   } catch (err) {
-    log(`[错误] 删除字体方案失败: ${describeError(err)}`, "error");
+    log(`删除字体方案失败：${describeError(err)}`, "error", "字体");
     await showAlert("删除失败", describeError(err));
   }
 }
@@ -4267,7 +4307,7 @@ async function exportFontTtmp(): Promise<void> {
     await call("ExportFontTTMP", configJson, savePath);
     await showAlert("导出成功", `已导出到：\n${savePath}`);
   } catch (err) {
-    log(`[错误] 导出 TTMP 失败: ${describeError(err)}`, "error");
+    log(`导出 TTMP 失败：${describeError(err)}`, "error", "字体");
   }
 }
 
@@ -4419,7 +4459,7 @@ async function runFontCommand(command: string): Promise<void> {
           await call("ExportFontRaw", configJson, outDir);
           await showAlert("导出成功", `已导出到：\n${outDir}`);
         } catch (err) {
-          log(`[字体] 导出原始文件失败: ${describeError(err)}`, "error");
+          log(`导出原始文件失败：${describeError(err)}`, "error", "字体");
         }
         return;
       }
@@ -4434,7 +4474,7 @@ async function runFontCommand(command: string): Promise<void> {
         return;
     }
   } catch (err) {
-    log(`[错误] 执行菜单命令失败: ${describeError(err)}`, "error");
+    log(`执行菜单命令失败：${describeError(err)}`, "error", "字体");
   }
 }
 
@@ -4924,7 +4964,7 @@ async function loadFontPresetsForCurrentRegion(): Promise<void> {
     if (gen !== fontPresetGeneration || getCurrentFontRegion() !== reg) {
       return;
     }
-    log(`[错误] 加载字体方案列表失败: ${describeError(err)}`, "error");
+    log(`加载字体方案列表失败：${describeError(err)}`, "error", "字体");
     return;
   }
 
@@ -5060,7 +5100,7 @@ async function loadFontPreset(presetId: string): Promise<void> {
       schedulePreviewRender();
     }
   } catch (err) {
-    log(`[错误] 加载方案内容失败: ${describeError(err)}`, "error");
+    log(`加载方案内容失败：${describeError(err)}`, "error", "字体");
   }
 }
 
@@ -5638,7 +5678,7 @@ function openElementEditorModal(): void {
     subEditorOpen = false;
     subEditorFaceName = "";
     subEditorElementIndex = -1;
-    log(`[错误] 打开图层属性窗口失败: ${describeError(err)}`, "error");
+    log(`打开图层属性窗口失败：${describeError(err)}`, "error", "字体");
   });
 }
 
@@ -5990,7 +6030,7 @@ async function doPreviewRender(): Promise<void> {
     el.previewHint.textContent = `预览不可用：${describeError(err)}`;
     el.previewHint.classList.remove("hidden");
     el.previewImage.classList.add("hidden");
-    log(`[字体] 预览渲染失败: ${describeError(err)}`, "warn");
+    log(`预览渲染失败：${describeError(err)}`, "warn", "字体");
   } finally {
     if (token === previewRenderToken) {
       el.previewStage.classList.remove("rendering");
@@ -6012,7 +6052,7 @@ async function openBackupDir(): Promise<void> {
   try {
     await call("OpenBackupDirectory", config.language);
   } catch (err) {
-    log(`[错误] 打开备份目录失败: ${describeError(err)}`, "error");
+    log(`打开备份目录失败：${describeError(err)}`, "error", "校验");
   }
 }
 
@@ -6078,7 +6118,7 @@ async function refreshGameInfo(): Promise<void> {
       return;
     }
     gameInfo = null;
-    log(`读取游戏目录信息失败: ${describeError(error)}`, "error");
+    log(`读取游戏目录信息失败：${describeError(error)}`, "error", "配置");
   }
   renderGameInfo();
 }
@@ -6532,7 +6572,7 @@ function syncPresetWithSelection(): void {
 function wireEvents(): void {
   el.versionBadge.addEventListener("click", () => {
     if (updateLocked()) {
-      log("[提示] 汉化进行中，暂不能检查更新。", "warn");
+      log("汉化进行中，暂不能检查更新", "warn", "更新");
       return;
     }
     void checkAppUpdate({ interactive: true });
@@ -6557,14 +6597,14 @@ function wireEvents(): void {
       if (dir) {
         const prevDir = currentGameDir();
         setGameDir(dir);
-        log(`[配置] 已选择游戏目录：${dir}`);
+        log(`已选择游戏目录：${dir}`, "info", "配置");
         await refreshGameInfo();
         if (dir !== prevDir) {
           void checkClientEnvironment();
         }
       }
     } catch (error) {
-      log(`[错误] 选择目录失败: ${describeError(error)}`, "error");
+      log(`选择游戏目录失败：${describeError(error)}`, "error", "配置");
     }
   });
 
@@ -6633,14 +6673,14 @@ function wireEvents(): void {
         if (detected.length > 0 && detected[0] && !currentGameDir()) {
           config.gameDirs[newLang] = detected[0];
           el.gamePath.value = detected[0];
-          log(`${DIAG_PREFIX}切区探测到目录：${detected[0]}`, "diag");
+          logDiag(`切区探测到目录：${detected[0]}`);
           renderGameInfo();
         }
       } catch (err) {
         if (switchGen !== clientSwitchGeneration || config.language !== newLang) {
           return;
         }
-        log(`[警告] 自动探测游戏目录失败: ${describeError(err)}`, "warn");
+        log(`自动探测游戏目录失败：${describeError(err)}`, "warn", "配置");
       }
     }
 
@@ -6835,7 +6875,7 @@ function wireEvents(): void {
       return;
     }
     if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
-      log("[错误] 区服不匹配，无法还原。", "error");
+      log("区服与客户端目录不匹配，无法还原", "error", "校验");
       return;
     }
     const isGlobal = isGlobalLanguage(config.language);
@@ -6845,15 +6885,15 @@ function wireEvents(): void {
       gameInfo.version !== gameInfo.backupVersion
     );
     if (!isGlobal && !gameInfo?.backupExists) {
-      log("[警告] 本地没有备份，只能先用官方启动器修复客户端", "warn");
+      log("本地没有原版备份，请先使用官方启动器修复客户端", "warn", "校验");
       return;
     }
     if (!isGlobal && versionMismatch) {
-      log(`[警告] 游戏版本 v${gameInfo?.version} 与备份 v${gameInfo?.backupVersion} 不一致，请先用官方启动器修复`, "warn");
+      log(`游戏版本 v${gameInfo?.version} 与备份 v${gameInfo?.backupVersion} 不一致，请先使用官方启动器修复`, "warn", "校验");
       return;
     }
     if (!currentGameDir()) {
-      log("[错误] 请先选择游戏目录", "error");
+      log("请先选择游戏目录", "error", "校验");
       return;
     }
     const confirmMsg = isGlobal && !gameInfo?.backupExists
@@ -6866,7 +6906,7 @@ function wireEvents(): void {
     const restoreText = el.restoreTextCheck.checked;
     const restoreFont = el.restoreFontCheck.checked;
     if (!restoreText && !restoreFont) {
-      log("[提示] 未勾选要还原的内容，已取消", "warn");
+      log("未勾选要还原的内容，已取消", "warn", "校验");
       return;
     }
     try {
@@ -6874,10 +6914,10 @@ function wireEvents(): void {
       setBusy(true, restoreText && restoreFont ? "正在还原官方原版文件…" : restoreText ? "正在还原文本…" : "正在还原字体…");
       const resp = await call("RestoreOriginal", currentGameDir(), config.language, restoreText, restoreFont);
       if (resp.cancelled) {
-        log("[提示] 还原已取消", "info");
+        log("已取消还原", "info", "校验");
         return;
       }
-      // 完成结果由后端日志给出（[完成] …），此处不再重复输出。
+      // 完成结果由后端日志给出，此处不再重复输出。
       try {
         clientStatus = await call("CheckClientStatus", currentGameDir(), config.language);
       } catch {
@@ -6885,7 +6925,7 @@ function wireEvents(): void {
       }
       await refreshGameInfo();
     } catch (error) {
-      log(`还原失败: ${describeError(error)}`, "error");
+      log(`还原失败：${describeError(error)}`, "error", "校验");
     } finally {
       setBusy(false);
     }
@@ -6911,19 +6951,19 @@ function wireEvents(): void {
     }
     if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
       const msg = "当前选择的目录与所选区服不匹配，请切换区服或重新选择游戏目录";
-      log(`[错误] ${msg}`, "error");
+      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (!currentGameDir()) {
       const msg = "请先选择或自动探测有效的游戏安装目录";
-      log(`[错误] ${msg}`, "error");
+      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (!config.replaceText && !config.replaceFont) {
       const msg = "请至少开启「文本数据」或「游戏字体」其中一项";
-      log(`[错误] ${msg}`, "error");
+      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
@@ -6931,19 +6971,19 @@ function wireEvents(): void {
       const msg = (bootstrap?.csv.tableList.length ?? 0) === 0
         ? "缺少数据表清单，请检查网络或代理后重试"
         : "当前选中的词条目录已失效，请切换到内置词条或其他有效目录";
-      log(`[错误] ${msg}`, "error");
+      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (config.replaceText && selected.size === 0) {
       const msg = "尚未选择任何要汉化的数据表，请在「修改范围」中至少勾选一项";
-      log(`[错误] ${msg}`, "error");
+      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (config.replaceText && regionLanguageOptions().length > 1 && targetLangs.length === 0) {
       const msg = "请至少勾选一种要替换的目标语言";
-      log(`[错误] ${msg}`, "error");
+      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
@@ -6958,7 +6998,7 @@ function wireEvents(): void {
       toggleConsole(true);
       setBusy(true, "正在汉化…");
       el.progressBar.style.width = "0%";
-      log("[补丁] 开始汉化…");
+      log("开始执行汉化…", "info", "汉化");
 
       const req: PatchRequest = {
         gameDir: currentGameDir(),
@@ -6973,11 +7013,11 @@ function wireEvents(): void {
 
       const resp = await call("StartPatch", req);
       if (resp.cancelled) {
-        log("[提示] 汉化已中止", "info");
+        log("已中止汉化", "info", "汉化");
         return;
       }
       for (const w of resp.warnings ?? []) {
-        log(`[警告] ${w}`, "warn");
+        log(w, "warn", "汉化");
       }
       // 之前同步失败过的话，这次开始汉化前已经重试通过。
       builtinSyncFailed = false;
@@ -6991,7 +7031,7 @@ function wireEvents(): void {
       await reloadCSVContext();
       await reloadRules();
     } catch (error) {
-      log(`汉化失败: ${describeError(error)}`, "error");
+      log(`汉化失败：${describeError(error)}`, "error", "汉化");
     } finally {
       isPatching = false;
       isStopping = false;
@@ -7017,11 +7057,11 @@ function wireEvents(): void {
     try {
       fontBuild = await call("CompileFontPreset");
       if (!fontBuild.ready) {
-        log(`[字体] 编译未通过：${fontBuild.reason}`, "warn");
+        log(`编译未通过：${fontBuild.reason}`, "warn", "字体");
       }
     } catch (err) {
       fontBuild = null;
-      log(`[字体] 编译失败：${describeError(err)}`, "error");
+      log(`编译失败：${describeError(err)}`, "error", "字体");
     } finally {
       fontCompiling = false;
       updateFontUiAssetState();
@@ -7032,7 +7072,7 @@ function wireEvents(): void {
     if (busy || el.btnOpenFontEditor.disabled || openingFontEditor) return;
     const gameDir = currentGameDir();
     if (!gameDir) {
-      log("[字体] 请先选择游戏目录", "warn");
+      log("请先选择游戏目录", "warn", "字体");
       return;
     }
     const originalText = "编辑方案";
@@ -7043,14 +7083,14 @@ function wireEvents(): void {
         const status = await call("CheckClientStatus", gameDir, config.language);
         clientStatus = status;
         if (status.font?.status === "modified") {
-          log("[字体] 字体文件已被修改，请先「还原原版」再编辑方案", "error");
+          log("字体文件已被修改，请先「还原原版」再编辑方案", "error", "字体");
           return;
         }
         if (status.font?.status === "unknown") {
-          log("[字体] 无法核对字体是否为原版，提取到的字形可能有误", "warn");
+          log("无法核对字体是否为原版，提取到的字形可能有误", "warn", "字体");
         }
       } else {
-        log("[字体] 此区服无法检查原版状态，若已打补丁提取字形可能有误", "warn");
+        log("此区服无法检查原版状态，若已打补丁提取字形可能有误", "warn", "字体");
       }
 
       if (!fontCompilerReady) {
@@ -7068,7 +7108,7 @@ function wireEvents(): void {
       await loadFontPresetsForCurrentRegion();
       schedulePreviewRender();
     } catch (err) {
-      log(`[字体] 无法打开字体定制: ${describeError(err)}`, "error");
+      log(`无法打开字体定制：${describeError(err)}`, "error", "字体");
     } finally {
       openingFontEditor = false;
       resetFontCompilerButtonState(originalText);
@@ -7164,12 +7204,12 @@ function wireEvents(): void {
       const saved = await call("SaveFontPreset", curReg, name.trim(), JSON.stringify(parsed, null, "\t"));
       if (!config.fontPresets) config.fontPresets = {};
       config.fontPresets[curReg] = saved.id;
-      log(`[方案] 已导入并选用方案：${saved.name}`, "ok");
+      log(`已导入并选用字体方案：${saved.name}`, "ok", "字体");
       await loadFontPresetsForCurrentRegion();
       await loadFontPreset(saved.id);
     } catch (err) {
       const msg = describeError(err);
-      log(`[错误] 导入方案失败: ${msg}`, "error");
+      log(`导入字体方案失败：${msg}`, "error", "字体");
       await showAlert("导入方案失败", msg);
     }
   });
@@ -7398,7 +7438,7 @@ function wireElementEditorEvents(): void {
       schedulePreviewRender();
     } catch (err) {
       if (!IS_ELEMENT_EDITOR_SUBWINDOW) {
-        log(`[错误] 选择字体文件失败: ${describeError(err)}`, "error");
+        log(`选择字体文件失败：${describeError(err)}`, "error", "字体");
       }
     }
   });
@@ -7956,10 +7996,11 @@ function wireRuntimeEvents(): void {
     }
 
     if (ev.stage === "download") {
-      if (ev.detail && ev.detail !== lastDownloadDetail) {
-        lastDownloadDetail = ev.detail;
+      const detail = ev.detail.replace(/^正在下载\s*/, "");
+      if (detail && detail !== lastDownloadDetail) {
+        lastDownloadDetail = detail;
         const sizeInfo = ev.total > 0 ? ` (${(ev.total / 1024 / 1024).toFixed(1)} MB)` : "";
-        log(`[下载] 开始下载 ${ev.detail}${sizeInfo}`);
+        log(`正在下载原版 ${detail}${sizeInfo}`, "info", "校验");
       }
       return;
     }
@@ -7974,9 +8015,7 @@ function wireRuntimeEvents(): void {
   });
 
   Events.On("patch-log", (event) => {
-    if (typeof event.data === "string") {
-      log(event.data);
-    }
+    handleBackendLog(event.data);
   });
 
   Events.On("unknown-confirm", async (event) => {
@@ -7988,7 +8027,7 @@ function wireRuntimeEvents(): void {
     try {
       await call("AnswerUnknownConfirm", ok);
     } catch (error) {
-      log(`确认反馈失败: ${describeError(error)}`, "error");
+      log(`确认反馈失败：${describeError(error)}`, "error", "系统");
     }
   });
 
@@ -8001,7 +8040,7 @@ function wireRuntimeEvents(): void {
     try {
       await call("AnswerLauncherConfirm", ok);
     } catch (error) {
-      log(`确认反馈失败: ${describeError(error)}`, "error");
+      log(`确认反馈失败：${describeError(error)}`, "error", "系统");
     }
   });
 

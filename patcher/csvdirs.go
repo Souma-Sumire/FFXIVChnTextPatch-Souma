@@ -612,9 +612,9 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 		if convert {
 			return current, errors.New("已存在内置词条副本，请先删除旧副本再生成繁体副本")
 		}
-		a.emitPatchLog("[词条] 已选用现有副本")
+		a.emitInfo(logTagCSV, "已选用现有词条副本")
 		if missing := missingCopyCount(dstDir, srcDir, knownTableKeys(doc)); missing > 0 {
-			a.emitPatchLog(fmt.Sprintf("[警告] 副本缺少 %d 份 CSV（缺失的表将使用原文），建议删除后重做", missing))
+			a.emitWarn(logTagCSV, "词条副本缺少 %d 份 CSV（缺失的表将保留原文），建议删除后重做", missing)
 		}
 	} else {
 		transform := func(data []byte) ([]byte, error) { return data, nil }
@@ -661,9 +661,9 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 			return current, fmt.Errorf("提交自定义词条目录失败: %w", err)
 		}
 		if convert {
-			a.emitPatchLog("[词条] 已生成繁体词条副本")
+			a.emitOK(logTagCSV, "已生成繁体词条副本")
 		} else {
-			a.emitPatchLog("[词条] 已生成词条副本")
+			a.emitOK(logTagCSV, "已生成词条副本")
 		}
 	}
 
@@ -681,6 +681,11 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 	if err := a.SaveConfig(cfg); err != nil {
 		return current, err
 	}
+	selectedDesc := "内置词条"
+	if conf.Selected != "" {
+		selectedDesc = conf.Selected
+	}
+	a.emitDiag("词条操作：切换词条来源（区服=%s | 目标=%s）", regionKey, selectedDesc)
 	return a.csvContext(cfg, doc, regionKey), nil
 }
 
@@ -746,6 +751,11 @@ func (a *App) SetCSVSelection(language, path string) (CSVContext, error) {
 	if err := a.SaveConfig(cfg); err != nil {
 		return current, err
 	}
+	selectedDesc := "内置词条"
+	if conf.Selected != "" {
+		selectedDesc = conf.Selected
+	}
+	a.emitDiag("词条操作：切换词条来源（区服=%s | 目标=%s）", regionKey, selectedDesc)
 	return a.csvContext(cfg, doc, regionKey), nil
 }
 
@@ -833,6 +843,7 @@ func (a *App) RemoveCSVDirectory(language, path string, deleteFiles bool) (CSVCo
 	if err := a.SaveConfig(cfg); err != nil {
 		return a.csvContext(cfg, doc, regionKey), err
 	}
+	a.emitDiag("词条操作：移除自定义词条目录（区服=%s | 删除文件=%t | 目录=%s）", regionKey, deleteFiles, matched)
 	return a.csvContext(cfg, doc, regionKey), nil
 }
 

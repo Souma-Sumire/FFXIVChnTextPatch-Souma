@@ -81,7 +81,7 @@ func (a *App) resolveFontPresetContent(resourceDir, regionKey string, targetReg 
 	configJson, err := fontengine.GetPresetContent(presetID, presetsDirFor(resourceDir))
 	if err != nil {
 		defaultID := defaultPresetForRegionWithDirs(targetReg, a.loadConfig(resourceDir).GameDirs)
-		a.emitPatchLog(fmt.Sprintf("[字体] 方案 %s 不可用（%v），改用默认方案 %s", presetID, err, defaultID))
+		a.emitWarn(logTagFont, "方案 %s 不可用（%v），已改用默认方案 %s", presetID, err, defaultID)
 		configJson, err = fontengine.GetPresetContent(defaultID, "")
 		if err != nil {
 			return "", "", 0, fmt.Errorf("读取字体配置失败: %w", err)
@@ -196,16 +196,22 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		return info, err
 	}
 	if changed > 0 {
-		a.emitPatchLog(fmt.Sprintf("[字体] 方案中有 %d 处贴图边长已调整为 %dpx", changed, fontengine.SideLength))
+		a.emitInfo(logTagFont, "方案中有 %d 处贴图边长已调整为 %dpx", changed, fontengine.SideLength)
 	}
 
 	use16Bit := a.fontTexture16Bit(resourceDir)
 	dir := fontBuildDir(resourceDir)
+	a.emitDiag("=== 开始编译字体 === 方案=%s | 区服=%s | 16位=%t | 目录=%s", presetID, regionKey, use16Bit, dir)
+	if changed > 0 {
+		a.emitDiag("字体编译：已调整 %d 处贴图边长为 %dpx", changed, fontengine.SideLength)
+	}
 	tmpDir := dir + ".tmp"
 	if err := os.RemoveAll(tmpDir); err != nil {
+		a.emitDiag("字体编译失败：清理临时目录失败（%v）", err)
 		return info, fmt.Errorf("清理上次编译残留失败: %w", err)
 	}
 	if err := os.MkdirAll(tmpDir, 0o755); err != nil {
+		a.emitDiag("字体编译失败：创建临时目录失败（%v）", err)
 		return info, fmt.Errorf("创建编译目录失败: %w", err)
 	}
 
@@ -214,15 +220,17 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 	if use16Bit {
 		bitDesc = "16位"
 	}
-	a.emitPatchLog(fmt.Sprintf("[字体] 正在编译方案：%s（%s贴图）...", presetID, bitDesc))
+	a.emitInfo(logTagFont, "正在编译方案 %s（%s贴图）…", presetID, bitDesc)
 	if err := a.fontEngine.CompileRaw(ctx, configJson, tmpDir, use16Bit, func(pct int, msg string) {
 		a.emitFontBuildProgress(int64(pct), msg)
 	}); err != nil {
 		_ = os.RemoveAll(tmpDir)
+		a.emitDiag("字体编译失败：%v", err)
 		return info, fmt.Errorf("字体编译失败：%w", err)
 	}
 	if !hasFontTexture(tmpDir) {
 		_ = os.RemoveAll(tmpDir)
+		a.emitDiag("字体编译失败：未产出字体贴图")
 		return info, errors.New("编译没有产出字体贴图，已中止")
 	}
 
@@ -232,6 +240,7 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		if _, statErr := os.Stat(fontIndexPath); statErr == nil {
 			if err := replace.CheckFontFiles(fontIndexPath, tmpDir); err != nil {
 				_ = os.RemoveAll(tmpDir)
+				a.emitDiag("字体编译失败：贴图校验未通过（%v）", err)
 				return info, err
 			}
 		}
@@ -268,7 +277,9 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		return info, fmt.Errorf("写入编译记录失败: %w", err)
 	}
 
-	a.emitPatchLog(fmt.Sprintf("[字体] 编译完成：%d 张贴图，%dpx（耗时 %s）", texCount, side, time.Since(started).Round(100*time.Millisecond)))
+	elapsed := formatElapsed(time.Since(started))
+	a.emitDiag("字体编译完成：方案=%s | 贴图=%d张/%dpx | 耗时=%s", presetID, texCount, side, elapsed)
+	a.emitOK(logTagFont, "字体编译完成：%d 张贴图，%dpx（耗时 %s）", texCount, side, elapsed)
 	return a.fontBuildInfoFor(resourceDir, presetID, configJson, use16Bit), nil
 }
 

@@ -137,10 +137,12 @@ func (a *App) resourceDir() string {
 func NewApp() *App {
 	u := updater.New()
 	u.LocalOnly = localResourceOnly
-	return &App{
+	app := &App{
 		updater:    u,
 		fontEngine: fontengine.NewEngine(""),
 	}
+	u.DiagLog = app.emitDiag
+	return app
 }
 
 // SetRuntime 注入 Wails v3 应用与主窗口实例。
@@ -642,13 +644,13 @@ func (a *App) loadConfigLocked(resourceDir string) AppConfig {
 	data, err := os.ReadFile(cfgPath)
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
-			a.emitPatchLog(fmt.Sprintf("[警告] 读取配置文件 %s 失败: %v，已使用默认配置", cfgPath, err))
+			a.emitWarn(logTagConfig, "读取配置文件 %s 失败（%v），已使用默认配置", cfgPath, err)
 		}
 		return cfg
 	}
 	var saved AppConfig
 	if err := json.Unmarshal(data, &saved); err != nil {
-		a.emitPatchLog(fmt.Sprintf("[警告] 解析配置文件 %s 失败: %v，已使用默认配置", cfgPath, err))
+		a.emitWarn(logTagConfig, "解析配置文件 %s 失败（%v），已使用默认配置", cfgPath, err)
 		return cfg
 	}
 	if saved.Language != "" {
@@ -739,11 +741,7 @@ func (a *App) loadConfigLocked(resourceDir string) AppConfig {
 	return cfg
 }
 
-// emitPatchLog 是后端日志的唯一出口。诊断行会随反馈贴到公开 issue，
-// 统一在这里隐去路径中的用户名，避免某处漏改就把本机账户带出去。
-func (a *App) emitPatchLog(msg string) {
-	a.emitEvent("patch-log", redactPaths(msg))
-}
+// 短哈希截断为 8 位，供诊断日志展示。
 
 func shortHash(h string) string {
 	if len(h) > 8 {
@@ -845,19 +843,19 @@ func (a *App) ensureBuiltinResource(ctx context.Context, resourceDir string) err
 		if len(updates) == 0 {
 			updates = append(updates, "内置资源")
 		}
-		a.emitPatchLog(fmt.Sprintf("[资源] 已更新%s", strings.Join(updates, "、")))
+		a.emitOK(logTagResource, "已更新%s", strings.Join(updates, "、"))
 	} else if status.Updated {
 		a.emitDiag("资源同步：已校验补齐本地资源 | csv=%s", shortHash(status.CSVHash))
-		a.emitPatchLog("[资源] 已校验并补齐本地内置词条")
+		a.emitOK(logTagResource, "已校验并补齐本地内置词条")
 	} else if a.updater.LocalOnly {
 		a.emitDiag("资源同步：使用工作区本地资源")
-		a.emitPatchLog("[资源] 已加载本地内置词条")
+		a.emitInfo(logTagResource, "已加载本地内置词条")
 	} else {
 		a.emitDiag("资源同步：已是最新 (csv=%s, 清单=%s)", shortHash(status.CSVHash), status.GeneratedAt)
 		if ts := formatResourceTime(status.GeneratedAt); ts != "" {
-			a.emitPatchLog(fmt.Sprintf("[资源] 内置词条已是最新（%s）", ts))
+			a.emitOK(logTagResource, "内置词条已是最新（%s）", ts)
 		} else {
-			a.emitPatchLog("[资源] 内置词条已是最新")
+			a.emitOK(logTagResource, "内置词条已是最新")
 		}
 	}
 	a.builtinSynced.Store(true)
@@ -926,7 +924,7 @@ func (a *App) EnsureTableDoc() (bool, error) {
 	}
 	if updated {
 		a.emitDiag("已更新表清单 tables.json")
-		a.emitPatchLog("[资源] 已更新表清单")
+		a.emitOK(logTagResource, "已更新表清单")
 	}
 	return updated, nil
 }
@@ -956,7 +954,7 @@ func (a *App) SyncBuiltinResource() error {
 		ctx = context.Background()
 	}
 	if err := a.ensureBuiltinResource(ctx, a.resourceDir()); err != nil {
-		a.emitPatchLog(fmt.Sprintf("[错误] %v", err))
+		a.emitError(logTagResource, "%v", err)
 		return err
 	}
 	return nil
@@ -975,7 +973,7 @@ func (a *App) GetRules() []pipeline.RuleMeta {
 func (a *App) getRules(resourceDir string) []pipeline.RuleMeta {
 	ruleList, ruleErr := loadRules(resourceDir)
 	if ruleErr != nil {
-		a.emitPatchLog(fmt.Sprintf("[警告] %v", ruleErr))
+		a.emitWarn(logTagResource, "%v", ruleErr)
 	}
 	ruleMetas := make([]pipeline.RuleMeta, 0, len(ruleList))
 	for _, rule := range ruleList {
@@ -1000,7 +998,7 @@ func (a *App) GetBootstrap() (BootstrapInfo, error) {
 		resTime = formatResourceTime(mf.GeneratedAt)
 		resHash = shortHash(mf.RawEXD.SHA256)
 	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
-		a.emitPatchLog(fmt.Sprintf("[警告] 读取本地 manifest.json 失败: %v", err))
+		a.emitWarn(logTagResource, "读取本地 manifest.json 失败：%v", err)
 	}
 
 	return BootstrapInfo{
@@ -1037,10 +1035,10 @@ func (a *App) loadTablesDoc(resourceDir string) TablesDoc {
 	tablesPath := filepath.Join(resourceDir, "tables.json")
 	if data, err := os.ReadFile(tablesPath); err == nil {
 		if err := json.Unmarshal(data, &tables); err != nil {
-			a.emitPatchLog(fmt.Sprintf("[警告] 解析本地 tables.json 失败: %v", err))
+			a.emitWarn(logTagResource, "解析本地 tables.json 失败：%v", err)
 		}
 	} else if !errors.Is(err, os.ErrNotExist) {
-		a.emitPatchLog(fmt.Sprintf("[警告] 读取本地 tables.json (%s) 失败: %v", tablesPath, err))
+		a.emitWarn(logTagResource, "读取本地 tables.json（%s）失败：%v", tablesPath, err)
 	}
 	if tables.Folders == nil {
 		tables.Folders = map[string]string{}
@@ -1178,7 +1176,9 @@ func (a *App) DetectGamePaths(language string) []string {
 			targetReg = region.Of(parsed)
 		}
 	}
-	return a.detectRegionPaths(ctx, targetReg)
+	paths := a.detectRegionPaths(ctx, targetReg)
+	a.emitDiag("探测游戏目录：区服=%s | 命中=%d", language, len(paths))
+	return paths
 }
 
 func detectLauncherGamePaths() []string {
@@ -1378,7 +1378,11 @@ func (a *App) SelectGameDirectory(language string) (string, error) {
 	if win := a.activeDialogWindow(); win != nil {
 		dlg.AttachToWindow(win)
 	}
-	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+	dir, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
+	if err == nil && dir != "" {
+		a.emitDiag("手动选择游戏目录：区服=%s | 目录=%s", language, dir)
+	}
+	return dir, err
 }
 
 // GetGameInfo 返回游戏目录、版本与文件状态。
@@ -1604,6 +1608,8 @@ func (a *App) CheckClientStatus(gameDir, language string) (ClientStatusResult, e
 		summary = ClientPartStatus{Status: "unknown", Label: "文件缺失", Description: "客户端索引文件缺失"}
 	}
 
+	a.emitDiag("校验客户端状态：区服=%s | 状态=%s（文本=%s，字体=%s）",
+		language, summary.Status, textPart.Status, fontPart.Status)
 	return ClientStatusResult{
 		Status:      summary.Status,
 		Label:       summary.Label,
@@ -1708,7 +1714,7 @@ func (a *App) checkGameNotRunning(ctx context.Context, gameDir string) error {
 			return a.waitLauncherConfirm(ctx, launcherNames)
 		},
 		OnLaunchersKilled: func(killed []string) {
-			a.emitPatchLog(fmt.Sprintf("[提示] 已强制结束游戏启动器进程（%s）", strings.Join(killed, "、")))
+			a.emitWarn(logTagSystem, "已强制结束游戏启动器进程（%s）", strings.Join(killed, "、"))
 		},
 	})
 }
@@ -1837,6 +1843,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 		return nil
 	}
 	if verifyExecutable(legacyPath) == nil {
+		a.emitDiag("字体编译组件：从旧路径迁移至独立目录")
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			return fmt.Errorf("创建字体组件目录失败: %w", err)
 		}
@@ -1853,6 +1860,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 		a.fontEngine.SetBinPath(path)
 		return nil
 	}
+	a.emitDiag("字体编译组件：本地未就绪，开始按节点下载")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("创建字体组件目录失败: %w", err)
 	}
@@ -1867,7 +1875,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 		}
 	}()
 
-	a.emitPatchLog("[字体] 正在下载字体编译组件...")
+	a.emitInfo(logTagFont, "正在下载字体编译组件…")
 	progressCb := func(done, total int64) {
 		a.emitFontCompilerProgress("downloading", "准备组件中", done, total)
 	}
@@ -1876,7 +1884,7 @@ func (a *App) ensureFontCompiler(ctx context.Context, resourceDir string) error 
 	}
 	ready = true
 	a.fontEngine.SetBinPath(path)
-	a.emitPatchLog("[字体] 字体编译组件已就绪")
+	a.emitOK(logTagFont, "字体编译组件已就绪")
 	return nil
 }
 
@@ -2066,7 +2074,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 
 	if err := a.checkGameNotRunning(patchCtx, req.GameDir); err != nil {
 		if errors.Is(err, gameproc.ErrCancelled) {
-			a.emitPatchLog("[提示] 汉化已取消：游戏启动器正在运行")
+			a.emitWarn(logTagPatch, "已取消汉化：游戏启动器正在运行")
 			resp.Cancelled = true
 			return resp, nil
 		}
@@ -2093,7 +2101,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 	if req.ReplaceFont {
 		if err := a.checkFontSource(patchCtx, resourceDir, req.GameDir); err != nil {
 			if errors.Is(err, context.Canceled) {
-				a.emitPatchLog("[提示] 汉化已取消")
+				a.emitInfo(logTagPatch, "已取消汉化")
 				resp.Cancelled = true
 				return resp, nil
 			}
@@ -2104,7 +2112,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 	// 表清单缺失时先补一份；补不到就无法列出可汉化的表，直接中止。
 	if err := a.ensureTableDoc(patchCtx, resourceDir); err != nil {
 		if errors.Is(err, context.Canceled) {
-			a.emitPatchLog("[提示] 汉化已取消")
+			a.emitInfo(logTagPatch, "已取消汉化")
 			resp.Cancelled = true
 			return resp, nil
 		}
@@ -2117,12 +2125,12 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		a.emitDiag("距上次检查词条已满 30 分钟，刷新内置资源")
 		if err := a.ensureBuiltinResource(patchCtx, resourceDir); err != nil {
 			if errors.Is(err, context.Canceled) {
-				a.emitPatchLog("[提示] 汉化已取消")
+				a.emitInfo(logTagPatch, "已取消汉化")
 				resp.Cancelled = true
 				return resp, nil
 			}
 			// 刷新失败不阻断：本次运行启动时已校验通过，按本地已有资源继续。
-			a.emitPatchLog(fmt.Sprintf("[警告] 检查词条更新失败，使用本地资源继续：%v", err))
+			a.emitWarn(logTagResource, "检查词条更新失败，将使用本地资源继续：%v", err)
 		}
 	}
 	// 内置词条只有同步跑通后才允许汉化；启动时同步失败过就在开始前再试一次。
@@ -2134,7 +2142,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 	if needSync {
 		if err := a.ensureBuiltinResource(patchCtx, resourceDir); err != nil {
 			if errors.Is(err, context.Canceled) {
-				a.emitPatchLog("[提示] 汉化已取消")
+				a.emitInfo(logTagPatch, "已取消汉化")
 				resp.Cancelled = true
 				return resp, nil
 			}
@@ -2157,17 +2165,17 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 	} else if manifest, manifestErr := updater.ReadLocalManifest(resourceDir); manifest != nil {
 		a.emitDiag("内置资源版本：%s（%s）", formatResourceTime(manifest.GeneratedAt), formatResourceHashDetail(manifest))
 	} else if manifestErr != nil && !errors.Is(manifestErr, os.ErrNotExist) {
-		a.emitPatchLog(fmt.Sprintf("[警告] 读取 manifest.json 失败: %v", manifestErr))
+		a.emitWarn(logTagResource, "读取本地 manifest.json 失败：%v", manifestErr)
 	}
 	if customCSV {
-		a.emitPatchLog(fmt.Sprintf("[词条] 使用自定义目录：%s", csvDir))
+		a.emitInfo(logTagCSV, "使用自定义词条目录：%s", csvDir)
 	}
 
 	// 与资源同步互斥，避免读到正在被解压覆盖的 CSV。
 	unlockResource, lockErr := a.lockResource(patchCtx)
 	if lockErr != nil {
 		if errors.Is(lockErr, context.Canceled) {
-			a.emitPatchLog("[提示] 汉化已取消")
+			a.emitInfo(logTagPatch, "已取消汉化")
 			resp.Cancelled = true
 			return resp, nil
 		}
@@ -2179,7 +2187,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 
 	ruleList, ruleErr := loadRules(resourceDir)
 	if ruleErr != nil {
-		a.emitPatchLog(fmt.Sprintf("[警告] %v", ruleErr))
+		a.emitWarn(logTagResource, "%v", ruleErr)
 	}
 	registry := pipeline.NewRegistry(ruleList)
 	if customCSV {
@@ -2230,17 +2238,17 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		if len(enabledRuleNames) > 0 {
 			ruleNote = fmt.Sprintf("，规则：%s", strings.Join(enabledRuleNames, "、"))
 		}
-		a.emitPatchLog(fmt.Sprintf("[配置] 区服：%s，目标语言：%s，数据表：%d 张%s",
-			region.DisplayName(targetReg), strings.Join(targetLangs, "/"), len(req.SelectedTables), ruleNote))
+		a.emitInfo(logTagPatch, "区服：%s，目标语言：%s，数据表：%d 张%s",
+			region.DisplayName(targetReg), strings.Join(targetLangs, "/"), len(req.SelectedTables), ruleNote)
 	case req.ReplaceText:
 		ruleNote := ""
 		if len(enabledRuleNames) > 0 {
 			ruleNote = fmt.Sprintf("，规则：%s", strings.Join(enabledRuleNames, "、"))
 		}
-		a.emitPatchLog(fmt.Sprintf("[配置] 区服：%s，仅文本，目标语言：%s，数据表：%d 张%s",
-			region.DisplayName(targetReg), strings.Join(targetLangs, "/"), len(req.SelectedTables), ruleNote))
+		a.emitInfo(logTagPatch, "区服：%s，仅替换文本（目标语言：%s，数据表：%d 张%s）",
+			region.DisplayName(targetReg), strings.Join(targetLangs, "/"), len(req.SelectedTables), ruleNote)
 	default:
-		a.emitPatchLog(fmt.Sprintf("[配置] 区服：%s，仅替换字体", region.DisplayName(targetReg)))
+		a.emitInfo(logTagPatch, "区服：%s，仅替换字体", region.DisplayName(targetReg))
 	}
 
 	include := map[string]bool{}
@@ -2250,6 +2258,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		}
 	}
 
+	lastStage := ""
 	cfg := verifier.Config{
 		GameDir:        req.GameDir,
 		BackupRoot:     backupRoot,
@@ -2259,10 +2268,14 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		Cloud:          a.getCloud(),
 		ConfirmUnknown: a.waitUnknownConfirm,
 		OnEvent: func(ev verifier.Event) {
+			if ev.Stage != "" && ev.Stage != lastStage {
+				lastStage = ev.Stage
+				a.emitDiag("汉化阶段：%s（%s）", ev.Stage, ev.Detail)
+			}
 			a.emitProgress(ev.Stage, ev.Detail, ev.Done, ev.Total)
 		},
 		Log: func(format string, args ...any) {
-			a.emitPatchLog(fmt.Sprintf(format, args...))
+			a.emitLegacyLog(logTagVerify, format, args...)
 		},
 	}
 	// undos 记录本次已开始写入的文件组，失败或中止时按相反顺序撤回。
@@ -2275,7 +2288,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		}
 		textIndexPath := filepath.Join(sqpackDir, "0a0000.win32.index")
 		a.emitDiag("文本写入：索引=%s｜包含表=%d", textIndexPath, len(include))
-		a.emitPatchLog(fmt.Sprintf("[文本] 正在写入 %d 张数据表（%s）...", len(include), strings.Join(targetLangs, "/")))
+		a.emitInfo(logTagPatch, "正在写入 %d 张数据表（%s）…", len(include), strings.Join(targetLangs, "/"))
 		undo, undoErr := replace.NewUndo(textIndexPath)
 		if undoErr != nil {
 			return undoErr
@@ -2295,7 +2308,10 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 			Undo:            undo,
 		})
 		if err == nil {
-			a.emitPatchLog(fmt.Sprintf("[文本] 替换 %d 条（%d 表 / %d 文件）", stats.Entries, stats.Tables, stats.Files))
+			a.emitDiag("文本写入完成：替换=%d条 | 表=%d | 文件=%d", stats.Entries, stats.Tables, stats.Files)
+			a.emitOK(logTagPatch, "已替换 %d 条文本（%d 张表，%d 个文件）", stats.Entries, stats.Tables, stats.Files)
+		} else {
+			a.emitDiag("文本写入失败：%v", err)
 		}
 		resp.Text = stats
 		return err
@@ -2326,7 +2342,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 			if dir, ok := localFontPackage(resourceDir); ok {
 				fontDir = dir
 			} else {
-				a.emitPatchLog("[字体] 正在下载内置字体包...")
+				a.emitInfo(logTagFont, "正在下载内置字体包…")
 				if err := a.updater.EnsureFontPack(ctx, resourceDir, a.emitResourceProgress); err != nil {
 					return fmt.Errorf("获取字体包失败：%w", err)
 				}
@@ -2346,7 +2362,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		if a.fontSourceMode(resourceDir) == "compile" {
 			fontSourceLabel = "自定义编译字体"
 		}
-		a.emitPatchLog(fmt.Sprintf("[字体] 使用%s（方案：%s，%d 张贴图，%dpx）", fontSourceLabel, presetID, fontCount, fontSide))
+		a.emitInfo(logTagFont, "使用%s（方案：%s，%d 张贴图，%dpx）", fontSourceLabel, presetID, fontCount, fontSide)
 
 		// 4096 的字体贴图需要游戏开启「高分辨率 UI 贴图」（FFXIV-FontChanger 的
 		// Wiki 也是这么要求的），否则大厅/界面会闪退。1024 的原版规格不需要。
@@ -2354,12 +2370,12 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 			cfgRes, cfgErr := gamecfg.EnsureHighResolutionUiAsset("")
 			if cfgErr != nil {
 				if errors.Is(cfgErr, gamecfg.ErrConfigNotFound) {
-					a.emitPatchLog(fmt.Sprintf("[提示] 字体贴图为 %dpx，请在游戏设置中开启高分辨率界面贴图", side))
+					a.emitWarn(logTagConfig, "当前字体贴图为 %dpx，请在游戏设置中开启「高分辨率界面贴图」", side)
 				} else {
-					a.emitPatchLog(fmt.Sprintf("[警告] 修改游戏高分辨率设置失败: %v", cfgErr))
+					a.emitWarn(logTagConfig, "开启游戏高分辨率界面贴图失败：%v", cfgErr)
 				}
 			} else if cfgRes.Modified {
-				a.emitPatchLog("[配置] 已自动开启游戏高分辨率界面贴图")
+				a.emitInfo(logTagConfig, "已自动开启游戏高分辨率界面贴图")
 			} else {
 				a.emitDiag("字体贴图 %dpx，游戏已开启高分辨率", side)
 			}
@@ -2385,7 +2401,10 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 			undo,
 		)
 		if err == nil {
-			a.emitPatchLog(fmt.Sprintf("[字体] 已替换 %d 个字体文件", stats.Files))
+			a.emitDiag("字体写入完成：替换=%d文件", stats.Files)
+			a.emitOK(logTagFont, "已替换 %d 个字体文件", stats.Files)
+		} else {
+			a.emitDiag("字体写入失败：%v", err)
 		}
 		resp.Font = stats
 		return err
@@ -2401,20 +2420,21 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 			// 不再用原版备份把 6 个文件整体覆盖——那会连带回滚本次没碰的文件组，
 			// 而且未知版本根本没有可用的原版备份。
 			if cancelled {
-				a.emitPatchLog("[提示] 已取消，正在撤回本次写入...")
+				a.emitWarn(logTagPatch, "已取消汉化，正在撤回本次写入…")
 			} else {
-				a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v，正在撤回本次写入...", err))
+				a.emitError(logTagPatch, "汉化失败：%v，正在撤回本次写入…", err)
 			}
 			changed, rbErr := revertWrites(undos)
+			a.emitDiag("汉化撤回：已撤回=%d文件 | 错误=%v", changed, rbErr)
 			switch {
 			case rbErr != nil:
-				a.emitPatchLog(fmt.Sprintf("[警告] 撤回失败: %v，请点击「还原」恢复", rbErr))
+				a.emitWarn(logTagPatch, "撤回失败（%v），请点击「还原原版」恢复", rbErr)
 			case changed > 0:
-				a.emitPatchLog("[回滚] 已撤回本次写入")
+				a.emitInfo(logTagPatch, "已撤回本次写入")
 			case restoredOriginals:
-				a.emitPatchLog("[提示] 已还原为原版，本次未写入")
+				a.emitInfo(logTagPatch, "已还原为原版，本次未写入")
 			default:
-				a.emitPatchLog("[提示] 未修改客户端文件")
+				a.emitInfo(logTagPatch, "未修改客户端文件")
 			}
 			resp.Cancelled = cancelled
 			if cancelled {
@@ -2426,13 +2446,13 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		// 写入前就失败了：不做任何还原，只按实际发生的事写日志。
 		switch {
 		case cancelled && restoredOriginals:
-			a.emitPatchLog("[提示] 已取消（客户端已还原为原版）")
+			a.emitInfo(logTagPatch, "已取消汉化（客户端已还原为原版）")
 		case cancelled:
-			a.emitPatchLog("[提示] 已取消，未修改文件")
+			a.emitInfo(logTagPatch, "已取消汉化，未修改文件")
 		case restoredOriginals:
-			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v（客户端已还原为原版）", err))
+			a.emitError(logTagPatch, "汉化失败：%v（客户端已还原为原版）", err)
 		default:
-			a.emitPatchLog(fmt.Sprintf("[错误] 汉化失败：%v", err))
+			a.emitError(logTagPatch, "汉化失败：%v", err)
 		}
 		resp.Cancelled = cancelled
 		if cancelled {
@@ -2441,7 +2461,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		return resp, err
 	}
 	if !result.Cancelled {
-		a.emitPatchLog(fmt.Sprintf("[完成] 汉化完成（耗时 %s）", time.Since(started).Round(100*time.Millisecond)))
+		a.emitOK(logTagPatch, "汉化完成（耗时 %s）", formatElapsed(time.Since(started)))
 	}
 	resp.Plan = result.Plan
 	resp.Cancelled = result.Cancelled
@@ -2471,7 +2491,7 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 		cfgSaved.Rules[id] = on
 	}
 	if err := a.SaveConfig(cfgSaved); err != nil {
-		a.emitPatchLog(fmt.Sprintf("[警告] 保存本地配置失败: %v", err))
+		a.emitWarn(logTagConfig, "保存本地配置失败：%v", err)
 	}
 
 	return resp, nil
@@ -2534,7 +2554,7 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 
 	if err := a.checkGameNotRunning(patchCtx, gameDir); err != nil {
 		if errors.Is(err, gameproc.ErrCancelled) {
-			a.emitPatchLog("[提示] 还原已取消：游戏启动器正在运行")
+			a.emitWarn(logTagVerify, "已取消还原：游戏启动器正在运行")
 			resp.Cancelled = true
 			return resp, nil
 		}
@@ -2561,8 +2581,9 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 			scope = "仅字体"
 		}
 	}
-	a.emitPatchLog(fmt.Sprintf("[还原] 正在还原（%s）...", scope))
+	a.emitInfo(logTagVerify, "正在还原原版（%s）…", scope)
 	resourceDir := a.resourceDir()
+	lastStage := ""
 	restored, err := verifier.Restore(patchCtx, verifier.RestoreConfig{
 		GameDir:    gameDir,
 		BackupRoot: backupRootFor(resourceDir),
@@ -2572,26 +2593,30 @@ func (a *App) RestoreOriginal(gameDir, language string, restoreText, restoreFont
 		Repo:       "Souma-Sumire/FFXIVChnTextPatch-Souma",
 		Cloud:      a.getCloud(),
 		OnProgress: func(stage, detail string, done, total int64) {
+			if stage != "" && stage != lastStage {
+				lastStage = stage
+				a.emitDiag("还原阶段：%s（%s）", stage, detail)
+			}
 			a.emitProgress(stage, detail, done, total)
 		},
 		Log: func(format string, args ...any) {
-			a.emitPatchLog(fmt.Sprintf(format, args...))
+			a.emitLegacyLog(logTagVerify, format, args...)
 		},
 	})
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
-			a.emitPatchLog("[提示] 还原已取消")
+			a.emitInfo(logTagVerify, "已取消还原")
 			resp.Cancelled = true
 			return resp, nil
 		}
-		a.emitPatchLog(fmt.Sprintf("[错误] 还原失败：%v", err))
+		a.emitError(logTagVerify, "还原失败：%v", err)
 		return resp, err
 	}
 	resp.Restored = restored
 	if len(restored) == 0 {
-		a.emitPatchLog("[完成] 已是原版，无需还原")
+		a.emitOK(logTagVerify, "客户端已是原版，无需还原")
 	} else {
-		a.emitPatchLog(fmt.Sprintf("[完成] 已还原 %d 个原版文件（耗时 %s）", len(restored), time.Since(started).Round(100*time.Millisecond)))
+		a.emitOK(logTagVerify, "已还原 %d 个原版文件（耗时 %s）", len(restored), formatElapsed(time.Since(started)))
 	}
 	return resp, nil
 }
@@ -2608,6 +2633,7 @@ func (a *App) SyncResources() (SyncSummary, error) {
 	defer a.endBusy()
 
 	resourceDir := a.resourceDir()
+	a.emitDiag("=== 开始手动同步资源 ===")
 	unlock, lockErr := a.lockResource(a.ctx)
 	if lockErr != nil {
 		return summary, lockErr
@@ -2622,8 +2648,10 @@ func (a *App) SyncResources() (SyncSummary, error) {
 		})
 	})
 	if err != nil {
+		a.emitDiag("手动同步资源失败：%v", err)
 		return summary, err
 	}
+	a.emitDiag("手动同步资源完成：更新=%t | 下载文件=%d | csv=%s", status.Updated, status.DownloadedFiles, shortHash(status.CSVHash))
 	// 手动同步成功同样标记「已同步」，否则下次汉化前还会再联网确认一次。
 	a.resourceSyncedAt.Store(time.Now().UnixNano())
 	a.builtinSynced.Store(true)
@@ -2664,10 +2692,13 @@ func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	a.emitDiag("检查应用更新：当前版本=%s", current)
 	info, err := updater.CheckAppUpdate(ctx, a.getCloud(), appUpdateRepo, appVersion)
 	if err != nil {
+		a.emitDiag("检查应用更新失败：%v", err)
 		return updater.AppUpdateInfo{CurrentVersion: current, LatestVersion: current}, err
 	}
+	a.emitDiag("检查应用更新完成：最新=%s | 有更新=%t", info.LatestVersion, info.HasUpdate)
 	return *info, nil
 }
 
@@ -2701,6 +2732,7 @@ func (a *App) InstallAppUpdate() error {
 		return errors.New("当前已是最新版本")
 	}
 
+	a.emitDiag("=== 开始应用更新 === 当前=%s | 目标=v%s", appVersion, info.LatestVersion)
 	a.emitAppUpdateProgress("download", fmt.Sprintf("正在下载 v%s", info.LatestVersion), 0, 0)
 
 	downloadCtx, cancelDownload := context.WithTimeout(context.Background(), 30*time.Minute)
@@ -2714,22 +2746,28 @@ func (a *App) InstallAppUpdate() error {
 	}, func(label string) {
 		if node == "" {
 			node = label
+			a.emitDiag("应用更新：使用下载线路 %s", label)
 			return
 		}
-		a.emitPatchLog(fmt.Sprintf("[更新] 下载线路 %s 不可用，已切换", node))
+		a.emitDiag("应用更新：下载线路 %s 不可用，切换至 %s", node, label)
+		a.emitWarn(logTagUpdate, "下载线路 %s 不可用，已切换备用线路", node)
 		node = label
 	})
 	if err != nil {
+		a.emitDiag("应用更新下载失败：%v", err)
 		return fmt.Errorf("下载新版本失败: %w", err)
 	}
 
+	a.emitDiag("应用更新：安装包已就绪，开始替换可执行文件")
 	a.emitAppUpdateProgress("install", "正在安装更新", 0, 0)
 	if _, err := updater.SwapExecutable(tmpPath, exe); err != nil {
 		_ = os.Remove(tmpPath)
+		a.emitDiag("应用更新替换失败：%v", err)
 		return err
 	}
 
-	a.emitPatchLog(fmt.Sprintf("[更新] 新版本 v%s 已安装", info.LatestVersion))
+	a.emitDiag("应用更新：替换完成，等待重启生效")
+	a.emitOK(logTagUpdate, "新版本 v%s 已安装，重启后生效", info.LatestVersion)
 	a.emitAppUpdateProgress("done", "更新已安装，重启后生效", 0, 0)
 	return nil
 }
@@ -3127,7 +3165,11 @@ func (a *App) openDirectoryDialog(title string, defaultDir string) (string, erro
 	if win := a.activeDialogWindow(); win != nil {
 		dlg.AttachToWindow(win)
 	}
-	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+	dir, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
+	if err == nil && dir != "" {
+		a.emitDiag("选择目录（%s）：%s", title, dir)
+	}
+	return dir, err
 }
 
 func (a *App) openFileDialog(title string, filters []application.FileFilter) (string, error) {
@@ -3144,7 +3186,11 @@ func (a *App) openFileDialog(title string, filters []application.FileFilter) (st
 	if win := a.activeDialogWindow(); win != nil {
 		dlg.AttachToWindow(win)
 	}
-	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+	file, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
+	if err == nil && file != "" {
+		a.emitDiag("选择文件（%s）：%s", title, file)
+	}
+	return file, err
 }
 
 func (a *App) saveFileDialog(title string, defaultName string, filters []application.FileFilter) (string, error) {
@@ -3159,7 +3205,11 @@ func (a *App) saveFileDialog(title string, defaultName string, filters []applica
 		Window:               a.activeDialogWindow(),
 		CanCreateDirectories: true,
 	})
-	return normalizeDialogSelection(dlg.PromptForSingleSelection())
+	file, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
+	if err == nil && file != "" {
+		a.emitDiag("保存文件（%s）：%s", title, file)
+	}
+	return file, err
 }
 
 // SelectRawExportDir 弹出原生目录选择框供用户指定原始文件导出目录

@@ -411,7 +411,7 @@ func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, 
 			return nil, fmt.Errorf("云端缺少文件 %s", name)
 		}
 		backupPath := filepath.Join(backupDir, name)
-		cfg.event("download", "正在下载 "+name, 0, 0)
+		cfg.event("download", name, 0, 0)
 		cfg.log(DiagPrefix+"下载原版 %s", name)
 
 		err := cfg.Cloud.Download(ctx, asset.DownloadURL, backupPath, func(done, total int64) {

@@ -82,7 +82,7 @@ func diagLine(format string, args ...any) string {
 }
 
 func (a *App) emitDiag(format string, args ...any) {
-	a.emitPatchLog(diagLine(format, args...))
+	a.emitLog(logLevelDiag, "", format, args...)
 }
 
 // GetDiagnostics 返回一次会话的完整本地诊断信息，供前端写入日志。

@@ -309,10 +309,13 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 	var lastErr error
 	for _, node := range u.nodes() {
 		url := strings.TrimRight(node, "/") + "/" + zipName
+		nodeName := shortNodeName(node)
+		u.diag("下载 %s：尝试节点 %s（模式=%s）", zipName, nodeName, u.modeLabel(url, false))
 		tmp := filepath.Join(resourceDir, zipName+".part")
 		if err := u.fetchToFile(ctx, u.httpClient(), url, tmp, func(done, total int64) {
 			zp.report(zp.dl, done, total)
 		}); err != nil {
+			u.diag("下载 %s：节点 %s 失败（%v）", zipName, nodeName, err)
 			lastErr = err
 			continue
 		}
@@ -326,6 +329,7 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 		if got.SHA256 != want.SHA256 || (want.Size > 0 && got.Size != want.Size) {
 			lastErr = fmt.Errorf("%s 校验失败（节点 %s，期望 SHA256=%s 大小=%d，实际 SHA256=%s 大小=%d）",
 				zipName, node, shortHash(want.SHA256), want.Size, shortHash(got.SHA256), got.Size)
+			u.diag("下载 %s：节点 %s 校验失败", zipName, nodeName)
 			_ = os.Remove(tmp)
 			continue
 		}
@@ -344,6 +348,7 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 		if err := ExtractZipWithProgress(zipPath, resourceDir, func(done, total int64) {
 			zp.report(zp.extract, done, total)
 		}); err != nil {
+			u.diag("下载 %s：节点 %s 解压失败（%v）", zipName, nodeName, err)
 			lastErr = fmt.Errorf("解压 %s 失败: %w", zipName, err)
 			_ = os.Remove(tmp)
 			continue
@@ -351,6 +356,7 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 		if !keep {
 			_ = os.Remove(tmp)
 		}
+		u.diag("下载 %s：已从 %s 完成", zipName, nodeName)
 		return nil
 	}
 	if lastErr == nil {
@@ -363,8 +369,11 @@ func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want Fi
 	var lastErr error
 	for _, node := range u.nodes() {
 		url := strings.TrimRight(node, "/") + "/" + strings.TrimLeft(key, "/")
+		nodeName := shortNodeName(node)
+		u.diag("下载 %s：尝试节点 %s（模式=%s）", key, nodeName, u.modeLabel(url, false))
 		tmp := dst + ".part"
 		if err := u.fetchToFile(ctx, u.httpClient(), url, tmp, progress); err != nil {
+			u.diag("下载 %s：节点 %s 失败（%v）", key, nodeName, err)
 			lastErr = err
 			continue
 		}
@@ -377,6 +386,7 @@ func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want Fi
 		if got.SHA256 != want.SHA256 || (want.Size > 0 && got.Size != want.Size) {
 			lastErr = fmt.Errorf("%s 校验失败（节点 %s，期望 SHA256=%s 大小=%d，实际 SHA256=%s 大小=%d）",
 				key, node, shortHash(want.SHA256), want.Size, shortHash(got.SHA256), got.Size)
+			u.diag("下载 %s：节点 %s 校验失败", key, nodeName)
 			_ = os.Remove(tmp)
 			continue
 		}

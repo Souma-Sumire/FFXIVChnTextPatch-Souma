@@ -89,7 +89,7 @@ func (u *Updater) DownloadFromURLs(ctx context.Context, subject string, urls []s
 	if len(urls) == 0 {
 		return errors.New("没有可用的下载节点")
 	}
-	failures, ok, err := u.tryDownloadFromURLs(ctx, u.httpClient(), false, urls, dst, verify, progress)
+	failures, ok, err := u.tryDownloadFromURLs(ctx, subject, u.httpClient(), false, urls, dst, verify, progress)
 	if ok {
 		return nil
 	}
@@ -97,7 +97,8 @@ func (u *Updater) DownloadFromURLs(ctx context.Context, subject string, urls []s
 		return err
 	}
 	if u.usesProxyForAny(urls) {
-		directFailures, directOK, directErr := u.tryDownloadFromURLs(ctx, u.DirectHTTP, true, urls, dst, verify, progress)
+		u.diag("下载%s：经代理全部 %d 个节点均失败，触发无代理直连兜底", subject, len(urls))
+		directFailures, directOK, directErr := u.tryDownloadFromURLs(ctx, subject, u.DirectHTTP, true, urls, dst, verify, progress)
 		if directOK {
 			return nil
 		}
@@ -109,21 +110,26 @@ func (u *Updater) DownloadFromURLs(ctx context.Context, subject string, urls []s
 	return DescribeNodeFailures(subject, failures)
 }
 
-func (u *Updater) tryDownloadFromURLs(ctx context.Context, client *http.Client, direct bool, urls []string, dst string, verify func(path string) error, progress func(done, total int64)) ([]NodeFailure, bool, error) {
+func (u *Updater) tryDownloadFromURLs(ctx context.Context, subject string, client *http.Client, direct bool, urls []string, dst string, verify func(path string) error, progress func(done, total int64)) ([]NodeFailure, bool, error) {
 	failures := make([]NodeFailure, 0, len(urls))
 	for _, rawURL := range urls {
 		if ctx.Err() != nil {
 			return failures, false, ctx.Err()
 		}
+		nodeName := shortNodeName(rawURL)
+		mode := u.modeLabel(rawURL, direct)
+		u.diag("下载%s：尝试节点 %s（模式=%s）", subject, nodeName, mode)
 		tmp := dst + ".part"
 		_ = os.Remove(tmp)
 		if err := u.fetchToFile(ctx, client, rawURL, tmp, progress); err != nil {
+			u.diag("下载%s：节点 %s 失败（%v）", subject, nodeName, err)
 			failures = append(failures, NodeFailure{Node: rawURL, Err: err, Direct: direct})
 			_ = os.Remove(tmp)
 			continue
 		}
 		if verify != nil {
 			if err := verify(tmp); err != nil {
+				u.diag("下载%s：节点 %s 校验失败（%v）", subject, nodeName, err)
 				failures = append(failures, NodeFailure{Node: rawURL, Err: err, Direct: direct})
 				_ = os.Remove(tmp)
 				continue
@@ -134,10 +140,12 @@ func (u *Updater) tryDownloadFromURLs(ctx context.Context, client *http.Client, 
 			return failures, false, err
 		}
 		if err := os.Rename(tmp, dst); err != nil {
+			u.diag("下载%s：节点 %s 落盘失败（%v）", subject, nodeName, err)
 			failures = append(failures, NodeFailure{Node: rawURL, Err: err, Direct: direct})
 			_ = os.Remove(tmp)
 			continue
 		}
+		u.diag("下载%s：已从 %s 完成（模式=%s）", subject, nodeName, mode)
 		return failures, true, nil
 	}
 	return failures, false, nil
@@ -151,6 +159,7 @@ type Updater struct {
 	// LocalOnly 为 true 时只校验本地资源，不向云端发任何请求。
 	// 本地开发构建用它保住工作区里的 resource/；发布构建恒为 false。
 	LocalOnly     bool
+	DiagLog       func(format string, args ...any)
 	preferredNode string
 	mu            sync.RWMutex
 
@@ -158,6 +167,22 @@ type Updater struct {
 	manifestMu     sync.Mutex
 	manifestCache  *Manifest
 	manifestCached time.Time
+}
+
+func (u *Updater) diag(format string, args ...any) {
+	if u.DiagLog != nil {
+		u.DiagLog(format, args...)
+	}
+}
+
+func (u *Updater) modeLabel(rawURL string, direct bool) string {
+	if direct {
+		return "直连兜底"
+	}
+	if u.usesProxyForAny([]string{rawURL}) {
+		return "代理"
+	}
+	return "直连"
 }
 
 // manifestCacheTTL 是清单缓存的有效期：只用于合并同一次启动内的重复请求，
@@ -277,6 +302,7 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 		return nil, errors.New("没有可用的下载节点")
 	}
 
+	u.diag("并发请求资源清单（节点数=%d）", len(nodes))
 	m, failures, err := u.fetchManifestWithClient(ctx, u.httpClient(), false, nodes)
 	if m != nil {
 		return m, nil
@@ -290,6 +316,7 @@ func (u *Updater) FetchManifest(ctx context.Context) (*Manifest, error) {
 		manifestURLs = append(manifestURLs, strings.TrimRight(n, "/")+"/manifest.json")
 	}
 	if u.usesProxyForAny(manifestURLs) {
+		u.diag("资源清单：经代理全部 %d 个节点均失败，触发无代理直连兜底", len(nodes))
 		dm, directFailures, directErr := u.fetchManifestWithClient(ctx, u.DirectHTTP, true, nodes)
 		if dm != nil {
 			return dm, nil
@@ -358,6 +385,8 @@ func (u *Updater) fetchManifestWithClient(ctx context.Context, client *http.Clie
 				cancel()
 				u.SetPreferredNode(res.node)
 				u.cacheManifest(res.manifest)
+				mode := u.modeLabel(res.node, direct)
+				u.diag("资源清单：已从 %s 获取（模式=%s）", shortNodeName(res.node), mode)
 				return res.manifest, nil, nil
 			}
 			failures = append(failures, NodeFailure{Node: res.node, Err: res.err, Direct: direct})

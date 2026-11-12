@@ -1772,8 +1772,8 @@ body.is-resizing-log * {
 .log-line {
   display: flex;
   align-items: baseline;
-  gap: var(--sp-3);
-  padding: 1px 0;
+  gap: var(--sp-2);
+  padding: 2px 0;
   white-space: pre-wrap;
   word-break: break-all;
   font-family: var(--font-mono, monospace);
@@ -1787,6 +1787,40 @@ body.is-resizing-log * {
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
   user-select: none;
+  margin-right: 2px;
+}
+
+.log-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 34px;
+  padding: 0 5px;
+  height: 17px;
+  border-radius: 3px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-3);
+  background-color: var(--surface-sheen);
+  user-select: none;
+}
+
+.log-tag[data-level="ok"] {
+  color: var(--ok);
+  background-color: var(--ok-soft);
+}
+
+.log-tag[data-level="warn"] {
+  color: var(--warn);
+  background-color: var(--warn-soft);
+}
+
+.log-tag[data-level="error"] {
+  color: var(--err);
+  background-color: var(--err-soft);
 }
 
 .log-text {
@@ -1853,8 +1887,9 @@ body.is-resizing-log * {
 
 .action-status-row {
   width: 100%;
+  min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
@@ -1871,8 +1906,13 @@ body.is-resizing-log * {
   text-align: center;
 }
 
+.action-status-row:has(.action-progress-percent:not(.hidden)) .action-status-text {
+  text-align: left;
+}
+
 .action-progress-percent {
   flex-shrink: 0;
+  white-space: nowrap;
   font-family: var(--font-mono, monospace);
   font-size: var(--fs-meta);
   font-weight: 500;
