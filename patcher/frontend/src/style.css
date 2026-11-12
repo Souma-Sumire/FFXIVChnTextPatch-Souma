@@ -3207,72 +3207,12 @@ body.row-resizing * {
   height: 100%;
 }
 
-.subwindow-mode .elem-modal-head-top {
-  cursor: default !important;
-}
-
 .elem-modal-header {
   display: flex;
   flex-direction: column;
   background-color: var(--bg);
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
-}
-
-.elem-modal-head-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px 6px 16px;
-  cursor: grab;
-  user-select: none;
-}
-
-.elem-modal-head-top:active {
-  cursor: grabbing;
-}
-
-.elem-modal-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.elem-modal-title {
-  font-size: var(--fs-title);
-  font-weight: 500;
-  line-height: 1.35;
-  text-wrap: balance;
-  color: var(--text);
-}
-
-.elem-modal-badge {
-  font-size: var(--fs-meta);
-  font-family: var(--font-mono);
-  color: var(--text-3);
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--line);
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-}
-
-.elem-modal-close-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--text-3);
-  cursor: pointer;
-  transition: color 0.12s var(--ease), background-color 0.12s var(--ease);
-}
-
-.elem-modal-close-btn:hover {
-  color: var(--text);
-  background-color: var(--bg-hover);
 }
 
 /* 顶部一体化下划线导航 */
@@ -3823,20 +3763,19 @@ body.row-resizing * {
   align-items: center;
   gap: 7px;
   height: 26px;
-  padding: 0 10px 0 6px;
-  background-color: var(--bg-sunken);
-  border: 1px solid var(--line);
+  padding: 0 8px 0 4px;
+  background-color: transparent;
+  border: none;
   border-radius: var(--radius-sm);
   color: var(--text-2);
   cursor: pointer;
-  transition: background-color 0.12s var(--ease), border-color 0.12s var(--ease), color 0.12s var(--ease);
+  transition: background-color 0.12s var(--ease), color 0.12s var(--ease);
   user-select: none;
 }
 
 .elem-lever-btn:hover {
   background-color: var(--bg-hover);
   color: var(--text);
-  border-color: var(--line-strong);
 }
 
 .lever-track {
@@ -3872,7 +3811,6 @@ body.row-resizing * {
 .elem-lever-btn:active,
 .elem-lever-btn.active {
   background-color: var(--bg-control);
-  border-color: var(--accent-line);
   color: var(--text);
 }
 

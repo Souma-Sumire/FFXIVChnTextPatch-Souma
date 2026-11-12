@@ -616,8 +616,6 @@ const el = {
 
   // 字体元素编辑器模态框节点 (IDD_FONTELEMENTEDITOR)
   fontElementModal: byId("font-element-modal"),
-  elemModalSubtitle: byId("elem-modal-subtitle"),
-  btnElemModalClose: byId<HTMLButtonElement>("btn-elem-modal-close"),
   elemTabFont: byId("elem-tab-font"),
   elemTabChars: byId("elem-tab-chars"),
   elemTabTypo: byId("elem-tab-typo"),
@@ -1626,7 +1624,6 @@ async function bootstrapElementEditorSubWindow(): Promise<void> {
       activeFaceName = payload.faceName;
       activeElementIndex = 0;
       document.title = `字体图层属性 - ${payload.faceName} · 图层 #${payload.elementIndex + 1}`;
-      el.elemModalSubtitle.textContent = `${payload.faceName} · 图层 #${payload.elementIndex + 1}`;
       renderPropsPanel();
       if (resetTab) {
         switchElementModalTab("font");
@@ -7110,14 +7107,6 @@ function wireElementEditorEvents(): void {
   });
 
   el.btnElemModalCancel.addEventListener("click", () => {
-    if (IS_ELEMENT_EDITOR_SUBWINDOW) {
-      void cancelSubEditor();
-    } else {
-      closeElementEditorModal(false);
-    }
-  });
-
-  el.btnElemModalClose.addEventListener("click", () => {
     if (IS_ELEMENT_EDITOR_SUBWINDOW) {
       void cancelSubEditor();
     } else {
