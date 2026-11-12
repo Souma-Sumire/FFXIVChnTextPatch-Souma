@@ -47,7 +47,10 @@ func TestCheckFontSourceCompileRequiresBuild(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeFontSourceConfig(t, root, "compile")
-	if err := os.WriteFile(filepath.Join(root, fontengine.CLIBinaryName), make([]byte, 1<<20+1), 0o755); err != nil {
+	fakeExe := make([]byte, 1<<20+1)
+	fakeExe[0] = 'M'
+	fakeExe[1] = 'Z'
+	if err := os.WriteFile(filepath.Join(root, fontengine.CLIBinaryName), fakeExe, 0o755); err != nil {
 		t.Fatal(err)
 	}
 
