@@ -125,7 +125,6 @@ export const specialFile: SpecialFileMap = {
       "5455": "还剩",
       "5459": "https://sqex.to/Jhk",
       "5460": "https://sqex.to/2IS",
-      "5500": "此份汉化基于Gpoint的开源程序修改的汉化器产生，仅供交流学习，请下载后两秒内删除。<hex:02100103>by Souma",
       "5506": "https://jp.finalfantasyxiv.com/lodestone/playguide/?utm_source=game&utm_medium=main_menu&utm_campaign=playguide",
       "5507": "https://jp.finalfantasyxiv.com/lodestone/playguide/?utm_source=game&utm_medium=main_menu&utm_campaign=playguide",
       "5552": "https://sqex.to/NMU",
