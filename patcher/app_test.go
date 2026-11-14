@@ -932,3 +932,54 @@ func TestNormalizeDialogSelection(t *testing.T) {
 		t.Fatal("非取消异常应透传错误")
 	}
 }
+
+func TestCustomScopeConfigPersistence(t *testing.T) {
+	app := NewApp()
+	dir := t.TempDir()
+	app.resourceDirOverride = dir
+
+	cfg := defaultConfig()
+	cfg.Preset = "custom"
+	cfg.CustomScope = &CustomTableScope{
+		Mode:   "exclude",
+		Tables: []string{"LogMessage", "BNpcName", "LogMessage", " "},
+	}
+	if err := app.SaveConfig(cfg); err != nil {
+		t.Fatalf("保存自定义范围配置失败: %v", err)
+	}
+
+	loaded := app.loadConfig(dir)
+	if loaded.Preset != "custom" || loaded.CustomScope == nil {
+		t.Fatalf("重载后应保留 custom 范围，实际 preset=%q scope=%+v", loaded.Preset, loaded.CustomScope)
+	}
+	if loaded.CustomScope.Mode != "exclude" {
+		t.Fatalf("模式应为 exclude，实际 %q", loaded.CustomScope.Mode)
+	}
+	if len(loaded.CustomScope.Tables) != 2 || loaded.CustomScope.Tables[0] != "BNpcName" || loaded.CustomScope.Tables[1] != "LogMessage" {
+		t.Fatalf("自定义表列表应去重并排序，实际 %v", loaded.CustomScope.Tables)
+	}
+
+	// 缺少 customScope 的旧版 custom 预设应安全回落到 recommended。
+	cfgInvalid := defaultConfig()
+	cfgInvalid.Preset = "custom"
+	cfgInvalid.CustomScope = nil
+	if err := app.SaveConfig(cfgInvalid); err != nil {
+		t.Fatalf("保存配置失败: %v", err)
+	}
+	fallback := app.loadConfig(dir)
+	if fallback.Preset != "recommended" || fallback.CustomScope != nil {
+		t.Fatalf("缺少 customScope 时应回落 recommended，实际 preset=%q scope=%+v", fallback.Preset, fallback.CustomScope)
+	}
+
+	// 切回非自定义预设时应清除 customScope。
+	cfgAll := defaultConfig()
+	cfgAll.Preset = "all"
+	cfgAll.CustomScope = &CustomTableScope{Mode: "include", Tables: []string{"Addon"}}
+	if err := app.SaveConfig(cfgAll); err != nil {
+		t.Fatalf("保存配置失败: %v", err)
+	}
+	loadedAll := app.loadConfig(dir)
+	if loadedAll.Preset != "all" || loadedAll.CustomScope != nil {
+		t.Fatalf("非 custom 预设不应保留 customScope，实际 preset=%q scope=%+v", loadedAll.Preset, loadedAll.CustomScope)
+	}
+}

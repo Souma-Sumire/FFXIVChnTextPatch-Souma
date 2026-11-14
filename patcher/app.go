@@ -320,6 +320,12 @@ func (m *LanguagesByRegion) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// CustomTableScope 记录自定义选表范围，按较短一侧存储以保持配置精简。
+type CustomTableScope struct {
+	Mode   string   `json:"mode"`
+	Tables []string `json:"tables"`
+}
+
 // AppConfig 是持久化配置。
 // 客户端目录与汉化语言都按区服保存，当前值由 Language 对应的条目决定。
 type AppConfig struct {
@@ -330,6 +336,7 @@ type AppConfig struct {
 	ReplaceFont     bool              `json:"replaceFont"`
 	Rules           map[string]bool   `json:"rules"`
 	Preset          string            `json:"preset"`
+	CustomScope     *CustomTableScope `json:"customScope,omitempty"`
 	CSVDirs         CSVDirsByRegion   `json:"csvDirs"`
 	FontPresets     map[string]string `json:"fontPresets,omitempty"`
 	// FontSource 决定换字体时用内置字体包还是现场编译自定义方案：package | compile。
@@ -382,14 +389,15 @@ type GameInfo struct {
 
 // PatchRequest 是汉化请求。
 type PatchRequest struct {
-	GameDir         string          `json:"gameDir"`
-	Language        string          `json:"language"`
-	TargetLanguages []string        `json:"targetLanguages"`
-	ReplaceText     bool            `json:"replaceText"`
-	ReplaceFont     bool            `json:"replaceFont"`
-	Rules           map[string]bool `json:"rules"`
-	SelectedTables  []string        `json:"selectedTables"`
-	Preset          string          `json:"preset"`
+	GameDir         string            `json:"gameDir"`
+	Language        string            `json:"language"`
+	TargetLanguages []string          `json:"targetLanguages"`
+	ReplaceText     bool              `json:"replaceText"`
+	ReplaceFont     bool              `json:"replaceFont"`
+	Rules           map[string]bool   `json:"rules"`
+	SelectedTables  []string          `json:"selectedTables"`
+	Preset          string            `json:"preset"`
+	CustomScope     *CustomTableScope `json:"customScope,omitempty"`
 }
 
 // ProgressEvent 是进度事件。
@@ -590,6 +598,37 @@ func normalizeRegionCode(lang string) string {
 	}
 }
 
+func normalizeTableScope(preset string, scope *CustomTableScope) (string, *CustomTableScope) {
+	switch preset {
+	case "recommended", "all":
+		return preset, nil
+	case "custom":
+		if scope == nil || (scope.Mode != "exclude" && scope.Mode != "include") {
+			return "recommended", nil
+		}
+		seen := make(map[string]struct{}, len(scope.Tables))
+		tables := make([]string, 0, len(scope.Tables))
+		for _, t := range scope.Tables {
+			t = strings.TrimSpace(t)
+			if t == "" {
+				continue
+			}
+			if _, ok := seen[t]; ok {
+				continue
+			}
+			seen[t] = struct{}{}
+			tables = append(tables, t)
+		}
+		sort.Strings(tables)
+		return "custom", &CustomTableScope{
+			Mode:   scope.Mode,
+			Tables: tables,
+		}
+	default:
+		return "recommended", nil
+	}
+}
+
 func defaultConfig() AppConfig {
 	default16Bit := true
 	return AppConfig{
@@ -711,7 +750,7 @@ func (a *App) loadConfigLocked(resourceDir string) AppConfig {
 			cfg.FontTexture16Bit = boolFields.FontTexture16Bit
 		}
 	}
-	cfg.Preset = saved.Preset
+	cfg.Preset, cfg.CustomScope = normalizeTableScope(saved.Preset, saved.CustomScope)
 	if len(saved.CSVDirs) > 0 {
 		for code, conf := range saved.CSVDirs {
 			normalized := normalizeCSVConfig(conf)
@@ -1146,6 +1185,7 @@ func (a *App) SaveConfig(cfg AppConfig) error {
 		}
 	}
 	cfg.FontPresets = fontPresets
+	cfg.Preset, cfg.CustomScope = normalizeTableScope(cfg.Preset, cfg.CustomScope)
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return err
@@ -2479,7 +2519,11 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 	cfgSaved.TargetLanguages[normLang] = targetLangs
 	cfgSaved.ReplaceText = req.ReplaceText
 	cfgSaved.ReplaceFont = req.ReplaceFont
-	cfgSaved.Preset = req.Preset
+	scope := req.CustomScope
+	if scope == nil && req.Preset == "custom" {
+		scope = cfgSaved.CustomScope
+	}
+	cfgSaved.Preset, cfgSaved.CustomScope = normalizeTableScope(req.Preset, scope)
 	if cfgSaved.Rules == nil {
 		cfgSaved.Rules = map[string]bool{}
 	}

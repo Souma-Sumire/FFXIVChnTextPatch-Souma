@@ -149,6 +149,8 @@ func (a *App) diagnosticsLines() []string {
 	presetDesc := cfg.Preset
 	if presetDesc == "" {
 		presetDesc = "recommended"
+	} else if presetDesc == "custom" && cfg.CustomScope != nil {
+		presetDesc = fmt.Sprintf("custom(%s:%d)", cfg.CustomScope.Mode, len(cfg.CustomScope.Tables))
 	}
 	fontMode := a.fontSourceMode(resourceDir)
 	font16Bit := a.fontTexture16Bit(resourceDir)

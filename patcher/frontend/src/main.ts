@@ -47,6 +47,11 @@ interface CSVConfig {
   labels?: Record<string, CSVDirLabel>;
 }
 
+interface CustomTableScope {
+  mode: "exclude" | "include";
+  tables: string[];
+}
+
 interface AppConfig {
   gameDirs: Record<string, string>;
   language: string;
@@ -57,6 +62,7 @@ interface AppConfig {
   fontSource?: "package" | "compile";
   rules: Record<string, boolean>;
   preset: string;
+  customScope?: CustomTableScope;
   csvDirs?: Record<string, CSVConfig>;
 }
 
@@ -257,6 +263,7 @@ interface PatchRequest {
   rules: Record<string, boolean>;
   selectedTables: string[];
   preset: string;
+  customScope?: CustomTableScope;
 }
 
 interface ReplaceStats {
@@ -1817,8 +1824,16 @@ async function loadBootstrap(): Promise<void> {
   renderLanguages();
   renderTargetLangs();
 
-  const activePreset = config.preset && config.preset !== "custom" ? config.preset : "recommended";
+  const hasValidCustom = config.preset === "custom" && Boolean(config.customScope);
+  const activePreset = hasValidCustom
+    ? "custom"
+    : config.preset === "all"
+      ? "all"
+      : "recommended";
   config.preset = activePreset;
+  if (activePreset !== "custom") {
+    config.customScope = undefined;
+  }
   applyCSVContext(info.csv, "");
   tableDocPending = ensureTableDoc();
   void loadFontPresetsForCurrentRegion();
@@ -2820,17 +2835,14 @@ function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?
 
   const nextKeys = ctx.tableList.map((entry) => entry.key).join("\n");
   if (nextKeys !== prevKeys) {
-    const available = new Set(ctx.tableList.map((entry) => entry.key));
-    for (const key of [...selected]) {
-      if (!available.has(key)) {
-        selected.delete(key);
-      }
-    }
-    if (config.preset === "recommended" || config.preset === "all") {
+    if (ctx.tableList.length === 0) {
+      selected.clear();
+      el.preset.value = config.preset;
+      updateScopeCount();
+    } else {
       applyPreset(config.preset, false);
     }
   }
-  syncPresetWithSelection();
   renderTables();
 
   if (bootstrap.csv.tableList.length === 0 || !csvSelectionValid()) {
@@ -6165,22 +6177,68 @@ function setSelected(key: string, value: boolean): void {
   updateScopeCount();
 }
 
+function buildCustomScopeFromSelection(all: TableEntry[]): CustomTableScope {
+  const included: string[] = [];
+  const excluded: string[] = [];
+  for (const entry of all) {
+    if (selected.has(entry.key)) {
+      included.push(entry.key);
+    } else {
+      excluded.push(entry.key);
+    }
+  }
+  if (included.length < excluded.length) {
+    return { mode: "include", tables: included.sort() };
+  }
+  return { mode: "exclude", tables: excluded.sort() };
+}
+
+function applyCustomScopeToSelection(all: TableEntry[], scope: CustomTableScope): void {
+  selected.clear();
+  const tableSet = new Set(scope.tables);
+  if (scope.mode === "include") {
+    for (const entry of all) {
+      if (tableSet.has(entry.key)) {
+        selected.add(entry.key);
+      }
+    }
+    return;
+  }
+  for (const entry of all) {
+    if (!tableSet.has(entry.key)) {
+      selected.add(entry.key);
+    }
+  }
+}
+
 function applyPreset(name: string, rerender = true): void {
   if (!bootstrap) {
     return;
   }
-  // 自定义范围保留当前勾选，只切换预设状态，具体表在详情页里挑。
+  const all = tableList();
   if (name === "custom") {
-    config.preset = "custom";
-    el.preset.value = "custom";
-    updateScopeCount();
-    if (rerender) {
-      renderTables();
+    if (config.customScope) {
+      applyCustomScopeToSelection(all, config.customScope);
+      config.preset = "custom";
+      el.preset.value = "custom";
+      updateScopeCount();
+      if (rerender) {
+        renderTables();
+      }
+      return;
     }
-    return;
+    if (selected.size > 0 || all.length === 0) {
+      config.preset = "custom";
+      el.preset.value = "custom";
+      updateScopeCount();
+      if (rerender) {
+        renderTables();
+      }
+      return;
+    }
+    name = "recommended";
   }
   selected.clear();
-  const all = tableList();
   if (name === "all") {
     for (const entry of all) {
       selected.add(entry.key);
@@ -6195,6 +6253,7 @@ function applyPreset(name: string, rerender = true): void {
     name = "recommended";
   }
   config.preset = name;
+  config.customScope = undefined;
   el.preset.value = name;
   updateScopeCount();
   if (rerender) {
@@ -6580,7 +6639,7 @@ async function loadCSVPreviewPage(): Promise<void> {
 }
 
 // syncPresetWithSelection 让预设跟随实际勾选结果：
-// 勾选恰好等于某个预设时归到该预设，否则标记为自定义。
+// 勾选恰好等于某个预设时归到该预设，否则标记为自定义并持久化范围。
 function syncPresetWithSelection(): void {
   const all = tableList();
   if (all.length === 0) {
@@ -6593,10 +6652,8 @@ function syncPresetWithSelection(): void {
   } else if (all.every((entry) => selected.has(entry.key) === !excluded.includes(entry.key))) {
     next = "recommended";
   }
-  if (config.preset === next) {
-    return;
-  }
   config.preset = next;
+  config.customScope = next === "custom" ? buildCustomScopeFromSelection(all) : undefined;
   el.preset.value = next;
   updateScopeCount();
   void persistConfig();
@@ -6854,6 +6911,7 @@ function wireEvents(): void {
       return;
     }
     applyPreset("all", true);
+    void persistConfig();
   });
 
   el.btnSelectNone.addEventListener("click", () => {
@@ -7042,6 +7100,7 @@ function wireEvents(): void {
         rules: { ...config.rules },
         selectedTables: Array.from(selected),
         preset: config.preset,
+        customScope: config.customScope,
       };
 
       const resp = await call("StartPatch", req);
