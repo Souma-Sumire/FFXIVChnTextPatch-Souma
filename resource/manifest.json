@@ -1,0 +1,220 @@
+{
+  "generatedAt": "2026-11-14T12:09:22Z",
+  "rootHash": "02c9c11012391fca8f7fb7b4c0cd5c9f1fb33cbafd66119d7fb0e9118100ac01",
+  "rawexd": {
+    "sha256": "5e9dd3122b094ce1c9ac0718431758eb5ad216f6b2e1236731bfd2859de438f3",
+    "size": 28343859,
+    "count": 7114
+  },
+  "font": {
+    "sha256": "1f7b852d4930e17e2561dc9b001fcf1bba0678e2a1d0bcc49a162713149633fb",
+    "size": 36952063,
+    "count": 49
+  },
+  "rules": {
+    "sha256": "b954b300a4ba2ef1ec4a4c5fbe9926dccad6018c7ed96db980c408292ceb283d",
+    "size": 1602
+  },
+  "tables": {
+    "sha256": "8ab57d7b1dc103280094fa1f3e720deab7c5d33ddb035f5253485ab7770f5269",
+    "size": 261191
+  },
+  "fonts": {
+    "font/AXIS_12.fdt": {
+      "sha256": "d0dfc1974d1c27f93d2228899b4465338e611498b707d2693eaf6db071a2c53c",
+      "size": 355360
+    },
+    "font/AXIS_12_lobby.fdt": {
+      "sha256": "0e3c98862c166981e75dcdcba2e0b1917d9c7a519b196aba61f38a66eb86b0de",
+      "size": 355360
+    },
+    "font/AXIS_14.fdt": {
+      "sha256": "008aaf3aabb4909a13105068a220c26f964778a3a7eb4ee3d4aaeebe5af5eb84",
+      "size": 355408
+    },
+    "font/AXIS_14_lobby.fdt": {
+      "sha256": "894f2dfe44c7be778883c5795a8fba167f5491116ece5acd2ed47509694d6b96",
+      "size": 355408
+    },
+    "font/AXIS_18.fdt": {
+      "sha256": "2ba4d907741165b5c6877b62529eaba66b411d2ef633d32e6ac500c7f56ab8a0",
+      "size": 355680
+    },
+    "font/AXIS_18_lobby.fdt": {
+      "sha256": "c9eb0d727977450c5aa09a6fbbda1a8c84eba249607cf3b208c935ca10ce0811",
+      "size": 355680
+    },
+    "font/AXIS_36.fdt": {
+      "sha256": "44cc112c3e8269f31f2c44383d42938178eb2d8f6a3877fc036920f3e20fd185",
+      "size": 355728
+    },
+    "font/AXIS_36_lobby.fdt": {
+      "sha256": "1df836d7cc5a704e07625acf44cd6fd00e8fb450abae1f6ae0dde3b269bb5677",
+      "size": 355728
+    },
+    "font/AXIS_96.fdt": {
+      "sha256": "67a21bd1531a287764be5d21a1b40eefbaf86b20a86c630b950a58ce654eea89",
+      "size": 355040
+    },
+    "font/Jupiter_16.fdt": {
+      "sha256": "21aa16c44579b44344e02525ac29e9f2f9413517aa3ecadb0c8d9f4668c32f91",
+      "size": 354208
+    },
+    "font/Jupiter_16_lobby.fdt": {
+      "sha256": "e272d6d4195134f61556aaff3e1bbd42b9ce78798a439dec14386901e2185bb8",
+      "size": 354208
+    },
+    "font/Jupiter_20.fdt": {
+      "sha256": "6a292ab1388c9bdce487221b77bde3de902d4d98c384b2a3a0e02bfe347a86ca",
+      "size": 359792
+    },
+    "font/Jupiter_20_lobby.fdt": {
+      "sha256": "fe7b4a4f66403b283b10c17504bfac6caebf217060e3e7e26e8d7874536a6ff6",
+      "size": 359792
+    },
+    "font/Jupiter_23.fdt": {
+      "sha256": "dae5851c89590e6faba8a47e91347d3dd542c2ccf9b7d85a49ab1fd7d2685dd2",
+      "size": 359792
+    },
+    "font/Jupiter_23_lobby.fdt": {
+      "sha256": "552f61b961eab38790435b2a7e935b0340098c5289ad21a9e58ebf1cb61f9578",
+      "size": 359792
+    },
+    "font/Jupiter_45.fdt": {
+      "sha256": "6c6552e006d376a49c70718687248945cb4f6ac5569deb905b5cfda4c7a49401",
+      "size": 304
+    },
+    "font/Jupiter_45_lobby.fdt": {
+      "sha256": "aa97ab4ed1b061a918fcc4db654fc7660082d0f83c33f16612f6027bae443d25",
+      "size": 256
+    },
+    "font/Jupiter_46.fdt": {
+      "sha256": "4534e2ebc8769ab3fe47c81cf4493606fac1ee031494bbb592e5e28c6103eafc",
+      "size": 365696
+    },
+    "font/Jupiter_46_lobby.fdt": {
+      "sha256": "43b7901bdc27ec9d6315960331c61d7a3e22bcf5212c1257f890a2e8f031275d",
+      "size": 365696
+    },
+    "font/Jupiter_90.fdt": {
+      "sha256": "b080179bcdca5b95c26a672ef79e67e18aa8192389b99af361b2f30dd3fda782",
+      "size": 304
+    },
+    "font/Jupiter_90_lobby.fdt": {
+      "sha256": "b349e1d538306241546d80d3e4098b282cb857e96daa029cf5c48a10fef820d5",
+      "size": 256
+    },
+    "font/Meidinger_16.fdt": {
+      "sha256": "8969e7cd5c7789c7222c2366863df502d047934e94c862087fe69137d68ae5ae",
+      "size": 432
+    },
+    "font/Meidinger_16_lobby.fdt": {
+      "sha256": "ed0c66f5d86c581922125655de518f9409cc2deba64f031dc999aa0ca83515c9",
+      "size": 384
+    },
+    "font/Meidinger_20.fdt": {
+      "sha256": "0284572b3ae8c0045ac0e947ad06cbf529c54b9b56891f8a0c864a06de7340d3",
+      "size": 432
+    },
+    "font/Meidinger_20_lobby.fdt": {
+      "sha256": "a7534e4d1a070d80a6331ac3f0e6312b87b81329962a6db85eaef0aa097787c4",
+      "size": 384
+    },
+    "font/Meidinger_40.fdt": {
+      "sha256": "c8a48d7927a9240a98e884c042fc0f16d19ba5457c8d70709b3956eed87fc906",
+      "size": 432
+    },
+    "font/Meidinger_40_lobby.fdt": {
+      "sha256": "fb7030cf336dc58522bd54c831b54fd40dc83db68040d51616545e103075dee9",
+      "size": 384
+    },
+    "font/MiedingerMid_10.fdt": {
+      "sha256": "52f5cdb33d9ff8724cdf2e210e577c491255f9bdebf1c17e0de5802bbc0f11bc",
+      "size": 347776
+    },
+    "font/MiedingerMid_10_lobby.fdt": {
+      "sha256": "06126e84992f8fea15f9858c87a398165fbb8edfeab19946f26f035fcefcda9e",
+      "size": 347760
+    },
+    "font/MiedingerMid_12.fdt": {
+      "sha256": "f5580d3f164dc3f8c8a71f8d2f74b00163919d8523af4d44c1f50caf8ce9f4ed",
+      "size": 347808
+    },
+    "font/MiedingerMid_12_lobby.fdt": {
+      "sha256": "1d5056599451a765820a5176fcc979859a0d91fd63c7a4415bec6d3c5b065bf3",
+      "size": 347792
+    },
+    "font/MiedingerMid_14.fdt": {
+      "sha256": "691e252ec0a7ec707879420889b6ab1c5954bd179fce8b3b108843855e459ffb",
+      "size": 349600
+    },
+    "font/MiedingerMid_14_lobby.fdt": {
+      "sha256": "a03aaf02de7db5783d3602b8a1b038780958bcc30f9b2dc2d79ba9dd7551983e",
+      "size": 349584
+    },
+    "font/MiedingerMid_18.fdt": {
+      "sha256": "f01c725efe5a3d14a9fc6b076b1d7a4326d363c02d4de40dae76f3cb4b5521bf",
+      "size": 369472
+    },
+    "font/MiedingerMid_18_lobby.fdt": {
+      "sha256": "ef8506e3035541e893a7bffe35ac58a20914ca97f6b6c807db30c9731256f2f6",
+      "size": 369456
+    },
+    "font/MiedingerMid_36.fdt": {
+      "sha256": "c5651ec015720a0e5afc6c0044ce0dd981441b7ba57269442c38c9e75e157b15",
+      "size": 370816
+    },
+    "font/MiedingerMid_36_lobby.fdt": {
+      "sha256": "cef9697d14aebdf7f7cada567609e39f93db7aeb7e5bd067e179114a293386e9",
+      "size": 370800
+    },
+    "font/TrumpGothic_184.fdt": {
+      "sha256": "34db6aa14777cdc9e894cee57ab659e77fe6ff46f26637eeb3de83c05f5a9856",
+      "size": 339728
+    },
+    "font/TrumpGothic_184_lobby.fdt": {
+      "sha256": "4ab22f0a9a50dce45b4e7a4e428cae672e11d66cb01b1a028dbb41fc012e2d41",
+      "size": 339728
+    },
+    "font/TrumpGothic_23.fdt": {
+      "sha256": "90704615da1c580cdd8700b15d77de486792ed8ed5390bbe741009a84001b767",
+      "size": 340400
+    },
+    "font/TrumpGothic_23_lobby.fdt": {
+      "sha256": "7fc3df674f39e36941f37e98acc03a963d83a3774ebf7013149c8c2ff8c068c7",
+      "size": 340400
+    },
+    "font/TrumpGothic_34.fdt": {
+      "sha256": "a4cfb8bfdacc927a667eaab214afe2087a67bec585315023433956827b4e6548",
+      "size": 342096
+    },
+    "font/TrumpGothic_34_lobby.fdt": {
+      "sha256": "3cc0a7b0fba22a5c92379fae880ce1ed2ed944ef43a71eec76cfa85e421cacbd",
+      "size": 342096
+    },
+    "font/TrumpGothic_68.fdt": {
+      "sha256": "acecb5cc5d5ac6b437029239991384af3a6db80fbe740a6f51584c663797fe6d",
+      "size": 344704
+    },
+    "font/TrumpGothic_68_lobby.fdt": {
+      "sha256": "dd9d9cb5526a3d79eab2b9374d868b929b131eee852242aa647d947be17b5cae",
+      "size": 344704
+    },
+    "font/font1.tex": {
+      "sha256": "1e8eb49fb5cbe364e199a880da1954621db11f0d7c03215bdee4d3fa7e6b841c",
+      "size": 67108944
+    },
+    "font/font2.tex": {
+      "sha256": "f264f14d6f399249ae79884077e6a8c4e25bdb21e9af78b058b9292d831abfcc",
+      "size": 67108944
+    },
+    "font/font_lobby1.tex": {
+      "sha256": "11dc9896c65dd23a11d7c7b55c710c7a8b679f86f3e438a0a8a7f0acd5b4774d",
+      "size": 67108944
+    },
+    "font/font_lobby2.tex": {
+      "sha256": "d5bab953149e351c3d2c021dc497240cd221c42cbfdf591158fb7eafca199910",
+      "size": 67108944
+    }
+  }
+}
