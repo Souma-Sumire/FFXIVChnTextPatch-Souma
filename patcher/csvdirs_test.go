@@ -429,3 +429,93 @@ func TestCopyBuiltinCSVDirectoryConverts(t *testing.T) {
 		t.Fatal("已存在副本时不应重新转换")
 	}
 }
+
+func TestSearchCSVContent(t *testing.T) {
+	app, resDir := newCSVTestApp(t)
+	rawDir := filepath.Join(resDir, "rawexd")
+
+	itemContent := strings.Join([]string{
+		"key,0,1",
+		"#,Name,Description",
+		"offset,0,4",
+		"Int32,String,String",
+		"0,普通药水,恢复少量体力",
+		"10,强力以太药,蕴含魔晶石<hex:02100103>之力的秘药",
+		"20,Ether Hi-Potion,Restores MP immediately",
+	}, "\n")
+	if err := os.WriteFile(filepath.Join(rawDir, "Item.csv"), []byte(itemContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	bnpcContent := strings.Join([]string{
+		"key,0",
+		"#,Name",
+		"offset,0",
+		"Int32,String",
+		"100,魔晶石守卫",
+	}, "\n")
+	if err := os.WriteFile(filepath.Join(rawDir, "BNpcName.csv"), []byte(bnpcContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	questDir := filepath.Join(rawDir, "quest", "000")
+	if err := os.MkdirAll(questDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	questContent := strings.Join([]string{
+		"key,0,1",
+		"#,ID,Text",
+		"offset,0,4",
+		"Int32,String,String",
+		"0,TEXT_000,你好冒险者",
+		"1,TEXT_001,寻找失落的魔晶石碎片",
+	}, "\n")
+	if err := os.WriteFile(filepath.Join(questDir, "Test001.csv"), []byte(questContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	emptyRes, err := app.SearchCSVContent("GLOBAL", "   ", 50)
+	if err != nil || len(emptyRes.Hits) != 0 {
+		t.Fatalf("空查询应返回空结果: res=%+v err=%v", emptyRes, err)
+	}
+
+	res, err := app.SearchCSVContent("GLOBAL", "魔晶石", 50)
+	if err != nil {
+		t.Fatalf("跨表搜索失败: %v", err)
+	}
+	if res.MatchedFiles != 3 || res.TotalHits != 3 || res.Truncated || len(res.Hits) != 3 {
+		t.Fatalf("跨表搜索统计不正确: %+v", res)
+	}
+
+	var itemHit *CSVSearchHit
+	for i := range res.Hits {
+		if res.Hits[i].TableKey == "Item" {
+			itemHit = &res.Hits[i]
+			break
+		}
+	}
+	if itemHit == nil {
+		t.Fatalf("未在结果中找到 Item 表命中: %+v", res.Hits)
+	}
+	if itemHit.RowKey != "10" || itemHit.RowIndex != 1 || itemHit.ColHeader != "Description" {
+		t.Fatalf("Item 命中定位元数据异常: %+v", *itemHit)
+	}
+	if strings.Contains(itemHit.Snippet, "<hex:02100103>") || !strings.Contains(itemHit.Snippet, "魔晶石") {
+		t.Fatalf("摘要应清理换行控制符并保留关键词: %q", itemHit.Snippet)
+	}
+
+	preview, err := app.PreviewCSVTable("GLOBAL", itemHit.TableKey, "", itemHit.RowIndex, 1)
+	if err != nil || len(preview.Rows) != 1 || preview.Rows[0][0] != itemHit.RowKey {
+		t.Fatalf("按 RowIndex 定位预览失败: preview=%+v err=%v", preview, err)
+	}
+
+	asciiRes, err := app.SearchCSVContent("GLOBAL", "ether", 10)
+	if err != nil || asciiRes.TotalHits != 1 || asciiRes.Hits[0].RowKey != "20" {
+		t.Fatalf("英文大小写不敏感匹配失败: res=%+v err=%v", asciiRes, err)
+	}
+
+	truncRes, err := app.SearchCSVContent("GLOBAL", "魔晶石", 2)
+	if err != nil || !truncRes.Truncated || len(truncRes.Hits) != 2 || truncRes.TotalHits != 3 {
+		t.Fatalf("截断逻辑不正确: res=%+v err=%v", truncRes, err)
+	}
+}

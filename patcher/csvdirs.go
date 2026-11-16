@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"unicode"
 
 	"github.com/longbridgeapp/opencc"
 
@@ -992,4 +994,253 @@ func exdDataStartIndex(rows [][]string) int {
 		}
 	}
 	return idx
+}
+
+// CSVSearchHit 描述跨表全文搜索的一条行级命中结果。
+type CSVSearchHit struct {
+	TableKey  string `json:"tableKey"`
+	TableName string `json:"tableName"`
+	RowKey    string `json:"rowKey"`
+	RowIndex  int    `json:"rowIndex"`
+	ColHeader string `json:"colHeader"`
+	Snippet   string `json:"snippet"`
+}
+
+// CSVSearchResult 描述跨表全文搜索结果与统计。
+type CSVSearchResult struct {
+	Query        string         `json:"query"`
+	Hits         []CSVSearchHit `json:"hits"`
+	TotalHits    int            `json:"totalHits"`
+	MatchedFiles int            `json:"matchedFiles"`
+	Truncated    bool           `json:"truncated"`
+}
+
+// SearchCSVContent 并发扫描当前词条目录下的 CSV 文件，返回跨表全文匹配结果。
+func (a *App) SearchCSVContent(language, query string, maxHits int) (CSVSearchResult, error) {
+	q := strings.TrimSpace(query)
+	if q == "" {
+		return CSVSearchResult{Query: ""}, nil
+	}
+	if maxHits <= 0 {
+		maxHits = 200
+	} else if maxHits > 500 {
+		maxHits = 500
+	}
+
+	parentCtx := a.ctx
+	if parentCtx == nil {
+		parentCtx = context.Background()
+	}
+	ctx, cancel := context.WithCancel(parentCtx)
+	a.csvSearchMu.Lock()
+	if a.csvSearchCancel != nil {
+		a.csvSearchCancel()
+	}
+	a.csvSearchSeq++
+	seq := a.csvSearchSeq
+	a.csvSearchCancel = cancel
+	a.csvSearchMu.Unlock()
+	defer func() {
+		cancel()
+		a.csvSearchMu.Lock()
+		if a.csvSearchSeq == seq {
+			a.csvSearchCancel = nil
+		}
+		a.csvSearchMu.Unlock()
+	}()
+
+	resourceDir := a.resourceDir()
+	csvDir, customCSV, err := a.resolveCSVDir(resourceDir, normalizeRegionCode(language))
+	if err != nil {
+		return CSVSearchResult{}, err
+	}
+	doc := a.loadTablesDoc(resourceDir)
+
+	var entries []TableEntry
+	if customCSV {
+		keys, keyErr := validCSVKeys(csvDir, knownTableKeys(doc))
+		if keyErr != nil {
+			return CSVSearchResult{}, keyErr
+		}
+		entries = tableEntries(doc, keys)
+	} else {
+		entries = buildTableList(doc)
+	}
+	if len(entries) == 0 {
+		return CSVSearchResult{Query: q}, nil
+	}
+
+	qLower := strings.ToLower(q)
+	qBytes := []byte(q)
+	qLowerBytes := []byte(qLower)
+	hasASCIIUpperOrLower := hasASCIILetter(q)
+	canPrefilter := !strings.ContainsRune(q, '"')
+
+	perTableHits := make([][]CSVSearchHit, len(entries))
+	var nextIdx atomic.Int64
+	workers := min(max(goruntime.NumCPU(), 4), 12)
+	if len(entries) < workers {
+		workers = len(entries)
+	}
+
+	var wg sync.WaitGroup
+	for w := 0; w < workers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				if ctx.Err() != nil {
+					return
+				}
+				idx := int(nextIdx.Add(1) - 1)
+				if idx >= len(entries) {
+					return
+				}
+				entry := entries[idx]
+				csvPath := filepath.Join(csvDir, filepath.FromSlash(entry.Key)+".csv")
+				data, readErr := os.ReadFile(csvPath)
+				if readErr != nil {
+					continue
+				}
+				// 快速预筛：跳过整文件都不包含查询串的表，避免无意义的 CSV 全解析。
+				if canPrefilter {
+					if hasASCIIUpperOrLower {
+						if !bytes.Contains(bytes.ToLower(data), qLowerBytes) {
+							continue
+						}
+					} else if !bytes.Contains(data, qBytes) {
+						continue
+					}
+				}
+				if ctx.Err() != nil {
+					return
+				}
+
+				headers := extractEXDHeaders(data)
+				allParsed := csvx.Parse(data)
+				dataStart := exdDataStartIndex(allParsed)
+				if dataStart >= len(allParsed) {
+					continue
+				}
+				dataRows := allParsed[dataStart:]
+
+				var tableHits []CSVSearchHit
+				for rowIdx, row := range dataRows {
+					if len(row) == 0 {
+						continue
+					}
+					for colIdx, cell := range row {
+						if !strings.Contains(strings.ToLower(cell), qLower) {
+							continue
+						}
+						colHeader := fmt.Sprintf("列 %d", colIdx)
+						if colIdx < len(headers) && headers[colIdx] != "" {
+							colHeader = headers[colIdx]
+						}
+						tableHits = append(tableHits, CSVSearchHit{
+							TableKey:  entry.Key,
+							TableName: entry.Name,
+							RowKey:    row[0],
+							RowIndex:  rowIdx,
+							ColHeader: colHeader,
+							Snippet:   buildSearchSnippet(cell, qLower),
+						})
+						break
+					}
+				}
+				if len(tableHits) > 0 {
+					perTableHits[idx] = tableHits
+				}
+			}
+		}()
+	}
+	wg.Wait()
+
+	if ctx.Err() != nil {
+		return CSVSearchResult{}, ctx.Err()
+	}
+
+	res := CSVSearchResult{
+		Query: q,
+		Hits:  make([]CSVSearchHit, 0, min(maxHits, 64)),
+	}
+	for _, tableHits := range perTableHits {
+		if len(tableHits) == 0 {
+			continue
+		}
+		res.MatchedFiles++
+		res.TotalHits += len(tableHits)
+		if len(res.Hits) < maxHits {
+			need := min(len(tableHits), maxHits-len(res.Hits))
+			res.Hits = append(res.Hits, tableHits[:need]...)
+		}
+	}
+	res.Truncated = res.TotalHits > len(res.Hits)
+	return res, nil
+}
+
+func hasASCIILetter(s string) bool {
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
+			return true
+		}
+	}
+	return false
+}
+
+func buildSearchSnippet(cell, qLower string) string {
+	cleaned := strings.ReplaceAll(cell, "<hex:02100103>", " ")
+	cleaned = strings.ReplaceAll(cleaned, "\r\n", " ")
+	cleaned = strings.ReplaceAll(cleaned, "\r", " ")
+	cleaned = strings.ReplaceAll(cleaned, "\n", " ")
+	cleaned = strings.Join(strings.Fields(cleaned), " ")
+	if cleaned == "" || !strings.Contains(strings.ToLower(cleaned), qLower) {
+		cleaned = strings.Join(strings.Fields(strings.NewReplacer("\r\n", " ", "\r", " ", "\n", " ").Replace(cell)), " ")
+	}
+	runes := []rune(cleaned)
+	const maxLen = 90
+	if len(runes) <= maxLen {
+		return cleaned
+	}
+	lowerRunes := []rune(strings.ToLower(cleaned))
+	qRunes := []rune(qLower)
+	matchRuneIdx := findRuneSubslice(lowerRunes, qRunes)
+	if matchRuneIdx < 0 {
+		return string(runes[:maxLen]) + "…"
+	}
+	start := max(0, matchRuneIdx-30)
+	end := min(len(runes), start+maxLen)
+	if end == len(runes) {
+		start = max(0, end-maxLen)
+	}
+	var out strings.Builder
+	if start > 0 {
+		out.WriteString("…")
+	}
+	out.WriteString(string(runes[start:end]))
+	if end < len(runes) {
+		out.WriteString("…")
+	}
+	return out.String()
+}
+
+func findRuneSubslice(haystack, needle []rune) int {
+	if len(needle) == 0 || len(needle) > len(haystack) {
+		return -1
+	}
+	limit := len(haystack) - len(needle)
+	for i := 0; i <= limit; i++ {
+		matched := true
+		for j := 0; j < len(needle); j++ {
+			if unicode.ToLower(haystack[i+j]) != needle[j] {
+				matched = false
+				break
+			}
+		}
+		if matched {
+			return i
+		}
+	}
+	return -1
 }

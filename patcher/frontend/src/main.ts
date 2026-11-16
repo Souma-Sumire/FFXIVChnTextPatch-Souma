@@ -214,6 +214,23 @@ interface CSVPreviewResult {
   hasMore: boolean;
 }
 
+interface CSVSearchHit {
+  tableKey: string;
+  tableName: string;
+  rowKey: string;
+  rowIndex: number;
+  colHeader: string;
+  snippet: string;
+}
+
+interface CSVSearchResult {
+  query: string;
+  hits: CSVSearchHit[];
+  totalHits: number;
+  matchedFiles: number;
+  truncated: boolean;
+}
+
 interface BootstrapInfo {
   version: string;
   resourceDir: string;
@@ -365,6 +382,7 @@ interface GoApp {
   RemoveCSVDirectory(language: string, path: string, deleteFiles: boolean): Promise<CSVContext>;
   SetCSVDirectoryMeta(language: string, path: string, title: string, desc: string): Promise<CSVContext>;
   PreviewCSVTable(language: string, tableKey: string, query: string, offset: number, limit: number): Promise<CSVPreviewResult>;
+  SearchCSVContent(language: string, query: string, maxHits: number): Promise<CSVSearchResult>;
   OpenCSVDirectory(language: string, path: string): Promise<void>;
   OpenBackupDirectory(language: string): Promise<void>;
   DetectGamePaths(language: string): Promise<string[]>;
@@ -593,13 +611,18 @@ const el = {
   btnBackWorkbench: byId<HTMLButtonElement>("btn-back-workbench"),
   preset: byId<HTMLSelectElement>("preset"),
   search: byId<HTMLInputElement>("search"),
+  btnSearchModeTable: byId<HTMLButtonElement>("btn-search-mode-table"),
+  btnSearchModeContent: byId<HTMLButtonElement>("btn-search-mode-content"),
   btnFilterUnselected: byId<HTMLButtonElement>("btn-filter-unselected"),
   countUnselected: byId("count-unselected"),
   btnCollapseAll: byId<HTMLButtonElement>("btn-collapse-all"),
   btnExpandAll: byId<HTMLButtonElement>("btn-expand-all"),
   btnSelectAll: byId<HTMLButtonElement>("btn-select-all"),
   btnSelectNone: byId<HTMLButtonElement>("btn-select-none"),
+  tablesScrollViewport: byId("tables-scroll-viewport"),
+  tablesDataTable: byId<HTMLTableElement>("tables-data-table"),
   tableList: byId<HTMLTableSectionElement>("table-list"),
+  csvContentSearchView: byId("csv-content-search-view"),
 
   csvPreviewModal: byId("csv-preview-modal"),
   csvPreviewTitle: byId("csv-preview-title"),
@@ -650,6 +673,12 @@ const el = {
   fcSplitter2: byId("fc-splitter-2"),
   fcFontListContextMenu: byId("fc-fontlist-context-menu"),
   fcElementContextMenu: byId("fc-element-context-menu"),
+  fcMenuUndo: byId<HTMLButtonElement>("fc-menu-undo"),
+  fcMenuRedo: byId<HTMLButtonElement>("fc-menu-redo"),
+  fcMenuMoveUp: byId<HTMLButtonElement>("fc-menu-move-up"),
+  fcMenuMoveDown: byId<HTMLButtonElement>("fc-menu-move-down"),
+  fcCtxMoveUp: byId<HTMLButtonElement>("fc-ctx-move-up"),
+  fcCtxMoveDown: byId<HTMLButtonElement>("fc-ctx-move-down"),
 
   // 字体元素编辑器模态框节点 (IDD_FONTELEMENTEDITOR)
   fontElementModal: byId("font-element-modal"),
@@ -768,6 +797,9 @@ function switchView(view: "workbench" | "tables" | "font-editor"): void {
   el.viewWorkbench.classList.toggle("hidden", view !== "workbench");
   el.viewTables.classList.toggle("hidden", view !== "tables");
   el.viewFontEditor.classList.toggle("hidden", view !== "font-editor");
+  if (view === "tables" && tableSearchMode === "table") {
+    requestAnimationFrame(() => renderVirtualTableSlice(true));
+  }
   void adjustWindowForView(view);
 }
 
@@ -2843,7 +2875,15 @@ function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?
       applyPreset(config.preset, false);
     }
   }
-  renderTables();
+  renderTables(false);
+  if (tableSearchMode === "content") {
+    lastContentSearchResult = null;
+    if (el.search.value.trim()) {
+      void runCSVContentSearch();
+    } else {
+      renderContentSearchState("请输入关键词，在当前词条目录的全部 CSV 文件中搜索台词、道具、技能等文本。");
+    }
+  }
 
   if (bootstrap.csv.tableList.length === 0 || !csvSelectionValid()) {
     if (tableDocReady) {
@@ -3388,6 +3428,184 @@ let copiedFontElements: FontElement[] = [];
 const selectedElementIndices = new Set<number>([0]);
 let elementModalSnapshot: string | null = null;
 
+interface FontHistoryEntry {
+  multiFontJson: string;
+  activeFaceName: string;
+  activeElementIndex: number;
+  selectedIndices: number[];
+}
+
+const FONT_HISTORY_LIMIT = 50;
+let fontUndoStack: FontHistoryEntry[] = [];
+let fontRedoStack: FontHistoryEntry[] = [];
+let lastFontCoalesceKey = "";
+let lastFontCoalesceTime = 0;
+let pendingModalHistoryEntry: FontHistoryEntry | null = null;
+let savedMultiFontSnapshot = "";
+let unsavedExternalLabel = "";
+
+function serializeMultiFontBaseline(mf: MultiFontSet | null): string {
+  if (!mf) return "";
+  const cloned = JSON.parse(JSON.stringify(mf)) as MultiFontSet;
+  for (const face of getFacesList(cloned)) {
+    delete face.previewText;
+  }
+  return JSON.stringify(cloned);
+}
+
+function isFontPresetDirty(): boolean {
+  if (!currentMultiFont) return false;
+  if (!activePresetId) return true;
+  return serializeMultiFontBaseline(currentMultiFont) !== savedMultiFontSnapshot;
+}
+
+function captureFontHistoryEntry(): FontHistoryEntry | null {
+  if (!currentMultiFont) return null;
+  return {
+    multiFontJson: JSON.stringify(currentMultiFont),
+    activeFaceName,
+    activeElementIndex,
+    selectedIndices: getSelectedElementIndices(),
+  };
+}
+
+function clearFontHistory(): void {
+  fontUndoStack = [];
+  fontRedoStack = [];
+  lastFontCoalesceKey = "";
+  lastFontCoalesceTime = 0;
+  pendingModalHistoryEntry = null;
+}
+
+function commitUndoSnapshot(snap: FontHistoryEntry | null, coalesceKey = ""): void {
+  if (!snap) return;
+  const now = Date.now();
+  if (coalesceKey && coalesceKey === lastFontCoalesceKey && now - lastFontCoalesceTime < 500 && fontUndoStack.length > 0) {
+    lastFontCoalesceTime = now;
+    fontRedoStack = [];
+    syncFontEditMenuState();
+    return;
+  }
+  if (fontUndoStack.length > 0 && fontUndoStack[fontUndoStack.length - 1]!.multiFontJson === snap.multiFontJson) {
+    lastFontCoalesceKey = coalesceKey;
+    lastFontCoalesceTime = now;
+    syncFontEditMenuState();
+    return;
+  }
+  fontUndoStack.push(snap);
+  if (fontUndoStack.length > FONT_HISTORY_LIMIT) {
+    fontUndoStack.shift();
+  }
+  fontRedoStack = [];
+  lastFontCoalesceKey = coalesceKey;
+  lastFontCoalesceTime = now;
+  syncFontEditMenuState();
+}
+
+function pushFontUndoSnapshot(coalesceKey = ""): void {
+  commitUndoSnapshot(captureFontHistoryEntry(), coalesceKey);
+}
+
+function canMoveSelectedElements(direction: -1 | 1): boolean {
+  const face = getCurrentFace();
+  if (!face || face.elements.length <= 1) return false;
+  const indices = getSelectedElementIndices();
+  if (indices.length === 0) return false;
+  const selectedSet = new Set(indices);
+  return indices.some((idx) => {
+    const target = idx + direction;
+    return target >= 0 && target < face.elements.length && !selectedSet.has(target);
+  });
+}
+
+function syncFontEditMenuState(): void {
+  if (IS_ELEMENT_EDITOR_SUBWINDOW) return;
+  el.fcMenuUndo.disabled = fontUndoStack.length === 0;
+  el.fcMenuRedo.disabled = fontRedoStack.length === 0;
+  const canUp = canMoveSelectedElements(-1);
+  const canDown = canMoveSelectedElements(1);
+  el.fcMenuMoveUp.disabled = !canUp;
+  el.fcMenuMoveDown.disabled = !canDown;
+  el.fcCtxMoveUp.disabled = !canUp;
+  el.fcCtxMoveDown.disabled = !canDown;
+  const resetBtn = document.querySelector<HTMLButtonElement>('#fc-dropdown-file [data-menu="file-reset"]');
+  if (resetBtn) {
+    resetBtn.disabled = !activePresetId || !isFontPresetDirty();
+  }
+}
+
+function updateFontDirtyUI(): void {
+  if (IS_ELEMENT_EDITOR_SUBWINDOW) return;
+  const dirty = isFontPresetDirty();
+  if (el.fcPresetSelect) {
+    el.fcPresetSelect.classList.toggle("is-dirty", dirty);
+    if (activePresetId) {
+      const preset = availableFontPresets.find((p) => p.id === activePresetId);
+      const opt = Array.from(el.fcPresetSelect.options).find((o) => o.value === activePresetId);
+      if (preset && opt) {
+        const clean = cleanPresetDisplayName(preset.name);
+        const base = `${clean}${preset.builtin ? "" : " (自定义)"}`;
+        opt.textContent = dirty ? `${base} *` : base;
+      }
+    }
+  }
+  syncFontEditMenuState();
+}
+
+function applyHistoryEntry(entry: FontHistoryEntry): void {
+  if (subEditorOpen) {
+    deactivateBypass();
+    deactivateCompare();
+  }
+  currentMultiFont = JSON.parse(entry.multiFontJson) as MultiFontSet;
+  const faces = getFacesList(currentMultiFont);
+  activeFaceName = faces.some((f) => f.name === entry.activeFaceName)
+    ? entry.activeFaceName
+    : pickDefaultFaceName(faces);
+  expandFaceGroup(activeFaceName);
+  activeElementIndex = entry.activeElementIndex;
+  syncActiveFaceToUI();
+  setElementSelection(entry.selectedIndices, entry.activeElementIndex);
+  renderFaceTabs();
+  renderElementList();
+  renderPropsPanel();
+  if (subEditorOpen) {
+    const face = getCurrentFace();
+    const elem = face?.elements[activeElementIndex];
+    if (face && elem) {
+      subEditorFaceName = face.name;
+      subEditorElementIndex = activeElementIndex;
+      elementModalSnapshot = JSON.stringify(elem);
+      pendingModalHistoryEntry = captureFontHistoryEntry();
+    }
+    syncOpenSubEditorToSelection();
+  }
+  schedulePreviewRender(true);
+  updateFontDirtyUI();
+}
+
+function undoFontEdit(): void {
+  if (fontUndoStack.length === 0) return;
+  const current = captureFontHistoryEntry();
+  const prev = fontUndoStack.pop()!;
+  if (current) {
+    fontRedoStack.push(current);
+  }
+  lastFontCoalesceKey = "";
+  applyHistoryEntry(prev);
+}
+
+function redoFontEdit(): void {
+  if (fontRedoStack.length === 0) return;
+  const current = captureFontHistoryEntry();
+  const next = fontRedoStack.pop()!;
+  if (current) {
+    fontUndoStack.push(current);
+  }
+  lastFontCoalesceKey = "";
+  applyHistoryEntry(next);
+}
+
 function hideAllContextMenus(): void {
   el.fcFontListContextMenu?.classList.add("hidden");
   el.fcElementContextMenu?.classList.add("hidden");
@@ -3397,17 +3615,22 @@ function hideAllContextMenus(): void {
 function showFontListContextMenu(x: number, y: number): void {
   hideAllContextMenus();
   if (!el.fcFontListContextMenu) return;
-  el.fcFontListContextMenu.style.left = `${Math.min(window.innerWidth - 200, x)}px`;
-  el.fcFontListContextMenu.style.top = `${Math.min(window.innerHeight - 150, y)}px`;
   el.fcFontListContextMenu.classList.remove("hidden");
+  const w = el.fcFontListContextMenu.offsetWidth || 200;
+  const h = el.fcFontListContextMenu.offsetHeight || 150;
+  el.fcFontListContextMenu.style.left = `${Math.max(4, Math.min(window.innerWidth - w - 4, x))}px`;
+  el.fcFontListContextMenu.style.top = `${Math.max(4, Math.min(window.innerHeight - h - 4, y))}px`;
 }
 
 function showElementContextMenu(x: number, y: number): void {
   hideAllContextMenus();
   if (!el.fcElementContextMenu) return;
-  el.fcElementContextMenu.style.left = `${Math.min(window.innerWidth - 220, x)}px`;
-  el.fcElementContextMenu.style.top = `${Math.min(window.innerHeight - 340, y)}px`;
+  syncFontEditMenuState();
   el.fcElementContextMenu.classList.remove("hidden");
+  const w = el.fcElementContextMenu.offsetWidth || 220;
+  const h = el.fcElementContextMenu.offsetHeight || 360;
+  el.fcElementContextMenu.style.left = `${Math.max(4, Math.min(window.innerWidth - w - 4, x))}px`;
+  el.fcElementContextMenu.style.top = `${Math.max(4, Math.min(window.innerHeight - h - 4, y))}px`;
 }
 
 // ---------- 菜单栏 / 右键菜单 / 快捷键 (复刻 FFXIV-FontChanger IDR_FONTEDITOR) ----------
@@ -3441,6 +3664,7 @@ function toggleFontMenu(item: HTMLElement): void {
   closeFontMenus();
   if (wasOpen) return;
   syncFontMenuChecks();
+  syncFontEditMenuState();
   item.classList.add("open");
   menu.classList.remove("hidden");
   openFontMenuItemId = item.id;
@@ -3472,12 +3696,14 @@ function refreshAfterElementChange(): void {
   renderPropsPanel();
   syncOpenSubEditorToSelection();
   schedulePreviewRender();
+  updateFontDirtyUI();
 }
 
 // 微调命令：对每个选中图层套用同一步进（菜单里的 W/S/A/D/Q/E 与 [/] 都走这里）。
 function applyQuickStep(stepType: string): void {
   const face = getCurrentFace();
   if (!face) return;
+  const beforeSnap = captureFontHistoryEntry();
   let applied = 0;
   for (const index of getSelectedElementIndices()) {
     const elem = face.elements[index];
@@ -3517,6 +3743,7 @@ function applyQuickStep(stepType: string): void {
     applied++;
   }
   if (applied === 0) return;
+  commitUndoSnapshot(beforeSnap, `quick:${stepType}`);
   refreshAfterElementChange();
 }
 
@@ -3557,6 +3784,7 @@ function makeDefaultFontElement(baseSize: number): FontElement {
 function insertFontElements(elements: FontElement[]): void {
   const face = getCurrentFace();
   if (!face || elements.length === 0) return;
+  pushFontUndoSnapshot();
   const indices = getSelectedElementIndices();
   const insertAt = indices.length > 0 ? indices[indices.length - 1] + 1 : face.elements.length;
   face.elements.splice(insertAt, 0, ...elements);
@@ -3616,6 +3844,7 @@ function deleteSelectedFontElements(): void {
     log("每个字体至少保留一个图层", "warn", "字体");
     return;
   }
+  pushFontUndoSnapshot();
   for (const index of [...indices].sort((a, b) => b - a)) {
     face.elements.splice(index, 1);
   }
@@ -3663,21 +3892,27 @@ async function pasteFontElements(): Promise<void> {
 
 function moveSelectedFontElements(direction: -1 | 1): void {
   const face = getCurrentFace();
-  if (!face) return;
-  const indices = getSelectedElementIndices();
-  if (indices.length === 0) return;
-  const order = direction > 0 ? [...indices].reverse() : [...indices];
-  let moved = false;
-  for (const index of order) {
-    const target = index + direction;
-    if (target < 0 || target >= face.elements.length) continue;
-    const swap = face.elements[index];
-    face.elements[index] = face.elements[target];
-    face.elements[target] = swap;
-    moved = true;
-  }
-  if (!moved) return;
-  setElementSelection(indices.map((i) => i + direction).filter((i) => i >= 0 && i < face.elements.length));
+  if (!face || !canMoveSelectedElements(direction)) return;
+  pushFontUndoSnapshot();
+  const selectedSet = new Set(getSelectedElementIndices());
+  const nextActive = (() => {
+    const start = direction < 0 ? 0 : face.elements.length - 1;
+    const end = direction < 0 ? face.elements.length : -1;
+    let active = activeElementIndex;
+    for (let index = start; index !== end; index -= direction) {
+      if (!selectedSet.has(index)) continue;
+      const target = index + direction;
+      if (target < 0 || target >= face.elements.length || selectedSet.has(target)) continue;
+      const swap = face.elements[index];
+      face.elements[index] = face.elements[target];
+      face.elements[target] = swap;
+      selectedSet.delete(index);
+      selectedSet.add(target);
+      if (active === index) active = target;
+    }
+    return active;
+  })();
+  setElementSelection([...selectedSet], nextActive);
   refreshAfterElementChange();
 }
 
@@ -3736,6 +3971,7 @@ async function autoFitFace(faceName: string, indices: number[] | null): Promise<
 async function autoFit(allSizes: boolean, useSelection: boolean): Promise<void> {
   const face = getCurrentFace();
   if (!face || !currentMultiFont) return;
+  const beforeSnap = captureFontHistoryEntry();
   const selection = useSelection ? getSelectedElementIndices() : [];
   const ok = await autoFitFace(face.name, selection.length > 0 ? selection : null);
   if (!ok) return;
@@ -3746,9 +3982,10 @@ async function autoFit(allSizes: boolean, useSelection: boolean): Promise<void> 
       const ratio = srcSize > 0 ? parseFaceNominalSize(sibling.name) / srcSize : 1;
       sibling.elements = face.elements.map((elem) => scaleElementCopy(elem, ratio));
       sibling.verticalAlignment = face.verticalAlignment;
-      if (!(await autoFitFace(sibling.name, null))) return;
+      if (!(await autoFitFace(sibling.name, null))) break;
     }
   }
+  commitUndoSnapshot(beforeSnap);
   refreshAfterElementChange();
 }
 
@@ -3770,6 +4007,7 @@ async function addSystemFontToFamily(): Promise<void> {
   );
   if (!family) return;
 
+  const beforeSnap = captureFontHistoryEntry();
   const targets = [srcFace, ...sameFamilyFaces(srcFace.name)];
   for (const face of targets) {
     const elem = makeDefaultFontElement(parseFaceNominalSize(face.name));
@@ -3779,7 +4017,10 @@ async function addSystemFontToFamily(): Promise<void> {
     }
     face.elements.push(elem);
   }
-  for (const face of targets) await autoFitFace(face.name, null);
+  for (const face of targets) {
+    if (!(await autoFitFace(face.name, null))) break;
+  }
+  commitUndoSnapshot(beforeSnap);
   refreshAfterElementChange();
 }
 
@@ -3873,28 +4114,56 @@ function cleanPresetDisplayName(name: string): string {
 function updateCurrentPresetBadge(customLabel?: string): void {
   if (!el.fcPresetSelect) return;
   el.fcPresetSelect.replaceChildren();
+  const extLabel = customLabel ?? (!activePresetId ? unsavedExternalLabel : "");
 
   for (const p of availableFontPresets) {
     const opt = document.createElement("option");
     opt.value = p.id;
     const clean = cleanPresetDisplayName(p.name);
     opt.textContent = `${clean}${p.builtin ? "" : " (自定义)"}`;
-    if (p.id === activePresetId && !customLabel) {
+    if (p.id === activePresetId && !extLabel) {
       opt.selected = true;
     }
     el.fcPresetSelect.append(opt);
   }
 
-  if (customLabel || !activePresetId) {
+  if (extLabel || !activePresetId) {
     const opt = document.createElement("option");
     opt.value = "";
-    opt.textContent = customLabel || "未保存方案";
+    opt.textContent = extLabel || "未保存方案";
     opt.selected = true;
     el.fcPresetSelect.prepend(opt);
   }
+  updateFontDirtyUI();
+}
+
+async function confirmUnsavedFontChanges(actionLabel: string): Promise<boolean> {
+  if (!isFontPresetDirty()) return true;
+  const preset = availableFontPresets.find((p) => p.id === activePresetId);
+  const name = preset ? cleanPresetDisplayName(preset.name) : (unsavedExternalLabel || "当前方案");
+  const result = await openModal(
+    "未保存的修改",
+    `字体方案「${name}」有未保存的修改，是否先保存？`,
+    `保存并${actionLabel}`,
+    "放弃修改",
+    false,
+  );
+  if (result === "cancel") return false;
+  if (result === "ok") {
+    await saveFontPresetCurrent();
+    return !isFontPresetDirty();
+  }
+  if (activePresetId) {
+    await loadFontPreset(activePresetId);
+  } else {
+    savedMultiFontSnapshot = serializeMultiFontBaseline(currentMultiFont);
+    unsavedExternalLabel = "";
+  }
+  return true;
 }
 
 async function openFontJsonFile(): Promise<void> {
+  if (!(await confirmUnsavedFontChanges("打开"))) return;
   const path = await call("SelectFontJsonFile");
   if (!path) return;
   const content = await call("ReadTextFile", path);
@@ -3909,8 +4178,11 @@ async function openFontJsonFile(): Promise<void> {
   currentMultiFont = parsed;
   // 打开的 JSON 还没有对应的方案，Ctrl+S 会走"另存为方案"。
   activePresetId = "";
+  savedMultiFontSnapshot = "";
   const fileName = path.split(/[\\/]/).pop() ?? "";
-  updateCurrentPresetBadge(`外部 JSON: ${fileName} (未保存)`);
+  unsavedExternalLabel = `外部 JSON: ${fileName} (未保存)`;
+  clearFontHistory();
+  updateCurrentPresetBadge(unsavedExternalLabel);
   if (!faces.some((f) => f.name === activeFaceName)) {
     activeFaceName = pickDefaultFaceName(faces);
   }
@@ -3938,8 +4210,10 @@ async function saveFontPresetAsNew(): Promise<void> {
     JSON.stringify(currentMultiFont, null, "\t"),
   );
   activePresetId = saved.id;
+  unsavedExternalLabel = "";
+  savedMultiFontSnapshot = serializeMultiFontBaseline(currentMultiFont);
   markPresetSelected(saved.id);
-  await loadFontPresetsForCurrentRegion();
+  await loadFontPresetsForCurrentRegion(false);
   updateCurrentPresetBadge();
 }
 
@@ -3952,8 +4226,10 @@ async function saveFontPresetCurrent(): Promise<void> {
   }
   const saved = await call("SaveFontPreset", getCurrentFontRegion(), preset.name, JSON.stringify(currentMultiFont, null, "\t"));
   activePresetId = saved.id;
+  unsavedExternalLabel = "";
+  savedMultiFontSnapshot = serializeMultiFontBaseline(currentMultiFont);
   markPresetSelected(saved.id);
-  await loadFontPresetsForCurrentRegion();
+  await loadFontPresetsForCurrentRegion(false);
   updateCurrentPresetBadge();
 }
 
@@ -3990,6 +4266,7 @@ function buildEmptyAxisMultiFont(source: MultiFontSet): MultiFontSet {
 }
 
 async function createNewEmptyAxisPreset(): Promise<void> {
+  if (!(await confirmUnsavedFontChanges("新建"))) return;
   const reg = getCurrentFontRegion();
   const name = await promptModalInput("新建空 AXIS 方案", "方案名称：", "空 AXIS 方案");
   if (!name || !name.trim()) return;
@@ -4016,8 +4293,9 @@ async function createNewEmptyAxisPreset(): Promise<void> {
   try {
     const saved = await call("SaveFontPreset", reg, safeName, JSON.stringify(emptyFont, null, "\t"));
     activePresetId = saved.id;
+    unsavedExternalLabel = "";
     markPresetSelected(saved.id);
-    await loadFontPresetsForCurrentRegion();
+    await loadFontPresetsForCurrentRegion(false);
     await applyFontPreset(saved.id);
     closePresetManager();
   } catch (err) {
@@ -4180,6 +4458,7 @@ function renderPresetManager(): void {
 }
 
 async function applyPresetFromManager(preset: PresetSummary): Promise<void> {
+  if (!(await confirmUnsavedFontChanges("切换"))) return;
   try {
     await applyFontPreset(preset.id);
     closePresetManager();
@@ -4189,6 +4468,7 @@ async function applyPresetFromManager(preset: PresetSummary): Promise<void> {
 }
 
 async function duplicatePreset(preset: PresetSummary): Promise<void> {
+  if (!(await confirmUnsavedFontChanges("切换"))) return;
   const reg = getCurrentFontRegion();
   const base = preset.name.replace(/(（副本\d*）|_副本\d*)$/, "");
   const name = await promptModalInput("复制字体方案", "新方案名称：", `${base}_副本`);
@@ -4203,8 +4483,9 @@ async function duplicatePreset(preset: PresetSummary): Promise<void> {
     const saved = await call("SaveFontPreset", reg, safeName, content);
     // 后端 SaveFontPreset 会顺手选中新方案，前端配置同步，别让后续加载退回旧方案。
     activePresetId = saved.id;
+    unsavedExternalLabel = "";
     markPresetSelected(saved.id);
-    await loadFontPresetsForCurrentRegion();
+    await loadFontPresetsForCurrentRegion(false);
     await applyFontPreset(saved.id);
     closePresetManager();
   } catch (err) {
@@ -4221,8 +4502,11 @@ async function renamePreset(preset: PresetSummary): Promise<void> {
   try {
     const renamed = await call("RenameFontPreset", reg, preset.id, name.trim());
     // 后端改的是配置文件，前端这份 config 不跟着改的话，重新加载会退回默认方案。
-    if (wasActive) markPresetSelected(renamed.id);
-    await loadFontPresetsForCurrentRegion();
+    if (wasActive) {
+      activePresetId = renamed.id;
+      markPresetSelected(renamed.id);
+    }
+    await loadFontPresetsForCurrentRegion(false);
   } catch (err) {
     log(`重命名字体方案失败：${describeError(err)}`, "error", "字体");
     await showAlert("重命名失败", describeError(err));
@@ -4239,8 +4523,9 @@ async function deletePreset(preset: PresetSummary): Promise<void> {
   if (!ok) return;
   try {
     await call("DeleteFontPreset", reg, preset.id);
-    if (activePresetId === preset.id) activePresetId = "";
-    await loadFontPresetsForCurrentRegion();
+    const deletedActive = activePresetId === preset.id;
+    if (deletedActive) activePresetId = "";
+    await loadFontPresetsForCurrentRegion(deletedActive);
     // 删的是当前方案时后端已回退到默认方案，这里让前端配置跟上同一结果。
     if (activePresetId) markPresetSelected(activePresetId);
   } catch (err) {
@@ -4261,6 +4546,7 @@ async function scaleCurrentFace(): Promise<void> {
   if (!inputStr) return;
   const targetSize = parseFloat(inputStr);
   if (isNaN(targetSize) || targetSize <= 0) return;
+  pushFontUndoSnapshot();
   const ratio = targetSize / curNominal;
   for (const elem of face.elements) {
     if (elem.size) elem.size = Number((elem.size * ratio).toFixed(2));
@@ -4275,9 +4561,7 @@ async function scaleCurrentFace(): Promise<void> {
       if (elem.renderSpecific.empty.lineHeight) elem.renderSpecific.empty.lineHeight = Math.round(elem.renderSpecific.empty.lineHeight * ratio);
     }
   }
-  renderElementList();
-  renderPropsPanel();
-  schedulePreviewRender();
+  refreshAfterElementChange();
 }
 
 // 复刻原版「将 X 的其他尺寸替换为 Y 的缩放副本」：确认后清空目标字号，
@@ -4299,6 +4583,7 @@ async function propagateCurrentFamily(): Promise<void> {
   );
   if (!ok) return;
 
+  pushFontUndoSnapshot();
   for (const target of siblings) {
     const targetSize = parseFaceNominalSize(target.name);
     const ratio = srcSize > 0 ? targetSize / srcSize : 1;
@@ -4333,6 +4618,7 @@ async function runFontCommand(command: string): Promise<void> {
         await duplicateCurrentPreset();
         return;
       case "file-import-json":
+        if (!(await confirmUnsavedFontChanges("导入"))) return;
         el.fontPresetImportPicker.value = "";
         el.fontPresetImportPicker.click();
         return;
@@ -4360,6 +4646,12 @@ async function runFontCommand(command: string): Promise<void> {
         return;
 
       // 编辑
+      case "edit-undo":
+        undoFontEdit();
+        return;
+      case "edit-redo":
+        redoFontEdit();
+        return;
       case "edit-add":
         addEmptyFontElement(true);
         return;
@@ -4565,6 +4857,8 @@ function wireFontMenuInteractions(): void {
     ["fc-ctx-copy", () => copySelectedFontElements()],
     ["fc-ctx-clone", () => cloneSelectedFontElements()],
     ["fc-ctx-delete", () => deleteSelectedFontElements()],
+    ["fc-ctx-move-up", () => moveSelectedFontElements(-1)],
+    ["fc-ctx-move-down", () => moveSelectedFontElements(1)],
     ["fc-ctx-add", () => addEmptyFontElement(true)],
     ["fc-ctx-add-system", () => addFontElementFromSystemFont()],
     ["fc-ctx-paste", () => pasteFontElements()],
@@ -4617,12 +4911,15 @@ function wireFontMenuInteractions(): void {
     if (ev.ctrlKey || ev.metaKey) {
       if (ev.shiftKey) {
         if (key === "s") return run("file-save-as");
+        if (key === "z") return run("edit-redo");
         if (key === "tab") return run("view-prev-font");
         return;
       }
       if (key === "s") return run("file-save");
       if (key === "o") return run("file-open");
       if (key === "q") return run("file-back");
+      if (key === "z") return run("edit-undo");
+      if (key === "y") return run("edit-redo");
       if (key === "c") return run("edit-copy");
       if (key === "x") return run("edit-cut");
       if (key === "v") return run("edit-paste");
@@ -4630,7 +4927,13 @@ function wireFontMenuInteractions(): void {
       if (key === "tab") return run("view-next-font");
       return;
     }
-    if (ev.altKey) return;
+    if (ev.altKey) {
+      if (!ev.ctrlKey && !ev.metaKey && !ev.shiftKey) {
+        if (ev.key === "ArrowUp") return run("edit-move-up");
+        if (ev.key === "ArrowDown") return run("edit-move-down");
+      }
+      return;
+    }
 
     switch (ev.key) {
       case "Insert":
@@ -4962,7 +5265,7 @@ async function ensureSystemFonts(): Promise<void> {
 
 let fontPresetGeneration = 0;
 
-async function loadFontPresetsForCurrentRegion(): Promise<void> {
+async function loadFontPresetsForCurrentRegion(reloadContent = true): Promise<void> {
   const gen = ++fontPresetGeneration;
   const reg = getCurrentFontRegion();
   el.fontRegionBadge.textContent = getRegionShortName(reg);
@@ -4995,16 +5298,18 @@ async function loadFontPresetsForCurrentRegion(): Promise<void> {
     targetId = matched ? matched.id : availableFontPresets[0]?.id || "";
   }
 
-  activePresetId = targetId;
+  if (reloadContent || activePresetId) {
+    activePresetId = targetId;
+  }
   updateCurrentPresetBadge();
-  const currentPreset = availableFontPresets.find((p) => p.id === targetId);
+  const currentPreset = availableFontPresets.find((p) => p.id === activePresetId);
   const cleanSummary = currentPreset ? cleanPresetDisplayName(currentPreset.name) : "默认方案";
   setSummaryText(
     el.fontPresetSummary,
     currentPreset ? `${cleanSummary}${currentPreset.builtin ? "" : " (自定义)"}` : "默认方案",
   );
 
-  if (targetId) {
+  if (reloadContent && targetId) {
     await loadFontPreset(targetId);
   }
   // 方案管理弹窗开着时，列表要跟着刷新（保存/复制/重命名/删除都会走到这里）。
@@ -5091,6 +5396,9 @@ async function loadFontPreset(presetId: string): Promise<void> {
     if (gen !== fontPresetDetailGeneration) return;
     if (!rawJson) return;
     currentMultiFont = JSON.parse(rawJson) as MultiFontSet;
+    unsavedExternalLabel = "";
+    savedMultiFontSnapshot = serializeMultiFontBaseline(currentMultiFont);
+    clearFontHistory();
 
     const faces = getFacesList(currentMultiFont);
     if (!faces.some((f) => f.name === activeFaceName)) {
@@ -5105,6 +5413,7 @@ async function loadFontPreset(presetId: string): Promise<void> {
     renderElementList();
     renderPropsPanel();
     syncFontMenuChecks();
+    updateCurrentPresetBadge();
     if (!el.viewFontEditor.classList.contains("hidden")) {
       syncOpenSubEditorToSelection();
       schedulePreviewRender();
@@ -5640,10 +5949,14 @@ function syncOpenSubEditorToSelection(): void {
   if (targetChanged) {
     deactivateBypass();
     deactivateCompare();
+    if (pendingModalHistoryEntry && currentMultiFont && pendingModalHistoryEntry.multiFontJson !== JSON.stringify(currentMultiFont)) {
+      commitUndoSnapshot(pendingModalHistoryEntry);
+    }
     activeSubEditorSessionId++;
     subEditorFaceName = face.name;
     subEditorElementIndex = activeElementIndex;
     elementModalSnapshot = JSON.stringify(elem);
+    pendingModalHistoryEntry = captureFontHistoryEntry();
   }
 
   const title = `字体图层属性 - ${face.name} · 图层 #${activeElementIndex + 1}`;
@@ -5666,6 +5979,7 @@ function openElementEditorModal(): void {
   subEditorFaceName = face.name;
   subEditorElementIndex = activeElementIndex;
   elementModalSnapshot = JSON.stringify(elem);
+  pendingModalHistoryEntry = captureFontHistoryEntry();
 
   const title = `字体图层属性 - ${face.name} · 图层 #${activeElementIndex + 1}`;
   const payloadJson = JSON.stringify(buildSubEditorPayload(sessionId, face.name, activeElementIndex, elem));
@@ -5673,6 +5987,7 @@ function openElementEditorModal(): void {
     subEditorOpen = false;
     subEditorFaceName = "";
     subEditorElementIndex = -1;
+    pendingModalHistoryEntry = null;
     log(`打开图层属性窗口失败：${describeError(err)}`, "error", "字体");
   });
 }
@@ -5683,7 +5998,15 @@ function closeElementEditorModal(commit: boolean, hideWindow = true): void {
   const hit = findFaceElement(subEditorFaceName, subEditorElementIndex);
   if (!commit && elementModalSnapshot && hit) {
     hit.face.elements[hit.index] = JSON.parse(elementModalSnapshot) as FontElement;
+  } else if (
+    commit &&
+    pendingModalHistoryEntry &&
+    currentMultiFont &&
+    pendingModalHistoryEntry.multiFontJson !== JSON.stringify(currentMultiFont)
+  ) {
+    commitUndoSnapshot(pendingModalHistoryEntry);
   }
+  pendingModalHistoryEntry = null;
   elementModalSnapshot = null;
   subEditorOpen = false;
   subEditorFaceName = "";
@@ -5696,6 +6019,7 @@ function closeElementEditorModal(commit: boolean, hideWindow = true): void {
   renderElementList();
   renderPropsPanel();
   schedulePreviewRender(true);
+  updateFontDirtyUI();
 }
 
 function isCjkCodepoints(ranges: number[][]): boolean {
@@ -6223,7 +6547,7 @@ function applyPreset(name: string, rerender = true): void {
       el.preset.value = "custom";
       updateScopeCount();
       if (rerender) {
-        renderTables();
+        renderTables(false);
       }
       return;
     }
@@ -6232,7 +6556,7 @@ function applyPreset(name: string, rerender = true): void {
       el.preset.value = "custom";
       updateScopeCount();
       if (rerender) {
-        renderTables();
+        renderTables(false);
       }
       return;
     }
@@ -6257,7 +6581,7 @@ function applyPreset(name: string, rerender = true): void {
   el.preset.value = name;
   updateScopeCount();
   if (rerender) {
-    renderTables();
+    renderTables(false);
   }
 }
 
@@ -6288,7 +6612,88 @@ function updateScopeCount(): void {
   renderScopeSummary();
 }
 
-function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""): HTMLTableRowElement {
+const TABLE_ROW_HEIGHT = 34;
+const TABLE_OVERSCAN = 12;
+
+type TableSearchMode = "table" | "content";
+
+type VirtualTableRow =
+  | {
+      kind: "folder";
+      folderKey: string;
+      folderChs: string;
+      totalInFolder: number;
+      selInFolder: number;
+      isExpanded: boolean;
+    }
+  | {
+      kind: "entry";
+      entry: TableEntry;
+      isChild: boolean;
+      folderChs: string;
+      parentFolder: string;
+    };
+
+interface CSVPreviewLocateTarget {
+  rowKey: string;
+  rowIndex: number;
+}
+
+let virtualTableRows: VirtualTableRow[] = [];
+let virtualFolderEntriesMap = new Map<string, TableEntry[]>();
+let virtualLastStart = -1;
+let virtualLastEnd = -1;
+let virtualScrollRaf = 0;
+let tableSearchDebounceTimer = 0;
+let tableSearchMode: TableSearchMode = "table";
+let contentSearchAbortSeq = 0;
+let lastContentSearchResult: CSVSearchResult | null = null;
+
+function updateVisibleFolderCheckbox(folderKey: string): void {
+  if (!folderKey) {
+    return;
+  }
+  const entries = virtualFolderEntriesMap.get(folderKey);
+  if (!entries) {
+    return;
+  }
+  const totalInFolder = entries.length;
+  let selInFolder = 0;
+  for (const item of entries) {
+    if (selected.has(item.key)) {
+      selInFolder++;
+    }
+  }
+  const isAllSel = selInFolder === totalInFolder && totalInFolder > 0;
+  const isPartSel = selInFolder > 0 && selInFolder < totalInFolder;
+
+  for (const vRow of virtualTableRows) {
+    if (vRow.kind === "folder" && vRow.folderKey === folderKey) {
+      vRow.selInFolder = selInFolder;
+      break;
+    }
+  }
+
+  for (const child of el.tableList.children) {
+    const tr = child as HTMLElement;
+    if (tr.dataset.folderKey !== folderKey) {
+      continue;
+    }
+    const cb = tr.querySelector<HTMLInputElement>("input.folder-checkbox");
+    if (cb) {
+      cb.checked = isAllSel;
+      cb.indeterminate = isPartSel;
+    }
+    break;
+  }
+}
+
+function createTableDataRow(
+  entry: TableEntry,
+  isChild = false,
+  folderChs = "",
+  parentFolder = "",
+): HTMLTableRowElement {
   const isEntrySel = selected.has(entry.key);
   const tr = document.createElement("tr");
   tr.className = `table-data-row ${isEntrySel ? "selected" : "unselected"} ${isChild ? "is-child-row" : ""}`.trim();
@@ -6305,7 +6710,9 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
     tr.classList.toggle("selected", checkbox.checked);
     tr.classList.toggle("unselected", !checkbox.checked);
     syncPresetWithSelection();
-    updateScopeCount();
+    if (parentFolder) {
+      updateVisibleFolderCheckbox(parentFolder);
+    }
   });
   checkLabel.append(checkbox);
   tdCheck.append(checkLabel);
@@ -6338,6 +6745,7 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
     const tag = document.createElement("span");
     tag.className = "status-tag-warn";
     tag.textContent = entry.warning;
+    setTip(tag, entry.warning);
     tdStatus.append(tag);
   }
 
@@ -6345,12 +6753,166 @@ function createTableDataRow(entry: TableEntry, isChild = false, folderChs = ""):
   return tr;
 }
 
-function renderTables(): void {
+function createFolderHeaderRow(row: Extract<VirtualTableRow, { kind: "folder" }>): HTMLTableRowElement {
+  const { folderKey, folderChs, totalInFolder, selInFolder, isExpanded } = row;
+  const isAllSel = selInFolder === totalInFolder && totalInFolder > 0;
+  const isPartSel = selInFolder > 0 && selInFolder < totalInFolder;
+
+  const trGroup = document.createElement("tr");
+  trGroup.className = `folder-header-row ${isExpanded ? "expanded" : ""}`;
+  trGroup.dataset.folderKey = folderKey;
+
+  const tdSel = document.createElement("td");
+  tdSel.className = "col-sel folder-sel-cell";
+  const selWrap = document.createElement("div");
+  selWrap.className = "folder-sel-wrap";
+
+  const caret = document.createElement("span");
+  caret.className = `folder-caret ${isExpanded ? "expanded" : ""}`;
+  caret.innerHTML =
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>';
+
+  const folderCheckbox = document.createElement("input");
+  folderCheckbox.type = "checkbox";
+  folderCheckbox.className = "folder-checkbox";
+  folderCheckbox.checked = isAllSel;
+  folderCheckbox.indeterminate = isPartSel;
+  folderCheckbox.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const targetState = !isAllSel;
+    const allEntriesInFolder = virtualFolderEntriesMap.get(folderKey) || [];
+    for (const item of allEntriesInFolder) {
+      setSelected(item.key, targetState);
+    }
+    syncPresetWithSelection();
+    renderTables(false);
+  });
+
+  selWrap.append(caret, folderCheckbox);
+  tdSel.append(selWrap);
+
+  const tdKey = document.createElement("td");
+  tdKey.className = "col-filename folder-name-cell";
+  tdKey.textContent = folderKey;
+
+  const tdPreview = document.createElement("td");
+  tdPreview.className = "col-preview folder-preview-cell";
+
+  const tdName = document.createElement("td");
+  tdName.className = "col-chs folder-chs-cell";
+  tdName.textContent = folderChs || "-";
+
+  const tdStatus = document.createElement("td");
+  tdStatus.className = "col-status folder-status-cell";
+
+  trGroup.append(tdSel, tdKey, tdPreview, tdName, tdStatus);
+
+  trGroup.addEventListener("click", () => {
+    if (isExpanded) {
+      expandedFolders.delete(folderKey);
+    } else {
+      expandedFolders.add(folderKey);
+    }
+    renderTables(false);
+  });
+
+  return trGroup;
+}
+
+function createVirtualSpacerRow(heightPx: number): HTMLTableRowElement {
+  const tr = document.createElement("tr");
+  tr.className = "virtual-spacer-row";
+  tr.setAttribute("aria-hidden", "true");
+  const td = document.createElement("td");
+  td.colSpan = 5;
+  td.style.height = `${heightPx}px`;
+  tr.append(td);
+  return tr;
+}
+
+function renderEmptyTableNotice(rawTerm: string): void {
+  const trEmpty = document.createElement("tr");
+  const tdEmpty = document.createElement("td");
+  tdEmpty.colSpan = 5;
+  tdEmpty.className = "table-empty-cell";
+  if (tableList().length === 0) {
+    tdEmpty.textContent = "表清单尚未加载，请先同步资源或检查网络连接";
+  } else if (rawTerm && filterOnlyUnselected) {
+    tdEmpty.textContent = `未找到同时匹配「${rawTerm}」且未选中的数据表`;
+  } else if (rawTerm) {
+    const text = document.createElement("div");
+    text.textContent = `未找到匹配「${rawTerm}」的数据表`;
+    const actionWrap = document.createElement("div");
+    actionWrap.className = "table-empty-action";
+    const switchBtn = document.createElement("button");
+    switchBtn.type = "button";
+    switchBtn.className = "btn btn-quiet btn-xs";
+    switchBtn.textContent = `在全部词条内容中搜索「${rawTerm}」`;
+    switchBtn.addEventListener("click", () => {
+      setTableSearchMode("content");
+    });
+    actionWrap.append(switchBtn);
+    tdEmpty.append(text, actionWrap);
+  } else if (filterOnlyUnselected) {
+    tdEmpty.textContent = "所有数据表均已选中，暂无未选项";
+  } else {
+    tdEmpty.textContent = "暂无可显示的数据表";
+  }
+  trEmpty.append(tdEmpty);
+  el.tableList.replaceChildren(trEmpty);
+}
+
+function renderVirtualTableSlice(force = false): void {
+  if (tableSearchMode !== "table" || el.viewTables.classList.contains("hidden")) {
+    return;
+  }
+  if (virtualTableRows.length === 0) {
+    if (force) {
+      renderEmptyTableNotice(el.search.value.trim());
+    }
+    return;
+  }
+
+  const headerHeight = el.tablesDataTable.tHead ? el.tablesDataTable.tHead.offsetHeight : 0;
+  const viewportHeight = el.tablesScrollViewport.clientHeight || 560;
+  const bodyScrollTop = Math.max(0, el.tablesScrollViewport.scrollTop - headerHeight);
+  const firstVisible = Math.floor(bodyScrollTop / TABLE_ROW_HEIGHT);
+  const visibleCount = Math.max(1, Math.ceil(viewportHeight / TABLE_ROW_HEIGHT));
+  const startIdx = Math.max(0, firstVisible - TABLE_OVERSCAN);
+  const endIdx = Math.min(virtualTableRows.length, firstVisible + visibleCount + TABLE_OVERSCAN);
+
+  if (!force && startIdx === virtualLastStart && endIdx === virtualLastEnd) {
+    return;
+  }
+  virtualLastStart = startIdx;
+  virtualLastEnd = endIdx;
+
+  const fragment = document.createDocumentFragment();
+  if (startIdx > 0) {
+    fragment.append(createVirtualSpacerRow(startIdx * TABLE_ROW_HEIGHT));
+  }
+  for (let i = startIdx; i < endIdx; i++) {
+    const row = virtualTableRows[i];
+    if (row.kind === "folder") {
+      fragment.append(createFolderHeaderRow(row));
+    } else {
+      fragment.append(createTableDataRow(row.entry, row.isChild, row.folderChs, row.parentFolder));
+    }
+  }
+  if (endIdx < virtualTableRows.length) {
+    fragment.append(createVirtualSpacerRow((virtualTableRows.length - endIdx) * TABLE_ROW_HEIGHT));
+  }
+  el.tableList.replaceChildren(fragment);
+}
+
+function renderTables(resetScroll = false): void {
   if (!bootstrap) {
     return;
   }
+  if (resetScroll) {
+    el.tablesScrollViewport.scrollTop = 0;
+  }
   const term = el.search.value.trim().toLowerCase();
-  el.tableList.replaceChildren();
 
   const folderGroups = new Map<string, TableEntry[]>();
   const rootEntries: TableEntry[] = [];
@@ -6370,12 +6932,11 @@ function renderTables(): void {
   const folderKeys = Array.from(folderGroups.keys()).sort((a, b) => a.localeCompare(b));
   rootEntries.sort((a, b) => a.key.localeCompare(b.key));
 
-  const fragment = document.createDocumentFragment();
+  const nextRows: VirtualTableRow[] = [];
+  const nextFolderMap = new Map<string, TableEntry[]>();
 
-  // 1. 分类文件夹
   for (const fKey of folderKeys) {
     const allEntriesInFolder = folderGroups.get(fKey)!;
-
     const filteredEntries = allEntriesInFolder.filter((entry) => {
       const isSel = selected.has(entry.key);
       if (filterOnlyUnselected && isSel) {
@@ -6397,83 +6958,43 @@ function renderTables(): void {
     }
 
     const totalInFolder = allEntriesInFolder.length;
-    const selInFolder = allEntriesInFolder.filter((e) => selected.has(e.key)).length;
-    const isAllSel = selInFolder === totalInFolder && totalInFolder > 0;
-    const isPartSel = selInFolder > 0 && selInFolder < totalInFolder;
+    let selInFolder = 0;
+    for (const item of allEntriesInFolder) {
+      if (selected.has(item.key)) {
+        selInFolder++;
+      }
+    }
 
     const shouldAutoExpand = term.length > 0 || filterOnlyUnselected;
     const isExpanded = shouldAutoExpand || expandedFolders.has(fKey);
-
-    const trGroup = document.createElement("tr");
-    trGroup.className = `folder-header-row ${isExpanded ? "expanded" : ""}`;
-
-    const tdSel = document.createElement("td");
-    tdSel.className = "col-sel folder-sel-cell";
-    const selWrap = document.createElement("div");
-    selWrap.className = "folder-sel-wrap";
-
-    const caret = document.createElement("span");
-    caret.className = `folder-caret ${isExpanded ? "expanded" : ""}`;
-    caret.innerHTML =
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>';
-
-    const folderCheckbox = document.createElement("input");
-    folderCheckbox.type = "checkbox";
-    folderCheckbox.className = "folder-checkbox";
-    folderCheckbox.checked = isAllSel;
-    folderCheckbox.indeterminate = isPartSel;
-    folderCheckbox.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const targetState = !isAllSel;
-      for (const item of allEntriesInFolder) {
-        setSelected(item.key, targetState);
-      }
-      syncPresetWithSelection();
-      renderTables();
-    });
-
-    selWrap.append(caret, folderCheckbox);
-    tdSel.append(selWrap);
-
-    const tdKey = document.createElement("td");
-    tdKey.className = "col-filename folder-name-cell";
-    tdKey.textContent = fKey;
-
-    const tdPreview = document.createElement("td");
-    tdPreview.className = "col-preview folder-preview-cell";
-
     const folderChs =
       (bootstrap?.folders && bootstrap.folders[fKey]) ||
       allEntriesInFolder.find((e) => e.name && e.name !== "-")?.name ||
       "";
-    const tdName = document.createElement("td");
-    tdName.className = "col-chs folder-chs-cell";
-    tdName.textContent = folderChs || "-";
 
-    const tdStatus = document.createElement("td");
-    tdStatus.className = "col-status folder-status-cell";
-
-    trGroup.append(tdSel, tdKey, tdPreview, tdName, tdStatus);
-
-    trGroup.addEventListener("click", () => {
-      if (isExpanded) {
-        expandedFolders.delete(fKey);
-      } else {
-        expandedFolders.add(fKey);
-      }
-      renderTables();
+    nextFolderMap.set(fKey, allEntriesInFolder);
+    nextRows.push({
+      kind: "folder",
+      folderKey: fKey,
+      folderChs,
+      totalInFolder,
+      selInFolder,
+      isExpanded,
     });
-
-    fragment.append(trGroup);
 
     if (isExpanded) {
       for (const entry of filteredEntries) {
-        fragment.append(createTableDataRow(entry, true, folderChs));
+        nextRows.push({
+          kind: "entry",
+          entry,
+          isChild: true,
+          folderChs,
+          parentFolder: fKey,
+        });
       }
     }
   }
 
-  // 2. 独立数据表
   const filteredRootEntries = rootEntries.filter((entry) => {
     const isSel = selected.has(entry.key);
     if (filterOnlyUnselected && isSel) {
@@ -6490,32 +7011,235 @@ function renderTables(): void {
   });
 
   for (const entry of filteredRootEntries) {
-    fragment.append(createTableDataRow(entry));
+    nextRows.push({
+      kind: "entry",
+      entry,
+      isChild: false,
+      folderChs: "",
+      parentFolder: "",
+    });
   }
 
-  if (fragment.childNodes.length === 0) {
-    const trEmpty = document.createElement("tr");
-    const tdEmpty = document.createElement("td");
-    tdEmpty.colSpan = 5;
-    tdEmpty.className = "table-empty-cell";
-    const rawTerm = el.search.value.trim();
-    if (tableList().length === 0) {
-      tdEmpty.textContent = "表清单尚未加载，请先同步资源或检查网络连接";
-    } else if (rawTerm && filterOnlyUnselected) {
-      tdEmpty.textContent = `未找到同时匹配「${rawTerm}」且未选中的数据表`;
-    } else if (rawTerm) {
-      tdEmpty.textContent = `未找到匹配「${rawTerm}」的数据表`;
-    } else if (filterOnlyUnselected) {
-      tdEmpty.textContent = "所有数据表均已选中，暂无未选项";
-    } else {
-      tdEmpty.textContent = "暂无可显示的数据表";
-    }
-    trEmpty.append(tdEmpty);
-    fragment.append(trEmpty);
-  }
+  virtualTableRows = nextRows;
+  virtualFolderEntriesMap = nextFolderMap;
+  virtualLastStart = -1;
+  virtualLastEnd = -1;
 
-  el.tableList.append(fragment);
+  if (nextRows.length === 0) {
+    renderEmptyTableNotice(el.search.value.trim());
+  } else {
+    renderVirtualTableSlice(true);
+  }
   updateScopeCount();
+}
+
+function setTableSearchMode(mode: TableSearchMode): void {
+  if (tableSearchDebounceTimer) {
+    window.clearTimeout(tableSearchDebounceTimer);
+    tableSearchDebounceTimer = 0;
+  }
+  if (tableSearchMode === mode) {
+    return;
+  }
+  tableSearchMode = mode;
+  el.btnSearchModeTable.classList.toggle("active", mode === "table");
+  el.btnSearchModeTable.setAttribute("aria-pressed", mode === "table" ? "true" : "false");
+  el.btnSearchModeContent.classList.toggle("active", mode === "content");
+  el.btnSearchModeContent.setAttribute("aria-pressed", mode === "content" ? "true" : "false");
+  el.tablesDataTable.classList.toggle("hidden", mode === "content");
+  el.csvContentSearchView.classList.toggle("hidden", mode !== "content");
+  el.search.placeholder =
+    mode === "content"
+      ? "搜索全部词条文本，如 利姆萨 / 亚拉戈（回车立即搜索）"
+      : "搜索表名或中文名称，如 Item / 道具";
+
+  el.tablesScrollViewport.scrollTop = 0;
+  if (mode === "table") {
+    renderTables(false);
+    return;
+  }
+
+  const query = el.search.value.trim();
+  if (!query) {
+    renderContentSearchState("请输入关键词，在当前词条目录的全部 CSV 文件中搜索台词、道具、技能等文本。");
+    return;
+  }
+  if (lastContentSearchResult && lastContentSearchResult.query === query) {
+    renderContentSearchResult(lastContentSearchResult);
+    return;
+  }
+  void runCSVContentSearch();
+}
+
+function renderContentSearchState(message: string): void {
+  const box = document.createElement("div");
+  box.className = "csv-search-empty";
+  box.textContent = message;
+  el.csvContentSearchView.replaceChildren(box);
+}
+
+function appendHighlightedSnippet(container: HTMLElement, text: string, query: string): void {
+  const q = query.trim();
+  if (!q) {
+    container.textContent = text;
+    return;
+  }
+  const lowerText = text.toLowerCase();
+  const lowerQ = q.toLowerCase();
+  let cursor = 0;
+  while (cursor < text.length) {
+    const idx = lowerText.indexOf(lowerQ, cursor);
+    if (idx < 0) {
+      container.append(document.createTextNode(text.slice(cursor)));
+      break;
+    }
+    if (idx > cursor) {
+      container.append(document.createTextNode(text.slice(cursor, idx)));
+    }
+    const mark = document.createElement("mark");
+    mark.className = "csv-hit-mark";
+    mark.textContent = text.slice(idx, idx + q.length);
+    container.append(mark);
+    cursor = idx + q.length;
+  }
+}
+
+function entryForSearchHit(hit: CSVSearchHit): TableEntry {
+  const found = tableList().find((item) => item.key === hit.tableKey);
+  if (found) {
+    return found;
+  }
+  return {
+    key: hit.tableKey,
+    name: hit.tableName || "-",
+    folder: "",
+    warning: "",
+  };
+}
+
+function renderContentSearchResult(res: CSVSearchResult): void {
+  const fragment = document.createDocumentFragment();
+
+  const summary = document.createElement("div");
+  summary.className = "csv-search-summary";
+  const summaryMain = document.createElement("span");
+  summaryMain.textContent = res.truncated
+    ? `共在 ${res.matchedFiles} 张表中找到 ${res.totalHits} 条匹配（当前展示前 ${res.hits.length} 条，可输入更精确关键词）`
+    : `共在 ${res.matchedFiles} 张表中找到 ${res.totalHits} 条匹配`;
+  const summarySource = document.createElement("span");
+  const csvCtx = bootstrap?.csv;
+  if (csvCtx) {
+    const selectedDir = csvCtx.selected ? csvCtx.dirs.find((d) => d.path === csvCtx.selected) : undefined;
+    const sourceLabel = csvCtx.selected ? (selectedDir?.title || csvDirName(csvCtx.selected)) : "内置词条";
+    summarySource.textContent = `词条源：${sourceLabel}`;
+  }
+  summary.append(summaryMain, summarySource);
+  fragment.append(summary);
+
+  if (res.hits.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "csv-search-empty";
+    empty.textContent = `未在当前词条目录中找到包含「${res.query}」的文本`;
+    fragment.append(empty);
+    el.csvContentSearchView.replaceChildren(fragment);
+    return;
+  }
+
+  const list = document.createElement("div");
+  list.className = "csv-search-hit-list";
+  for (const hit of res.hits) {
+    const entry = entryForSearchHit(hit);
+    const rowEl = document.createElement("div");
+    rowEl.className = "csv-search-hit-row";
+
+    const checkLabel = document.createElement("label");
+    checkLabel.className = "csv-search-hit-check";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = selected.has(hit.tableKey);
+    cb.dataset.tableKey = hit.tableKey;
+    cb.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+    cb.addEventListener("change", () => {
+      setSelected(hit.tableKey, cb.checked);
+      syncPresetWithSelection();
+      for (const peer of list.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')) {
+        if (peer !== cb && peer.dataset.tableKey === hit.tableKey) {
+          peer.checked = cb.checked;
+        }
+      }
+    });
+    checkLabel.append(cb);
+
+    const main = document.createElement("div");
+    main.className = "csv-search-hit-main";
+
+    const head = document.createElement("div");
+    head.className = "csv-search-hit-head";
+    const tableSpan = document.createElement("span");
+    tableSpan.className = "csv-search-hit-table";
+    tableSpan.textContent = hit.tableKey;
+    head.append(tableSpan);
+    if (entry.name && entry.name !== "-") {
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "csv-search-hit-name";
+      nameSpan.textContent = entry.name;
+      head.append(nameSpan);
+    }
+    const metaSpan = document.createElement("span");
+    metaSpan.className = "csv-search-hit-meta";
+    metaSpan.textContent = hit.colHeader ? `Key ${hit.rowKey} · ${hit.colHeader}` : `Key ${hit.rowKey}`;
+    head.append(metaSpan);
+
+    const snippetEl = document.createElement("div");
+    snippetEl.className = "csv-search-hit-snippet";
+    appendHighlightedSnippet(snippetEl, hit.snippet, res.query);
+
+    main.append(head, snippetEl);
+
+    const locateBtn = document.createElement("button");
+    locateBtn.type = "button";
+    locateBtn.className = "btn btn-quiet btn-xs csv-search-hit-locate";
+    locateBtn.textContent = "定位预览";
+    locateBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      void openCSVPreview(entry, { rowKey: hit.rowKey, rowIndex: hit.rowIndex });
+    });
+
+    rowEl.addEventListener("click", () => {
+      void openCSVPreview(entry, { rowKey: hit.rowKey, rowIndex: hit.rowIndex });
+    });
+
+    rowEl.append(checkLabel, main, locateBtn);
+    list.append(rowEl);
+  }
+  fragment.append(list);
+  el.csvContentSearchView.replaceChildren(fragment);
+}
+
+async function runCSVContentSearch(): Promise<void> {
+  const query = el.search.value.trim();
+  const seq = ++contentSearchAbortSeq;
+  if (!query) {
+    lastContentSearchResult = null;
+    renderContentSearchState("请输入关键词，在当前词条目录的全部 CSV 文件中搜索台词、道具、技能等文本。");
+    return;
+  }
+  renderContentSearchState(`正在全表检索「${query}」…`);
+  try {
+    const res = await call("SearchCSVContent", config.language, query, 200);
+    if (seq !== contentSearchAbortSeq || tableSearchMode !== "content") {
+      return;
+    }
+    lastContentSearchResult = res;
+    renderContentSearchResult(res);
+  } catch (err) {
+    if (seq !== contentSearchAbortSeq || tableSearchMode !== "content") {
+      return;
+    }
+    renderContentSearchState(`全文检索失败：${describeError(err)}`);
+  }
 }
 
 const CSV_PREVIEW_PAGE_SIZE = 100;
@@ -6523,10 +7247,14 @@ let csvPreviewEntry: TableEntry | null = null;
 let csvPreviewOffset = 0;
 let csvPreviewGeneration = 0;
 let csvPreviewSearchTimer = 0;
+let csvPreviewLocateKey = "";
+let csvPreviewLocatePending = false;
 
 function closeCSVPreview(): void {
   csvPreviewGeneration++;
   csvPreviewEntry = null;
+  csvPreviewLocateKey = "";
+  csvPreviewLocatePending = false;
   if (csvPreviewSearchTimer) {
     window.clearTimeout(csvPreviewSearchTimer);
     csvPreviewSearchTimer = 0;
@@ -6536,9 +7264,13 @@ function closeCSVPreview(): void {
   el.csvPreviewTbody.replaceChildren();
 }
 
-async function openCSVPreview(entry: TableEntry): Promise<void> {
+async function openCSVPreview(entry: TableEntry, locate?: CSVPreviewLocateTarget): Promise<void> {
   csvPreviewEntry = entry;
-  csvPreviewOffset = 0;
+  csvPreviewOffset = locate
+    ? Math.floor(Math.max(0, locate.rowIndex) / CSV_PREVIEW_PAGE_SIZE) * CSV_PREVIEW_PAGE_SIZE
+    : 0;
+  csvPreviewLocateKey = locate ? locate.rowKey : "";
+  csvPreviewLocatePending = Boolean(locate);
   el.csvPreviewTitle.textContent = entry.key;
   if (entry.name && entry.name !== "-") {
     el.csvPreviewName.textContent = entry.name;
@@ -6595,6 +7327,7 @@ async function loadCSVPreviewPage(): Promise<void> {
     el.csvPreviewThead.append(headRow);
 
     if (res.rows.length === 0) {
+      csvPreviewLocatePending = false;
       el.csvPreviewState.textContent = query ? `未找到包含「${query}」的数据行` : "该 CSV 表暂无数据行";
       el.csvPreviewState.classList.remove("hidden");
       el.csvPreviewScroll.classList.add("hidden");
@@ -6604,8 +7337,16 @@ async function loadCSVPreviewPage(): Promise<void> {
 
     const colCount = res.headers.length;
     const frag = document.createDocumentFragment();
+    let locatedRowEl: HTMLTableRowElement | null = null;
     for (const row of res.rows) {
       const tr = document.createElement("tr");
+      const rowKey = row[0] ?? "";
+      if (csvPreviewLocateKey && rowKey === csvPreviewLocateKey) {
+        tr.classList.add("is-located-row");
+        if (!locatedRowEl) {
+          locatedRowEl = tr;
+        }
+      }
       for (let i = 0; i < colCount; i++) {
         const td = document.createElement("td");
         if (i === 0) {
@@ -6620,7 +7361,18 @@ async function loadCSVPreviewPage(): Promise<void> {
 
     el.csvPreviewState.classList.add("hidden");
     el.csvPreviewScroll.classList.remove("hidden");
-    el.csvPreviewScroll.scrollTop = 0;
+    if (csvPreviewLocatePending) {
+      csvPreviewLocatePending = false;
+      if (locatedRowEl) {
+        requestAnimationFrame(() => {
+          locatedRowEl?.scrollIntoView({ block: "center" });
+        });
+      } else {
+        el.csvPreviewScroll.scrollTop = 0;
+      }
+    } else {
+      el.csvPreviewScroll.scrollTop = 0;
+    }
 
     const start = res.offset + 1;
     const end = res.offset + res.rows.length;
@@ -6631,6 +7383,7 @@ async function loadCSVPreviewPage(): Promise<void> {
     if (gen !== csvPreviewGeneration) {
       return;
     }
+    csvPreviewLocatePending = false;
     el.csvPreviewState.textContent = `预览失败：${describeError(err)}`;
     el.csvPreviewState.classList.remove("hidden");
     el.csvPreviewScroll.classList.add("hidden");
@@ -6879,19 +7632,72 @@ function wireEvents(): void {
     switchView("workbench");
   });
 
+  el.btnSearchModeTable.addEventListener("click", () => {
+    setTableSearchMode("table");
+  });
+
+  el.btnSearchModeContent.addEventListener("click", () => {
+    setTableSearchMode("content");
+  });
+
+  el.tablesScrollViewport.addEventListener("scroll", () => {
+    if (tableSearchMode !== "table") {
+      return;
+    }
+    if (virtualScrollRaf) {
+      return;
+    }
+    virtualScrollRaf = window.requestAnimationFrame(() => {
+      virtualScrollRaf = 0;
+      renderVirtualTableSlice(false);
+    });
+  });
+
+  window.addEventListener("resize", () => {
+    if (tableSearchMode === "table" && !el.viewTables.classList.contains("hidden")) {
+      renderVirtualTableSlice(false);
+    }
+  });
+
   el.search.addEventListener("input", () => {
-    renderTables();
+    if (tableSearchDebounceTimer) {
+      window.clearTimeout(tableSearchDebounceTimer);
+      tableSearchDebounceTimer = 0;
+    }
+    if (tableSearchMode === "content") {
+      lastContentSearchResult = null;
+      tableSearchDebounceTimer = window.setTimeout(() => {
+        tableSearchDebounceTimer = 0;
+        void runCSVContentSearch();
+      }, 220);
+      return;
+    }
+    tableSearchDebounceTimer = window.setTimeout(() => {
+      tableSearchDebounceTimer = 0;
+      renderTables(true);
+    }, 120);
+  });
+
+  el.search.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter" && tableSearchMode === "content") {
+      ev.preventDefault();
+      if (tableSearchDebounceTimer) {
+        window.clearTimeout(tableSearchDebounceTimer);
+        tableSearchDebounceTimer = 0;
+      }
+      void runCSVContentSearch();
+    }
   });
 
   el.btnFilterUnselected.addEventListener("click", () => {
     filterOnlyUnselected = !filterOnlyUnselected;
     el.btnFilterUnselected.classList.toggle("active", filterOnlyUnselected);
-    renderTables();
+    renderTables(true);
   });
 
   el.btnCollapseAll.addEventListener("click", () => {
     expandedFolders.clear();
-    renderTables();
+    renderTables(true);
   });
 
   el.btnExpandAll.addEventListener("click", () => {
@@ -6903,7 +7709,7 @@ function wireEvents(): void {
         expandedFolders.add(entry.folder);
       }
     }
-    renderTables();
+    renderTables(true);
   });
 
   el.btnSelectAll.addEventListener("click", () => {
@@ -6920,7 +7726,7 @@ function wireEvents(): void {
     }
     selected.clear();
     syncPresetWithSelection();
-    renderTables();
+    renderTables(false);
   });
 
   el.btnClearLog.addEventListener("click", () => {
@@ -7207,10 +8013,11 @@ function wireEvents(): void {
     }
   });
 
-  el.btnBackWorkbenchFont.addEventListener("click", () => {
+  el.btnBackWorkbenchFont.addEventListener("click", async () => {
     if (subEditorOpen || !el.fontElementModal.classList.contains("hidden")) {
       closeElementEditorModal(true);
     }
+    if (!(await confirmUnsavedFontChanges("返回"))) return;
     switchView("workbench");
     void refreshFontBuild();
     const currentPreset = availableFontPresets.find((p) => p.id === activePresetId);
@@ -7225,18 +8032,21 @@ function wireEvents(): void {
   el.fcPresetSelect.addEventListener("change", async () => {
     const nextId = el.fcPresetSelect.value;
     if (!nextId || nextId === activePresetId) return;
-    await loadFontPreset(nextId);
-    const reg = getCurrentFontRegion();
-    if (!config.fontPresets) config.fontPresets = {};
-    config.fontPresets[reg] = nextId;
+    const prevId = activePresetId;
+    el.fcPresetSelect.value = prevId || "";
+    if (!(await confirmUnsavedFontChanges("切换"))) {
+      el.fcPresetSelect.value = prevId || "";
+      return;
+    }
+    await applyFontPreset(nextId);
     void persistConfig();
-    updateCurrentPresetBadge();
   });
   el.btnPresetClose.addEventListener("click", () => closePresetManager());
   el.presetModal.addEventListener("mousedown", (ev) => {
     if (ev.target === el.presetModal) closePresetManager();
   });
-  el.btnPresetImport.addEventListener("click", () => {
+  el.btnPresetImport.addEventListener("click", async () => {
+    if (!(await confirmUnsavedFontChanges("导入"))) return;
     el.fontPresetImportPicker.value = "";
     el.fontPresetImportPicker.click();
   });
@@ -7248,6 +8058,8 @@ function wireEvents(): void {
     if (ev.target === el.csvPreviewModal) closeCSVPreview();
   });
   el.csvPreviewSearch.addEventListener("input", () => {
+    csvPreviewLocatePending = false;
+    csvPreviewLocateKey = "";
     if (csvPreviewSearchTimer) {
       window.clearTimeout(csvPreviewSearchTimer);
     }
@@ -7258,10 +8070,14 @@ function wireEvents(): void {
   });
   el.btnCsvPreviewPrev.addEventListener("click", () => {
     if (csvPreviewOffset <= 0) return;
+    csvPreviewLocatePending = false;
+    csvPreviewLocateKey = "";
     csvPreviewOffset = Math.max(0, csvPreviewOffset - CSV_PREVIEW_PAGE_SIZE);
     void loadCSVPreviewPage();
   });
   el.btnCsvPreviewNext.addEventListener("click", () => {
+    csvPreviewLocatePending = false;
+    csvPreviewLocateKey = "";
     csvPreviewOffset += CSV_PREVIEW_PAGE_SIZE;
     void loadCSVPreviewPage();
   });
@@ -7296,8 +8112,9 @@ function wireEvents(): void {
       const saved = await call("SaveFontPreset", curReg, name.trim(), JSON.stringify(parsed, null, "\t"));
       if (!config.fontPresets) config.fontPresets = {};
       config.fontPresets[curReg] = saved.id;
+      unsavedExternalLabel = "";
       log(`已导入并选用字体方案：${saved.name}`, "ok", "字体");
-      await loadFontPresetsForCurrentRegion();
+      await loadFontPresetsForCurrentRegion(false);
       await loadFontPreset(saved.id);
     } catch (err) {
       const msg = describeError(err);
@@ -8142,6 +8959,7 @@ function wireRuntimeEvents(): void {
     hit.face.elements[hit.index] = data.element;
     renderElementList();
     schedulePreviewRender();
+    updateFontDirtyUI();
   });
 
   Events.On("elem-editor:bypass", (event) => {

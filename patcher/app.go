@@ -102,6 +102,10 @@ type App struct {
 	detectMu     sync.Mutex
 	detectCancel context.CancelFunc
 
+	csvSearchMu     sync.Mutex
+	csvSearchSeq    uint64
+	csvSearchCancel context.CancelFunc
+
 	cancelPatchMu sync.Mutex
 	cancelPatch   context.CancelFunc
 

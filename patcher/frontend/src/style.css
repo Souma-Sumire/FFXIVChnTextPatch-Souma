@@ -2049,8 +2049,8 @@ body.is-resizing-log * {
 
 .search-field {
   flex: 1 1 200px;
-  min-width: 150px;
-  max-width: 280px;
+  min-width: 180px;
+  max-width: 340px;
   height: 28px;
   padding: 0 10px;
   display: flex;
@@ -2061,6 +2061,10 @@ body.is-resizing-log * {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   transition: border-color 0.12s var(--ease);
+}
+
+.search-field:has(.search-mode-switch) {
+  padding-right: 4px;
 }
 
 .search-field:focus-within {
@@ -2078,6 +2082,40 @@ body.is-resizing-log * {
 
 .search-field input::placeholder {
   color: var(--text-3);
+}
+
+.search-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background-color: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.search-mode-btn {
+  height: 18px;
+  padding: 0 7px;
+  font-size: var(--fs-meta);
+  line-height: 1;
+  color: var(--text-3);
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s var(--ease), color 0.12s var(--ease);
+}
+
+.search-mode-btn:hover {
+  color: var(--text-2);
+}
+
+.search-mode-btn.active {
+  color: var(--text);
+  background-color: var(--bg-control);
 }
 
 .filter-toggle {
@@ -2312,12 +2350,27 @@ body.is-resizing-log * {
 }
 
 .status-tag-warn {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--fs-label);
   line-height: 1.45;
   color: var(--warn);
-  white-space: normal;
-  word-break: break-word;
+}
+
+.data-table tbody tr.folder-header-row,
+.data-table tbody tr.table-data-row {
+  height: 34px;
+}
+
+.data-table tr.virtual-spacer-row td {
+  height: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  font-size: 0;
 }
 
 .table-empty-cell {
@@ -2327,6 +2380,137 @@ body.is-resizing-log * {
   color: var(--text-3);
   border-bottom: none !important;
   white-space: normal !important;
+}
+
+.table-empty-action {
+  margin-top: 12px;
+}
+
+/* ---------- 跨表全文搜索视图 ---------- */
+
+.csv-content-search-view {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.csv-search-summary {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: 34px;
+  padding: 0 var(--sp-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-meta);
+  color: var(--text-3);
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--line-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.csv-search-empty {
+  padding: 48px var(--sp-6);
+  text-align: center;
+  font-size: var(--fs-label);
+  color: var(--text-3);
+  line-height: 1.6;
+}
+
+.csv-search-hit-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.csv-search-hit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--sp-6);
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background-color 0.12s var(--ease);
+}
+
+.csv-search-hit-row:hover {
+  background-color: var(--bg-hover);
+}
+
+.csv-search-hit-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.csv-search-hit-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.csv-search-hit-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.csv-search-hit-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.csv-search-hit-table {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.csv-search-hit-name {
+  font-size: var(--fs-meta);
+  color: var(--text-2);
+}
+
+.csv-search-hit-meta {
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+  background-color: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.csv-search-hit-snippet {
+  font-size: var(--fs-label);
+  line-height: 1.5;
+  color: var(--text-2);
+  word-break: break-word;
+  user-select: text;
+}
+
+.csv-hit-mark {
+  padding: 0 2px;
+  color: var(--text);
+  background-color: rgba(59, 120, 231, 0.34);
+  border-radius: 2px;
+}
+
+.csv-search-hit-locate {
+  flex-shrink: 0;
 }
 
 /* ---------- 模态框 ---------- */
@@ -2499,6 +2683,12 @@ body.is-resizing-log * {
   color: var(--text);
 }
 
+.fc-menu-entry:disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
 .fc-menu-entry:hover .fc-menu-accel {
   color: var(--text-2);
   border-color: var(--line-strong);
@@ -2621,6 +2811,11 @@ body.is-resizing-log * {
 
 .fc-preset-select:focus {
   border-color: var(--accent-line);
+}
+
+.fc-preset-select.is-dirty {
+  border-color: rgba(216, 169, 76, 0.55);
+  color: var(--gold-text);
 }
 
 select,
@@ -4813,6 +5008,14 @@ body.row-resizing * {
 
 .csv-preview-table tbody tr:hover {
   background: rgba(233, 238, 246, 0.035);
+}
+
+.csv-preview-table tbody tr.is-located-row {
+  background-color: var(--accent-soft);
+}
+
+.csv-preview-table tbody tr.is-located-row td {
+  color: var(--text);
 }
 
 .csv-preview-foot {

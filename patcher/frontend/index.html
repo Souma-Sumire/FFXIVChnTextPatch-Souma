@@ -229,6 +229,10 @@
               <line x1="20" y1="20" x2="16.65" y2="16.65" />
             </svg>
             <input id="search" placeholder="搜索表名或中文名称，如 Item / 道具" aria-label="搜索数据表" />
+            <div class="search-mode-switch" role="group" aria-label="搜索模式">
+              <button type="button" id="btn-search-mode-table" class="search-mode-btn active">表名</button>
+              <button type="button" id="btn-search-mode-content" class="search-mode-btn">内容</button>
+            </div>
           </div>
 
           <button id="btn-filter-unselected" class="btn filter-toggle" type="button">
@@ -262,8 +266,8 @@
         </div>
       </header>
 
-      <div class="tables-scroll-viewport">
-        <table class="data-table">
+      <div id="tables-scroll-viewport" class="tables-scroll-viewport">
+        <table id="tables-data-table" class="data-table">
           <thead>
             <tr>
               <th class="col-sel"><span class="sr-only">选择</span></th>
@@ -275,6 +279,7 @@
           </thead>
           <tbody id="table-list"></tbody>
         </table>
+        <div id="csv-content-search-view" class="csv-content-search-view hidden"></div>
       </div>
     </section>
 
@@ -332,6 +337,15 @@
           <div class="fc-menu-item" id="fc-menu-edit">
             <button type="button" class="fc-menu-btn">编辑</button>
             <div class="fc-dropdown-menu hidden" id="fc-dropdown-edit">
+              <button type="button" class="fc-menu-entry" data-menu="edit-undo" id="fc-menu-undo">
+                <span class="fc-menu-label">撤销</span>
+                <kbd class="fc-menu-accel">Ctrl+Z</kbd>
+              </button>
+              <button type="button" class="fc-menu-entry" data-menu="edit-redo" id="fc-menu-redo">
+                <span class="fc-menu-label">重做</span>
+                <kbd class="fc-menu-accel">Ctrl+Y</kbd>
+              </button>
+              <div class="fc-menu-divider"></div>
               <button type="button" class="fc-menu-entry" data-menu="edit-add-from-system">
                 <span class="fc-menu-label">从系统字体添加图层…</span>
                 <kbd class="fc-menu-accel">Shift+Ins</kbd>
@@ -350,6 +364,15 @@
               </button>
               <button type="button" class="fc-menu-entry" data-menu="edit-scale-size">
                 <span class="fc-menu-label">缩放当前字号…</span>
+              </button>
+              <div class="fc-menu-divider"></div>
+              <button type="button" class="fc-menu-entry" data-menu="edit-move-up" id="fc-menu-move-up">
+                <span class="fc-menu-label">上移图层</span>
+                <kbd class="fc-menu-accel">Alt+↑</kbd>
+              </button>
+              <button type="button" class="fc-menu-entry" data-menu="edit-move-down" id="fc-menu-move-down">
+                <span class="fc-menu-label">下移图层</span>
+                <kbd class="fc-menu-accel">Alt+↓</kbd>
               </button>
             </div>
           </div>
@@ -502,6 +525,15 @@
         <button type="button" class="fc-menu-entry" id="fc-ctx-delete">
           <span class="fc-menu-label">删除</span>
           <kbd class="fc-menu-accel">Del</kbd>
+        </button>
+        <div class="fc-menu-divider"></div>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-move-up">
+          <span class="fc-menu-label">上移图层</span>
+          <kbd class="fc-menu-accel">Alt+↑</kbd>
+        </button>
+        <button type="button" class="fc-menu-entry" id="fc-ctx-move-down">
+          <span class="fc-menu-label">下移图层</span>
+          <kbd class="fc-menu-accel">Alt+↓</kbd>
         </button>
         <div class="fc-menu-divider"></div>
         <button type="button" class="fc-menu-entry" id="fc-ctx-add">
