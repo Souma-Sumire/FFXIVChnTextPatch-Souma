@@ -69,7 +69,8 @@ namespace App {
 		MonospacingMode m_monospacingMode = MonospacingMode::Off;
 		bool m_bRefreshingMonospacing = false;
 
-		// Limits of the value of an edit of a number, and the steps that Up and Down (and Ctrl with them) change it by.
+		// Limits of the value of an edit of a number, and the steps that Up and Down change it by. The fine step is taken
+		// with Shift or Ctrl.
 		struct SpinRange {
 			float Min;
 			float Max;
@@ -77,6 +78,9 @@ namespace App {
 			float FineStep;
 		};
 		std::map<HWND, SpinRange> m_spinRanges;
+
+		// Edits of numbers whose text is not a number now, which are drawn apart.
+		std::set<HWND> m_invalidEdits;
 
 		ControlStruct* m_controls = nullptr;
 
@@ -96,7 +100,7 @@ namespace App {
 		bool ConsumeDialogMessage(MSG& msg);
 
 		// Shows the fields of the element that are Auto as they are fit now: their edits empty, with the values as cue
-		// banners, and the Auto item of the render mode, after the font they're fit in changed.
+		// banners, and the Auto item of the render mode, after the font they're fit in changed. The title follows the size.
 		void RefreshAutoFields();
 
 		HWND m_hWnd{};
@@ -123,6 +127,24 @@ namespace App {
 
 		// The value that Up and Down step from: that of the field, for an Auto field's edit that is left empty.
 		[[nodiscard]] float GetSteppedValue(HWND hwnd);
+
+		// The sign of the change that Up makes to the value of an edit, which is negative for vertical offsets.
+		[[nodiscard]] float GetUpDirection(HWND hwnd) const;
+
+		// Changes the value of an edit by its step, or its fine step, in the direction of the sign, within its limits.
+		void StepNumberEdit(HWND hwnd, float direction, bool fine);
+
+		// Marks an edit of a number as invalid while its text is neither a number nor an expression that evaluates.
+		void UpdateNumberEditValidity(HWND hwnd);
+
+		// Handles WM_CTLCOLOREDIT of the pages. Returns the brush for an invalid edit, and 0 for the others.
+		INT_PTR NumberEdit_OnCtlColor(HDC hdc, HWND hwnd) const;
+
+		// Shows the font and the size of the element in the title, which tells the editors of elements apart.
+		void RefreshTitle();
+
+		// Adds tooltips to the controls that have no label of their own.
+		void AddToolTips();
 
 		// Fills the render modes of DirectWrite in, after an Auto item for elements whose fields may be Auto.
 		void RepopulateDirectWriteRenderModeCombo();
@@ -209,8 +231,6 @@ namespace App {
 		INT_PTR CustomRangeAdd_OnCommand(uint16_t notiCode);
 
 		INT_PTR CustomRangeSubtract_OnCommand(uint16_t notiCode);
-
-		INT_PTR CodepointsList_OnCommand(uint16_t notiCode);
 
 		INT_PTR CodepointsClearButton_OnCommand(uint16_t notiCode);
 

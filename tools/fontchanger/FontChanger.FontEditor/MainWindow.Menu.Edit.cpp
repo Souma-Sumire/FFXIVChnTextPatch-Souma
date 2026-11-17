@@ -14,6 +14,7 @@ LRESULT App::FontEditorWindow::Menu_Edit_Add() {
 	if (!m_pActiveFont)
 		return 0;
 
+	UndoScope undo(*this, {m_pActiveFont});
 	auto& elements = m_pActiveFont->Elements;
 	auto indices = GetSelectedElementIndices();
 	if (indices.empty())
@@ -63,6 +64,8 @@ LRESULT App::FontEditorWindow::Menu_Edit_AddElementFromFont() {
 	if (!logFont)
 		return 0;
 
+	UndoScope undo(*this, {m_pActiveFont});
+
 	// Added before the first selected element, as Add does, or after all.
 	const auto indices = GetSelectedElementIndices();
 	const auto index = indices.empty() ? m_pActiveFont->Elements.size() : static_cast<size_t>(indices.front());
@@ -103,6 +106,8 @@ LRESULT App::FontEditorWindow::Menu_Edit_AddFromFont() {
 	if (!logFont)
 		return 0;
 
+	UndoScope undo(*this, GetFontsOfFontSet(*m_pActiveFont));
+
 	// The elements are added to the fonts of the family in the font set of the active font, and fit at each size.
 	try {
 		const auto lookup = FontsFromSystemFont::GetLookupFromLogFont(*logFont);
@@ -117,7 +122,6 @@ LRESULT App::FontEditorWindow::Menu_Edit_AddFromFont() {
 	}
 
 	UpdateFontElementList();
-	Changes_MarkDirty();
 	Window_Redraw();
 	return 0;
 }
@@ -145,6 +149,9 @@ LRESULT App::FontEditorWindow::Menu_Edit_AutoFit(bool allSizes, bool selectedOnl
 
 	// Editors would show, and revert to, the values from before the fitting.
 	CloseEditors(targets);
+
+	// The other sizes are those of the family, which are in the font set of the font.
+	UndoScope undo(*this, allSizes ? GetFontsOfFontSet(font) : std::vector<Structs::Font*>{&font});
 
 	std::set<const Structs::FontElement*> fitted;
 	try {
@@ -211,9 +218,9 @@ LRESULT App::FontEditorWindow::Menu_Edit_Copy() {
 	if (hg) {
 		if (const auto pLock = GlobalLock(hg)) {
 			memcpy(pLock, wstr.data(), (wstr.size() + 1) * 2);
-			copied = SetClipboardData(CF_UNICODETEXT, pLock);
+			GlobalUnlock(hg);
+			copied = SetClipboardData(CF_UNICODETEXT, hg) != nullptr;
 		}
-		GlobalUnlock(hg);
 		if (!copied)
 			GlobalFree(hg);
 	}
@@ -249,16 +256,16 @@ LRESULT App::FontEditorWindow::Menu_Edit_Paste() {
 		return 0;
 	}
 
+	UndoScope undo(*this, {m_pActiveFont});
+
+	// Pasted once, before the first selected element, or after all.
 	auto& elements = m_pActiveFont->Elements;
-	auto indices = GetSelectedElementIndices();
-	if (indices.empty())
-		indices.push_back(static_cast<int>(elements.size()));
+	const auto indices = GetSelectedElementIndices();
+	const auto pos = indices.empty() ? static_cast<ptrdiff_t>(elements.size()) : static_cast<ptrdiff_t>(indices.front());
 
 	std::set<const Structs::FontElement*> added;
-	for (const auto pos : indices | std::views::reverse) {
-		for (const auto& templateElement : parsedTemplateElements | std::views::reverse)
-			added.insert(elements.emplace(elements.begin() + pos, std::make_unique<Structs::FontElement>(templateElement))->get());
-	}
+	for (const auto& templateElement : parsedTemplateElements | std::views::reverse)
+		added.insert(elements.emplace(elements.begin() + pos, std::make_unique<Structs::FontElement>(templateElement))->get());
 
 	UpdateFontElementList();
 	SelectFontElements(added);
@@ -273,6 +280,14 @@ LRESULT App::FontEditorWindow::Menu_Edit_Delete() {
 	const auto indices = GetSelectedElementIndices();
 	if (indices.empty())
 		return 0;
+
+	UndoScope undo(*this, {m_pActiveFont});
+
+	// Editors refer to the elements.
+	std::vector<Structs::FontElement*> deleted;
+	for (const auto index : indices)
+		deleted.push_back(m_pActiveFont->Elements[index].get());
+	CloseEditors(deleted);
 
 	for (const auto index : indices | std::views::reverse)
 		m_pActiveFont->Elements.erase(m_pActiveFont->Elements.begin() + index);
@@ -295,8 +310,11 @@ LRESULT App::FontEditorWindow::Menu_Edit_Details() {
 
 LRESULT App::FontEditorWindow::Menu_Edit_ChangeParams(int verticalOffset, int horizontalOffset, int letterSpacing, float fontSize) {
 	const auto indices = GetSelectedElementIndices();
-	if (indices.empty())
+	if (!m_pActiveFont || indices.empty())
 		return 0;
+
+	// Steps of the same elements in a row are undone as one, whichever of their values they change.
+	UndoScope undo(*this, {m_pActiveFont}, Undo_MakeCoalesceKey(CoalesceGroup::Nudge, m_pActiveFont, indices));
 
 	const auto tempDisableRedraw = SuppressRedraw(m_hFontElementsListView);
 	for (const auto i : indices) {
@@ -339,8 +357,10 @@ LRESULT App::FontEditorWindow::Menu_Edit_ChangeParams(int verticalOffset, int ho
 
 LRESULT App::FontEditorWindow::Menu_Edit_ToggleMergeMode() {
 	const auto indices = GetSelectedElementIndices();
-	if (indices.empty())
+	if (!m_pActiveFont || indices.empty())
 		return 0;
+
+	UndoScope undo(*this, {m_pActiveFont});
 
 	const auto tempDisableRedraw = SuppressRedraw(m_hFontElementsListView);
 	for (const auto i : indices) {
@@ -358,17 +378,19 @@ LRESULT App::FontEditorWindow::Menu_Edit_SetVerticalAlignment(FontChanger::Fixed
 	if (!m_pActiveFont || m_pActiveFont->VerticalAlignment == alignment)
 		return 0;
 
+	UndoScope undo(*this, {m_pActiveFont});
 	m_pActiveFont->VerticalAlignment = alignment;
 	m_pActiveFont->OnElementChange();
-	Changes_MarkDirty();
 	Window_Redraw();
 	return 0;
 }
 
 LRESULT App::FontEditorWindow::Menu_Edit_MoveUpOrDown(int direction) {
 	auto indices = GetSelectedElementIndices();
-	if (indices.empty())
+	if (!m_pActiveFont || indices.empty())
 		return 0;
+
+	UndoScope undo(*this, {m_pActiveFont});
 
 	// Each selected element swaps places with its neighbor, starting from the one nearest to where they move.
 	auto& elements = m_pActiveFont->Elements;
@@ -399,6 +421,8 @@ LRESULT App::FontEditorWindow::FontElementsListView_Clone() {
 	const auto indices = GetSelectedElementIndices();
 	if (indices.empty())
 		return 0;
+
+	UndoScope undo(*this, {m_pActiveFont});
 
 	// The copies go after the last selected element, in their order.
 	auto& elements = m_pActiveFont->Elements;
@@ -450,6 +474,8 @@ LRESULT App::FontEditorWindow::Menu_Edit_CreateEmptyCopyFromSelection() {
 	const auto refIndex = ListView_GetNextItem(m_hFontElementsListView, -1, LVNI_SELECTED);
 	if (refIndex == -1)
 		return 0;
+
+	UndoScope undo(*this, {m_pActiveFont});
 
 	// An empty element of the same metrics, first so that it decides the metrics of the font.
 	auto& elements = m_pActiveFont->Elements;

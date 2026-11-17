@@ -33,7 +33,6 @@ LRESULT App::FontEditorWindow::Menu_View_ShowLineMetrics() {
 }
 
 LRESULT App::FontEditorWindow::Menu_View_Zoom(int zoom) {
-	m_nZoom = zoom;
-	Window_Redraw();
+	SetPreviewZoom(zoom);
 	return 0;
 }

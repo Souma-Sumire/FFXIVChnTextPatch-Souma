@@ -22,6 +22,7 @@ namespace App {
 			Id_FontListBox,
 			Id_FontElementListView,
 			Id_Edit,
+			Id_StatusBar,
 			Id_Last_,
 		};
 
@@ -37,9 +38,67 @@ namespace App {
 			EditPreview,
 		};
 
+		// A state of a font as the history keeps it, without its cached fonts and its preview text.
+		struct FontSnapshot {
+			Structs::Font State;
+			nlohmann::json Json;
+		};
+
+		struct UndoStep {
+			struct FontState {
+				Structs::Font* Target;
+				std::shared_ptr<const FontSnapshot> Before;
+				std::shared_ptr<const FontSnapshot> After;
+			};
+
+			std::vector<FontState> Fonts;
+			std::vector<int> SelectionBefore;
+			std::vector<int> SelectionAfter;
+			Structs::Font* ActiveFont;
+
+			// Steps of the same key that follow each other shortly are merged into one. 0 for steps that never are.
+			uint64_t CoalesceKey;
+			ULONGLONG Tick;
+		};
+
+		// Makes a step of the changes to the fonts that are made while it lives.
+		class UndoScope {
+			FontEditorWindow& m_window;
+			std::vector<Structs::Font*> m_fonts;
+			std::vector<int> m_selectionBefore;
+			uint64_t m_coalesceKey;
+
+		public:
+			UndoScope(FontEditorWindow& window, std::vector<Structs::Font*> fonts, uint64_t coalesceKey = 0);
+			UndoScope(UndoScope&&) = delete;
+			UndoScope(const UndoScope&) = delete;
+			UndoScope& operator =(UndoScope&&) = delete;
+			UndoScope& operator =(const UndoScope&) = delete;
+			~UndoScope();
+		};
+
+		enum class CoalesceGroup : uint8_t {
+			Nudge = 1,
+			ElementEditor,
+		};
+
 		const std::vector<std::wstring> m_args;
 
-		bool m_bChanged = false;
+		std::vector<UndoStep> m_undo;
+		std::vector<UndoStep> m_redo;
+
+		// The state of each font as of the last step, which the next step is a change from.
+		std::map<Structs::Font*, std::shared_ptr<const FontSnapshot>> m_undoBaselines;
+
+		// The number of steps to undo at which the document is as saved, if it can be reached.
+		std::optional<size_t> m_savedDepth = 0;
+
+		// Set by changes that are not steps, such as those to the preview text.
+		bool m_bDirtyWithoutStep = false;
+
+		bool m_bCanMergeUndoStep = false;
+		int m_nUndoScopeDepth = 0;
+
 		std::filesystem::path m_currentPath;
 		Structs::MultiFontSet m_multiFontSet;
 		Structs::Font* m_pActiveFont = nullptr;
@@ -76,10 +135,21 @@ namespace App {
 		HWND m_hFontsListBox{};
 		HWND m_hFontElementsListView{};
 		HWND m_hEdit{};
+		HWND m_hStatusBar{};
 		HMENU m_hFontElementContextMenu{};
+		std::array<std::wstring, 3> m_statusBarTexts;
+
+		// The DPI that the font and the widths of the columns are for.
+		UINT m_nDpi = USER_DEFAULT_SCREEN_DPI;
+
+		// Set while the saved placement is applied, which is in the pixels of the monitor it is on already.
+		bool m_bRestoringPlacement = false;
 
 		int m_nDrawLeft{};
 		int m_nDrawTop{};
+
+		// The bottom of the area above the status bar.
+		int m_nContentBottom{};
 		int m_nZoom = PreviewZoomOne;
 
 		int m_nPreviewScrollX = 0;
@@ -89,13 +159,24 @@ namespace App {
 		bool m_nPreviewMayScroll = false;
 
 		bool m_bIsReorderingFontElementList = false;
+
+		// The order and the selection that the elements being reordered had, which cancelling brings back.
+		std::vector<Structs::FontElement*> m_reorderOriginalOrder;
+		std::vector<int> m_reorderOriginalSelection;
+
 		VerticalSplitter m_activeSplitter = VerticalSplitter::None;
 
 		struct {
 			bool Active{};
-			POINT StartPosition{};
-			POINT DragRelativePosition{};
+
+			// Where the mouse was when the preview was last scrolled, in client coordinates.
+			POINT LastPosition{};
 		} m_previewPan;
+
+		// Wheel movement that has not made a whole step yet.
+		int m_nWheelZoomRemainder = 0;
+		double m_wheelScrollRemainderX = 0;
+		double m_wheelScrollRemainderY = 0;
 
 	public:
 		FontEditorWindow(std::vector<std::wstring> args);
@@ -118,10 +199,30 @@ namespace App {
 		LRESULT Window_OnMouseMove(uint16_t states, int16_t x, int16_t y);
 		LRESULT Window_OnMouseLButtonDown(uint16_t states, int16_t x, int16_t y);
 		LRESULT Window_OnMouseLButtonUp(uint16_t states, int16_t x, int16_t y);
-		LRESULT Window_OnMouseWheel(int16_t delta, int16_t x, int16_t y);
+		LRESULT Window_OnMouseWheel(bool horizontal, int16_t delta, int16_t x, int16_t y);
 		LRESULT Window_OnSetCursor(HWND hContainer, int hittest, int wm);
+		LRESULT Window_OnDpiChanged(UINT dpi, const RECT& suggested);
 		LRESULT Window_OnDestroy();
 		void Window_Redraw();
+
+		// Scrolls the preview for a key, if it is one that does.
+		bool Window_ScrollPreviewByKey(WPARAM vk);
+
+		// Makes the font of the controls for the DPI and gives it to them.
+		void ApplyUiFont();
+
+		// Shows the window where it was when the application was last closed, if that is on a monitor.
+		void RestoreWindowPlacement();
+
+		// Takes the placement of the window, the widths of the columns and the settings of the preview into the configuration.
+		void StoreWindowState();
+
+		void UpdateStatusBar();
+
+		[[nodiscard]] bool IsInPreview(int x, int y) const;
+
+		// Sets the zoom of the preview. The point of the preview at the anchor, in client coordinates, stays where it is.
+		void SetPreviewZoom(int zoom, const POINT* anchor = nullptr);
 
 		LRESULT Menu_File_New(xivres::font_type fontType);
 		LRESULT Menu_File_Open();
@@ -134,6 +235,8 @@ namespace App {
 		LRESULT Menu_File_GameInstallationManager();
 		LRESULT Menu_File_Exit();
 
+		LRESULT Menu_Edit_Undo();
+		LRESULT Menu_Edit_Redo();
 		LRESULT Menu_Edit_Add();
 
 		std::optional<LOGFONTW> ChooseSystemFont();
@@ -191,8 +294,13 @@ namespace App {
 		bool FontElementsListView_OnDragProcessMouseUp(int16_t x, int16_t y);
 		bool FontElementsListView_OnDragProcessMouseMove(int16_t x, int16_t y);
 		bool FontElementsListView_DragProcessDragging(int16_t x, int16_t y);
+
+		// Ends the reordering, if any, with the elements back in the order they had.
+		void FontElementsListView_CancelDrag();
 		LRESULT FontElementsListView_OnDblClick(NMITEMACTIVATE& nmia);
-		LRESULT FontElementsListView_OnRightClick(NMITEMACTIVATE& nmia);
+
+		// screenPos is (-1, -1) if the menu is opened from the keyboard.
+		LRESULT FontElementsListView_OnContextMenu(POINT screenPos);
 
 		// Draws the values of fields that are Auto in the gray of disabled text.
 		LRESULT FontElementsListView_OnCustomDraw(NMLVCUSTOMDRAW& nmcd);
@@ -215,7 +323,13 @@ namespace App {
 		// Gets the indices of the selected elements of the active font, in ascending order.
 		[[nodiscard]] std::vector<int> GetSelectedElementIndices() const;
 
-		// Marks the changes and draws again after the elements of the active font changed.
+		// Finds the font that has the element.
+		[[nodiscard]] Structs::Font* FindFont(const Structs::FontElement& element) const;
+
+		// Gets the fonts of the font set that has the font, or only the font if none has it.
+		[[nodiscard]] std::vector<Structs::Font*> GetFontsOfFontSet(Structs::Font& font) const;
+
+		// Fits the Auto fields and draws again after the elements of the active font changed.
 		void OnActiveFontElementsChanged();
 
 		// Fits the Auto fields of the active font's elements again, and shows them where they are shown.
@@ -231,8 +345,25 @@ namespace App {
 		LRESULT OnGlyphFoldersChanged();
 
 		void Changes_MarkFresh();
+
+		// Marks a change that is not a step of the history.
 		void Changes_MarkDirty();
 		bool Changes_ConfirmIfDirty();
+		[[nodiscard]] bool Changes_IsDirty() const;
+		void Changes_UpdateTitle();
+
+		[[nodiscard]] static std::shared_ptr<const FontSnapshot> Undo_TakeSnapshot(const Structs::Font& font);
+		[[nodiscard]] static uint64_t Undo_MakeCoalesceKey(CoalesceGroup group, const void* subject, const std::vector<int>& indices = {});
+
+		// Forgets the history, and takes the fonts as they are as what the next steps change.
+		void Undo_Reset();
+
+		// Makes a step of what changed in the fonts since the last step, or merges it into the last step.
+		// Returns whether anything changed.
+		bool Undo_Commit(const std::vector<Structs::Font*>& fonts, Structs::Font* activeFont, std::vector<int> selectionBefore, std::vector<int> selectionAfter, uint64_t coalesceKey);
+
+		// Brings the fonts of the step to their states before it, or after it for redo, and shows its font and selection.
+		void Undo_Restore(const UndoStep& step, bool redo);
 
 		void ShowEditor(Structs::FontElement& element);
 

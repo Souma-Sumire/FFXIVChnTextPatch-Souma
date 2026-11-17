@@ -302,6 +302,9 @@ namespace {
 		if (!out)
 			throw std::runtime_error(std::format("Failed to open {} for writing.", xivres::util::unicode::convert<std::string>(path.wstring())));
 		out.write(data.data(), static_cast<std::streamsize>(data.size()));
+
+		// Closing writes what is still buffered, which can fail as well.
+		out.close();
 		if (!out)
 			throw std::runtime_error(std::format("Failed to write to {}.", xivres::util::unicode::convert<std::string>(path.wstring())));
 	}

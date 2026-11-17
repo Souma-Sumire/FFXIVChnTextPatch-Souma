@@ -1,4 +1,7 @@
 #include "pch.h"
+
+#include <set>
+
 #include "FontChanger.Presets/Structs.h"
 #include "ExportPreviewWindow.h"
 #include "MainWindow.h"
@@ -119,10 +122,8 @@ namespace {
 		for (const auto& target : targets) {
 			const auto limit = GetGameTextureCount(target);
 			if (limit && textureCount > static_cast<size_t>(*limit)) {
-				throw std::runtime_error(std::format(
-					"{} texture files are required, but the game loads only up to {} texture files for \"{}\".\n"
-					"Reduce the number of glyphs or the font sizes, or increase the texture size.",
-					textureCount, *limit, target));
+				const auto targetW = xivres::util::unicode::convert<std::wstring>(target);
+				throw WException(std::vformat(GetStringResource(IDS_ERROR_EXPORT_TOOMANYTEXTURES), std::make_wformat_args(textureCount, *limit, targetW)));
 			}
 		}
 	}
@@ -152,12 +153,57 @@ namespace {
 			const auto& [missingFrom, extraIn, codepoint] = itSmall == smallGlyphs.end() || (itLarge != largeGlyphs.end() && *itLarge->Utf8Value < *itSmall->Utf8Value)
 				? std::make_tuple(smallName, largeName, itLarge->codepoint())
 				: std::make_tuple(largeName, smallName, itSmall->codepoint());
-			throw std::runtime_error(std::format(
-				"{} and {} must contain the same characters, as the game substitutes glyphs of {} into {} by their position in the glyph table.\n"
-				"U+{:04X} is in {} but not in {}.",
-				smallName, largeName, smallName, largeName,
-				static_cast<uint32_t>(codepoint), extraIn, missingFrom));
+			const auto smallNameW = xivres::util::unicode::convert<std::wstring>(smallName);
+			const auto largeNameW = xivres::util::unicode::convert<std::wstring>(largeName);
+			const auto extraInW = xivres::util::unicode::convert<std::wstring>(extraIn);
+			const auto missingFromW = xivres::util::unicode::convert<std::wstring>(missingFrom);
+			const auto codepointValue = static_cast<uint32_t>(codepoint);
+			throw WException(std::vformat(
+				GetStringResource(IDS_ERROR_EXPORT_AXISGLYPHMISMATCH),
+				std::make_wformat_args(smallNameW, largeNameW, codepointValue, extraInW, missingFromW)));
 		}
+	}
+
+	WException MakeFileError(UINT messageResId, const std::filesystem::path& path) {
+		return WException(std::vformat(GetStringResource(messageResId), std::make_wformat_args(path.native())));
+	}
+
+	// Gets the names of the files in the folder that a raw export of the font sets writes over.
+	std::vector<std::string> FindFilesToOverwrite(const App::Structs::MultiFontSet& multiFontSet, const std::filesystem::path& folder) {
+		std::set<std::string> names;
+		for (const auto& pFontSet : multiFontSet.FontSets) {
+			// The number of textures is known only after compiling, so this is the number from the last time.
+			const auto textureCount = static_cast<size_t>((std::max)(0, pFontSet->ExpectedTexCount));
+			for (size_t i = 1; i <= textureCount; i++)
+				names.emplace(std::vformat(pFontSet->TexFilenameFormat, std::make_format_args(i)));
+			for (const auto& pFont : pFontSet->Fonts)
+				names.emplace(std::format("{}.fdt", pFont->Name));
+			for (auto& sourceAndAlias : GetExportAliases(multiFontSet, *pFontSet, textureCount))
+				names.emplace(std::move(sourceAndAlias.second));
+		}
+
+		std::vector<std::string> res;
+		for (const auto& name : names) {
+			std::error_code ec;
+			if (exists(folder / name, ec))
+				res.emplace_back(name);
+		}
+		return res;
+	}
+
+	// Asks whether to write over the files of an earlier export in the folder, if it has any.
+	bool ConfirmOverwrite(HWND hWnd, const App::Structs::MultiFontSet& multiFontSet, const std::filesystem::path& folder) {
+		const auto existing = FindFilesToOverwrite(multiFontSet, folder);
+		if (existing.empty())
+			return true;
+
+		const auto count = existing.size();
+		const auto firstName = xivres::util::unicode::convert<std::wstring>(existing.front());
+		return IDYES == MessageBoxW(
+			hWnd,
+			std::vformat(GetStringResource(IDS_EXPORT_CONFIRMOVERWRITE), std::make_wformat_args(count, firstName, folder.native())).c_str(),
+			GetWindowString(hWnd).c_str(),
+			MB_YESNO | MB_ICONWARNING);
 	}
 
 	// Throws if the game cannot use the compiled font set as it is.
@@ -180,7 +226,7 @@ LRESULT App::FontEditorWindow::Menu_Export_Preview() {
 	using namespace FontChanger::FixedSizeFont;
 
 	return TryCatchShowError<ProgressDialog::ProgressDialogCancelledError>(m_hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
-		ProgressDialog progressDialog(m_hWnd, std::wstring(GetStringResource(IDS_WINDOWTITLE_EXPORTRAW)));
+		ProgressDialog progressDialog(m_hWnd, std::wstring(GetStringResource(IDS_WINDOWTITLE_EXPORTPREVIEW)));
 		ShowWindow(m_hWnd, SW_HIDE);
 		const auto hideWhilePacking = xivres::util::on_dtor([this] { ShowWindow(m_hWnd, SW_SHOW); });
 
@@ -204,9 +250,11 @@ LRESULT App::FontEditorWindow::Menu_Export_Preview() {
 }
 
 LRESULT App::FontEditorWindow::Menu_Export_Raw() {
-	return TryCatchShowError<ProgressDialog::ProgressDialogCancelledError>(m_hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
+	// The completion is told once the progress dialog is gone and the window is shown again.
+	std::optional<std::filesystem::path> exportedPath;
+	const auto res = TryCatchShowError<ProgressDialog::ProgressDialogCancelledError>(m_hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
 		const auto basePath = PickFolder(m_hWnd, Guid_IFileDialog_Export, IDS_WINDOWTITLE_EXPORTRAW);
-		if (!basePath)
+		if (!basePath || !ConfirmOverwrite(m_hWnd, m_multiFontSet, *basePath))
 			return 0;
 
 		ProgressDialog progressDialog(m_hWnd, std::wstring(GetStringResource(IDS_WINDOWTITLE_EXPORTRAW)));
@@ -216,10 +264,16 @@ LRESULT App::FontEditorWindow::Menu_Export_Raw() {
 		std::vector<char> buf(32768);
 		const auto write = [&](const std::filesystem::path& path, xivres::stream& stream) {
 			std::ofstream out(path, std::ios::binary);
+			if (!out)
+				throw MakeFileError(IDS_ERROR_EXPORT_CANNOTOPENFILE, path);
 			for (size_t read, pos = 0; (read = stream.read(pos, buf.data(), buf.size())); pos += read) {
 				progressDialog.ThrowIfCancelled();
-				out.write(buf.data(), read);
+				if (!out.write(buf.data(), read))
+					throw MakeFileError(IDS_ERROR_EXPORT_CANNOTWRITEFILE, path);
 			}
+			out.close();
+			if (!out)
+				throw MakeFileError(IDS_ERROR_EXPORT_CANNOTWRITEFILE, path);
 		};
 
 		for (const auto& pFontSet : m_multiFontSet.FontSets) {
@@ -246,18 +300,26 @@ LRESULT App::FontEditorWindow::Menu_Export_Raw() {
 			for (const auto& [source, alias] : GetExportAliases(m_multiFontSet, *pFontSet, mips.size()))
 				copy(*basePath / source, *basePath / alias, std::filesystem::copy_options::overwrite_existing);
 		}
+		exportedPath = *basePath;
 		return 0;
 	});
+	if (exportedPath)
+		ShowExportCompleteMessageBox(m_hWnd, *exportedPath);
+	return res;
 }
 
 LRESULT App::FontEditorWindow::Menu_Export_TTMP(CompressionMode compressionMode) {
-	static constexpr COMDLG_FILTERSPEC fileTypes[] = {
-		{L"TTMP2 file (*.ttmp2)", L"*.ttmp2"},
-		{L"ZIP file (*.zip)", L"*.zip"},
-		{L"All files (*.*)", L"*"},
+	const std::wstring ttmp2FilesName(GetStringResource(IDS_FILTERSPEC_TTMP2FILES));
+	const std::wstring zipFilesName(GetStringResource(IDS_FILTERSPEC_ZIPFILES));
+	const std::wstring allFilesName(GetStringResource(IDS_FILTERSPEC_ALLFILES));
+	const COMDLG_FILTERSPEC fileTypes[] = {
+		{ttmp2FilesName.c_str(), L"*.ttmp2"},
+		{zipFilesName.c_str(), L"*.zip"},
+		{allFilesName.c_str(), L"*"},
 	};
 
-	return TryCatchShowError<ProgressDialog::ProgressDialogCancelledError>(m_hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
+	std::optional<std::filesystem::path> exportedPath;
+	const auto res = TryCatchShowError<ProgressDialog::ProgressDialogCancelledError>(m_hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
 		const auto finalPath = PickFile(
 			m_hWnd,
 			true,
@@ -265,7 +327,7 @@ LRESULT App::FontEditorWindow::Menu_Export_TTMP(CompressionMode compressionMode)
 			IDS_WINDOWTITLE_EXPORTTTMP,
 			fileTypes,
 			std::format(L"{}.ttmp2", std::filesystem::path(GetCurrentFileName()).replace_extension(L"").wstring()),
-			L"json");
+			L"ttmp2");
 		if (!finalPath)
 			return 0;
 
@@ -324,8 +386,12 @@ LRESULT App::FontEditorWindow::Menu_Export_TTMP(CompressionMode compressionMode)
 			}
 		}
 		writer.close();
+		exportedPath = *finalPath;
 		return 0;
 	});
+	if (exportedPath)
+		ShowExportCompleteMessageBox(m_hWnd, *exportedPath);
+	return res;
 }
 
 LRESULT App::FontEditorWindow::Menu_Export_ToggleMapping(const ExportMapping& mapping) {

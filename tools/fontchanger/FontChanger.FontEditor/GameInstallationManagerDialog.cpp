@@ -60,6 +60,14 @@ INT_PTR App::GameInstallationManagerDialog::Dialog_OnInitDialog() {
 	AddListViewColumn(m_controls->PathList, ListViewColsVendor, 80, IDS_GAMEINSTALLATIONLISTVIEW_COLUMN_VENDOR);
 	AddListViewColumn(m_controls->PathList, ListViewColsExists, 80, IDS_GAMEINSTALLATIONLISTVIEW_COLUMN_EXISTS);
 
+	// The path takes what the other columns leave, less a vertical scroll bar so that no horizontal one appears.
+	RECT rc;
+	GetClientRect(m_controls->PathList, &rc);
+	const auto othersWidth = ListView_GetColumnWidth(m_controls->PathList, ListViewColsVendor) + ListView_GetColumnWidth(m_controls->PathList, ListViewColsExists);
+	const auto pathWidth = rc.right - rc.left - othersWidth - GetSystemMetrics(SM_CXVSCROLL);
+	if (pathWidth > ListView_GetColumnWidth(m_controls->PathList, ListViewColsPath))
+		ListView_SetColumnWidth(m_controls->PathList, ListViewColsPath, pathWidth);
+
 	for (size_t i = 0; i < m_prevConfig.GamePaths.size(); i++) {
 		for (const auto& p : m_prevConfig.GamePaths[i])
 			AddInstallation(p, static_cast<GameReleaseVendor>(i + 1));
@@ -247,6 +255,10 @@ INT_PTR App::GameInstallationManagerDialog::DlgProc(UINT message, WPARAM wParam,
 						case LVN_ITEMCHANGED: return PathListView_ItemChanged(*reinterpret_cast<LPNMLISTVIEW>(lParam));
 						case LVN_COLUMNCLICK: return PathListView_ColumnClick(*reinterpret_cast<LPNMLISTVIEW>(lParam));
 						case NM_DBLCLK: return PathListView_DoubleClick(*reinterpret_cast<LPNMITEMACTIVATE>(lParam));
+						case LVN_KEYDOWN:
+							if (reinterpret_cast<LPNMLVKEYDOWN>(lParam)->wVKey == VK_DELETE)
+								return RemoveButton_OnCommand(BN_CLICKED);
+							return 0;
 					}
 					return 0;
 				}

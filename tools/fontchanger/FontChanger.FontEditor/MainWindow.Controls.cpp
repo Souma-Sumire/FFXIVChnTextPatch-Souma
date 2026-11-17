@@ -103,6 +103,7 @@ LRESULT App::FontEditorWindow::FontListBox_OnCommand(uint16_t commandId) {
 		case LBN_SELCHANGE: {
 			if (const auto index = ListBox_GetCurSel(m_hFontsListBox); index != LB_ERR) {
 				m_pActiveFont = reinterpret_cast<Structs::Font*>(ListBox_GetItemData(m_hFontsListBox, index));
+				m_nPreviewScrollX = 0;
 				m_nPreviewScrollY = 0;
 				UpdateFontElementList();
 			}
@@ -197,12 +198,12 @@ void App::FontEditorWindow::FontListBox_ScaleToSize(Structs::Font& font) {
 	// Editors would show, and revert to, the values from before the scaling.
 	CloseEditors(font);
 
+	UndoScope undo(*this, {&font});
 	for (const auto& pElement : font.Elements) {
 		pElement->Scale(size / *currentSize);
 		UpdateFontElementListViewItem(*pElement);
 	}
 	font.OnElementChange();
-	Changes_MarkDirty();
 	Window_Redraw();
 }
 
@@ -237,6 +238,10 @@ std::vector<App::Structs::Font*> App::FontEditorWindow::FontListBox_ReplaceOther
 		return {};
 
 	std::vector<Structs::Font*> res;
+	for (const auto pTarget : targets | std::views::keys)
+		res.push_back(pTarget);
+
+	UndoScope undo(*this, res);
 	for (const auto& [pTarget, size] : targets) {
 		CloseEditors(*pTarget);
 
@@ -245,16 +250,19 @@ std::vector<App::Structs::Font*> App::FontEditorWindow::FontListBox_ReplaceOther
 			pTarget->Elements.emplace_back(std::make_unique<Structs::FontElement>(*pElement))->Scale(size / *fontSize);
 		pTarget->VerticalAlignment = font.VerticalAlignment;
 		pTarget->OnElementChange();
-		res.push_back(pTarget);
 	}
 
-	Changes_MarkDirty();
 	return res;
 }
 
 LRESULT App::FontEditorWindow::FontElementsListView_OnBeginDrag(NM_LISTVIEW& nmlv) {
 	if (!m_pActiveFont)
 		return -1;
+
+	m_reorderOriginalOrder.clear();
+	for (const auto& pElement : m_pActiveFont->Elements)
+		m_reorderOriginalOrder.push_back(pElement.get());
+	m_reorderOriginalSelection = GetSelectedElementIndices();
 
 	m_bIsReorderingFontElementList = true;
 	SetCapture(m_hWnd);
@@ -266,10 +274,44 @@ bool App::FontEditorWindow::FontElementsListView_OnDragProcessMouseUp(int16_t x,
 	if (!m_bIsReorderingFontElementList)
 		return false;
 
+	// Not reordering anymore first, so that WM_CAPTURECHANGED does not cancel it.
 	m_bIsReorderingFontElementList = false;
 	ReleaseCapture();
 	FontElementsListView_DragProcessDragging(x, y);
+
+	// The whole drag is one step.
+	RefitAutoFields();
+	Undo_Commit({m_pActiveFont}, m_pActiveFont, std::move(m_reorderOriginalSelection), GetSelectedElementIndices(), 0);
+	m_reorderOriginalOrder.clear();
+	m_reorderOriginalSelection.clear();
+	Window_Redraw();
 	return true;
+}
+
+void App::FontEditorWindow::FontElementsListView_CancelDrag() {
+	if (!m_bIsReorderingFontElementList)
+		return;
+
+	m_bIsReorderingFontElementList = false;
+	if (GetCapture() == m_hWnd)
+		ReleaseCapture();
+
+	const auto originalOrder = std::move(m_reorderOriginalOrder);
+	m_reorderOriginalOrder.clear();
+	m_reorderOriginalSelection.clear();
+	if (!m_pActiveFont)
+		return;
+
+	auto& elements = m_pActiveFont->Elements;
+	if (!std::ranges::is_permutation(elements, originalOrder, {}, &std::unique_ptr<Structs::FontElement>::get))
+		return;
+
+	std::ranges::sort(elements, {}, [&originalOrder](const std::unique_ptr<Structs::FontElement>& pElement) {
+		return std::ranges::find(originalOrder, pElement.get()) - originalOrder.begin();
+	});
+	UpdateFontElementList();
+	m_pActiveFont->OnElementChange();
+	Window_Redraw();
 }
 
 bool App::FontEditorWindow::FontElementsListView_OnDragProcessMouseMove(int16_t x, int16_t y) {
@@ -329,8 +371,10 @@ bool App::FontEditorWindow::FontElementsListView_DragProcessDragging(int16_t x, 
 	if (std::ranges::equal(elements, previousOrder, {}, &std::unique_ptr<Structs::FontElement>::get))
 		return false;
 
+	// The step, and the fitting it needs, are made when the drag ends.
 	UpdateFontElementList();
-	OnActiveFontElementsChanged();
+	m_pActiveFont->OnElementChange();
+	Window_Redraw();
 	return true;
 }
 
@@ -345,16 +389,36 @@ LRESULT App::FontEditorWindow::FontElementsListView_OnDblClick(NMITEMACTIVATE& n
 	return 0;
 }
 
-LRESULT App::FontEditorWindow::FontElementsListView_OnRightClick(NMITEMACTIVATE& nmia) {
-	if (!m_pActiveFont || !m_hFontElementContextMenu)
+LRESULT App::FontEditorWindow::FontElementsListView_OnContextMenu(POINT screenPos) {
+	if (!m_pActiveFont || !m_hFontElementContextMenu || m_bIsReorderingFontElementList)
 		return 0;
-	POINT pt{nmia.ptAction};
-	ClientToScreen(m_hFontElementsListView, &pt);
 
-	// On the background, the menu adds fonts, after all the elements.
-	if (nmia.iItem < 0)
-		ListView_SetItemState(m_hFontElementsListView, -1, 0, LVIS_SELECTED);
-	TrackPopupMenuEx(GetSubMenu(m_hFontElementContextMenu, nmia.iItem < 0 ? 1 : 0), TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd, nullptr);
+	int item;
+	if (screenPos.x == -1 && screenPos.y == -1) {
+		item = ListView_GetNextItem(m_hFontElementsListView, -1, LVNI_FOCUSED | LVNI_SELECTED);
+		if (item < 0)
+			item = ListView_GetNextItem(m_hFontElementsListView, -1, LVNI_SELECTED);
+
+		RECT rc{};
+		if (item >= 0) {
+			ListView_EnsureVisible(m_hFontElementsListView, item, FALSE);
+			ListView_GetItemRect(m_hFontElementsListView, item, &rc, LVIR_LABEL);
+		} else if (const auto hHeader = ListView_GetHeader(m_hFontElementsListView)) {
+			GetClientRect(hHeader, &rc);
+		}
+		screenPos = {rc.left, rc.bottom};
+		ClientToScreen(m_hFontElementsListView, &screenPos);
+	} else {
+		LVHITTESTINFO lvhti{.pt = screenPos};
+		ScreenToClient(m_hFontElementsListView, &lvhti.pt);
+		item = ListView_HitTest(m_hFontElementsListView, &lvhti);
+
+		// On the background, the menu adds fonts, after all the elements.
+		if (item < 0)
+			ListView_SetItemState(m_hFontElementsListView, -1, 0, LVIS_SELECTED);
+	}
+
+	TrackPopupMenuEx(GetSubMenu(m_hFontElementContextMenu, item < 0 ? 1 : 0), TPM_RIGHTBUTTON, screenPos.x, screenPos.y, m_hWnd, nullptr);
 	return 0;
 }
 
@@ -383,5 +447,6 @@ LRESULT App::FontEditorWindow::FontElementsListView_OnCustomDraw(NMLVCUSTOMDRAW&
 }
 
 double App::FontEditorWindow::GetZoom() const noexcept {
-	return GetZoomFromWindow(m_hWnd);
+	// The DPI of the window, which is the new one already when it is told of a change.
+	return GetDpiForWindow(m_hWnd) / static_cast<double>(USER_DEFAULT_SCREEN_DPI);
 }

@@ -26,7 +26,9 @@ namespace {
 	}
 
 	LRESULT RunExportJobs(HWND hWnd, const std::vector<ExportJob>& jobs) {
-		return TryCatchShowError<App::ProgressDialog::ProgressDialogCancelledError>(hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
+		// The completion is told once the progress dialog is gone.
+		std::optional<std::filesystem::path> exportedPath;
+		const auto res = TryCatchShowError<App::ProgressDialog::ProgressDialogCancelledError>(hWnd, IDS_ERROR_EXPORTFAILURE_BODY, LRESULT{1}, [&]() -> LRESULT {
 			const auto folder = PickFolder(hWnd, Guid_IFileDialog_ExportGlyphs, IDS_WINDOWTITLE_EXPORTGLYPHS);
 			if (!folder)
 				return 0;
@@ -43,8 +45,12 @@ namespace {
 					}
 				});
 			}
+			exportedPath = *folder;
 			return 0;
 		});
+		if (exportedPath)
+			ShowExportCompleteMessageBox(hWnd, *exportedPath);
+		return res;
 	}
 }
 

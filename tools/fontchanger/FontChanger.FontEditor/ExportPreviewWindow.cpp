@@ -28,6 +28,10 @@ LRESULT App::ExportPreviewWindow::Window_OnCreate(HWND hwnd) {
 	SetWindowSubclass(m_hEdit, [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) -> LRESULT {
 		if (msg == WM_GETDLGCODE && wParam == VK_TAB)
 			return 0;
+
+		// A multiline edit that is driven through IsDialogMessage would close its parent on Esc.
+		if ((msg == WM_KEYDOWN || msg == WM_CHAR) && wParam == VK_ESCAPE)
+			return 0;
 		if (msg == WM_KEYDOWN && wParam == 'A' && (GetKeyState(VK_CONTROL) & 0x8000) && !(GetKeyState(VK_SHIFT) & 0x8000) && !(GetKeyState(VK_MENU) & 0x8000) && !(GetKeyState(VK_LWIN) & 0x8000) && !(GetKeyState(VK_RWIN) & 0x8000))
 			Edit_SetSel(hWnd, 0, Edit_GetTextLength(hWnd));
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
@@ -194,7 +198,7 @@ App::ExportPreviewWindow::ExportPreviewWindow(std::vector<std::pair<std::string,
 
 	RegisterClassExW(&wcex);
 
-	CreateWindowExW(0, ClassName, L"Export Preview", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+	CreateWindowExW(0, ClassName, std::wstring(GetStringResource(IDS_WINDOWTITLE_EXPORTPREVIEW)).c_str(), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 		CW_USEDEFAULT, CW_USEDEFAULT, 1200, 640,
 		nullptr, nullptr, nullptr, this);
 }

@@ -17,6 +17,12 @@ void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const std::wstr
 void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const class std::system_error& e);
 void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const class std::exception& e);
 
+// Converts the text of an exception, which is in UTF-8 or else in the ANSI code page.
+std::wstring ErrorTextToWString(std::string_view sv);
+
+// Tells that an export to a file or a folder finished, and offers to show it in Explorer.
+void ShowExportCompleteMessageBox(HWND hParent, const std::filesystem::path& target);
+
 std::wstring GetOpenTypeFeatureName(enum DWRITE_FONT_FEATURE_TAG tag);
 
 std::wstring GetFontWeightName(DWRITE_FONT_WEIGHT weight);

@@ -58,6 +58,9 @@
     <ClCompile Include="MainWindow.Menu.Edit.cpp">
       <Filter>Source\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="MainWindow.Undo.cpp">
+      <Filter>Source\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="MainWindow.Menu.Export.cpp">
       <Filter>Source\Windows</Filter>
     </ClCompile>

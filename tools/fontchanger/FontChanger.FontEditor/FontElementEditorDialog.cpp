@@ -140,6 +140,105 @@ bool App::FontElementEditorDialog::TryReadOptionalNumber(HWND hwnd, std::optiona
 	return true;
 }
 
+float App::FontElementEditorDialog::GetUpDirection(HWND hwnd) const {
+	// Vertical offsets grow downwards, and Up moves the glyphs up.
+	return hwnd == m_controls->AdjustmentVerticalOffsetEdit || hwnd == m_controls->GlyphMergingOffsetYEdit ? -1.f : 1.f;
+}
+
+void App::FontElementEditorDialog::StepNumberEdit(HWND hwnd, float direction, bool fine) {
+	const auto& range = m_spinRanges.at(hwnd);
+	const auto step = fine ? range.FineStep : range.Step;
+	SetWindowNumber(hwnd, std::clamp(GetSteppedValue(hwnd) + direction * step, range.Min, range.Max));
+}
+
+void App::FontElementEditorDialog::UpdateNumberEditValidity(HWND hwnd) {
+	const auto& c = *m_controls;
+	const auto takesExpressions = hwnd != c.FontVariationValueEdit;
+	if (!m_spinRanges.contains(hwnd)
+		&& hwnd != c.FontVariationValueEdit
+		&& hwnd != c.GlyphMergingTextSizeEdit
+		&& hwnd != c.GlyphImagesUnitsPerEmEdit
+		&& hwnd != c.GlyphImagesBaselineEdit
+		&& hwnd != c.GlyphImagesAscentEdit
+		&& hwnd != c.GlyphImagesLineHeightEdit)
+		return;
+
+	// An empty edit stands for a default or an automatic value.
+	auto valid = true;
+	if (const auto str = GetWindowString(hwnd, true); str.empty()) {
+	} else if (takesExpressions && str.starts_with(L'=')) {
+		double value;
+		valid = TryEvaluate(str, value, true) && std::isfinite(value);
+	} else {
+		wchar_t* end;
+		const auto value = std::wcstod(str.c_str(), &end);
+		valid = end != str.c_str() && !*end && std::isfinite(value);
+	}
+
+	if (valid ? m_invalidEdits.erase(hwnd) != 0 : m_invalidEdits.insert(hwnd).second)
+		InvalidateRect(hwnd, nullptr, TRUE);
+}
+
+INT_PTR App::FontElementEditorDialog::NumberEdit_OnCtlColor(HDC hdc, HWND hwnd) const {
+	if (!m_invalidEdits.contains(hwnd))
+		return 0;
+
+	SetTextColor(hdc, RGB(0xC4, 0x2B, 0x1C));
+	SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
+	return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
+}
+
+void App::FontElementEditorDialog::RefreshTitle() {
+	auto name = xivres::util::unicode::convert<std::wstring>(m_element.Lookup.FamilyName);
+
+	// The family of these sources is not what they draw.
+	if (name.empty() || m_element.Source == Structs::ElementSourceEnum::Empty || m_element.Source == Structs::ElementSourceEnum::GlyphImages) {
+		switch (m_element.Source) {
+			case Structs::ElementSourceEnum::Empty: name = GetStringResource(IDS_ELEMENTSOURCE_EMPTY); break;
+			case Structs::ElementSourceEnum::Game: name = GetStringResource(IDS_ELEMENTSOURCE_GAME); break;
+			case Structs::ElementSourceEnum::DirectWrite: name = GetStringResource(IDS_ELEMENTSOURCE_DIRECTWRITE); break;
+			case Structs::ElementSourceEnum::FreeType: name = GetStringResource(IDS_ELEMENTSOURCE_FREETYPE); break;
+			case Structs::ElementSourceEnum::GlyphImages: name = GetStringResource(IDS_ELEMENTSOURCE_GLYPHIMAGES); break;
+		}
+	}
+
+	const auto size = FormatPixelValue(m_element.Size);
+	const auto title = std::vformat(GetStringResource(IDS_FONTELEMENTEDITOR_TITLE_FORMAT), std::make_wformat_args(name, size));
+	if (title != GetWindowString(m_hWnd))
+		SetWindowTextW(m_hWnd, title.c_str());
+}
+
+void App::FontElementEditorDialog::AddToolTips() {
+	const auto tip = CreateWindowExW(
+		WS_EX_TOPMOST, TOOLTIPS_CLASSW, nullptr, WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		m_hWnd, nullptr, g_hInstance, nullptr);
+	if (!tip)
+		return;
+
+	// A width makes the longer texts wrap.
+	SendMessageW(tip, TTM_SETMAXTIPWIDTH, 0, static_cast<LPARAM>(280 * GetZoomFromWindow(m_hWnd)));
+
+	for (const auto& [hwnd, textId] : {
+		     std::pair{m_controls->TransformScaleXEdit, IDS_TOOLTIP_TRANSFORM_SCALEX},
+		     std::pair{m_controls->TransformScaleYEdit, IDS_TOOLTIP_TRANSFORM_SCALEY},
+		     std::pair{m_controls->MonospacingAlignmentCombo, IDS_TOOLTIP_MONOSPACING_ALIGNMENT},
+		     std::pair{m_controls->MonospacingReferenceEdit, IDS_TOOLTIP_MONOSPACING_REFERENCE},
+		     std::pair{m_controls->CodepointsMergeModeCombo, IDS_TOOLTIP_CODEPOINTS_MERGEMODE},
+		     std::pair{m_controls->CustomRangeEdit, IDS_TOOLTIP_ADDCUSTOMRANGE},
+	     }) {
+		std::wstring text(GetStringResource(textId));
+		TOOLINFOW ti{
+			.cbSize = sizeof ti,
+			.uFlags = TTF_IDISHWND | TTF_SUBCLASS,
+			.hwnd = GetParent(hwnd),
+			.uId = reinterpret_cast<UINT_PTR>(hwnd),
+			.lpszText = text.data(),
+		};
+		SendMessageW(tip, TTM_ADDTOOLW, 0, reinterpret_cast<LPARAM>(&ti));
+	}
+}
+
 INT_PTR App::FontElementEditorDialog::ExpressionHelpButton_OnCommand(uint16_t notiCode) {
 	ShellExecuteW(
 		m_controls->Window,
@@ -289,7 +388,7 @@ INT_PTR App::FontElementEditorDialog::Dialog_OnInitDialog() {
 	InitializeMonospacingControls();
 	InitializeGlyphMergingPage();
 
-	// Edits of numbers, which Up and Down change by a step; Ctrl changes them by a finer step.
+	// Edits of numbers, which Up and Down change by a step, or by a finer one with Shift or Ctrl.
 	const auto setSpinRange = [this](SpinRange range, std::initializer_list<HWND> edits) {
 		for (const auto edit : edits)
 			m_spinRanges.emplace(edit, range);
@@ -302,7 +401,7 @@ INT_PTR App::FontElementEditorDialog::Dialog_OnInitDialog() {
 		m_controls->AdjustmentLetterSpacingEdit,
 		m_controls->AdjustmentHorizontalOffsetEdit,
 	});
-	setSpinRange({1.f, 3.f, 0.1f, 0.1f}, {m_controls->AdjustmentGammaEdit});
+	setSpinRange({1.f, 3.f, 0.1f, 0.01f}, {m_controls->AdjustmentGammaEdit});
 	setSpinRange({8.f, 255.f, 1.f, 0.1f}, {m_controls->FontSizeEdit});
 	setSpinRange({-1000.f, 1000.f, 1.f, 0.1f}, {
 		m_controls->TransformScaleXEdit,
@@ -324,18 +423,15 @@ INT_PTR App::FontElementEditorDialog::Dialog_OnInitDialog() {
 	for (const auto& edit : m_spinRanges | std::views::keys) {
 		SetWindowSubclass(edit, [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) -> LRESULT {
 			auto& dlg = *reinterpret_cast<FontElementEditorDialog*>(dwRefData);
-			const auto& range = dlg.m_spinRanges.at(hWnd);
-			const auto step = GetKeyState(VK_CONTROL) & 0x8000 ? range.FineStep : range.Step;
-			if (msg == WM_KEYDOWN && wParam == VK_DOWN && !GetWindowString(hWnd).starts_with(L"=")) {
-				SetWindowNumber(hWnd, (std::max)(range.Min, dlg.GetSteppedValue(hWnd) + step));
-				return 0;
-			} else if (msg == WM_KEYDOWN && wParam == VK_UP && !GetWindowString(hWnd).starts_with(L"=")) {
-				SetWindowNumber(hWnd, (std::min)(range.Max, dlg.GetSteppedValue(hWnd) - step));
+			if (msg == WM_KEYDOWN && (wParam == VK_UP || wParam == VK_DOWN) && !GetWindowString(hWnd).starts_with(L"=")) {
+				const auto fine = GetKeyState(VK_SHIFT) < 0 || GetKeyState(VK_CONTROL) < 0;
+				dlg.StepNumberEdit(hWnd, wParam == VK_UP ? dlg.GetUpDirection(hWnd) : -dlg.GetUpDirection(hWnd), fine);
 				return 0;
 			} else if (msg == WM_GETDLGCODE && wParam == VK_RETURN && GetWindowString(hWnd).starts_with(L"=")) {
 				return DefSubclassProc(hWnd, msg, wParam, lParam) | DLGC_WANTALLKEYS;
 			} else if (msg == WM_KEYDOWN && wParam == VK_RETURN) {
 				if (const auto wstr = GetWindowString(hWnd); wstr.starts_with(L"=")) {
+					const auto& range = dlg.m_spinRanges.at(hWnd);
 					if (float r; dlg.TryEvaluate(wstr, r))
 						SetWindowNumber(hWnd, (std::min)(range.Max, (std::max)(range.Min, r)));
 					return 0;
@@ -346,8 +442,8 @@ INT_PTR App::FontElementEditorDialog::Dialog_OnInitDialog() {
 		}, 1, reinterpret_cast<DWORD_PTR>(this));
 	}
 
-	// Edits that hold the x and y of a pair of values also take W, A, S, and D, which change the values as the arrow keys do:
-	// A and D change x, and W and S change y as Up and Down do. Keys are taken by their positions on the keyboard.
+	// Edits that hold the x and y of a pair of values also take W, A, S, and D. A and D decrease and increase x, and W and S
+	// change y as Up and Down do. Keys are taken by their positions on the keyboard.
 	for (const auto& controlHwnd : {
 		     m_controls->AdjustmentHorizontalOffsetEdit,
 		     m_controls->AdjustmentVerticalOffsetEdit,
@@ -364,12 +460,13 @@ INT_PTR App::FontElementEditorDialog::Dialog_OnInitDialog() {
 
 			// Scan codes of W, A, S, and D, which are where they are regardless of the keyboard layout.
 			const auto scanCode = (lParam >> 16) & 0xFF;
-			int axis, direction;
+			int axis;
+			float direction;
 			switch (scanCode) {
-				case 0x11: axis = 1, direction = -1; break;
-				case 0x1E: axis = 0, direction = -1; break;
-				case 0x1F: axis = 1, direction = +1; break;
-				case 0x20: axis = 0, direction = +1; break;
+				case 0x11: axis = 1, direction = +1.f; break;
+				case 0x1E: axis = 0, direction = -1.f; break;
+				case 0x1F: axis = 1, direction = -1.f; break;
+				case 0x20: axis = 0, direction = +1.f; break;
 				default: return DefSubclassProc(hWnd, msg, wParam, lParam);
 			}
 
@@ -393,13 +490,25 @@ INT_PTR App::FontElementEditorDialog::Dialog_OnInitDialog() {
 			if (!IsWindowEnabled(target) || GetWindowString(target).starts_with(L"="))
 				return 0;
 
-			// Shift changes the value in finer steps.
-			const auto& range = dlg.m_spinRanges.at(target);
-			const auto step = GetKeyState(VK_SHIFT) < 0 ? range.FineStep : range.Step;
-			SetWindowNumber(target, (std::min)(range.Max, (std::max)(range.Min, dlg.GetSteppedValue(target) + direction * step)));
+			// Only Shift changes the value in finer steps, as the keys with Ctrl are shortcuts of the edit.
+			if (axis == 1)
+				direction *= dlg.GetUpDirection(target);
+			dlg.StepNumberEdit(target, direction, GetKeyState(VK_SHIFT) < 0);
 			return 0;
 		}, 2, reinterpret_cast<DWORD_PTR>(this));
 	}
+
+	// Delete on the list of codepoints does what its Delete button does.
+	SetWindowSubclass(m_controls->CodepointsList, [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) -> LRESULT {
+		if (msg == WM_KEYDOWN && wParam == VK_DELETE) {
+			reinterpret_cast<FontElementEditorDialog*>(dwRefData)->CodepointsDeleteButton_OnCommand(BN_CLICKED);
+			return 0;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}, 1, reinterpret_cast<DWORD_PTR>(this));
+
+	Edit_SetCueBannerText(m_controls->CustomRangeEdit, std::wstring(GetStringResource(IDS_ADDCUSTOMRANGE_CUE)).c_str());
+	AddToolTips();
 
 	CenterWindowOnParent(m_controls->Window, m_hParentWnd);
 	ShowWindow(m_controls->Window, SW_SHOW);
@@ -502,6 +611,10 @@ INT_PTR App::FontElementEditorDialog::DlgProc(UINT message, WPARAM wParam, LPARA
 			if (!m_controls)
 				return 0;
 
+			// Before the handlers, which return early on texts they cannot read.
+			if (HIWORD(wParam) == EN_CHANGE)
+				UpdateNumberEditValidity(reinterpret_cast<HWND>(lParam));
+
 			switch (LOWORD(wParam)) {
 				case IDOK: return OkButton_OnCommand(HIWORD(wParam));
 				case IDCANCEL: return CancelButton_OnCommand(HIWORD(wParam));
@@ -554,7 +667,6 @@ INT_PTR App::FontElementEditorDialog::DlgProc(UINT message, WPARAM wParam, LPARA
 				case IDC_BUTTON_PRESETRANGE_SCRIPT_SUBTRACT: return PresetRangeScript_OnCommand(false, HIWORD(wParam));
 				case IDC_BUTTON_PRESETRANGE_GAMEFONT_ADD: return PresetRangeGameFont_OnCommand(true, HIWORD(wParam));
 				case IDC_BUTTON_PRESETRANGE_GAMEFONT_SUBTRACT: return PresetRangeGameFont_OnCommand(false, HIWORD(wParam));
-				case IDC_LIST_CODEPOINTS: return CodepointsList_OnCommand(HIWORD(wParam));
 				case IDC_BUTTON_CODEPOINTS_CLEAR: return CodepointsClearButton_OnCommand(HIWORD(wParam));
 				case IDC_BUTTON_CODEPOINTS_DELETE: return CodepointsDeleteButton_OnCommand(HIWORD(wParam));
 				case IDC_COMBO_CODEPOINTS_MERGEMODE: return CodepointsMergeModeCombo_OnCommand(HIWORD(wParam));
@@ -620,12 +732,8 @@ INT_PTR App::FontElementEditorDialog::DlgProc(UINT message, WPARAM wParam, LPARA
 				return FontFeaturesList_OnContextMenu({ GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) });
 			return 0;
 		}
-		case WM_CLOSE: {
-			Reactivate();
-			DestroyWindow(m_controls->Window);
-			m_bOpened = false;
-			return 0;
-		}
+		case WM_CLOSE:
+			return m_controls ? CancelButton_OnCommand(0) : 0;
 		case WM_DESTROY: {
 			Reactivate();
 			m_bOpened = false;
@@ -652,6 +760,12 @@ INT_PTR __stdcall App::FontElementEditorDialog::PageDlgProc(HWND hwnd, UINT mess
 		case WM_CONTEXTMENU:
 			SendMessageW(GetParent(hwnd), message, wParam, lParam);
 			return TRUE;
+
+		case WM_CTLCOLOREDIT:
+			// A dialog procedure returns the brush itself for this message, and FALSE for the default colors.
+			if (const auto dlg = reinterpret_cast<FontElementEditorDialog*>(GetWindowLongPtrW(GetParent(hwnd), DWLP_USER)))
+				return dlg->NumberEdit_OnCtlColor(reinterpret_cast<HDC>(wParam), reinterpret_cast<HWND>(lParam));
+			return FALSE;
 	}
 	return FALSE;
 }

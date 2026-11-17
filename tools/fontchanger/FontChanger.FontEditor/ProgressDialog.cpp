@@ -2,6 +2,11 @@
 #include "resource.h"
 #include "ProgressDialog.h"
 
+namespace {
+	// Sets the step text to the string that lParam points to.
+	constexpr UINT WmUpdateStatusMessage = WM_APP + 1;
+}
+
 struct App::ProgressDialog::ControlStruct {
 	HWND Window;
 	HWND CancelButton = GetDlgItem(Window, IDCANCEL);
@@ -56,7 +61,8 @@ bool App::ProgressDialog::IsCancelled() const {
 }
 
 void App::ProgressDialog::UpdateStatusMessage(const std::wstring& s) {
-	Static_SetText(m_controls->StepNameStatic, s.c_str());
+	// The dialog's thread sets the text, so that it cannot replace the text shown once cancelled.
+	SendMessageW(m_controls->Window, WmUpdateStatusMessage, 0, reinterpret_cast<LPARAM>(s.c_str()));
 }
 
 void App::ProgressDialog::UpdateStatusMessage(std::wstring_view s) {
@@ -86,8 +92,11 @@ INT_PTR App::ProgressDialog::Dialog_OnInitDialog() {
 }
 
 INT_PTR App::ProgressDialog::CancelButton_OnCommand(uint16_t notiCode) {
-	m_bCancelled = true;
+	if (m_bCancelled.exchange(true))
+		return 0;
+
 	EnableWindow(m_controls->CancelButton, FALSE);
+	SetWindowTextW(m_controls->StepNameStatic, std::wstring(GetStringResource(IDS_PROGRESS_CANCELLING)).c_str());
 	return 0;
 }
 
@@ -101,13 +110,20 @@ INT_PTR App::ProgressDialog::DlgProc(UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			return 0;
 		}
+		case WmUpdateStatusMessage: {
+			if (!m_bCancelled)
+				SetWindowTextW(m_controls->StepNameStatic, reinterpret_cast<LPCWSTR>(lParam));
+			return 1;
+		}
 		case WM_CLOSE: {
+			// The destructor closes the dialog. The close button of the title bar only asks to cancel.
 			if (lParam == 1) {
 				SetForegroundWindow(m_hParentWnd);
 				EndDialog(m_controls->Window, 0);
-			} else
-				return 1;
-			return 0;
+			} else {
+				CancelButton_OnCommand(BN_CLICKED);
+			}
+			return 1;
 		}
 	}
 	return 0;

@@ -52,6 +52,7 @@ void App::FontEditorWindow::SetCurrentMultiFontSet(Structs::MultiFontSet multiFo
 	}
 	m_editors.clear();
 	m_deactivatedElements.clear();
+	FontElementsListView_CancelDrag();
 
 	m_multiFontSet = std::move(multiFontSet);
 	m_currentPath = std::move(path);
@@ -60,6 +61,7 @@ void App::FontEditorWindow::SetCurrentMultiFontSet(Structs::MultiFontSet multiFo
 	m_pActiveFont = nullptr;
 
 	UpdateFontList();
+	Undo_Reset();
 	Changes_MarkFresh();
 }
 
@@ -82,8 +84,28 @@ std::vector<int> App::FontEditorWindow::GetSelectedElementIndices() const {
 	return indices;
 }
 
+App::Structs::Font* App::FontEditorWindow::FindFont(const Structs::FontElement& element) const {
+	for (const auto& pFontSet : m_multiFontSet.FontSets) {
+		for (const auto& pFont : pFontSet->Fonts) {
+			if (std::ranges::any_of(pFont->Elements, [&element](const auto& pElement) { return pElement.get() == &element; }))
+				return pFont.get();
+		}
+	}
+	return nullptr;
+}
+
+std::vector<App::Structs::Font*> App::FontEditorWindow::GetFontsOfFontSet(Structs::Font& font) const {
+	const auto pFontSet = FindFontSet(font);
+	if (!pFontSet)
+		return {&font};
+
+	std::vector<Structs::Font*> fonts;
+	for (const auto& pFont : pFontSet->Fonts)
+		fonts.push_back(pFont.get());
+	return fonts;
+}
+
 void App::FontEditorWindow::OnActiveFontElementsChanged() {
-	Changes_MarkDirty();
 	m_pActiveFont->OnElementChange();
 	RefitAutoFields();
 	Window_Redraw();
@@ -110,37 +132,42 @@ void App::FontEditorWindow::RefitAutoFields() {
 }
 
 void App::FontEditorWindow::Changes_MarkFresh() {
-	m_bChanged = false;
+	m_savedDepth = m_undo.size();
+	m_bDirtyWithoutStep = false;
 
-	const auto fileName = GetCurrentFileName();
-	SetWindowTextW(
-		m_hWnd,
-		std::vformat(
-			GetStringResource(IDS_WINDOWTITLE_FONTEDITOR),
-			std::make_wformat_args(fileName)).c_str());
+	// A step merged into the saved one would leave the document changed at the saved depth.
+	m_bCanMergeUndoStep = false;
+	Changes_UpdateTitle();
 }
 
 void App::FontEditorWindow::Changes_MarkDirty() {
-	if (m_bChanged)
+	if (m_bDirtyWithoutStep)
 		return;
 
-	m_bChanged = true;
+	m_bDirtyWithoutStep = true;
+	Changes_UpdateTitle();
+}
 
+bool App::FontEditorWindow::Changes_IsDirty() const {
+	return m_bDirtyWithoutStep || m_savedDepth != m_undo.size();
+}
+
+void App::FontEditorWindow::Changes_UpdateTitle() {
 	const auto fileName = GetCurrentFileName();
-	SetWindowTextW(
-		m_hWnd,
-		std::vformat(
-			GetStringResource(IDS_WINDOWTITLE_FONTEDITOR_CHANGED),
-			std::make_wformat_args(fileName)).c_str());
+	const auto title = std::vformat(
+		GetStringResource(Changes_IsDirty() ? IDS_WINDOWTITLE_FONTEDITOR_CHANGED : IDS_WINDOWTITLE_FONTEDITOR),
+		std::make_wformat_args(fileName));
+	if (title != GetWindowString(m_hWnd))
+		SetWindowTextW(m_hWnd, title.c_str());
 }
 
 bool App::FontEditorWindow::Changes_ConfirmIfDirty() {
-	if (m_bChanged) {
+	if (Changes_IsDirty()) {
 		switch (MessageBoxW(
 			m_hWnd,
 			std::wstring(GetStringResource(IDS_CONFIRM_UNSAVEDEXIT)).c_str(),
 			GetWindowString(m_hWnd).c_str(),
-			MB_YESNOCANCEL)) {
+			MB_YESNOCANCEL | MB_ICONWARNING)) {
 			case IDYES:
 				if (Menu_File_Save())
 					return true;
@@ -160,10 +187,25 @@ void App::FontEditorWindow::ShowEditor(Structs::FontElement& element) {
 		pEditorWindow->Activate();
 	} else {
 		pEditorWindow = std::make_unique<FontElementEditorDialog>(m_hWnd, element, [this, &element]() {
+			// The editor stays open while another font is the active one.
+			const auto pFont = FindFont(element);
+			if (!pFont)
+				return;
+
 			UpdateFontElementListViewItem(element);
-			Changes_MarkDirty();
-			m_pActiveFont->OnElementChange();
-			RefitAutoFields();
+			pFont->OnElementChange();
+			if (pFont == m_pActiveFont)
+				RefitAutoFields();
+
+			// The dialog has changed the element already, so the step is taken from the state as of the last step.
+			if (!m_nUndoScopeDepth) {
+				std::vector<int> selection;
+				if (pFont == m_pActiveFont)
+					selection = GetSelectedElementIndices();
+				else
+					selection.push_back(static_cast<int>(std::ranges::find(pFont->Elements, &element, &std::unique_ptr<Structs::FontElement>::get) - pFont->Elements.begin()));
+				Undo_Commit({pFont}, pFont, selection, selection, Undo_MakeCoalesceKey(CoalesceGroup::ElementEditor, &element));
+			}
 			Window_Redraw();
 		}, [this, &element](bool deactivated) {
 			if (deactivated)
@@ -294,7 +336,7 @@ void App::FontEditorWindow::SelectFontElements(const std::set<const Structs::Fon
 
 std::wstring GetRangeRepresentation(const App::Structs::FontElement& element) {
 	if (element.WrapModifiers.Codepoints.empty())
-		return L"(None)";
+		return std::wstring(GetStringResource(IDS_ELEMENTLIST_NORANGE));
 
 	std::wstring res;
 	std::vector<char32_t> charVec(element.GetBaseFont()->all_codepoints().begin(), element.GetBaseFont()->all_codepoints().end());
@@ -334,26 +376,30 @@ std::wstring GetSourceRepresentation(const App::Structs::FontElement& element) {
 	using App::Structs::ElementSourceEnum;
 	switch (element.Source) {
 		case ElementSourceEnum::Empty:
-			return L"Empty";
+			return std::wstring(GetStringResource(IDS_ELEMENTSOURCE_EMPTY));
 
 		case ElementSourceEnum::Game:
-			return L"Prerendered (Game)";
+			return std::wstring(GetStringResource(IDS_ELEMENTSOURCE_GAME));
 
 		case ElementSourceEnum::DirectWrite:
-			return std::format(L"DirectWrite ({}, {}, {})",
+			return std::format(L"{} ({}, {}, {})",
+				GetStringResource(IDS_ELEMENTSOURCE_DIRECTWRITE),
 				element.RendererSpecific.DirectWrite.get_rendering_mode_string(),
 				element.RendererSpecific.DirectWrite.get_measuring_mode_string(),
 				element.RendererSpecific.DirectWrite.get_grid_fit_mode_string()
 			);
 
 		case ElementSourceEnum::FreeType:
-			return std::format(L"FreeType ({}, {})", element.RendererSpecific.FreeType.get_render_mode_string(), element.RendererSpecific.FreeType.get_load_flags_string());
+			return std::format(L"{} ({}, {})",
+				GetStringResource(IDS_ELEMENTSOURCE_FREETYPE),
+				element.RendererSpecific.FreeType.get_render_mode_string(),
+				element.RendererSpecific.FreeType.get_load_flags_string());
 
 		case ElementSourceEnum::GlyphImages:
-			return L"SVG/PNG";
+			return std::wstring(GetStringResource(IDS_ELEMENTSOURCE_GLYPHIMAGES));
 
 		default:
-			return L"INVALID";
+			return std::wstring(GetStringResource(IDS_ELEMENTLIST_INVALIDSOURCE));
 	}
 }
 
@@ -368,10 +414,13 @@ static std::wstring GetLookupRepresentation(const App::Structs::FontElement& ele
 				GetFontStretchName(element.Lookup.Stretch)
 			);
 
-		case App::Structs::ElementSourceEnum::GlyphImages:
-			return element.RendererSpecific.GlyphImages.IsEmbedded()
-				? std::format(L"(Embedded: {})", element.RendererSpecific.GlyphImages.Embedded.size())
-				: xivres::util::unicode::convert<std::wstring>(element.RendererSpecific.GlyphImages.Path);
+		case App::Structs::ElementSourceEnum::GlyphImages: {
+			if (!element.RendererSpecific.GlyphImages.IsEmbedded())
+				return xivres::util::unicode::convert<std::wstring>(element.RendererSpecific.GlyphImages.Path);
+
+			const auto count = element.RendererSpecific.GlyphImages.Embedded.size();
+			return std::vformat(GetStringResource(IDS_ELEMENTLIST_EMBEDDED), std::make_wformat_args(count));
+		}
 
 		default:
 			return L"-";
@@ -391,17 +440,16 @@ void App::FontEditorWindow::UpdateFontElementListViewItem(const Structs::FontEle
 	setItemText(ListViewColsFamilyName, xivres::util::unicode::convert<std::wstring>(element.GetWrappedFont()->family_name()));
 	setItemText(ListViewColsSubfamilyName, xivres::util::unicode::convert<std::wstring>(element.GetWrappedFont()->subfamily_name()));
 	if (std::fabsf(element.GetWrappedFont()->font_size() - element.Size) >= 0.01f) {
-		setItemText(ListViewColsSize, std::format(
-			L"{} (!= {})",
-			FormatPixelValue(element.GetWrappedFont()->font_size()),
-			FormatPixelValue(element.Size)));
+		const auto actual = FormatPixelValue(element.GetWrappedFont()->font_size());
+		const auto requested = FormatPixelValue(element.Size);
+		setItemText(ListViewColsSize, std::vformat(GetStringResource(IDS_ELEMENTLIST_SIZEREQUESTED), std::make_wformat_args(actual, requested)));
 	} else {
 		setItemText(ListViewColsSize, FormatPixelValue(element.GetWrappedFont()->font_size()));
 	}
 	setItemText(ListViewColsLineHeight, FormatPixelValue(element.GetWrappedFont()->line_height()));
 	if (element.WrapModifiers.VerticalOffset != 0.f && element.Source != Structs::ElementSourceEnum::Empty) {
 		setItemText(ListViewColsAscent, std::format(
-			L"{}({})",
+			L"{} ({})",
 			FormatPixelValue(element.GetBaseFont()->ascent()),
 			FormatPixelValue(element.WrapModifiers.VerticalOffset, true)));
 	} else {

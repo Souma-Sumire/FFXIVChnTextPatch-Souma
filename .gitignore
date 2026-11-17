@@ -6,7 +6,7 @@ debug.*
 /scripts/exd
 hashPaths.txt
 config.json
-fontchanger/
+/fontchanger/
 patcher/build/
 patcher/frontend/dist/*
 !patcher/frontend/dist/.gitkeep

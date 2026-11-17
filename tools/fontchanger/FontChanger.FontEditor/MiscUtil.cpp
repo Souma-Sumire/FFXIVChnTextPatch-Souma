@@ -45,10 +45,18 @@ std::wstring_view GetStringResource(UINT id) {
 	return {lpBuffer, static_cast<size_t>(length)};
 }
 
-static std::wstring OemCpToWString(std::string_view sv) {
-	std::wstring buf(MultiByteToWideChar(CP_OEMCP, 0, sv.data(), static_cast<int>(sv.size()), nullptr, 0), L'\0');
-	MultiByteToWideChar(CP_OEMCP, 0, sv.data(), static_cast<int>(sv.size()), buf.data(), static_cast<int>(buf.size()));
-	return buf;
+std::wstring ErrorTextToWString(std::string_view sv) {
+	const auto convert = [&](UINT codePage, DWORD flags) {
+		std::wstring buf(MultiByteToWideChar(codePage, flags, sv.data(), static_cast<int>(sv.size()), nullptr, 0), L'\0');
+		MultiByteToWideChar(codePage, flags, sv.data(), static_cast<int>(sv.size()), buf.data(), static_cast<int>(buf.size()));
+		return buf;
+	};
+
+	if (sv.empty())
+		return {};
+	if (auto res = convert(CP_UTF8, MB_ERR_INVALID_CHARS); !res.empty())
+		return res;
+	return convert(CP_ACP, 0);
 }
 
 void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const std::wstring& details) {
@@ -66,7 +74,7 @@ void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const std::wstr
 
 void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const std::system_error& e) {
 	std::wstring errorText;
-	if (e.code().category() != std::system_category()) {
+	if (e.code().category() == std::system_category()) {
 		LPWSTR pErrorText = nullptr;
 		FormatMessageW(
 			FORMAT_MESSAGE_FROM_SYSTEM
@@ -82,12 +90,40 @@ void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const std::syst
 			errorText = pErrorText;
 			LocalFree(pErrorText);
 		}
+		while (!errorText.empty() && (errorText.back() == L'\r' || errorText.back() == L'\n'))
+			errorText.pop_back();
+
+		// The system's message does not name the files, unlike what().
+		if (const auto fsError = dynamic_cast<const std::filesystem::filesystem_error*>(&e); fsError && !errorText.empty()) {
+			for (const auto* path : {&fsError->path1(), &fsError->path2()}) {
+				if (!path->empty())
+					errorText += L"\n" + path->wstring();
+			}
+		}
 	}
-	ShowErrorMessageBox(hParent, preambleStringResID, errorText.empty() ? OemCpToWString(e.what()) : errorText);
+	ShowErrorMessageBox(hParent, preambleStringResID, errorText.empty() ? ErrorTextToWString(e.what()) : errorText);
 }
 
 void ShowErrorMessageBox(HWND hParent, UINT preambleStringResID, const std::exception& e) {
-	ShowErrorMessageBox(hParent, preambleStringResID, OemCpToWString(e.what()));
+	ShowErrorMessageBox(hParent, preambleStringResID, ErrorTextToWString(e.what()));
+}
+
+void ShowExportCompleteMessageBox(HWND hParent, const std::filesystem::path& target) {
+	const auto res = MessageBoxW(
+		hParent,
+		std::vformat(GetStringResource(IDS_EXPORT_COMPLETE), std::make_wformat_args(target.native())).c_str(),
+		hParent
+			? GetWindowString(hParent).c_str()
+			: std::wstring(GetStringResource(IDS_APP)).c_str(),
+		MB_YESNO | MB_ICONINFORMATION);
+	if (res != IDYES)
+		return;
+
+	std::error_code ec;
+	if (is_directory(target, ec))
+		ShellExecuteW(hParent, L"explore", target.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+	else
+		ShellExecuteW(hParent, nullptr, L"explorer.exe", std::format(L"/select,\"{}\"", target.native()).c_str(), nullptr, SW_SHOWNORMAL);
 }
 
 void AddListViewColumn(HWND hListView, int columnIndex, int width, UINT nameResId) {

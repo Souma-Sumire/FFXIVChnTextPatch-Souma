@@ -47,6 +47,24 @@ void from_json(const nlohmann::json& json, FontGeneratorConfig& value) {
 		MinPreviewEditHeight);
 
 	value.LanguageCode = json.value("Language", "");
+
+	if (const auto it = json.find("WindowPlacement"); it != json.end() && it->is_object()) {
+		const RECT rc{it->value("Left", 0), it->value("Top", 0), it->value("Right", 0), it->value("Bottom", 0)};
+		if (rc.right > rc.left && rc.bottom > rc.top)
+			value.WindowRect = rc;
+		value.WindowMaximized = it->value("Maximized", false);
+	}
+
+	if (const auto it = json.find("FontElementListViewColumnWidths"); it != json.end() && it->is_array()) {
+		for (const auto& width : *it)
+			value.FontElementListViewColumnWidths.push_back(width.is_number_integer() ? std::clamp(width.get<int>(), 0, 10000) : -1);
+	}
+
+	// The zoom is a whole multiple, as the menu and the wheel set it.
+	value.PreviewZoom = std::clamp(json.value("PreviewZoom", PreviewZoomOne), PreviewZoomMin, PreviewZoomMax) / PreviewZoomScrollUnit * PreviewZoomScrollUnit;
+	value.PreviewWordWrap = json.value("PreviewWordWrap", false);
+	value.PreviewKerning = json.value("PreviewKerning", false);
+	value.PreviewShowLineMetrics = json.value("PreviewShowLineMetrics", true);
 }
 
 void to_json(nlohmann::json& json, const FontGeneratorConfig& value) {
@@ -63,6 +81,23 @@ void to_json(nlohmann::json& json, const FontGeneratorConfig& value) {
 	json.emplace("PreviewEditHeight", value.PreviewEditHeight);
 
 	json.emplace("Language", value.LanguageCode);
+
+	if (value.WindowRect) {
+		json.emplace("WindowPlacement", nlohmann::json::object({
+			{"Left", value.WindowRect->left},
+			{"Top", value.WindowRect->top},
+			{"Right", value.WindowRect->right},
+			{"Bottom", value.WindowRect->bottom},
+			{"Maximized", value.WindowMaximized},
+		}));
+	}
+	if (!value.FontElementListViewColumnWidths.empty())
+		json.emplace("FontElementListViewColumnWidths", value.FontElementListViewColumnWidths);
+
+	json.emplace("PreviewZoom", value.PreviewZoom);
+	json.emplace("PreviewWordWrap", value.PreviewWordWrap);
+	json.emplace("PreviewKerning", value.PreviewKerning);
+	json.emplace("PreviewShowLineMetrics", value.PreviewShowLineMetrics);
 }
 
 std::filesystem::path FontGeneratorConfig::GetConfigPath() {

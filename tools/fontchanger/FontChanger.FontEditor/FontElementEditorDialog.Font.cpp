@@ -146,6 +146,7 @@ void App::FontElementEditorDialog::RefreshAutoFields() {
 		}
 	}
 	RepopulateDirectWriteRenderModeCombo();
+	RefreshTitle();
 }
 
 void App::FontElementEditorDialog::RepopulateDirectWriteRenderModeCombo() {

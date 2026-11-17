@@ -7,6 +7,34 @@ namespace {
 	size_t CountInRange(const std::set<char32_t>& codepoints, char32_t c1, char32_t c2) {
 		return static_cast<size_t>(std::distance(codepoints.lower_bound(c1), codepoints.upper_bound(c2)));
 	}
+
+	// Lets a list box scroll sideways to the end of its widest item.
+	void UpdateHorizontalExtent(HWND list) {
+		const auto hdc = GetDC(list);
+		if (!hdc)
+			return;
+
+		const auto font = GetWindowFont(list);
+		const auto prevFont = font ? SelectObject(hdc, font) : nullptr;
+		int width = 0;
+		std::wstring text;
+		for (int i = 0, i_ = ListBox_GetCount(list); i < i_; i++) {
+			const auto length = ListBox_GetTextLen(list, i);
+			if (length <= 0)
+				continue;
+
+			text.resize(length);
+			ListBox_GetText(list, i, text.data());
+			if (SIZE size; GetTextExtentPoint32W(hdc, text.c_str(), length, &size))
+				width = (std::max)(width, static_cast<int>(size.cx));
+		}
+		if (prevFont)
+			SelectObject(hdc, prevFont);
+		ReleaseDC(list, hdc);
+
+		// Items are drawn after a margin.
+		ListBox_SetHorizontalExtent(list, width ? width + 4 * GetSystemMetrics(SM_CXEDGE) : 0);
+	}
 }
 
 INT_PTR App::FontElementEditorDialog::CustomRangeEdit_OnCommand(uint16_t notiCode) {
@@ -49,13 +77,6 @@ INT_PTR App::FontElementEditorDialog::CustomRangeSubtract_OnCommand(uint16_t not
 	return 0;
 }
 
-INT_PTR App::FontElementEditorDialog::CodepointsList_OnCommand(uint16_t notiCode) {
-	if (notiCode == LBN_DBLCLK)
-		return CodepointsDeleteButton_OnCommand(BN_CLICKED);
-
-	return 0;
-}
-
 INT_PTR App::FontElementEditorDialog::CodepointsClearButton_OnCommand(uint16_t notiCode) {
 	SetCodepointRanges({});
 	return 0;
@@ -71,6 +92,13 @@ INT_PTR App::FontElementEditorDialog::CodepointsDeleteButton_OnCommand(uint16_t 
 	for (const auto itemIndex : selItems)
 		ranges.push_back(m_element.WrapModifiers.Codepoints[itemIndex]);
 	RemoveCodepointRanges(ranges);
+
+	// The item that took the place of the deleted ones is selected, so that Delete can be pressed again.
+	if (const auto count = ListBox_GetCount(m_controls->CodepointsList); count > 0) {
+		const auto index = (std::min)(std::ranges::min(selItems), count - 1);
+		ListBox_SetSel(m_controls->CodepointsList, TRUE, index);
+		ListBox_SetCaretIndex(m_controls->CodepointsList, index);
+	}
 	return 0;
 }
 
@@ -267,6 +295,7 @@ void App::FontElementEditorDialog::RefreshCodepointsList() {
 	ListBox_ResetContent(m_controls->CodepointsList);
 	for (int i = 0, i_ = static_cast<int>(m_element.WrapModifiers.Codepoints.size()); i < i_; i++)
 		AddCodepointRangeToListBox(i, m_element.WrapModifiers.Codepoints[i].first, m_element.WrapModifiers.Codepoints[i].second);
+	UpdateHorizontalExtent(m_controls->CodepointsList);
 }
 
 void App::FontElementEditorDialog::AddCodepointRangeToListBox(int index, char32_t c1, char32_t c2) {
@@ -357,4 +386,5 @@ void App::FontElementEditorDialog::RefreshUnicodeBlockSearchResults() {
 		).c_str());
 		ListBox_SetItemData(m_controls->UnicodeBlockSearchResultList, ListBox_GetCount(m_controls->UnicodeBlockSearchResultList) - 1, &block);
 	}
+	UpdateHorizontalExtent(m_controls->UnicodeBlockSearchResultList);
 }

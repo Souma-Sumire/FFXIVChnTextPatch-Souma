@@ -233,6 +233,7 @@
     <ClCompile Include="MainWindow.GlyphFiles.cpp" />
     <ClCompile Include="MainWindow.Menu.Edit.cpp" />
     <ClCompile Include="MainWindow.Menu.Export.cpp" />
+    <ClCompile Include="MainWindow.Undo.cpp" />
     <ClCompile Include="MainWindow.Menu.File.cpp" />
     <ClCompile Include="MainWindow.Menu.HotReload.cpp" />
     <ClCompile Include="MainWindow.Menu.View.cpp" />

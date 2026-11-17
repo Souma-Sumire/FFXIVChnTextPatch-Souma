@@ -22,6 +22,18 @@ struct FontGeneratorConfig {
 	int FontElementListViewHeight;
 	int PreviewEditHeight;
 
+	// The restored position of the main window in workspace coordinates, if it was saved.
+	std::optional<RECT> WindowRect;
+	bool WindowMaximized = false;
+
+	// Widths in DIPs of the columns of the list of elements. Columns that are missing keep their default widths.
+	std::vector<int> FontElementListViewColumnWidths;
+
+	int PreviewZoom = 100;
+	bool PreviewWordWrap = false;
+	bool PreviewKerning = false;
+	bool PreviewShowLineMetrics = true;
+
 	bool Dirty;
 
 	static const FontGeneratorConfig Default;

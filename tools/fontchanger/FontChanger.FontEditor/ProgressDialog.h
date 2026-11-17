@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 namespace App {
 	class ProgressDialog {
 		struct ControlStruct;
@@ -12,7 +14,9 @@ namespace App {
 		ControlStruct* m_controls = nullptr;
 
 		std::thread m_dialogThread;
-		bool m_bCancelled = false;
+
+		// Set by the dialog's thread and read by the thread that does the work.
+		std::atomic_bool m_bCancelled = false;
 
 	public:
 		ProgressDialog(HWND hParentWnd, std::wstring windowTitle);
