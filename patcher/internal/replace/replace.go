@@ -297,6 +297,9 @@ func buildEntries(exh *exd.EXHF, file *exd.File, tableName string,
 						if err != nil {
 							return nil, 0, fmt.Errorf("表 %s 行 %d 列 %d 编码文本失败: %w", tableName, rowIndex, col, err)
 						}
+						if err := text.ValidateSeString(encoded); err != nil {
+							return nil, 0, fmt.Errorf("表 %s 行 %d 列 %d 控制码校验失败: %w", tableName, rowIndex, col, err)
+						}
 						newString = append(newString, encoded...)
 						replaced = true
 					}
