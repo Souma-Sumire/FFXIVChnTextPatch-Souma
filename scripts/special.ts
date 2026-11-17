@@ -96,7 +96,7 @@ export const specialFile: SpecialFileMap = {
       "2729": "",
       "2734": "传送网",
       "2735": "AETHERNET",
-      "3049": "",
+      "3049": "<hex:02280EFF09>ClassJob<hex:E8020103>",
       "3071": "",
       "3073": "",
       "3079": "",
