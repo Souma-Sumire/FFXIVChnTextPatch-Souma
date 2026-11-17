@@ -462,7 +462,7 @@ function byId<T extends HTMLElement>(id: string): T {
 }
 
 type LogLevel = "info" | "ok" | "warn" | "error" | "diag";
-type LogTag = "资源" | "词条" | "配置" | "校验" | "汉化" | "字体" | "更新" | "系统" | "";
+type LogTag = "汉化" | "还原" | "字体" | "词条" | "配置" | "更新" | "系统" | "";
 
 interface LogEntry {
   id: number;
@@ -475,7 +475,7 @@ interface LogEntry {
 }
 
 const VALID_LOG_LEVELS = new Set<LogLevel>(["info", "ok", "warn", "error", "diag"]);
-const VALID_LOG_TAGS = new Set<LogTag>(["资源", "词条", "配置", "校验", "汉化", "字体", "更新", "系统", ""]);
+const VALID_LOG_TAGS = new Set<LogTag>(["汉化", "还原", "字体", "词条", "配置", "更新", "系统", ""]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -811,27 +811,6 @@ function normalizeLogTag(value: unknown): LogTag {
   return typeof value === "string" && VALID_LOG_TAGS.has(value as LogTag) ? (value as LogTag) : "";
 }
 
-function parseLegacyLogText(raw: string): { level: LogLevel; tag: LogTag; message: string } {
-  let msg = raw.trim();
-  if (msg.startsWith("[诊断] ")) {
-    return { level: "diag", tag: "", message: msg.slice("[诊断] ".length) };
-  }
-  let level: LogLevel = "info";
-  if (msg.startsWith("[错误] ")) {
-    level = "error";
-    msg = msg.slice("[错误] ".length);
-  } else if (msg.startsWith("[警告] ")) {
-    level = "warn";
-    msg = msg.slice("[警告] ".length);
-  } else if (msg.startsWith("[完成] ")) {
-    level = "ok";
-    msg = msg.slice("[完成] ".length);
-  } else if (msg.startsWith("[提示] ")) {
-    msg = msg.slice("[提示] ".length);
-  }
-  return { level, tag: "", message: msg };
-}
-
 // 面板只显示时分秒：日期会把宽约 90px 的时间列占掉，正文跟着变窄；
 // 复制时用带日期的 logStamp，贴出去还能对时。
 function logClock(date = new Date()): string {
@@ -912,11 +891,6 @@ function handleBackendLog(payload: unknown): void {
       normalizeLogLevel(payload.level),
       normalizeLogTag(payload.tag),
     );
-    return;
-  }
-  if (typeof payload === "string") {
-    const parsed = parseLegacyLogText(payload);
-    log(parsed.message, parsed.level, parsed.tag);
   }
 }
 
@@ -1767,7 +1741,7 @@ async function bootstrapApp(): Promise<void> {
       const diagnostics = await call("GetDiagnostics");
       logHeader([...diagnostics, ...frontendDiagnostics()]);
     } catch (error) {
-      log(`读取诊断信息失败：${describeError(error)}`, "warn", "系统");
+      logDiag(`读取诊断信息失败：${describeError(error)}`);
       logHeader(frontendDiagnostics());
     }
 
@@ -1789,9 +1763,6 @@ async function bootstrapApp(): Promise<void> {
 
     if (currentGameDir()) {
       await refreshGameInfo();
-      if (gameInfo?.valid) {
-        log(`已加载${getRegionShortName(getCurrentFontRegion())}客户端（v${gameInfo.version || "未知"}）`, "info", "配置");
-      }
       void checkClientEnvironment();
       if (isGlobalLanguage(config.language) && !config.gameDirs?.["CHS"]) {
         runWhenIdle(() => {
@@ -1883,7 +1854,7 @@ async function syncBuiltinOnStart(): Promise<void> {
       await call("SyncBuiltinResource");
       await reloadRules();
     } catch (err) {
-      log(`本地内置词条不可用：${describeError(err)}`, "warn", "资源");
+      log(`本地内置词条不可用：${describeError(err)}`, "warn", "词条");
     }
     return;
   }
@@ -1899,7 +1870,7 @@ async function ensureTableDoc(): Promise<void> {
       await reloadCSVContext();
     }
   } catch (err) {
-    log(`表清单同步失败：${describeError(err)}`, "warn", "资源");
+    log(`表清单同步失败：${describeError(err)}`, "warn", "词条");
   }
   // 内置词条随后会走整包同步，这里只处理自定义目录，避免同步前误报缺清单。
   if (bootstrap?.csv.selected && !csvSelectionValid()) {
@@ -1975,7 +1946,7 @@ async function reloadRules(): Promise<void> {
     bootstrap.rules = rules;
     renderRules();
   } catch (err) {
-    log(`刷新附加规则失败：${describeError(err)}`, "warn", "资源");
+    log(`刷新附加规则失败：${describeError(err)}`, "warn", "词条");
   }
 }
 
@@ -2901,7 +2872,7 @@ function notifyInvalidCSV(): void {
   }
   invalidCSVNotified = ctx.selected;
   if (ctx.tableList.length === 0) {
-    log("本地表清单不可用且联网获取失败，请检查网络后重启程序", "warn", "资源");
+    log("本地表清单不可用且联网获取失败，请检查网络后重启程序", "warn", "词条");
     return;
   }
   log(`词条目录已失效（${ctx.selected}），请重新选择或移除该目录`, "warn", "词条");
@@ -3013,9 +2984,10 @@ async function syncBuiltinResource(): Promise<void> {
     await reloadRules();
   } catch (err) {
     builtinSyncFailed = true;
-    log(`内置词条同步失败：${describeError(err)}`, "warn", "资源");
-    if (!showOnPicker) {
-      log("当前使用自定义词条，不受本次同步失败影响；切回内置词条时会重试", "info", "词条");
+    if (showOnPicker) {
+      log(`内置词条同步失败：${describeError(err)}`, "warn", "词条");
+    } else {
+      logDiag(`后台内置词条同步失败（当前使用自定义词条）：${describeError(err)}`);
     }
   } finally {
     setResourceSyncing(false);
@@ -3109,17 +3081,24 @@ async function checkClientEnvironment(): Promise<void> {
     if (changed) {
       const kind: LogLevel =
         status.status === "original" ? "ok" : status.status === "mismatch" ? "warn" : "info";
+      const textLabel = status.text?.label ?? "";
+      const fontLabel = status.font?.label ?? "";
+      const sameState = textLabel === fontLabel && textLabel === status.label;
       const parts: string[] = [];
-      if (status.text?.label) parts.push(`文本：${status.text.label}`);
-      if (status.font?.label) parts.push(`字体：${status.font.label}`);
+      if (!sameState) {
+        if (textLabel) parts.push(`文本：${textLabel}`);
+        if (fontLabel) parts.push(`字体：${fontLabel}`);
+      }
       const detail = parts.length > 0 ? `（${parts.join("，")}）` : "";
-      log(`客户端状态：${status.label}${detail}`, kind, "校验");
+      const regionName = getRegionShortName(getCurrentFontRegion());
+      const verText = gameInfo?.version ? ` v${gameInfo.version}` : "";
+      log(`${regionName}客户端${verText}：${status.label}${detail}`, kind, "配置");
     }
   } catch (err) {
     if (gen !== checkClientGeneration || config.language !== currentLang || currentGameDir() !== currentDir) {
       return;
     }
-    log(`客户端校验失败：${describeError(err)}`, "error", "校验");
+    log(`客户端检测失败：${describeError(err)}`, "error", "配置");
   } finally {
     if (gen === checkClientGeneration) {
       checkingClient = false;
@@ -6403,7 +6382,7 @@ async function openBackupDir(): Promise<void> {
   try {
     await call("OpenBackupDirectory", config.language);
   } catch (err) {
-    log(`打开备份目录失败：${describeError(err)}`, "error", "校验");
+    log(`打开备份目录失败：${describeError(err)}`, "error", "系统");
   }
 }
 
@@ -7772,7 +7751,7 @@ function wireEvents(): void {
       return;
     }
     if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
-      log("区服与客户端目录不匹配，无法还原", "error", "校验");
+      showToast({ kind: "error", title: "无法还原", description: "区服与客户端目录不匹配，无法还原" });
       return;
     }
     const isGlobal = isGlobalLanguage(config.language);
@@ -7782,15 +7761,19 @@ function wireEvents(): void {
       gameInfo.version !== gameInfo.backupVersion
     );
     if (!isGlobal && !gameInfo?.backupExists) {
-      log("本地没有原版备份，请先使用官方启动器修复客户端", "warn", "校验");
+      showToast({ kind: "error", title: "无法还原", description: "本地没有原版备份，请先使用官方启动器修复客户端" });
       return;
     }
     if (!isGlobal && versionMismatch) {
-      log(`游戏版本 v${gameInfo?.version} 与备份 v${gameInfo?.backupVersion} 不一致，请先使用官方启动器修复`, "warn", "校验");
+      showToast({
+        kind: "error",
+        title: "无法还原",
+        description: `游戏版本 v${gameInfo?.version} 与备份 v${gameInfo?.backupVersion} 不一致，请先使用官方启动器修复`,
+      });
       return;
     }
     if (!currentGameDir()) {
-      log("请先选择游戏目录", "error", "校验");
+      showToast({ kind: "error", title: "无法还原", description: "请先选择游戏目录" });
       return;
     }
     const confirmMsg = isGlobal && !gameInfo?.backupExists
@@ -7803,18 +7786,20 @@ function wireEvents(): void {
     const restoreText = el.restoreTextCheck.checked;
     const restoreFont = el.restoreFontCheck.checked;
     if (!restoreText && !restoreFont) {
-      log("未勾选要还原的内容，已取消", "warn", "校验");
+      showToast({ kind: "error", title: "无法还原", description: "请至少勾选一项要还原的内容" });
       return;
     }
+    const logCountBefore = logEntries.length;
     try {
       toggleConsole(true);
       setBusy(true, restoreText && restoreFont ? "正在还原官方原版文件…" : restoreText ? "正在还原文本…" : "正在还原字体…");
       const resp = await call("RestoreOriginal", currentGameDir(), config.language, restoreText, restoreFont);
       if (resp.cancelled) {
-        log("已取消还原", "info", "校验");
+        if (logEntries.length === logCountBefore) {
+          log("已取消还原", "info", "还原");
+        }
         return;
       }
-      // 完成结果由后端日志给出，此处不再重复输出。
       try {
         clientStatus = await call("CheckClientStatus", currentGameDir(), config.language);
       } catch {
@@ -7822,7 +7807,9 @@ function wireEvents(): void {
       }
       await refreshGameInfo();
     } catch (error) {
-      log(`还原失败：${describeError(error)}`, "error", "校验");
+      if (logEntries.length === logCountBefore) {
+        log(`还原失败：${describeError(error)}`, "error", "还原");
+      }
     } finally {
       setBusy(false);
     }
@@ -7847,41 +7834,30 @@ function wireEvents(): void {
       return;
     }
     if (gameInfo?.regionMismatch || clientStatus?.status === "mismatch") {
-      const msg = "当前选择的目录与所选区服不匹配，请切换区服或重新选择游戏目录";
-      log(msg, "error", "汉化");
-      showToast({ kind: "error", title: "无法开始汉化", description: msg });
+      showToast({ kind: "error", title: "无法开始汉化", description: "当前选择的目录与所选区服不匹配，请切换区服或重新选择游戏目录" });
       return;
     }
     if (!currentGameDir()) {
-      const msg = "请先选择或自动探测有效的游戏安装目录";
-      log(msg, "error", "汉化");
-      showToast({ kind: "error", title: "无法开始汉化", description: msg });
+      showToast({ kind: "error", title: "无法开始汉化", description: "请先选择或自动探测有效的游戏安装目录" });
       return;
     }
     if (!config.replaceText && !config.replaceFont) {
-      const msg = "请至少开启「文本数据」或「游戏字体」其中一项";
-      log(msg, "error", "汉化");
-      showToast({ kind: "error", title: "无法开始汉化", description: msg });
+      showToast({ kind: "error", title: "无法开始汉化", description: "请至少开启「文本数据」或「游戏字体」其中一项" });
       return;
     }
     if (config.replaceText && !csvSelectionValid()) {
       const msg = (bootstrap?.csv.tableList.length ?? 0) === 0
         ? "缺少数据表清单，请检查网络或代理后重试"
         : "当前选中的词条目录已失效，请切换到内置词条或其他有效目录";
-      log(msg, "error", "汉化");
       showToast({ kind: "error", title: "无法开始汉化", description: msg });
       return;
     }
     if (config.replaceText && selected.size === 0) {
-      const msg = "尚未选择任何要汉化的数据表，请在「修改范围」中至少勾选一项";
-      log(msg, "error", "汉化");
-      showToast({ kind: "error", title: "无法开始汉化", description: msg });
+      showToast({ kind: "error", title: "无法开始汉化", description: "尚未选择任何要汉化的数据表，请在「修改范围」中至少勾选一项" });
       return;
     }
     if (config.replaceText && regionLanguageOptions().length > 1 && targetLangs.length === 0) {
-      const msg = "请至少勾选一种要替换的目标语言";
-      log(msg, "error", "汉化");
-      showToast({ kind: "error", title: "无法开始汉化", description: msg });
+      showToast({ kind: "error", title: "无法开始汉化", description: "请至少勾选一种要替换的目标语言" });
       return;
     }
 
@@ -7891,11 +7867,11 @@ function wireEvents(): void {
     if (el.btnPatchText) el.btnPatchText.textContent = "停止汉化";
     el.btnPatch.disabled = false;
 
+    const logCountBefore = logEntries.length;
     try {
       toggleConsole(true);
       setBusy(true, "正在汉化…");
       el.progressBar.style.width = "0%";
-      log("开始执行汉化…", "info", "汉化");
 
       const req: PatchRequest = {
         gameDir: currentGameDir(),
@@ -7911,7 +7887,9 @@ function wireEvents(): void {
 
       const resp = await call("StartPatch", req);
       if (resp.cancelled) {
-        log("已中止汉化", "info", "汉化");
+        if (logEntries.length === logCountBefore) {
+          log("已取消汉化", "info", "汉化");
+        }
         return;
       }
       for (const w of resp.warnings ?? []) {
@@ -7929,7 +7907,9 @@ function wireEvents(): void {
       await reloadCSVContext();
       await reloadRules();
     } catch (error) {
-      log(`汉化失败：${describeError(error)}`, "error", "汉化");
+      if (logEntries.length === logCountBefore) {
+        log(`汉化失败：${describeError(error)}`, "error", "汉化");
+      }
     } finally {
       isPatching = false;
       isStopping = false;
@@ -8898,10 +8878,22 @@ function wireRuntimeEvents(): void {
 
     if (ev.stage === "download") {
       const detail = ev.detail.replace(/^正在下载\s*/, "");
-      if (detail && detail !== lastDownloadDetail) {
-        lastDownloadDetail = detail;
+      if (detail) {
+        const label = detail.startsWith("0a0000.")
+          ? "原版文本文件"
+          : detail.startsWith("000000.")
+            ? "原版字体文件"
+            : detail;
         const sizeInfo = ev.total > 0 ? ` (${(ev.total / 1024 / 1024).toFixed(1)} MB)` : "";
-        log(`正在下载原版 ${detail}${sizeInfo}`, "info", "校验");
+        const diagKey = `${detail}${sizeInfo}`;
+        if (diagKey !== lastDownloadDetail) {
+          logDiag(`下载原版文件：${detail}${sizeInfo}`);
+        }
+        if (label !== lastDownloadDetail && !(detail.startsWith("0a0000.") && lastDownloadDetail.startsWith("0a0000.")) && !(detail.startsWith("000000.") && lastDownloadDetail.startsWith("000000."))) {
+          const tag: LogTag = isPatching ? "汉化" : "还原";
+          log(`正在下载${label}${sizeInfo}`, "info", tag);
+        }
+        lastDownloadDetail = diagKey;
       }
       return;
     }
@@ -8928,7 +8920,7 @@ function wireRuntimeEvents(): void {
     try {
       await call("AnswerUnknownConfirm", ok);
     } catch (error) {
-      log(`确认反馈失败：${describeError(error)}`, "error", "系统");
+      logDiag(`unknown-confirm 回调失败：${describeError(error)}`);
     }
   });
 
@@ -8941,7 +8933,7 @@ function wireRuntimeEvents(): void {
     try {
       await call("AnswerLauncherConfirm", ok);
     } catch (error) {
-      log(`确认反馈失败：${describeError(error)}`, "error", "系统");
+      logDiag(`launcher-confirm 回调失败：${describeError(error)}`);
     }
   });
 

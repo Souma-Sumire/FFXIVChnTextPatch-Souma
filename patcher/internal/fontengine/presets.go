@@ -77,6 +77,17 @@ var BuiltinPresetMap = map[string]PresetSummary{
 	},
 }
 
+// PresetDisplayName 返回字体方案的展示名称，未知 ID 时回退为原始标识。
+func PresetDisplayName(id string) string {
+	if p, ok := BuiltinPresetMap[id]; ok && p.Name != "" {
+		return p.Name
+	}
+	if name, ok := customPresetName(id); ok && name != "" {
+		return name
+	}
+	return id
+}
+
 // builtinPresetIDsForRegion 返回该区服可用的内置方案 id。
 func builtinPresetIDsForRegion(r region.Region) []string {
 	switch r {

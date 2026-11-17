@@ -81,7 +81,8 @@ func (a *App) resolveFontPresetContent(resourceDir, regionKey string, targetReg 
 	configJson, err := fontengine.GetPresetContent(presetID, presetsDirFor(resourceDir))
 	if err != nil {
 		defaultID := defaultPresetForRegionWithDirs(targetReg, a.loadConfig(resourceDir).GameDirs)
-		a.emitWarn(logTagFont, "方案 %s 不可用（%v），已改用默认方案 %s", presetID, err, defaultID)
+		a.emitDiag("字体方案 %s 不可用（%v），已改用默认方案 %s", presetID, err, defaultID)
+		a.emitWarn(logTagFont, "所选字体方案不可用，已自动切换为「%s」", fontengine.PresetDisplayName(defaultID))
 		configJson, err = fontengine.GetPresetContent(defaultID, "")
 		if err != nil {
 			return "", "", 0, fmt.Errorf("读取字体配置失败: %w", err)
@@ -220,7 +221,7 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 	if use16Bit {
 		bitDesc = "16位"
 	}
-	a.emitInfo(logTagFont, "正在编译方案 %s（%s贴图）…", presetID, bitDesc)
+	a.emitInfo(logTagFont, "正在编译字体「%s」（%s贴图）…", fontengine.PresetDisplayName(presetID), bitDesc)
 	if err := a.fontEngine.CompileRaw(ctx, configJson, tmpDir, use16Bit, func(pct int, msg string) {
 		a.emitFontBuildProgress(int64(pct), msg)
 	}); err != nil {

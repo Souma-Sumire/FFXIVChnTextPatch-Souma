@@ -220,7 +220,7 @@ func TestRun_WithExistingValidBackup(t *testing.T) {
 		Language:    region.GLOBAL,
 		ReplaceText: true,
 		ReplaceFont: true,
-		Log:         func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+		Log:         func(level LogLevel, format string, args ...any) { logs = append(logs, fmt.Sprintf("[%s] "+format, append([]any{level}, args...)...)) },
 		ApplyText: func(ctx context.Context) error {
 			// 汉化替换执行时，验证文件已被先还原为原版
 			cur, _ := os.ReadFile(filepath.Join(env.sqpackDir, "0a0000.win32.index"))
@@ -249,7 +249,7 @@ func TestRun_WithExistingValidBackup(t *testing.T) {
 	if !logContains(logs, "[文本] 还原 0a0000.win32.index") {
 		t.Fatalf("被改动的文本文件应记录还原动作，实际日志: %v", logs)
 	}
-	if !logContains(logs, DiagPrefix+"[字体] 客户端字体已是原版，无需还原") {
+	if !logContains(logs, "[diag] [字体] 客户端字体已是原版，无需还原") {
 		t.Fatalf("字体未改动时应记录无需还原，实际日志: %v", logs)
 	}
 }
@@ -413,7 +413,7 @@ func TestRun_LocalSnapshotReusedWithoutClobbering(t *testing.T) {
 		ReplaceText: true,
 		Cloud:       srv.client(),
 		Repo:        testRepo,
-		Log:         func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+		Log:         func(level LogLevel, format string, args ...any) { logs = append(logs, fmt.Sprintf("[%s] "+format, append([]any{level}, args...)...)) },
 		ConfirmUnknown: func(ctx context.Context, version string) (bool, error) {
 			confirmCalls++
 			return true, nil
@@ -692,7 +692,7 @@ func TestRun_AlreadyOriginal_SkipsRestore(t *testing.T) {
 		Language:    region.GLOBAL,
 		ReplaceText: true,
 		ReplaceFont: true,
-		Log:         func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+		Log:         func(level LogLevel, format string, args ...any) { logs = append(logs, fmt.Sprintf("[%s] "+format, append([]any{level}, args...)...)) },
 		ApplyText: func(ctx context.Context) error {
 			textPatched = true
 			return nil
@@ -710,8 +710,8 @@ func TestRun_AlreadyOriginal_SkipsRestore(t *testing.T) {
 	}
 	requireModTime(t, env.sqpackDir, old)
 
-	if !logContains(logs, DiagPrefix+"[文本] 客户端文本已是原版，无需还原") ||
-		!logContains(logs, DiagPrefix+"[字体] 客户端字体已是原版，无需还原") {
+	if !logContains(logs, "[diag] [文本] 客户端文本已是原版，无需还原") ||
+		!logContains(logs, "[diag] [字体] 客户端字体已是原版，无需还原") {
 		t.Fatalf("日志应记录文本与字体已是原版，实际: %v", logs)
 	}
 	for _, line := range logs {
@@ -734,7 +734,7 @@ func TestRestore_AlreadyOriginal(t *testing.T) {
 		GameDir:    env.gameDir,
 		BackupRoot: env.backupRoot,
 		Language:   region.GLOBAL,
-		Log:        func(format string, args ...any) { logs = append(logs, fmt.Sprintf(format, args...)) },
+		Log:        func(level LogLevel, format string, args ...any) { logs = append(logs, fmt.Sprintf("[%s] "+format, append([]any{level}, args...)...)) },
 	})
 	if err != nil {
 		t.Fatalf("Restore 失败: %v", err)

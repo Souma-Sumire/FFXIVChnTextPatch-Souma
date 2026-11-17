@@ -616,7 +616,7 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 		}
 		a.emitInfo(logTagCSV, "已选用现有词条副本")
 		if missing := missingCopyCount(dstDir, srcDir, knownTableKeys(doc)); missing > 0 {
-			a.emitWarn(logTagCSV, "词条副本缺少 %d 份 CSV（缺失的表将保留原文），建议删除后重做", missing)
+			a.emitWarn(logTagCSV, "词条副本缺少 %d 张数据表文件（缺失的表将保留原文），建议删除后重做", missing)
 		}
 	} else {
 		transform := func(data []byte) ([]byte, error) { return data, nil }

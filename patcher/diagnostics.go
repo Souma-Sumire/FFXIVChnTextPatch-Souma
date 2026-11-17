@@ -24,7 +24,7 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/verifier"
 )
 
-const diagPrefix = verifier.DiagPrefix
+const diagPrefix = "[诊断] "
 
 // 调试信息会贴到公开 issue。路径里的用户名先按已知的用户目录精确替换，
 // 再用正则兜底其他写法（配置 JSON 里的转义路径、其他盘符下的用户目录等）。

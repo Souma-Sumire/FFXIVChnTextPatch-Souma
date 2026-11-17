@@ -19,9 +19,18 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 )
 
-// DiagPrefix 标记诊断行，前端按这个前缀把日志降级显示。
-// 改这里要同步 frontend/src/main.ts 的 DIAG_PREFIX。
-const DiagPrefix = "[诊断] "
+// LogLevel 表示校验与还原流程的结构化日志级别。
+type LogLevel string
+
+const (
+	LogInfo LogLevel = "info"
+	LogOK   LogLevel = "ok"
+	LogWarn LogLevel = "warn"
+	LogDiag LogLevel = "diag"
+)
+
+// LogFunc 是内部校验流程向调用方输出结构化日志的回调。
+type LogFunc func(level LogLevel, format string, args ...any)
 
 var (
 	TextFiles = []string{"0a0000.win32.dat0", "0a0000.win32.index", "0a0000.win32.index2"}
@@ -61,7 +70,7 @@ type Config struct {
 	ApplyText      func(ctx context.Context) error
 	ApplyFont      func(ctx context.Context) error
 	OnEvent        func(Event)
-	Log            func(format string, args ...any)
+	Log            LogFunc
 }
 
 type Event struct {
@@ -88,11 +97,15 @@ func (m *BackupMeta) IsVerifiedOriginal() bool {
 	return m != nil && m.Source == BackupSourceCloud
 }
 
-func (c *Config) log(format string, args ...any) {
+func (c *Config) log(level LogLevel, format string, args ...any) {
 	if c.Log != nil {
-		c.Log(format, args...)
+		c.Log(level, format, args...)
 	}
 }
+
+func (c *Config) info(format string, args ...any) { c.log(LogInfo, format, args...) }
+func (c *Config) warn(format string, args ...any) { c.log(LogWarn, format, args...) }
+func (c *Config) diag(format string, args ...any) { c.log(LogDiag, format, args...) }
 
 func (c *Config) event(stage, detail string, done, total int64) {
 	if c.OnEvent != nil {
@@ -131,7 +144,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		return result, err
 	}
 	result.Plan.GameVersion = version
-	cfg.log("[校验] 客户端版本 %s（%s），核对原版备份...", version, region.DisplayName(reg))
+	cfg.diag("客户端版本 %s（%s），核对原版备份", version, region.DisplayName(reg))
 
 	meta, err := readBackupMeta(backupDir)
 	if err != nil {
@@ -142,13 +155,13 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	hasVerifiedBackup := hasBackup && meta.IsVerifiedOriginal()
 
 	if hasVerifiedBackup {
-		cfg.log("[备份] 命中本地原版备份 (%s)", version)
+		cfg.diag("命中本地原版备份 (%s)", version)
 		result.RestoredText, result.RestoredFont, err = restoreOriginals(ctx, &cfg, backupDir, sqpackDir, meta)
 		if err != nil {
 			return result, err
 		}
 		if !result.RestoredText && !result.RestoredFont && (cfg.ReplaceText || cfg.ReplaceFont) {
-			cfg.log("[校验] 客户端当前为官方原版，无需恢复")
+			cfg.diag("客户端当前为官方原版，无需恢复")
 		}
 	} else {
 		// 本地没有当前版本的可信原版备份，国际服先尝试从云端核对/升级。
@@ -164,7 +177,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 		}
 
 		if release != nil {
-			cfg.log("[备份] 核对 %s 原版文件...", version)
+			cfg.info("正在从云端核对官方原版文件（v%s）…", version)
 			downloadedMeta, dlErr := downloadAndCreateBackup(ctx, cfg, release, sqpackDir, backupDir, version, string(reg), result)
 			if dlErr != nil {
 				return result, fmt.Errorf("建立原版备份失败: %w", dlErr)
@@ -176,30 +189,30 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 				return result, err
 			}
 			if !result.RestoredText && !result.RestoredFont && (cfg.ReplaceText || cfg.ReplaceFont) {
-				cfg.log("[校验] 客户端当前为官方原版，无需恢复")
+				cfg.diag("客户端当前为官方原版，无需恢复")
 			}
 		} else if hasBackup {
-			cfg.log("[备份] 命中本地操作前快照 (%s)", version)
+			cfg.diag("命中本地操作前快照 (%s)", version)
 			result.RestoredText, result.RestoredFont, err = restoreOriginals(ctx, &cfg, backupDir, sqpackDir, meta)
 			if err != nil {
 				return result, err
 			}
 			if !result.RestoredText && !result.RestoredFont && (cfg.ReplaceText || cfg.ReplaceFont) {
-				cfg.log("[校验] 客户端与操作前快照一致，无需恢复")
+				cfg.diag("客户端与操作前快照一致，无需恢复")
 			}
 		} else {
 			// 云端未收录 或 网络失败 + 游戏已更新 = 未知版本
 			var note string
 			if cloudErr != nil && !errors.Is(cloudErr, ErrNotFound) {
 				note = fmt.Sprintf("获取云端原版信息失败（%s），无法核对当前文件", CleanNetError(cloudErr))
-				cfg.log(DiagPrefix+"云端原版查询原始错误：%v", cloudErr)
-				cfg.log("[警告] %s", note)
+				cfg.diag("云端原版查询原始错误：%v", cloudErr)
+				cfg.warn("%s", note)
 			} else if reg == region.Global {
 				note = fmt.Sprintf("云端暂未收录版本 %s", version)
-				cfg.log("[警告] %s", note)
+				cfg.warn("%s", note)
 			} else {
 				note = fmt.Sprintf("尚无版本 %s 的原版记录，无法确认是否被修改", version)
-				cfg.log("[警告] %s", note)
+				cfg.warn("%s", note)
 			}
 			result.Plan.Notes = append(result.Plan.Notes, note)
 
@@ -214,7 +227,7 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 				result.Cancelled = true
 				return result, nil
 			}
-			cfg.log("[备份] 正在备份当前客户端文件...")
+			cfg.info("正在备份当前客户端文件…")
 			createdMeta, backupErr := createLocalBackupFromGameDir(ctx, cfg, sqpackDir, backupDir, version, string(reg))
 			if backupErr != nil {
 				return result, fmt.Errorf("备份当前文件失败: %w", backupErr)
@@ -263,7 +276,7 @@ func createLocalBackupFromGameDir(ctx context.Context, cfg Config, sqpackDir, ba
 			return nil, fmt.Errorf("客户端缺失文件 %s: %w", name, err)
 		}
 		cfg.event("backup", fmt.Sprintf("正在备份原版文件 (%d/%d): %s", i+1, len(AllFiles), name), 0, 0)
-		cfg.log(DiagPrefix+"备份文件 %s", name)
+		cfg.diag("备份文件 %s", name)
 		got, err := copyFile(ctx, src, dst, "")
 		if err != nil {
 			return nil, fmt.Errorf("提取 %s 到备份目录失败: %w", name, err)
@@ -273,7 +286,7 @@ func createLocalBackupFromGameDir(ctx context.Context, cfg Config, sqpackDir, ba
 	if err := writeBackupMeta(backupDir, meta); err != nil {
 		return nil, fmt.Errorf("保存备份清单失败: %w", err)
 	}
-	cfg.log("[备份] 已备份当前文件 (%s)", version)
+	cfg.info("已备份当前客户端文件（v%s）", version)
 	return meta, nil
 }
 
@@ -309,7 +322,7 @@ func restoreFailure(label string, restored bool, err error) error {
 func restoreGroup(ctx context.Context, cfg *Config, backupDir, sqpackDir string, files []string, meta *BackupMeta, label string) (bool, error) {
 	restored, err := RestoreFiles(ctx, backupDir, sqpackDir, files, meta, func(name string) {
 		cfg.event("restore", "正在还原 "+name, 0, 0)
-		cfg.log(DiagPrefix+"[%s] 还原 %s", label, name)
+		cfg.diag("[%s] 还原 %s", label, name)
 	})
 	if err != nil {
 		// 已经覆盖过的文件不能对外声称「未修改」：调用方据此判断客户端是否处于半还原状态。
@@ -317,16 +330,17 @@ func restoreGroup(ctx context.Context, cfg *Config, backupDir, sqpackDir string,
 	}
 	if len(restored) == 0 {
 		if meta.IsVerifiedOriginal() {
-			cfg.log(DiagPrefix+"[%s] 客户端%s已是原版，无需还原", label, label)
+			cfg.diag("[%s] 客户端%s已是原版，无需还原", label, label)
 		} else {
-			cfg.log(DiagPrefix+"[%s] 客户端%s与操作前快照一致，无需还原", label, label)
+			cfg.diag("[%s] 客户端%s与操作前快照一致，无需还原", label, label)
 		}
 		return false, nil
 	}
+	cfg.diag("[%s] 已从备份还原 %d 个文件", label, len(restored))
 	if meta.IsVerifiedOriginal() {
-		cfg.log("[%s] 已从备份还原 %d 个原版文件", label, len(restored))
+		cfg.info("已将%s恢复为官方原版，准备重新汉化", label)
 	} else {
-		cfg.log("[%s] 已从备份还原 %d 个文件", label, len(restored))
+		cfg.info("已将%s恢复为操作前状态，准备重新汉化", label)
 	}
 	return true, nil
 }
@@ -417,7 +431,7 @@ func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, 
 		backupPath := filepath.Join(backupDir, name)
 		// 1. 本地备份已有且哈希与云端原版一致时直接复用，免去重复下载。
 		if got, err := HashFile(backupPath); err == nil && strings.EqualFold(got.SHA256, cloudSHA) {
-			cfg.log(DiagPrefix+"复用本地原版 %s", name)
+			cfg.diag("复用本地原版 %s", name)
 			meta.Files[name] = got
 			continue
 		}
@@ -426,7 +440,7 @@ func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, 
 			clientPath := filepath.Join(sqpackDir, name)
 			if got, err := HashFile(clientPath); err == nil && strings.EqualFold(got.SHA256, cloudSHA) {
 				cfg.event("backup", "正在备份 "+name, 0, 0)
-				cfg.log(DiagPrefix+"从客户端备份原版 %s", name)
+				cfg.diag("从客户端备份原版 %s", name)
 				copied, copyErr := copyFile(ctx, clientPath, backupPath, cloudSHA)
 				if copyErr == nil {
 					meta.Files[name] = copied
@@ -436,7 +450,7 @@ func downloadAndCreateBackup(ctx context.Context, cfg Config, release *Release, 
 		}
 
 		cfg.event("download", name, 0, 0)
-		cfg.log(DiagPrefix+"下载原版 %s", name)
+		cfg.diag("下载原版 %s", name)
 
 		err := cfg.Cloud.Download(ctx, asset.DownloadURL, backupPath, func(done, total int64) {
 			cfg.event("download", name, done, total)
@@ -652,14 +666,17 @@ type RestoreConfig struct {
 	Text       bool
 	Font       bool
 	OnProgress func(stage, detail string, done, total int64)
-	Log        func(format string, args ...any)
+	Log        LogFunc
 }
 
-func (c *RestoreConfig) log(format string, args ...any) {
+func (c *RestoreConfig) log(level LogLevel, format string, args ...any) {
 	if c.Log != nil {
-		c.Log(format, args...)
+		c.Log(level, format, args...)
 	}
 }
+
+func (c *RestoreConfig) info(format string, args ...any) { c.log(LogInfo, format, args...) }
+func (c *RestoreConfig) diag(format string, args ...any) { c.log(LogDiag, format, args...) }
 
 // Restore 手动恢复全部 6 个核心文件为官方原版，返回真正被覆盖的文件名。
 // 客户端本来就与备份一致时返回空列表，不写任何文件。
@@ -696,7 +713,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		}
 
 		if release != nil {
-			cfg.log("[还原] 核对 %s 原版备份...", version)
+			cfg.info("正在从云端获取官方原版备份（v%s）…", version)
 			downloadedMeta, dlErr := downloadAndCreateBackup(ctx, Config{
 				Cloud: cfg.Cloud,
 				Repo:  cfg.Repo,
@@ -712,12 +729,12 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 			}
 			meta = downloadedMeta
 		} else if hasBackup {
-			cfg.log("[备份] 使用本地操作前快照 (%s)", version)
+			cfg.diag("使用本地操作前快照 (%s)", version)
 		} else {
 			return nil, fmt.Errorf("本地没有版本 %s 的原版备份，云端也未收录；请使用官方启动器修复客户端", version)
 		}
 	} else {
-		cfg.log("[备份] 使用本地原版备份 (%s)", version)
+		cfg.diag("使用本地原版备份 (%s)", version)
 	}
 
 	// 只还原用户勾选的那一组：两个都没勾时按"全部还原"处理（旧调用方兼容）。
@@ -737,7 +754,7 @@ func Restore(ctx context.Context, cfg RestoreConfig) ([]string, error) {
 		if cfg.OnProgress != nil {
 			cfg.OnProgress("restore", "正在还原 "+name, 0, 0)
 		}
-		cfg.log(DiagPrefix+"[还原] 覆盖 %s", name)
+		cfg.diag("[还原] 覆盖 %s", name)
 	})
 	if err != nil {
 		return nil, err
