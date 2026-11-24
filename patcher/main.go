@@ -1,57 +1,66 @@
 package main
 
 import (
+	"context"
 	"embed"
+	"io/fs"
 	"log"
+	"runtime"
 
-	"github.com/wailsapp/wails/v3/pkg/application"
-	"github.com/wailsapp/wails/v3/pkg/events"
+	"github.com/egoist/mygo"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
 func main() {
-	appIcon, _ := assets.ReadFile("frontend/dist/appicon.png")
+	distFS, err := fs.Sub(assets, "frontend/dist")
+	if err != nil {
+		log.Fatal(err)
+	}
+	appIcon, _ := fs.ReadFile(distFS, "appicon.png")
+
+	mygo.App.SetName("FFXIV 汉化器")
+	mygo.App.SetVersion(appVersion)
+	mygo.Theme.SetSource(mygo.ThemeDark)
+	if runtime.GOOS == "windows" {
+		mygo.App.SetMenu(nil)
+	}
+	mygo.SetFrontend(distFS)
+
 	app := NewApp()
-	wailsApp := application.New(application.Options{
-		Name:        "FFXIV 汉化器",
-		Description: "最终幻想14 国际服汉化器",
-		Icon:        appIcon,
-		Services: []application.Service{
-			application.NewService(app),
-		},
-		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(assets),
-		},
-		Mac: application.MacOptions{
-			ApplicationShouldTerminateAfterLastWindowClosed: true,
-		},
+	mygo.Bind(app)
+	mygo.App.OnBeforeQuit(func(_ *mygo.QuitEvent) {
+		app.prepareQuit()
+	})
+	mygo.App.OnQuit(func() {
+		app.prepareQuit()
 	})
 
-	mainWin := wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
-		Name:             "main",
-		Title:            "FFXIV 汉化器",
-		Width:            1060,
-		Height:           720,
-		MinWidth:         840,
-		MinHeight:        580,
-		InitialPosition:  application.WindowCentered,
-		BackgroundColour: application.NewRGB(22, 23, 26),
-		Windows: application.WindowsWindow{
-			Theme:       application.Dark,
-			DisableMenu: true,
-		},
+	mygo.App.WhenReady(func() {
+		appCtx, appCancel := context.WithCancel(context.Background())
+		mainWin := mygo.NewWindow(mygo.WindowOptions{
+			Title:           "FFXIV 汉化器",
+			URL:             "/",
+			Width:           1060,
+			Height:          720,
+			MinWidth:        840,
+			MinHeight:       580,
+			BackgroundColor: "#16171a",
+			Page: mygo.PageOptions{
+				DevTools: mygo.DevToolsAuto,
+			},
+		})
+		if len(appIcon) > 0 {
+			_ = mainWin.SetIcon(appIcon)
+		}
+		mainWin.OnClose(func(_ *mygo.CloseEvent) {
+			app.prepareQuit()
+		})
+		app.initRuntime(appCtx, appCancel, mainWin, appIcon)
 	})
-	setupWindowIcon(mainWin, appIcon)
 
-	mainWin.RegisterHook(events.Common.WindowClosing, func(_ *application.WindowEvent) {
-		app.BeginQuit()
-	})
-
-	app.SetRuntime(wailsApp, mainWin)
-
-	if err := wailsApp.Run(); err != nil {
+	if err := mygo.App.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -16,8 +16,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/wailsapp/wails/v3/pkg/application"
-	"github.com/wailsapp/wails/v3/pkg/events"
+	"github.com/egoist/mygo"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/gamecfg"
@@ -41,9 +40,10 @@ const tcBackupURL = "https://github.com/NaofumiRaphtalia/FFXIVChnTextPatch-Souma
 // 只在启动时同步的话，长期不关程序的用户会一直用旧词条。
 const resourceRefreshInterval = 30 * time.Minute
 
-// App 是 Wails 绑定到前端的应用对象。
+// App 是 MyGo 绑定到前端的应用对象。
 type App struct {
-	ctx context.Context
+	ctx    context.Context
+	cancel context.CancelFunc
 
 	mu   sync.Mutex
 	busy bool
@@ -109,11 +109,11 @@ type App struct {
 	cancelPatchMu sync.Mutex
 	cancelPatch   context.CancelFunc
 
-	wailsApp *application.App
-	mainWin  *application.WebviewWindow
+	mainWin *mygo.Window
+	appIcon []byte
 
 	elemWinMu   sync.Mutex
-	elemWin     *application.WebviewWindow
+	elemWin     *mygo.Window
 	elemState   string
 	elemStateMu sync.RWMutex
 	quitting    atomic.Bool
@@ -149,78 +149,163 @@ func NewApp() *App {
 	return app
 }
 
-// SetRuntime 注入 Wails v3 应用与主窗口实例。
-func (a *App) SetRuntime(wailsApp *application.App, mainWin *application.WebviewWindow) {
-	a.wailsApp = wailsApp
-	a.mainWin = mainWin
-}
-
-// ServiceStartup 保存 Wails 服务上下文，并清理上一次自更新留下的旧程序文件。
-func (a *App) ServiceStartup(ctx context.Context, _ application.ServiceOptions) error {
+// initRuntime 注入 MyGo 运行时上下文、主窗口与图标，并清理上一次自更新留下的旧程序文件。
+func (a *App) initRuntime(ctx context.Context, cancel context.CancelFunc, mainWin *mygo.Window, appIcon []byte) {
 	a.ctx = ctx
+	a.cancel = cancel
+	a.mainWin = mainWin
+	a.appIcon = appIcon
 	if exe, err := os.Executable(); err == nil {
 		updater.CleanupStaleAppFiles(exe)
 	}
-	return nil
 }
 
-// ServiceShutdown 在服务退出前释放资源。
-func (a *App) ServiceShutdown() error {
-	return nil
-}
-
-// BeginQuit 在主窗口关闭时联动销毁单例编辑子窗口并退出应用。
-func (a *App) BeginQuit() {
+// prepareQuit 在主窗口或应用退出时取消后台任务并销毁隐藏的子窗口。
+func (a *App) prepareQuit() {
 	if a == nil || a.quitting.Swap(true) {
 		return
+	}
+	if a.cancel != nil {
+		a.cancel()
 	}
 	a.elemWinMu.Lock()
 	ew := a.elemWin
 	a.elemWin = nil
 	a.elemWinMu.Unlock()
-	if ew != nil {
-		ew.Close()
+	if ew != nil && !ew.IsDestroyed() {
+		ew.Destroy()
 	}
-	if a.wailsApp != nil {
-		a.wailsApp.Quit()
-	}
+}
+
+// quitApp 在执行退出前准备后主动关闭应用事件循环。
+func (a *App) quitApp() {
+	a.prepareQuit()
+	mygo.App.Quit()
 }
 
 func (a *App) hasUI() bool {
-	return a != nil && a.wailsApp != nil
+	return a != nil && a.mainWin != nil && !a.mainWin.IsDestroyed()
+}
+
+func (a *App) emitToElemWin(fn func(w *mygo.Window)) {
+	if a == nil {
+		return
+	}
+	a.elemWinMu.Lock()
+	ew := a.elemWin
+	a.elemWinMu.Unlock()
+	if ew == nil || ew.IsDestroyed() {
+		return
+	}
+	fn(ew)
 }
 
 func (a *App) emitEvent(name string, data ...any) {
+	if a == nil {
+		return
+	}
+	if ev, ok := elemEditorSubEvents[name]; ok {
+		if len(data) > 0 {
+			if payload, ok := data[0].(string); ok {
+				a.emitToElemWin(func(w *mygo.Window) { _ = ev.Emit(w, payload) })
+			}
+		}
+		return
+	}
 	if !a.hasUI() {
 		return
 	}
-	a.wailsApp.Event.Emit(name, data...)
+	if name == "elem-editor:native-close" {
+		_ = evElemEditorNativeClose.Emit(a.mainWin, struct{}{})
+		return
+	}
+	if len(data) == 0 {
+		return
+	}
+	if ev, ok := progressEvents[name]; ok {
+		if payload, ok := data[0].(ProgressEvent); ok {
+			_ = ev.Emit(a.mainWin, payload)
+		}
+		return
+	}
+	if ev, ok := stringEvents[name]; ok {
+		if payload, ok := data[0].(string); ok {
+			_ = ev.Emit(a.mainWin, payload)
+		}
+		return
+	}
+	if name == "patch-log" {
+		if payload, ok := data[0].(PatchLogEvent); ok {
+			_ = evPatchLog.Emit(a.mainWin, payload)
+		}
+	}
 }
 
-func (a *App) activeDialogWindow() application.Window {
+func (a *App) activeDialogWindow() *mygo.Window {
 	if a == nil {
 		return nil
 	}
 	a.elemWinMu.Lock()
 	ew := a.elemWin
 	a.elemWinMu.Unlock()
-	if ew != nil && ew.IsVisible() && ew.IsFocused() {
+	if ew != nil && !ew.IsDestroyed() && ew.IsVisible() && ew.IsFocused() {
 		return ew
 	}
-	if a.mainWin != nil {
+	if a.mainWin != nil && !a.mainWin.IsDestroyed() {
 		return a.mainWin
 	}
 	return nil
 }
 
-func normalizeDialogSelection(path string, err error) (string, error) {
-	if err != nil {
-		if strings.Contains(strings.ToLower(err.Error()), "cancel") {
-			return "", nil
-		}
-		return "", err
+// WindowStateInfo 描述调用窗口的当前尺寸与显示状态。
+type WindowStateInfo struct {
+	Width        int  `json:"width"`
+	Height       int  `json:"height"`
+	IsMaximized  bool `json:"isMaximized"`
+	IsFullScreen bool `json:"isFullScreen"`
+}
+
+// GetWindowState 返回调用窗口的当前尺寸与最大化/全屏状态。
+func (a *App) GetWindowState(ctx context.Context) WindowStateInfo {
+	win := mygo.CallerWindow(ctx)
+	if win == nil || win.IsDestroyed() {
+		return WindowStateInfo{}
 	}
-	return path, nil
+	w, h := win.Size()
+	return WindowStateInfo{
+		Width:        w,
+		Height:       h,
+		IsMaximized:  win.IsMaximized(),
+		IsFullScreen: win.IsFullScreen(),
+	}
+}
+
+// SetWindowSize 调整调用窗口的尺寸。
+func (a *App) SetWindowSize(ctx context.Context, width, height int) {
+	win := mygo.CallerWindow(ctx)
+	if win == nil || win.IsDestroyed() || width <= 0 || height <= 0 {
+		return
+	}
+	win.SetSize(width, height)
+}
+
+// CenterWindow 将调用窗口居中显示在所在屏幕工作区内。
+func (a *App) CenterWindow(ctx context.Context) {
+	win := mygo.CallerWindow(ctx)
+	if win == nil || win.IsDestroyed() {
+		return
+	}
+	win.Center()
+}
+
+// EmitElementEditorEvent 将图层属性子窗口的编辑事件转发给主窗口。
+func (a *App) EmitElementEditorEvent(name string, payload any) {
+	if !a.hasUI() {
+		return
+	}
+	if ev, ok := elemEditorMainEvents[name]; ok {
+		_ = ev.Emit(a.mainWin, payload)
+	}
 }
 
 // LanguageOption 是前端可选的语言。
@@ -1410,18 +1495,7 @@ func (a *App) SelectGameDirectory(language string) (string, error) {
 	}
 	cfg := a.loadConfig(a.resourceDir())
 	defaultDir := cfg.GameDirs[normalizeRegionCode(language)]
-	dlg := a.wailsApp.Dialog.OpenFile().
-		SetTitle("选择 FFXIV 客户端目录（包含 boot 与 game 文件夹）").
-		CanChooseDirectories(true).
-		CanChooseFiles(false).
-		CanCreateDirectories(false)
-	if defaultDir != "" {
-		dlg.SetDirectory(defaultDir)
-	}
-	if win := a.activeDialogWindow(); win != nil {
-		dlg.AttachToWindow(win)
-	}
-	dir, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
+	dir, err := a.pickDirectory("选择 FFXIV 客户端目录（包含 boot 与 game 文件夹）", defaultDir, false)
 	if err == nil && dir != "" {
 		a.emitDiag("手动选择游戏目录：区服=%s | 目录=%s", language, dir)
 	}
@@ -1851,11 +1925,11 @@ func fontCompilerPaths(resourceDir string) (dir, path, legacyPath string) {
 }
 
 func (a *App) emitFontCompilerProgress(stage, detail string, done, total int64) {
-	a.emitEvent("font-compiler-progress", map[string]any{
-		"stage":  stage,
-		"detail": detail,
-		"done":   done,
-		"total":  total,
+	a.emitEvent("font-compiler-progress", ProgressEvent{
+		Stage:  stage,
+		Detail: detail,
+		Done:   done,
+		Total:  total,
 	})
 }
 
@@ -2711,7 +2785,7 @@ func (a *App) OpenLink(url string) error {
 	if !a.hasUI() {
 		return errors.New("桌面运行时未就绪")
 	}
-	return a.wailsApp.Browser.OpenURL(url)
+	return mygo.Shell.OpenExternal(url)
 }
 
 // EnsureHighResolutionUiAsset 检查并确保 FFXIV.cfg 开启高分辨率贴图模式 (UiAssetType 1)。
@@ -2840,7 +2914,7 @@ func (a *App) RestartApp() error {
 	go func() {
 		time.Sleep(700 * time.Millisecond)
 		if a.hasUI() {
-			a.BeginQuit()
+			a.quitApp()
 			return
 		}
 		os.Exit(0)
@@ -3193,65 +3267,89 @@ func (a *App) ExportFontRaw(configJson string, outDir string) error {
 	return a.fontEngine.CompileRaw(ctx, constrained, outDir, use16Bit, nil)
 }
 
-func (a *App) openDirectoryDialog(title string, defaultDir string) (string, error) {
+func (a *App) pickDirectory(title string, defaultDir string, createDirs bool) (string, error) {
 	if !a.hasUI() {
 		return "", errors.New("桌面运行时未就绪")
 	}
-	dlg := a.wailsApp.Dialog.OpenFile().
-		SetTitle(title).
-		CanChooseDirectories(true).
-		CanChooseFiles(false)
-	if defaultDir != "" {
-		dlg.SetDirectory(defaultDir)
+	paths, err := mygo.Dialog.Open(mygo.OpenDialogOptions{
+		Parent:            a.activeDialogWindow(),
+		Title:             title,
+		DefaultPath:       defaultDir,
+		Directory:         true,
+		CreateDirectories: createDirs,
+	})
+	if err != nil {
+		return "", err
 	}
-	if win := a.activeDialogWindow(); win != nil {
-		dlg.AttachToWindow(win)
+	if len(paths) == 0 {
+		return "", nil
 	}
-	dir, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
+	return paths[0], nil
+}
+
+func (a *App) openDirectoryDialog(title string, defaultDir string) (string, error) {
+	dir, err := a.pickDirectory(title, defaultDir, true)
 	if err == nil && dir != "" {
 		a.emitDiag("选择目录（%s）：%s", title, dir)
 	}
 	return dir, err
 }
 
-func (a *App) openFileDialog(title string, filters []application.FileFilter) (string, error) {
+func (a *App) openFileDialog(title string, filters []mygo.FileFilter) (string, error) {
 	if !a.hasUI() {
 		return "", errors.New("桌面运行时未就绪")
 	}
-	dlg := a.wailsApp.Dialog.OpenFile().
-		SetTitle(title).
-		CanChooseFiles(true).
-		CanChooseDirectories(false)
-	for _, f := range filters {
-		dlg.AddFilter(f.DisplayName, f.Pattern)
+	paths, err := mygo.Dialog.Open(mygo.OpenDialogOptions{
+		Parent:  a.activeDialogWindow(),
+		Title:   title,
+		Filters: filters,
+	})
+	if err != nil {
+		return "", err
 	}
-	if win := a.activeDialogWindow(); win != nil {
-		dlg.AttachToWindow(win)
+	if len(paths) == 0 {
+		return "", nil
 	}
-	file, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
-	if err == nil && file != "" {
+	file := paths[0]
+	if file != "" {
 		a.emitDiag("选择文件（%s）：%s", title, file)
 	}
-	return file, err
+	return file, nil
 }
 
-func (a *App) saveFileDialog(title string, defaultName string, filters []application.FileFilter) (string, error) {
+func defaultSaveDialogPath(defaultName string) string {
+	if goruntime.GOOS != "darwin" || defaultName == "" || filepath.IsAbs(defaultName) {
+		return defaultName
+	}
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		return defaultName
+	}
+	desktop := filepath.Join(home, "Desktop")
+	if st, err := os.Stat(desktop); err == nil && st.IsDir() {
+		return filepath.Join(desktop, defaultName)
+	}
+	return filepath.Join(home, defaultName)
+}
+
+func (a *App) saveFileDialog(title string, defaultName string, filters []mygo.FileFilter) (string, error) {
 	if !a.hasUI() {
 		return "", errors.New("桌面运行时未就绪")
 	}
-	dlg := a.wailsApp.Dialog.SaveFile()
-	dlg.SetOptions(&application.SaveFileDialogOptions{
-		Title:                title,
-		Filename:             defaultName,
-		Filters:              filters,
-		Window:               a.activeDialogWindow(),
-		CanCreateDirectories: true,
+	file, err := mygo.Dialog.Save(mygo.SaveDialogOptions{
+		Parent:            a.activeDialogWindow(),
+		Title:             title,
+		DefaultPath:       defaultSaveDialogPath(defaultName),
+		Filters:           filters,
+		CreateDirectories: true,
 	})
-	file, err := normalizeDialogSelection(dlg.PromptForSingleSelection())
-	if err == nil && file != "" {
+	if err != nil {
+		return "", err
+	}
+	if file != "" {
 		a.emitDiag("保存文件（%s）：%s", title, file)
 	}
-	return file, err
+	return file, nil
 }
 
 // SelectRawExportDir 弹出原生目录选择框供用户指定原始文件导出目录
@@ -3261,17 +3359,17 @@ func (a *App) SelectRawExportDir() (string, error) {
 
 // SelectFontFile 弹出原生文件选择框供用户选取本地 TTF/OTF 字体文件
 func (a *App) SelectFontFile() (string, error) {
-	return a.openFileDialog("选择字体文件", []application.FileFilter{
-		{DisplayName: "字体文件 (*.ttf;*.otf)", Pattern: "*.ttf;*.otf"},
-		{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
+	return a.openFileDialog("选择字体文件", []mygo.FileFilter{
+		{Name: "字体文件", Extensions: []string{"ttf", "otf"}},
+		{Name: "所有文件", Extensions: []string{"*"}},
 	})
 }
 
 // SelectFontJsonFile 弹出原生文件选择框供用户选取字体方案 JSON 文件
 func (a *App) SelectFontJsonFile() (string, error) {
-	return a.openFileDialog("导入字体方案文件", []application.FileFilter{
-		{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
-		{DisplayName: "所有文件 (*.*)", Pattern: "*.*"},
+	return a.openFileDialog("导入字体方案文件", []mygo.FileFilter{
+		{Name: "字体方案", Extensions: []string{"json"}},
+		{Name: "所有文件", Extensions: []string{"*"}},
 	})
 }
 
@@ -3280,15 +3378,15 @@ func (a *App) SelectFontJsonSavePath(defaultName string) (string, error) {
 	if defaultName == "" {
 		defaultName = "FFXIV_Font_Preset.json"
 	}
-	return a.saveFileDialog("导出字体方案 JSON 文件", defaultName, []application.FileFilter{
-		{DisplayName: "字体方案 (*.json)", Pattern: "*.json"},
+	return a.saveFileDialog("导出字体方案 JSON 文件", defaultName, []mygo.FileFilter{
+		{Name: "字体方案", Extensions: []string{"json"}},
 	})
 }
 
 // SelectTTMPSavePath 弹出原生文件保存框供用户指定 TTMP2 输出路径
 func (a *App) SelectTTMPSavePath() (string, error) {
-	return a.saveFileDialog("导出 Penumbra TTMP2 模组包", "FFXIV_Custom_Font.ttmp2", []application.FileFilter{
-		{DisplayName: "Penumbra TTMP2 模组包 (*.ttmp2)", Pattern: "*.ttmp2"},
+	return a.saveFileDialog("导出 Penumbra TTMP2 模组包", "FFXIV_Custom_Font.ttmp2", []mygo.FileFilter{
+		{Name: "Penumbra TTMP2 模组包", Extensions: []string{"ttmp2"}},
 	})
 }
 
@@ -3307,27 +3405,27 @@ func (a *App) OpenElementEditorWindow(title string, stateJson string) error {
 
 	a.elemWinMu.Lock()
 	win := a.elemWin
-	if win == nil {
-		win = a.wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
-			Name:             "element-editor",
-			Title:            title,
-			Width:            1060,
-			Height:           720,
-			MinWidth:         940,
-			MinHeight:        640,
-			InitialPosition:  application.WindowCentered,
-			URL:              "/?window=element-editor",
-			BackgroundColour: application.NewRGB(22, 23, 26),
-			Windows: application.WindowsWindow{
-				Theme:       application.Dark,
-				DisableMenu: true,
+	if win == nil || win.IsDestroyed() {
+		win = mygo.NewWindow(mygo.WindowOptions{
+			Title:           title,
+			Width:           1060,
+			Height:          720,
+			MinWidth:        940,
+			MinHeight:       640,
+			URL:             "/?window=element-editor",
+			BackgroundColor: "#16171a",
+			Page: mygo.PageOptions{
+				DevTools: mygo.DevToolsAuto,
 			},
 		})
-		win.RegisterHook(events.Common.WindowClosing, func(e *application.WindowEvent) {
+		if len(a.appIcon) > 0 {
+			_ = win.SetIcon(a.appIcon)
+		}
+		win.OnClose(func(e *mygo.CloseEvent) {
 			if a.quitting.Load() {
 				return
 			}
-			e.Cancel()
+			e.PreventDefault()
 			win.Hide()
 			a.emitEvent("elem-editor:native-close")
 		})
@@ -3356,7 +3454,7 @@ func (a *App) SyncElementEditorWindow(title string, stateJson string) error {
 	a.elemWinMu.Lock()
 	win := a.elemWin
 	a.elemWinMu.Unlock()
-	if win == nil || !win.IsVisible() {
+	if win == nil || win.IsDestroyed() || !win.IsVisible() {
 		return nil
 	}
 	if strings.TrimSpace(title) != "" {
@@ -3374,10 +3472,10 @@ func (a *App) HideElementEditorWindow() {
 	a.elemWinMu.Lock()
 	win := a.elemWin
 	a.elemWinMu.Unlock()
-	if win != nil && win.IsVisible() {
+	if win != nil && !win.IsDestroyed() && win.IsVisible() {
 		win.Hide()
 	}
-	if a.mainWin != nil {
+	if a.mainWin != nil && !a.mainWin.IsDestroyed() {
 		a.mainWin.Focus()
 	}
 }

@@ -137,7 +137,7 @@ jobs:
         if: steps.release_check.outputs.exists == 'false'
         uses: actions/setup-go@v6
         with:
-          go-version: "1.26.x"
+          go-version: "1.27.x"
           cache: true
           cache-dependency-path: repo/patcher/go.sum
 

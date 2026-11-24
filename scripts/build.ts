@@ -103,6 +103,15 @@ function buildFrontend(): void {
   run("pnpm", ["run", "build"], frontendDir);
 }
 
+function goBuildArgs(goTags: string, ldflags: string, outPath: string, extraArgs: string[] = []): string[] {
+  const args = ["build"];
+  if (goTags) {
+    args.push("-tags", goTags);
+  }
+  args.push("-trimpath", ...extraArgs, "-ldflags", ldflags, "-o", outPath, ".");
+  return args;
+}
+
 async function buildMacOS(appVersion: string, goTags: string, releaseBuild: boolean): Promise<void> {
   const appName = "FFXIVChnTextPatch-SM-v2";
   const binDir = path.join(patcherDir, "build", "bin");
@@ -122,13 +131,12 @@ async function buildMacOS(appVersion: string, goTags: string, releaseBuild: bool
   fs.mkdirSync(resourcesDir, { recursive: true });
   fs.mkdirSync(tmpArchDir, { recursive: true });
 
-  const ldflags = `-s -w -X main.appVersion=${appVersion}`;
+  const ldflags = releaseBuild
+    ? `-s -w -X main.appVersion=${appVersion} -X github.com/egoist/mygo.production=1`
+    : `-s -w -X main.appVersion=${appVersion}`;
   const macCommonEnv = {
     GOOS: "darwin",
-    CGO_ENABLED: "1",
-    CGO_CFLAGS: "-mmacosx-version-min=12.0",
-    CGO_LDFLAGS: "-mmacosx-version-min=12.0",
-    MACOSX_DEPLOYMENT_TARGET: "12.0",
+    CGO_ENABLED: "0",
   };
 
   try {
@@ -139,13 +147,13 @@ async function buildMacOS(appVersion: string, goTags: string, releaseBuild: bool
       await Promise.all([
         runAsync(
           "go",
-          ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", amd64Bin, "."],
+          goBuildArgs(goTags, ldflags, amd64Bin, ["-buildvcs=false"]),
           patcherDir,
           { ...macCommonEnv, GOARCH: "amd64" },
         ),
         runAsync(
           "go",
-          ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", arm64Bin, "."],
+          goBuildArgs(goTags, ldflags, arm64Bin, ["-buildvcs=false"]),
           patcherDir,
           { ...macCommonEnv, GOARCH: "arm64" },
         ),
@@ -155,7 +163,7 @@ async function buildMacOS(appVersion: string, goTags: string, releaseBuild: bool
       const localArch = process.arch === "arm64" ? "arm64" : "amd64";
       run(
         "go",
-        ["build", "-tags", goTags, "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", universalBin, "."],
+        goBuildArgs(goTags, ldflags, universalBin, ["-buildvcs=false"]),
         patcherDir,
         { ...macCommonEnv, GOARCH: localArch },
       );
@@ -236,7 +244,7 @@ async function buildMacOS(appVersion: string, goTags: string, releaseBuild: bool
   }
 }
 
-function buildWindows(appVersion: string, goTags: string): void {
+function buildWindows(appVersion: string, goTags: string, releaseBuild: boolean): void {
   const outExe = path.join(repoRoot, "FFXIVChnTextPatch-SM-v2.exe");
   if (fs.existsSync(outExe)) {
     try {
@@ -271,8 +279,10 @@ function buildWindows(appVersion: string, goTags: string): void {
   }
 
   try {
-    const ldflags = `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
-    run("go", ["build", "-tags", goTags, "-trimpath", "-ldflags", ldflags, "-o", outExe, "."], patcherDir);
+    const ldflags = releaseBuild
+      ? `-H windowsgui -s -w -X main.appVersion=${appVersion} -X github.com/egoist/mygo.production=1`
+      : `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
+    run("go", goBuildArgs(goTags, ldflags, outExe), patcherDir, { CGO_ENABLED: "0" });
     console.log(`\n构建成功: ${outExe}`);
   } finally {
     restoreSyso();
@@ -287,14 +297,14 @@ async function main(): Promise<void> {
   // 字体编译组件不再打进主程序：运行时按需下载到数据目录（见 ensureFontCompiler），
   // 拿不到时改用同样按需下载的预编译字体包，构建本身不依赖这个二进制。
   // development tag 让本地构建只校验工作区 resource/，不向云端同步 CSV 与字体；
-  // 发布构建不带该 tag，保持「内置词条始终为云端最新」的行为。
-  const goTags = releaseBuild ? "desktop,production" : "desktop,production,development";
+  // 发布构建传入 mygo.production=1 关闭开发者工具，保持「内置词条始终为云端最新」的行为。
+  const goTags = releaseBuild ? "" : "development";
 
   buildFrontend();
   if (isMac) {
     await buildMacOS(appVersion, goTags, releaseBuild);
   } else {
-    buildWindows(appVersion, goTags);
+    buildWindows(appVersion, goTags, releaseBuild);
   }
 }
 

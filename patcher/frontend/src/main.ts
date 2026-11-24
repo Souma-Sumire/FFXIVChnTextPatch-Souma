@@ -1,4 +1,4 @@
-import { Call, Events, Window as WailsWindow } from "@wailsio/runtime";
+import { callMethod, onEvent, setNativeWindowTitle } from "./mygo";
 import "./style.css";
 import {
   applyReplacementRowEdit,
@@ -12,7 +12,7 @@ import { GAME_FONT_FACES, GAME_FONT_METRICS } from "./font_data";
 import { initTooltips, setTip } from "./tooltip";
 
 const IS_ELEMENT_EDITOR_SUBWINDOW = new URLSearchParams(window.location.search).get("window") === "element-editor";
-const WAILS_APP_SERVICE = "main.App";
+const APP_SERVICE = "App";
 
 interface RuleMeta {
   id: string;
@@ -366,6 +366,13 @@ interface FontBuildInfo {
   compiledAt: string;
 }
 
+interface WindowStateInfo {
+  width: number;
+  height: number;
+  isMaximized: boolean;
+  isFullScreen: boolean;
+}
+
 interface GoApp {
   GetAppVersion(): Promise<string>;
   GetDiagnostics(): Promise<string[]>;
@@ -424,6 +431,10 @@ interface GoApp {
   SyncElementEditorWindow(title: string, stateJson: string): Promise<void>;
   HideElementEditorWindow(): Promise<void>;
   GetElementEditorState(): Promise<string>;
+  GetWindowState(): Promise<WindowStateInfo>;
+  SetWindowSize(width: number, height: number): Promise<void>;
+  CenterWindow(): Promise<void>;
+  EmitElementEditorEvent(name: string, payload: unknown): Promise<void>;
 }
 
 // 启动握手会在后端就绪前反复失败，逐次记录只会刷屏；最终结果由 waitForBackend 抛出。
@@ -434,7 +445,7 @@ async function call<K extends keyof GoApp>(
   ...args: Parameters<GoApp[K]>
 ): Promise<Awaited<ReturnType<GoApp[K]>>> {
   try {
-    return (await Call.ByName(`${WAILS_APP_SERVICE}.${String(name)}`, ...args)) as Awaited<ReturnType<GoApp[K]>>;
+    return (await callMethod(`${APP_SERVICE}.${String(name)}`, ...args)) as Awaited<ReturnType<GoApp[K]>>;
   } catch (error) {
     if (!quietCallFailures.has(String(name))) {
       logDiag(`调用 ${String(name)} 失败：${describeError(error)}；参数=${summarizeCallArgs(args)}`);
@@ -759,34 +770,33 @@ let savedWorkbenchWindowSize: { w: number; h: number } | null = null;
 
 async function adjustWindowForView(view: "workbench" | "tables" | "font-editor"): Promise<void> {
   try {
-    const [isMax, isFull] = await Promise.all([WailsWindow.IsMaximised(), WailsWindow.IsFullscreen()]);
-    if (isMax || isFull) return;
+    const state = await call("GetWindowState");
+    if (state.isMaximized || state.isFullScreen) return;
 
     if (view === "font-editor") {
-      const cur = await WailsWindow.Size();
       const availW = window.screen?.availWidth ? Math.max(900, window.screen.availWidth - 40) : FONT_EDITOR_MIN_WIDTH;
       const availH = window.screen?.availHeight ? Math.max(640, window.screen.availHeight - 48) : FONT_EDITOR_MIN_HEIGHT;
       const targetW = Math.min(FONT_EDITOR_MIN_WIDTH, availW);
       const targetH = Math.min(FONT_EDITOR_MIN_HEIGHT, availH);
-      if (cur.width < targetW || cur.height < targetH) {
+      if (state.width < targetW || state.height < targetH) {
         if (!savedWorkbenchWindowSize) {
-          savedWorkbenchWindowSize = { w: cur.width, h: cur.height };
+          savedWorkbenchWindowSize = { w: state.width, h: state.height };
         }
-        const nextW = Math.max(cur.width, targetW);
-        const nextH = Math.max(cur.height, targetH);
-        await WailsWindow.SetSize(nextW, nextH);
+        const nextW = Math.max(state.width, targetW);
+        const nextH = Math.max(state.height, targetH);
+        await call("SetWindowSize", nextW, nextH);
         if (
           window.screen?.availWidth &&
           window.screen?.availHeight &&
           (window.screenX + nextW > window.screen.availWidth || window.screenY + nextH > window.screen.availHeight)
         ) {
-          await WailsWindow.Center();
+          await call("CenterWindow");
         }
       }
     } else if (view === "workbench" && savedWorkbenchWindowSize) {
       const prev = savedWorkbenchWindowSize;
       savedWorkbenchWindowSize = null;
-      await WailsWindow.SetSize(prev.w, prev.h);
+      await call("SetWindowSize", prev.w, prev.h);
     }
   } catch {
     // 忽略窗口尺寸调整异常
@@ -1377,7 +1387,7 @@ function setBusy(value: boolean, label = ""): void {
 function setWindowTitle(): void {
   const title = "FFXIV 汉化器";
   document.title = title;
-  void WailsWindow.SetTitle(title).catch(() => {
+  void setNativeWindowTitle(title).catch(() => {
     // 忽略非桌面环境下的调用失败
   });
 }
@@ -1710,8 +1720,8 @@ async function bootstrapElementEditorSubWindow(): Promise<void> {
     }
   };
 
-  Events.On("elem-editor:open", (event) => applyPayload(event.data, true));
-  Events.On("elem-editor:sync", (event) => applyPayload(event.data, false));
+  onEvent<string>("elem-editor:open", (data) => applyPayload(data, true));
+  onEvent<string>("elem-editor:sync", (data) => applyPayload(data, false));
 
   wireElementEditorEvents();
 
@@ -5885,16 +5895,20 @@ function deactivateCompare(): void {
   }
 }
 
+function emitSubEditorEvent(name: string, payload: unknown): Promise<void> {
+  return call("EmitElementEditorEvent", name, payload).catch(() => {});
+}
+
 function emitSubEditorUpdate(): void {
   if (!IS_ELEMENT_EDITOR_SUBWINDOW || activeSubEditorSessionId <= 0) return;
   const elem = getCurrentFace()?.elements[activeElementIndex];
   if (!elem) return;
-  void Events.Emit("elem-editor:update", {
+  void emitSubEditorEvent("elem-editor:update", {
     sessionId: activeSubEditorSessionId,
     faceName: subEditorFaceName,
     elementIndex: subEditorElementIndex,
     element: elem,
-  }).catch(() => {});
+  });
 }
 
 function releaseSubEditorLevers(emitEvent = true): void {
@@ -5903,14 +5917,14 @@ function releaseSubEditorLevers(emitEvent = true): void {
     isBypassActive = false;
     el.btnLeverBypass?.classList.remove("active");
     if (emitEvent && activeSubEditorSessionId > 0) {
-      void Events.Emit("elem-editor:bypass", { sessionId: activeSubEditorSessionId, active: false }).catch(() => {});
+      void emitSubEditorEvent("elem-editor:bypass", { sessionId: activeSubEditorSessionId, active: false });
     }
   }
   if (isCompareActive) {
     isCompareActive = false;
     el.btnLeverCompare?.classList.remove("active");
     if (emitEvent && activeSubEditorSessionId > 0) {
-      void Events.Emit("elem-editor:compare", { sessionId: activeSubEditorSessionId, active: false }).catch(() => {});
+      void emitSubEditorEvent("elem-editor:compare", { sessionId: activeSubEditorSessionId, active: false });
     }
   }
 }
@@ -8187,18 +8201,18 @@ function wireEvents(): void {
 function wireElementEditorEvents(): void {
   const commitSubEditor = async () => {
     releaseSubEditorLevers(false);
-    await Events.Emit("elem-editor:commit", {
+    await emitSubEditorEvent("elem-editor:commit", {
       sessionId: activeSubEditorSessionId,
       faceName: subEditorFaceName,
       elementIndex: subEditorElementIndex,
       element: getCurrentFace()?.elements[0],
-    }).catch(() => {});
+    });
     void call("HideElementEditorWindow").catch(() => {});
   };
 
   const cancelSubEditor = async () => {
     releaseSubEditorLevers(false);
-    await Events.Emit("elem-editor:cancel", { sessionId: activeSubEditorSessionId }).catch(() => {});
+    await emitSubEditorEvent("elem-editor:cancel", { sessionId: activeSubEditorSessionId });
     void call("HideElementEditorWindow").catch(() => {});
   };
 
@@ -8243,7 +8257,7 @@ function wireElementEditorEvents(): void {
       if (isBypassActive || activeSubEditorSessionId <= 0) return;
       isBypassActive = true;
       el.btnLeverBypass.classList.add("active");
-      void Events.Emit("elem-editor:bypass", { sessionId: activeSubEditorSessionId, active: true }).catch(() => {});
+      void emitSubEditorEvent("elem-editor:bypass", { sessionId: activeSubEditorSessionId, active: true });
     } else {
       activateBypass();
     }
@@ -8262,7 +8276,7 @@ function wireElementEditorEvents(): void {
       if (isCompareActive || activeSubEditorSessionId <= 0) return;
       isCompareActive = true;
       el.btnLeverCompare.classList.add("active");
-      void Events.Emit("elem-editor:compare", { sessionId: activeSubEditorSessionId, active: true }).catch(() => {});
+      void emitSubEditorEvent("elem-editor:compare", { sessionId: activeSubEditorSessionId, active: true });
     } else {
       activateCompare();
     }
@@ -8724,8 +8738,8 @@ function wireElementEditorEvents(): void {
 
 function wireRuntimeEvents(): void {
   // 自更新进度：下载阶段显示百分比，替换与重启阶段只更新提示文案。
-  Events.On("app-update-progress", (event) => {
-    const ev = asProgress(event.data);
+  onEvent("app-update-progress", (data) => {
+    const ev = asProgress(data);
     if (!busy) return;
     if (ev.total > 0) {
       const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
@@ -8739,8 +8753,8 @@ function wireRuntimeEvents(): void {
   });
 
   // 制作副本要逐个创建 7114 个 CSV（约 2.7 秒），进度同样压在选择器上。
-  Events.On("csv-copy-progress", (event) => {
-    const ev = asProgress(event.data);
+  onEvent("csv-copy-progress", (data) => {
+    const ev = asProgress(data);
     if (!csvBusyText || ev.total <= 0) return;
     const pct = Math.min(100, Math.max(0, (ev.done / ev.total) * 100));
     el.csvSummary.textContent = `${ev.detail || "制作副本"} ${pct.toFixed(0)}%`;
@@ -8748,8 +8762,8 @@ function wireRuntimeEvents(): void {
     el.csvSyncBar.style.width = `${pct.toFixed(1)}%`;
   });
 
-  Events.On("font-compiler-progress", (event) => {
-    const ev = asProgress(event.data);
+  onEvent("font-compiler-progress", (data) => {
+    const ev = asProgress(data);
     if (ev.stage === "done" || ev.stage === "failed") {
       if (ev.stage === "done" && ev.detail === "ready") {
         fontCompilerReady = true;
@@ -8775,8 +8789,8 @@ function wireRuntimeEvents(): void {
   // 资源同步的进度直接压在内置词条选择器上；汉化期间的进度同时走顶部进度条。
   let pendingResourceProgress: PatchProgressEvent | null = null;
   let resourceRafId = 0;
-  Events.On("resource-progress", (event) => {
-    const ev = asProgress(event.data);
+  onEvent("resource-progress", (data) => {
+    const ev = asProgress(data);
     pendingResourceProgress = ev;
     if (!resourceRafId) {
       resourceRafId = requestAnimationFrame(() => {
@@ -8864,8 +8878,8 @@ function wireRuntimeEvents(): void {
     }
   }
 
-  Events.On("patch-progress", (event) => {
-    const ev = asProgress(event.data);
+  onEvent("patch-progress", (data) => {
+    const ev = asProgress(data);
     pendingPatchProgress = ev;
     if (!patchRafId) {
       patchRafId = requestAnimationFrame(() => {
@@ -8900,21 +8914,21 @@ function wireRuntimeEvents(): void {
   });
 
   // 字体编译是独立动作，进度只压在这一行下方的小进度条上。
-  Events.On("font-build-progress", (event) => {
+  onEvent("font-build-progress", (data) => {
     if (!fontCompiling) return;
-    const ev = asProgress(event.data);
+    const ev = asProgress(data);
     const pct = ev.total > 0 ? Math.min(100, Math.max(0, (ev.done / ev.total) * 100)) : 0;
     el.fontBuildBar.style.width = `${pct.toFixed(1)}%`;
   });
 
-  Events.On("patch-log", (event) => {
-    handleBackendLog(event.data);
+  onEvent("patch-log", (data) => {
+    handleBackendLog(data);
   });
 
-  Events.On("unknown-confirm", async (event) => {
+  onEvent("unknown-confirm", async (data) => {
     const text =
-      typeof event.data === "string"
-        ? event.data
+      typeof data === "string"
+        ? data
         : "云端暂未收录当前游戏版本，无法核对是否为原版，确定继续？";
     const ok = await showConfirm("未知版本", text, "继续汉化");
     try {
@@ -8924,10 +8938,10 @@ function wireRuntimeEvents(): void {
     }
   });
 
-  Events.On("launcher-confirm", async (event) => {
+  onEvent("launcher-confirm", async (data) => {
     const text =
-      typeof event.data === "string"
-        ? event.data
+      typeof data === "string"
+        ? data
         : "游戏启动器正在运行，是否强制关闭并继续？";
     const ok = await showConfirm("启动器正在运行", text, "强制关闭并继续");
     try {
@@ -8937,8 +8951,8 @@ function wireRuntimeEvents(): void {
     }
   });
 
-  Events.On("elem-editor:update", (event) => {
-    const data = event.data as {
+  onEvent("elem-editor:update", (payload) => {
+    const data = payload as {
       sessionId?: number;
       faceName?: string;
       elementIndex?: number;
@@ -8954,8 +8968,8 @@ function wireRuntimeEvents(): void {
     updateFontDirtyUI();
   });
 
-  Events.On("elem-editor:bypass", (event) => {
-    const data = event.data as { sessionId?: number; active?: boolean } | null;
+  onEvent("elem-editor:bypass", (payload) => {
+    const data = payload as { sessionId?: number; active?: boolean } | null;
     if (!subEditorOpen || !data || data.sessionId !== activeSubEditorSessionId) return;
     if (data.active) {
       activateBypass(subEditorFaceName, subEditorElementIndex);
@@ -8964,8 +8978,8 @@ function wireRuntimeEvents(): void {
     }
   });
 
-  Events.On("elem-editor:compare", (event) => {
-    const data = event.data as { sessionId?: number; active?: boolean } | null;
+  onEvent("elem-editor:compare", (payload) => {
+    const data = payload as { sessionId?: number; active?: boolean } | null;
     if (!subEditorOpen || !data || data.sessionId !== activeSubEditorSessionId) return;
     if (data.active) {
       activateCompare(subEditorFaceName, subEditorElementIndex);
@@ -8974,8 +8988,8 @@ function wireRuntimeEvents(): void {
     }
   });
 
-  Events.On("elem-editor:commit", (event) => {
-    const data = event.data as {
+  onEvent("elem-editor:commit", (payload) => {
+    const data = payload as {
       sessionId?: number;
       faceName?: string;
       elementIndex?: number;
@@ -8993,13 +9007,13 @@ function wireRuntimeEvents(): void {
     closeElementEditorModal(true, false);
   });
 
-  Events.On("elem-editor:cancel", (event) => {
-    const data = event.data as { sessionId?: number } | null;
+  onEvent("elem-editor:cancel", (payload) => {
+    const data = payload as { sessionId?: number } | null;
     if (!subEditorOpen || (data?.sessionId && data.sessionId !== activeSubEditorSessionId)) return;
     closeElementEditorModal(false, false);
   });
 
-  Events.On("elem-editor:native-close", () => {
+  onEvent("elem-editor:native-close", () => {
     if (!subEditorOpen) return;
     closeElementEditorModal(false, false);
   });

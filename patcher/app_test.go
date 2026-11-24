@@ -7,7 +7,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
+
+	"github.com/egoist/mygo"
 
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/fontengine"
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/pipeline"
@@ -924,12 +927,18 @@ func TestCheckClientStatusCloudNetworkErrorWarnsUnknown(t *testing.T) {
 	}
 }
 
-func TestNormalizeDialogSelection(t *testing.T) {
-	if got, err := normalizeDialogSelection("", errors.New("cancelled by user")); err != nil || got != "" {
-		t.Fatalf("取消对话框应返回空字符串且无报错，实际 (%q, %v)", got, err)
+var testBindOnce sync.Once
+
+func TestMyGoBind(t *testing.T) {
+	testBindOnce.Do(func() {
+		mygo.Bind(NewApp())
+	})
+	ts, err := mygo.GenerateTypeScript()
+	if err != nil {
+		t.Fatalf("GenerateTypeScript 失败: %v", err)
 	}
-	if _, err := normalizeDialogSelection("", errors.New("unexpected io error")); err == nil {
-		t.Fatal("非取消异常应透传错误")
+	if !strings.Contains(string(ts), "export const App =") {
+		t.Fatalf("生成的客户端缺少 App 服务绑定:\n%s", string(ts))
 	}
 }
 
