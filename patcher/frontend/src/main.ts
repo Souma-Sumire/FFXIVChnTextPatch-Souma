@@ -3265,7 +3265,7 @@ function updateFontUiAssetState(): void {
   } else if (fontCompiling) {
     hint = "正在编译字体贴图，请等待编译完成后再编辑方案";
   } else if (!el.replaceFont.checked) {
-    hint = "请先开启「游戏字体」，再编辑自定义方案";
+    hint = "";
   } else if (!hasGameDir) {
     hint = "请先选择当前区服有效的游戏安装目录";
   } else if (isMismatch) {
