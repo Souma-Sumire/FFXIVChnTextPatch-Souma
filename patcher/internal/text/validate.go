@@ -10,7 +10,7 @@ var (
 	ErrInvalidSeString = errors.New("SeString 控制码结构非法")
 )
 
-const maxSeStringDepth = 32
+const maxSeStringDepth = 256
 
 // ValidateSeString 校验字节流中的 FFXIV SeString 控制码（0x02 ... 0x03）
 // 与内嵌字符串表达式（0xFF ...）长度是否与实际边界匹配，防止越界或截断导致游戏崩溃。
