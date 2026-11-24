@@ -45,6 +45,9 @@ func PrepareAppUpdate(ctx context.Context, cloud verifier.Cloud, info *AppUpdate
 	if info == nil || info.DownloadURL == "" {
 		return "", errors.New("未找到可用的更新下载地址")
 	}
+	if cloud == nil {
+		cloud = verifier.NewGitHubClient()
+	}
 	if info.DownloadSHA256 == "" && info.LatestVersion != "" {
 		tag := "patcher-v" + info.LatestVersion
 		if rel, err := cloud.ReleaseByTag(ctx, "Souma-Sumire/FFXIVChnTextPatch-Souma", tag); err == nil && rel != nil {
@@ -56,9 +59,6 @@ func PrepareAppUpdate(ctx context.Context, cloud verifier.Cloud, info *AppUpdate
 	}
 	if target == "" {
 		return "", errors.New("无法定位当前程序所在路径")
-	}
-	if cloud == nil {
-		cloud = verifier.NewGitHubClient()
 	}
 
 	dir := filepath.Dir(target)

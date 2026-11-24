@@ -4,10 +4,12 @@ package gameproc
 
 import (
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -104,7 +106,8 @@ func killProcess(pid uint32) error {
 		return err
 	}
 	if err := p.Kill(); err != nil {
-		if strings.Contains(err.Error(), "already finished") || strings.Contains(err.Error(), "process already finished") {
+		if errors.Is(err, syscall.ESRCH) || errors.Is(err, os.ErrProcessDone) ||
+			strings.Contains(err.Error(), "already finished") || strings.Contains(err.Error(), "process already finished") {
 			return nil
 		}
 		return err

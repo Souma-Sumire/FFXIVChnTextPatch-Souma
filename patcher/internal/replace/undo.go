@@ -15,10 +15,11 @@ import (
 // 因此只要记住 dat0 的原始长度和每个被改写偏移的原值，就能精确撤回本次写入，
 // 既不需要拷贝 GB 级文件，也不要求存在与当前游戏版本匹配的原版备份。
 type Undo struct {
-	indexPath string
-	datPath   string
-	datSize   int64
-	offsets   []undoOffset
+	indexPath  string
+	datPath    string
+	datSize    int64
+	datWritten bool
+	offsets    []undoOffset
 }
 
 type undoOffset struct {
@@ -46,8 +47,15 @@ func (u *Undo) Record(entry *sqpack.IndexFile) {
 	u.offsets = append(u.offsets, undoOffset{pt: entry.Pt, old: entry.DataOffset, idx2: entry.IsIndex2})
 }
 
-// Touched 表示本次是否记录过索引写入。
-func (u *Undo) Touched() bool { return u != nil && len(u.offsets) > 0 }
+// MarkDatWritten 标记本次已向 dat0 追加写入，即使尚未提交索引偏移也需要回滚截断。
+func (u *Undo) MarkDatWritten() {
+	if u != nil {
+		u.datWritten = true
+	}
+}
+
+// Touched 表示本次是否已写入索引或 dat0。
+func (u *Undo) Touched() bool { return u != nil && (len(u.offsets) > 0 || u.datWritten) }
 
 // Revert 撤销本次写入：先把索引偏移改回写前的值并刷盘，再把 dat0 截断回写入前的长度。
 // 顺序不能颠倒——先截断会让索引在截断到回写之间短暂指向已不存在的数据，掉电即坏索引。

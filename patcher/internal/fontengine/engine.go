@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -34,6 +35,7 @@ var cliRelativeCandidates = []string{
 type Engine struct {
 	customBinPath string
 	mu            sync.Mutex
+	configMu      sync.Mutex
 	cachedBin     string
 	gameDir       string
 	gameDirs      map[string]string
@@ -149,6 +151,9 @@ func (e *Engine) syncCliConfig(binPath string) bool {
 		return false
 	}
 
+	e.configMu.Lock()
+	defer e.configMu.Unlock()
+
 	cfgPath := filepath.Join(filepath.Dir(binPath), "config.json")
 	doc := make(map[string]any)
 	if raw, err := os.ReadFile(cfgPath); err == nil && len(raw) > 0 {
@@ -171,13 +176,24 @@ func (e *Engine) syncCliConfig(binPath string) bool {
 	if err != nil {
 		return false
 	}
-	tmpPath := cfgPath + ".fc.tmp"
-	if err := os.WriteFile(tmpPath, append(encoded, '\n'), 0o644); err != nil {
+	payload := append(encoded, '\n')
+	tmpFile, err := os.CreateTemp(filepath.Dir(cfgPath), "config.json.fc.*.tmp")
+	if err != nil {
+		return false
+	}
+	tmpPath := tmpFile.Name()
+	if _, err := tmpFile.Write(payload); err != nil {
+		_ = tmpFile.Close()
+		_ = os.Remove(tmpPath)
+		return false
+	}
+	if err := tmpFile.Close(); err != nil {
+		_ = os.Remove(tmpPath)
 		return false
 	}
 	if err := os.Rename(tmpPath, cfgPath); err != nil {
 		_ = os.Remove(tmpPath)
-		if err := os.WriteFile(cfgPath, append(encoded, '\n'), 0o644); err != nil {
+		if err := os.WriteFile(cfgPath, payload, 0o644); err != nil {
 			return false
 		}
 	}
@@ -429,6 +445,7 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 
 	var errLines []string
 	scanner := bufio.NewScanner(stderr)
+	scanner.Buffer(make([]byte, 64*1024), 4*1024*1024)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if strings.HasPrefix(line, "PROGRESS:") {
@@ -443,6 +460,9 @@ func (e *Engine) CompileRaw(ctx context.Context, configJson string, outDir strin
 		} else if line != "" {
 			errLines = append(errLines, line)
 		}
+	}
+	if scanner.Err() != nil {
+		_, _ = io.Copy(io.Discard, stderr)
 	}
 
 	if err := cmd.Wait(); err != nil {
@@ -515,6 +535,7 @@ func (e *Engine) CompileTTMP(ctx context.Context, configJson string, outPath str
 
 	var errLines []string
 	scanner := bufio.NewScanner(stderr)
+	scanner.Buffer(make([]byte, 64*1024), 4*1024*1024)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if strings.HasPrefix(line, "PROGRESS:") {
@@ -529,6 +550,9 @@ func (e *Engine) CompileTTMP(ctx context.Context, configJson string, outPath str
 		} else if line != "" {
 			errLines = append(errLines, line)
 		}
+	}
+	if scanner.Err() != nil {
+		_, _ = io.Copy(io.Discard, stderr)
 	}
 
 	if err := cmd.Wait(); err != nil {

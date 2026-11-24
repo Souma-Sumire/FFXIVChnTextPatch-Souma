@@ -239,8 +239,8 @@ func KillProcesses(procs []ProcessInfo) ([]string, error) {
 			lastErr = fmt.Errorf("%s (PID %d): %w", p.Name, p.PID, err)
 		}
 	}
-	if len(killed) == 0 && lastErr != nil {
-		return nil, fmt.Errorf("结束进程失败: %w", lastErr)
+	if lastErr != nil {
+		return killed, fmt.Errorf("结束进程失败: %w", lastErr)
 	}
 	time.Sleep(200 * time.Millisecond)
 	return killed, nil

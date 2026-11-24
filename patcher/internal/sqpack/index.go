@@ -65,7 +65,7 @@ func OpenIndex(path string) (*Index, error) {
 
 	idx := &Index{
 		Path:     path,
-		IsIndex2: strings.Contains(path, "index2"),
+		IsIndex2: strings.HasSuffix(strings.ToLower(path), ".index2"),
 		Folders:  make(map[int32]*Folder),
 	}
 
@@ -185,6 +185,9 @@ func WriteDataOffset(w interface {
 }, entry *IndexFile, datOffsetBytes int64) error {
 	if entry == nil {
 		return fmt.Errorf("索引条目为空")
+	}
+	if datOffsetBytes < 0 || datOffsetBytes > 0xFFFFFFFF {
+		return fmt.Errorf("索引偏移超出 uint32 范围: %d", datOffsetBytes)
 	}
 	offsetPos := entry.Pt + 8
 	if entry.IsIndex2 {

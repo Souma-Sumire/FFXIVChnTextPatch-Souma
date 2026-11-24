@@ -49,6 +49,13 @@ func ConvertTex32To16(texPath string) error {
 		return fmt.Errorf("不支持的贴图像素格式 0x%X (仅支持 0x1450 转 0x1440)", h.Type)
 	}
 
+	if h.Width == 0 || h.Height == 0 {
+		return fmt.Errorf("贴图尺寸非法: %dx%d", h.Width, h.Height)
+	}
+	if h.MipmapCount > 1 || h.Depth > 1 {
+		return fmt.Errorf("不支持多 Mipmap 或 3D 贴图转换为 16 位 (mipmap=%d, depth=%d)", h.MipmapCount, h.Depth)
+	}
+
 	pixelData := data[TexHeaderSize:]
 	pixelCount := int(h.Width) * int(h.Height)
 	if len(pixelData) < pixelCount*4 {
@@ -72,7 +79,25 @@ func ConvertTex32To16(texPath string) error {
 	binary.LittleEndian.PutUint32(outData[4:8], TexTypeB4G4R4A4)
 	copy(outData[TexHeaderSize:], outPixels)
 
-	return os.WriteFile(texPath, outData, 0o644)
+	tmpFile, err := os.CreateTemp(filepath.Dir(texPath), ".texconv-*.tmp")
+	if err != nil {
+		return err
+	}
+	tmpPath := tmpFile.Name()
+	if _, err := tmpFile.Write(outData); err != nil {
+		_ = tmpFile.Close()
+		_ = os.Remove(tmpPath)
+		return err
+	}
+	if err := tmpFile.Close(); err != nil {
+		_ = os.Remove(tmpPath)
+		return err
+	}
+	if err := os.Rename(tmpPath, texPath); err != nil {
+		_ = os.Remove(tmpPath)
+		return err
+	}
+	return nil
 }
 
 // ConvertTexDirTo16Bit 将指定目录下所有的 .tex 贴图文件转换为 16 位 (B4G4R4A4)。

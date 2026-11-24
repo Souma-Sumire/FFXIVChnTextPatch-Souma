@@ -58,6 +58,7 @@ func parse(data []byte, strict bool) ([][]string, error) {
 			continue
 		}
 		if j >= n || s[j] == '\r' || s[j] == '\n' {
+			i = j
 			for i < n && (s[i] == '\r' || s[i] == '\n') {
 				i++
 			}

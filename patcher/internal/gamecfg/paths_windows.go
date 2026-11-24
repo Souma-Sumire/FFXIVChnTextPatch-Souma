@@ -27,7 +27,11 @@ func findDocumentDirs() []string {
 	if k, err := registry.OpenKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders`, registry.QUERY_VALUE); err == nil {
 		defer k.Close()
 		if val, _, err := k.GetStringValue("Personal"); err == nil && val != "" {
-			add(os.ExpandEnv(val))
+			if expanded, expErr := registry.ExpandString(val); expErr == nil && expanded != "" {
+				add(expanded)
+			} else {
+				add(os.ExpandEnv(val))
+			}
 		}
 	}
 

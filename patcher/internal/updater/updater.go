@@ -484,7 +484,15 @@ func (u *Updater) getWithClient(ctx context.Context, client *http.Client, url st
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, url)
 	}
-	return io.ReadAll(resp.Body)
+	const maxBodyBytes = 8 * 1024 * 1024
+	data, err := io.ReadAll(io.LimitReader(resp.Body, maxBodyBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > maxBodyBytes {
+		return nil, fmt.Errorf("响应体超过上限 (%d 字节): %s", maxBodyBytes, url)
+	}
+	return data, nil
 }
 
 // ExtractZip 把 zip 解压到目标目录，并阻止 Zip Slip 路径穿越。

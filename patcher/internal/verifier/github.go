@@ -584,10 +584,25 @@ func (c *GitHubClient) loadHashesJSON(ctx context.Context, rel *Release) {
 	if !ok || asset.DownloadURL == "" {
 		return
 	}
-	tmp := filepath.Join(os.TempDir(), fmt.Sprintf("ffxiv_hashes_%d.tmp", time.Now().UnixNano()))
+	tmpFile, err := os.CreateTemp("", "ffxiv_hashes_*.tmp")
+	if err != nil {
+		return
+	}
+	tmp := tmpFile.Name()
+	_ = tmpFile.Close()
 	defer os.Remove(tmp)
 	if err := c.Download(ctx, asset.DownloadURL, tmp, nil); err != nil {
 		return
+	}
+	const maxHashesJSONBytes = 1024 * 1024
+	st, err := os.Stat(tmp)
+	if err != nil || st.Size() > maxHashesJSONBytes {
+		return
+	}
+	if wantSHA := strings.TrimPrefix(strings.TrimSpace(asset.Digest), "sha256:"); wantSHA != "" {
+		if got, err := HashFile(tmp); err != nil || !strings.EqualFold(got.SHA256, wantSHA) {
+			return
+		}
 	}
 	data, err := os.ReadFile(tmp)
 	if err != nil {
@@ -841,7 +856,11 @@ func extractZipFile(zipPath, dstPath string) error {
 		_ = os.Remove(tmpDst)
 		return err
 	}
-	return os.Rename(tmpDst, dstPath)
+	if err := os.Rename(tmpDst, dstPath); err != nil {
+		_ = os.Remove(tmpDst)
+		return err
+	}
+	return nil
 }
 
 // Download 下载文件到目标路径，并回调进度。若下载文件为压缩包而目标为原始文件，则自动解压。支持多节点故障回退。
@@ -860,6 +879,9 @@ func (c *GitHubClient) Download(ctx context.Context, rawURL, dst string, progres
 	candidates := c.candidateURLs(rawURL)
 	var lastErr error
 	for _, cand := range candidates {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		c.notifyNode(cand.mirror)
 		start := time.Now()
 		written, err := c.downloadCandidate(ctx, cand.url, downloadDst, progress)
@@ -956,7 +978,11 @@ func (c *GitHubClient) downloadCandidate(ctx context.Context, u, dst string, pro
 		_ = os.Remove(tmp)
 		return done, err
 	}
-	return done, os.Rename(tmp, dst)
+	if err := os.Rename(tmp, dst); err != nil {
+		_ = os.Remove(tmp)
+		return done, err
+	}
+	return done, nil
 }
 
 func dirOf(p string) string {

@@ -8,12 +8,14 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
 	uncompressedBlockSentinel = 32000
 	blockAlign                = 128
 	emptyBlockHeaderSize      = 24
+	maxZiPatchBlockSize       = 64 * 1024 * 1024
 )
 
 var zeroScratch = make([]byte, 64*1024)
@@ -46,6 +48,30 @@ func (a *patchApplier) wants(relPath string) bool {
 	return ok
 }
 
+func (a *patchApplier) resolveOutPath(relPath string) (string, error) {
+	if relPath == "" {
+		return "", fmt.Errorf("ZiPatch 目标路径为空")
+	}
+	if filepath.IsAbs(relPath) || strings.HasPrefix(relPath, "/") || strings.HasPrefix(relPath, "\\") {
+		return "", fmt.Errorf("ZiPatch 目标路径不允许为绝对路径: %s", relPath)
+	}
+	for _, seg := range strings.Split(strings.ReplaceAll(relPath, "\\", "/"), "/") {
+		if seg == ".." {
+			return "", fmt.Errorf("ZiPatch 目标路径包含越界目录段: %s", relPath)
+		}
+	}
+	absBase, err := filepath.Abs(a.outDir)
+	if err != nil {
+		return "", err
+	}
+	fullPath := filepath.Join(absBase, filepath.FromSlash(relPath))
+	rel, err := filepath.Rel(absBase, fullPath)
+	if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+		return "", fmt.Errorf("ZiPatch 目标路径越出输出目录: %s", relPath)
+	}
+	return fullPath, nil
+}
+
 func (a *patchApplier) openFile(relPath string, trunc bool) (*os.File, error) {
 	if trunc {
 		if f, ok := a.files[relPath]; ok {
@@ -56,7 +82,10 @@ func (a *patchApplier) openFile(relPath string, trunc bool) (*os.File, error) {
 		return f, nil
 	}
 
-	fullPath := filepath.Join(a.outDir, filepath.FromSlash(relPath))
+	fullPath, err := a.resolveOutPath(relPath)
+	if err != nil {
+		return nil, err
+	}
 	if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
 		return nil, err
 	}
@@ -202,6 +231,9 @@ func (a *patchApplier) applyEmptyData(body []byte) error {
 	}
 	blockOffset := int64(binary.BigEndian.Uint32(body[16:20])) << 7
 	blockCount := binary.BigEndian.Uint32(body[20:24])
+	if blockCount == 0 {
+		return nil
+	}
 
 	// 官方 SqPack 24 字节空块头全为 uint32；block_count - 1 位于 +0x0C（u32）。
 	var hdr [emptyBlockHeaderSize]byte
@@ -239,10 +271,15 @@ func (a *patchApplier) applyFile(body []byte) error {
 					_ = f.Close()
 					delete(a.files, rel)
 				}
-				_ = os.Remove(filepath.Join(a.outDir, filepath.FromSlash(rel)))
+				if fullPath, err := a.resolveOutPath(rel); err == nil {
+					_ = os.Remove(fullPath)
+				}
 			}
 		}
 		return nil
+	}
+	if fileOffset < 0 {
+		return fmt.Errorf("SQPK File 偏移非法: %d", fileOffset)
 	}
 	if pathLen < 0 || 32+pathLen > len(body) {
 		return fmt.Errorf("SQPK File 路径长度非法: %d", pathLen)
@@ -256,11 +293,15 @@ func (a *patchApplier) applyFile(body []byte) error {
 	case 'M':
 		return nil
 	case 'D':
+		fullPath, err := a.resolveOutPath(rel)
+		if err != nil {
+			return err
+		}
 		if f, ok := a.files[rel]; ok {
 			_ = f.Close()
 			delete(a.files, rel)
 		}
-		if err := os.Remove(filepath.Join(a.outDir, filepath.FromSlash(rel))); err != nil && !os.IsNotExist(err) {
+		if err := os.Remove(fullPath); err != nil && !os.IsNotExist(err) {
 			return err
 		}
 		return nil
@@ -278,7 +319,7 @@ func (a *patchApplier) applyFile(body []byte) error {
 			headerSize := int(int32(binary.LittleEndian.Uint32(body[pos : pos+4])))
 			compressedSize := int(int32(binary.LittleEndian.Uint32(body[pos+8 : pos+12])))
 			dataSize := int(int32(binary.LittleEndian.Uint32(body[pos+12 : pos+16])))
-			if headerSize < 16 || dataSize < 0 {
+			if headerSize < 16 || dataSize < 0 || dataSize > maxZiPatchBlockSize {
 				return fmt.Errorf("SQPK FileAdd 块参数非法: header=%d data=%d", headerSize, dataSize)
 			}
 			payloadLen := compressedSize

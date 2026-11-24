@@ -60,6 +60,7 @@ interface AppConfig {
   replaceFont: boolean;
   fontPresets?: Record<string, string>;
   fontSource?: "package" | "compile";
+  fontTexture16Bit?: boolean;
   rules: Record<string, boolean>;
   preset: string;
   customScope?: CustomTableScope;
@@ -1299,6 +1300,7 @@ function updateRestoreButtonState(): void {
 // detectGameDir 请求后端探测客户端目录；silent 为 true 时用于界面就绪后的后台扫描，
 // 不占用全局忙碌态，扫描期间探测按钮同样可点“停止”。
 async function detectGameDir(silent: boolean): Promise<void> {
+  const langAtRequest = config.language;
   isDetecting = true;
   detectCanceled = false;
   if (!silent) {
@@ -1306,8 +1308,8 @@ async function detectGameDir(silent: boolean): Promise<void> {
   }
   renderDetectButton(true);
   try {
-    const list = await call("DetectGamePaths", config.language);
-    if (detectCanceled) {
+    const list = await call("DetectGamePaths", langAtRequest);
+    if (detectCanceled || config.language !== langAtRequest) {
       return;
     }
     const prevDir = currentGameDir();
@@ -1720,13 +1722,12 @@ async function bootstrapElementEditorSubWindow(): Promise<void> {
     }
   };
 
-  onEvent<string>("elem-editor:open", (data) => applyPayload(data, true));
-  onEvent<string>("elem-editor:sync", (data) => applyPayload(data, false));
-
   wireElementEditorEvents();
 
   try {
     await waitForBackend(8000);
+    onEvent<string>("elem-editor:open", (data) => applyPayload(data, true));
+    onEvent<string>("elem-editor:sync", (data) => applyPayload(data, false));
     const initialJson = await call("GetElementEditorState");
     if (initialJson) {
       applyPayload(initialJson, true);
@@ -2820,13 +2821,6 @@ function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?
   if (!bootstrap) {
     return;
   }
-  const prevKeys = previousKeys ?? tableList().map((entry) => entry.key).join("\n");
-  bootstrap.csv = ctx;
-  if (ctx.folders) {
-    bootstrap.folders = ctx.folders;
-  }
-  bootstrap.resourceReady = ctx.resourceReady;
-
   if (!config.csvDirs) {
     config.csvDirs = {};
   }
@@ -2841,6 +2835,16 @@ function applyCSVContextForLanguage(lang: string, ctx: CSVContext, previousKeys?
     selected: ctx.selected,
     labels,
   };
+  if (lang !== config.language) {
+    return;
+  }
+
+  const prevKeys = previousKeys ?? tableList().map((entry) => entry.key).join("\n");
+  bootstrap.csv = ctx;
+  if (ctx.folders) {
+    bootstrap.folders = ctx.folders;
+  }
+  bootstrap.resourceReady = ctx.resourceReady;
 
   renderCSVTrigger();
   renderCSVMenu();
@@ -3166,15 +3170,25 @@ function fontBuildReady(): boolean {
   return fontBuild?.ready === true;
 }
 
+let fontBuildRefreshSeq = 0;
+
 async function refreshFontBuild(): Promise<void> {
+  const seq = ++fontBuildRefreshSeq;
   if (!fontBuildNeeded()) {
     fontBuild = null;
     renderFontBuildState();
     return;
   }
   try {
-    fontBuild = await call("GetFontBuildInfo");
+    const info = await call("GetFontBuildInfo");
+    if (seq !== fontBuildRefreshSeq || !fontBuildNeeded()) {
+      return;
+    }
+    fontBuild = info;
   } catch {
+    if (seq !== fontBuildRefreshSeq) {
+      return;
+    }
     fontBuild = null;
   }
   renderFontBuildState();
@@ -3444,7 +3458,7 @@ function serializeMultiFontBaseline(mf: MultiFontSet | null): string {
 
 function isFontPresetDirty(): boolean {
   if (!currentMultiFont) return false;
-  if (!activePresetId) return true;
+  if (!activePresetId && !savedMultiFontSnapshot) return true;
   return serializeMultiFontBaseline(currentMultiFont) !== savedMultiFontSnapshot;
 }
 
@@ -4182,6 +4196,7 @@ async function openFontJsonFile(): Promise<void> {
   renderFaceTabs();
   renderElementList();
   renderPropsPanel();
+  syncOpenSubEditorToSelection(true);
   schedulePreviewRender(true);
   syncFontMenuChecks();
 }
@@ -4647,8 +4662,11 @@ async function runFontCommand(command: string): Promise<void> {
       case "edit-add-from-system":
         await addFontElementFromSystemFont();
         return;
-      case "edit-propagate-all-sizes":
+      case "edit-add-system-to-family":
         await addSystemFontToFamily();
+        return;
+      case "edit-propagate-all-sizes":
+        await propagateCurrentFamily();
         return;
       case "edit-autofit":
         await autoFit(false, true);
@@ -4756,6 +4774,7 @@ async function runFontCommand(command: string): Promise<void> {
       }
       case "export-toggle-16bit": {
         fontTexture16BitEnabled = !fontTexture16BitEnabled;
+        config.fontTexture16Bit = fontTexture16BitEnabled;
         await call("SetFontTexture16Bit", fontTexture16BitEnabled).catch(() => {});
         syncFontMenuChecks();
         void refreshFontBuild();
@@ -4886,6 +4905,7 @@ function wireFontMenuInteractions(): void {
     if (el.viewFontEditor.classList.contains("hidden")) return;
     if (ev.defaultPrevented) return;
     if (!el.fontElementModal.classList.contains("hidden")) return;
+    if (!el.modal.classList.contains("hidden") || !el.presetModal.classList.contains("hidden")) return;
     const target = ev.target as HTMLElement | null;
     if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable)) {
       return;
@@ -5404,7 +5424,7 @@ async function loadFontPreset(presetId: string): Promise<void> {
     syncFontMenuChecks();
     updateCurrentPresetBadge();
     if (!el.viewFontEditor.classList.contains("hidden")) {
-      syncOpenSubEditorToSelection();
+      syncOpenSubEditorToSelection(true);
       schedulePreviewRender();
     }
   } catch (err) {
@@ -5929,7 +5949,7 @@ function releaseSubEditorLevers(emitEvent = true): void {
   }
 }
 
-function syncOpenSubEditorToSelection(): void {
+function syncOpenSubEditorToSelection(forceReset = false): void {
   if (IS_ELEMENT_EDITOR_SUBWINDOW || !subEditorOpen) return;
   const face = getCurrentFace();
   const elem = face?.elements[activeElementIndex];
@@ -5938,11 +5958,11 @@ function syncOpenSubEditorToSelection(): void {
     return;
   }
 
-  const targetChanged = face.name !== subEditorFaceName || activeElementIndex !== subEditorElementIndex;
+  const targetChanged = forceReset || face.name !== subEditorFaceName || activeElementIndex !== subEditorElementIndex;
   if (targetChanged) {
     deactivateBypass();
     deactivateCompare();
-    if (pendingModalHistoryEntry && currentMultiFont && pendingModalHistoryEntry.multiFontJson !== JSON.stringify(currentMultiFont)) {
+    if (!forceReset && pendingModalHistoryEntry && currentMultiFont && pendingModalHistoryEntry.multiFontJson !== JSON.stringify(currentMultiFont)) {
       commitUndoSnapshot(pendingModalHistoryEntry);
     }
     activeSubEditorSessionId++;
@@ -7109,13 +7129,14 @@ function entryForSearchHit(hit: CSVSearchHit): TableEntry {
 }
 
 function renderContentSearchResult(res: CSVSearchResult): void {
+  const hits = res.hits ?? [];
   const fragment = document.createDocumentFragment();
 
   const summary = document.createElement("div");
   summary.className = "csv-search-summary";
   const summaryMain = document.createElement("span");
   summaryMain.textContent = res.truncated
-    ? `共在 ${res.matchedFiles} 张表中找到 ${res.totalHits} 条匹配（当前展示前 ${res.hits.length} 条，可输入更精确关键词）`
+    ? `共在 ${res.matchedFiles} 张表中找到 ${res.totalHits} 条匹配（当前展示前 ${hits.length} 条，可输入更精确关键词）`
     : `共在 ${res.matchedFiles} 张表中找到 ${res.totalHits} 条匹配`;
   const summarySource = document.createElement("span");
   const csvCtx = bootstrap?.csv;
@@ -7127,7 +7148,7 @@ function renderContentSearchResult(res: CSVSearchResult): void {
   summary.append(summaryMain, summarySource);
   fragment.append(summary);
 
-  if (res.hits.length === 0) {
+  if (hits.length === 0) {
     const empty = document.createElement("div");
     empty.className = "csv-search-empty";
     empty.textContent = `未在当前词条目录中找到包含「${res.query}」的文本`;
@@ -7138,7 +7159,7 @@ function renderContentSearchResult(res: CSVSearchResult): void {
 
   const list = document.createElement("div");
   list.className = "csv-search-hit-list";
-  for (const hit of res.hits) {
+  for (const hit of hits) {
     const entry = entryForSearchHit(hit);
     const rowEl = document.createElement("div");
     rowEl.className = "csv-search-hit-row";
@@ -7309,15 +7330,18 @@ async function loadCSVPreviewPage(): Promise<void> {
     el.csvPreviewThead.replaceChildren();
     el.csvPreviewTbody.replaceChildren();
 
+    const headers = res.headers ?? [];
+    const rows = res.rows ?? [];
+
     const headRow = document.createElement("tr");
-    for (const h of res.headers) {
+    for (const h of headers) {
       const th = document.createElement("th");
       th.textContent = h;
       headRow.append(th);
     }
     el.csvPreviewThead.append(headRow);
 
-    if (res.rows.length === 0) {
+    if (rows.length === 0) {
       csvPreviewLocatePending = false;
       el.csvPreviewState.textContent = query ? `未找到包含「${query}」的数据行` : "该 CSV 表暂无数据行";
       el.csvPreviewState.classList.remove("hidden");
@@ -7326,10 +7350,10 @@ async function loadCSVPreviewPage(): Promise<void> {
       return;
     }
 
-    const colCount = res.headers.length;
+    const colCount = headers.length;
     const frag = document.createDocumentFragment();
     let locatedRowEl: HTMLTableRowElement | null = null;
-    for (const row of res.rows) {
+    for (const row of rows) {
       const tr = document.createElement("tr");
       const rowKey = row[0] ?? "";
       if (csvPreviewLocateKey && rowKey === csvPreviewLocateKey) {
@@ -7994,6 +8018,7 @@ function wireEvents(): void {
       switchView("font-editor");
       await ensureSystemFonts();
       fontTexture16BitEnabled = await call("GetFontTexture16Bit").catch(() => true);
+      config.fontTexture16Bit = fontTexture16BitEnabled;
       syncFontMenuChecks();
       await loadFontPresetsForCurrentRegion();
       schedulePreviewRender();
@@ -8026,12 +8051,17 @@ function wireEvents(): void {
     if (!nextId || nextId === activePresetId) return;
     const prevId = activePresetId;
     el.fcPresetSelect.value = prevId || "";
-    if (!(await confirmUnsavedFontChanges("切换"))) {
+    try {
+      if (!(await confirmUnsavedFontChanges("切换"))) {
+        el.fcPresetSelect.value = prevId || "";
+        return;
+      }
+      await applyFontPreset(nextId);
+      void persistConfig();
+    } catch (err) {
       el.fcPresetSelect.value = prevId || "";
-      return;
+      log(`切换字体方案失败：${describeError(err)}`, "error", "字体");
     }
-    await applyFontPreset(nextId);
-    void persistConfig();
   });
   el.btnPresetClose.addEventListener("click", () => closePresetManager());
   el.presetModal.addEventListener("mousedown", (ev) => {
@@ -8353,12 +8383,7 @@ function wireElementEditorEvents(): void {
     const rendererVal = Number(el.propRenderer.value);
     const actual = isNaN(rendererVal) ? 2 : rendererVal;
     setElementRenderer(elem, actual);
-    el.propsDirectwriteGroup.classList.toggle("hidden", actual !== 2);
-    el.propsFreetypeGroup.classList.toggle("hidden", actual !== 3);
-    el.propsEmptyGroup.classList.toggle("hidden", actual !== 0);
-    el.propsGameFontNotice.classList.toggle("hidden", actual !== 1);
-    el.propsEmptyFontNotice.classList.toggle("hidden", actual !== 0);
-    el.propsExternalFontWrap.classList.toggle("hidden", actual === 1 || actual === 0);
+    renderPropsPanel();
     renderElementList();
     schedulePreviewRender();
   });
@@ -8825,7 +8850,8 @@ function wireRuntimeEvents(): void {
     }
   });
 
-  let lastDownloadDetail = "";
+  let lastDownloadDiagKey = "";
+  let lastDownloadLogKey = "";
   let pendingPatchProgress: PatchProgressEvent | null = null;
   let patchRafId = 0;
 
@@ -8898,17 +8924,20 @@ function wireRuntimeEvents(): void {
             : detail;
         const sizeInfo = ev.total > 0 ? ` (${(ev.total / 1024 / 1024).toFixed(1)} MB)` : "";
         const diagKey = `${detail}${sizeInfo}`;
-        if (diagKey !== lastDownloadDetail) {
+        if (diagKey !== lastDownloadDiagKey) {
           logDiag(`下载原版文件：${detail}${sizeInfo}`);
+          lastDownloadDiagKey = diagKey;
         }
-        if (label !== lastDownloadDetail && !(detail.startsWith("0a0000.") && lastDownloadDetail.startsWith("0a0000.")) && !(detail.startsWith("000000.") && lastDownloadDetail.startsWith("000000."))) {
+        if (label !== lastDownloadLogKey) {
           const tag: LogTag = isPatching ? "汉化" : "还原";
           log(`正在下载${label}${sizeInfo}`, "info", tag);
+          lastDownloadLogKey = label;
         }
-        lastDownloadDetail = diagKey;
       }
       return;
     }
+    lastDownloadDiagKey = "";
+    lastDownloadLogKey = "";
   });
 
   // 字体编译是独立动作，进度只压在这一行下方的小进度条上。

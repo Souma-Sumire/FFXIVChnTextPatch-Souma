@@ -274,17 +274,32 @@ function buildWindows(appVersion: string, goTags: string, releaseBuild: boolean)
   };
 
   if (fs.existsSync(elevatedSyso) && fs.existsSync(normalSyso)) {
-    fs.copyFileSync(normalSyso, backupSyso);
+    if (!fs.existsSync(backupSyso)) {
+      fs.copyFileSync(normalSyso, backupSyso);
+    }
     fs.copyFileSync(elevatedSyso, normalSyso);
   }
+
+  const onSignal = (sig: NodeJS.Signals) => {
+    restoreSyso();
+    process.exit(sig === "SIGINT" ? 130 : 143);
+  };
+  process.once("SIGINT", onSignal);
+  process.once("SIGTERM", onSignal);
 
   try {
     const ldflags = releaseBuild
       ? `-H windowsgui -s -w -X main.appVersion=${appVersion} -X github.com/egoist/mygo.production=1`
       : `-H windowsgui -s -w -X main.appVersion=${appVersion}`;
-    run("go", goBuildArgs(goTags, ldflags, outExe), patcherDir, { CGO_ENABLED: "0" });
+    run("go", goBuildArgs(goTags, ldflags, outExe), patcherDir, {
+      CGO_ENABLED: "0",
+      GOOS: "windows",
+      GOARCH: "amd64",
+    });
     console.log(`\n构建成功: ${outExe}`);
   } finally {
+    process.removeListener("SIGINT", onSignal);
+    process.removeListener("SIGTERM", onSignal);
     restoreSyso();
   }
 }

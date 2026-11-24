@@ -233,7 +233,12 @@ func applyStream(ctx context.Context, stream seekStream, outDir string, targets 
 		if _, err := io.ReadFull(stream, hdr[:]); err != nil {
 			return stats, fmt.Errorf("读取 ZiPatch 块头失败 (off=%d): %w", pos, err)
 		}
-		size := int(binary.BigEndian.Uint32(hdr[0:4]))
+		rawSize := binary.BigEndian.Uint32(hdr[0:4])
+		const maxChunkSize = 256 * 1024 * 1024
+		if rawSize > maxChunkSize {
+			return stats, fmt.Errorf("ZiPatch 块大小超过上限: %d (off=%d)", rawSize, pos)
+		}
+		size := int(rawSize)
 		fourcc := string(hdr[4:8])
 		bodyStart := pos + 8
 		nextChunkPos := bodyStart + int64(size) + 4

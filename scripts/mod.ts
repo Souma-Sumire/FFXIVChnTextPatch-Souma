@@ -128,14 +128,14 @@ const specialOptions: Record<string, string> = {
 fs.rmSync(targetDir, { recursive: true, force: true });
 
 function traverseAndCopyFiles(currentDir: string, stack = 0): void {
-  fs.readdirSync(currentDir).forEach((file) => {
+  fs.readdirSync(currentDir).sort().forEach((file) => {
     const filePath = path.join(currentDir, file);
     const stat = fs.statSync(filePath);
 
     if (stat.isDirectory()) {
       traverseAndCopyFiles(filePath, stack + 1);
-    } else if (stat.isFile() && (file.includes("_ja") || file.includes("_en") || file.includes("_ko") || file.includes("_tc"))) {
-      const rawName = file.replace(/^([^_]+).*?_.+$/, "$1");
+    } else if (stat.isFile() && /_(ja|en|ko|tc)\.exd$/i.test(file)) {
+      const rawName = file.replace(/^([^_]+).*?_.+$/, "$1").toLowerCase();
       const relativePath = path.relative(sourceDir, filePath);
       // Penumbra 清单里的游戏内部路径用反斜杠，macOS 的 path.relative 给的是正斜杠。
       const gamePath = `exd\\${relativePath.replace(/\//g, "\\")}`;
@@ -198,6 +198,11 @@ function traverseAndCopyFiles(currentDir: string, stack = 0): void {
 }
 
 traverseAndCopyFiles(sourceDir, 0);
+
+SpecialOptionsGroup.DefaultSettings = SpecialOptionsGroup.Options.reduce(
+  (mask, opt, idx) => (opt.Name.includes("（BNpcName）") ? mask : mask | (1 << idx)),
+  0,
+);
 
 fs.writeFileSync(path.join(baseDir, modName, "meta.json"), JSON.stringify(jsonMeta, null, 2));
 fs.writeFileSync(path.join(baseDir, modName, "default_mod.json"), JSON.stringify(jsonDefaultMod, null, 2));

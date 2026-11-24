@@ -268,8 +268,7 @@ func RenameCustomPreset(id, newName, customPresetsDir string) (PresetSummary, er
 		return PresetSummary{ID: customPresetID(name), Name: name, Description: "用户保存的自定义方案"}, nil
 	}
 	src := customPresetPath(customPresetsDir, name)
-	data, err := os.ReadFile(src)
-	if err != nil {
+	if _, err := os.Stat(src); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return PresetSummary{}, fmt.Errorf("方案不存在: %s", name)
 		}
@@ -279,11 +278,8 @@ func RenameCustomPreset(id, newName, customPresetsDir string) (PresetSummary, er
 	if _, err := os.Stat(dst); err == nil {
 		return PresetSummary{}, fmt.Errorf("已存在同名方案: %s", safeName)
 	}
-	if err := os.WriteFile(dst, data, 0o644); err != nil {
-		return PresetSummary{}, fmt.Errorf("写入方案失败: %w", err)
-	}
-	if err := os.Remove(src); err != nil {
-		return PresetSummary{}, fmt.Errorf("删除原方案失败: %w", err)
+	if err := os.Rename(src, dst); err != nil {
+		return PresetSummary{}, fmt.Errorf("重命名方案失败: %w", err)
 	}
 	info, _ := os.Stat(dst)
 	summary := PresetSummary{
@@ -291,7 +287,6 @@ func RenameCustomPreset(id, newName, customPresetsDir string) (PresetSummary, er
 		Name:        safeName,
 		Description: "用户保存的自定义方案",
 		Builtin:     false,
-		Size:        int64(len(data)),
 	}
 	if info != nil {
 		summary.Size = info.Size()

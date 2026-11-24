@@ -264,18 +264,34 @@ func (a *App) CompileFontPreset() (FontBuildInfo, error) {
 		return info, fmt.Errorf("写入编译记录失败: %w", err)
 	}
 
-	// 新产物写好后才替换旧目录，编译失败时上一份仍可直接使用。
-	if err := os.RemoveAll(dir); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		return info, fmt.Errorf("替换旧编译产物失败: %w", err)
+	// 新产物写好后才替换旧目录，先将旧目录移作 .bak，重命名失败时恢复原目录。
+	bakDir := dir + ".bak"
+	_ = os.RemoveAll(bakDir)
+	hasBak := false
+	if _, statErr := os.Stat(dir); statErr == nil {
+		if err := os.Rename(dir, bakDir); err != nil {
+			_ = os.RemoveAll(tmpDir)
+			return info, fmt.Errorf("替换旧编译产物失败: %w", err)
+		}
+		hasBak = true
 	}
 	if err := os.Rename(tmpDir, dir); err != nil {
 		_ = os.RemoveAll(tmpDir)
+		if hasBak {
+			_ = os.Rename(bakDir, dir)
+		}
 		return info, fmt.Errorf("保存编译产物失败: %w", err)
 	}
 	// 记录写在目录之外：这一步失败时贴图还在但没有记录，界面判成未编译，不会被误用。
-	if err := os.WriteFile(fontBuildMetaPath(resourceDir), raw, 0o644); err != nil {
+	if err := writeFileAtomic(fontBuildMetaPath(resourceDir), raw); err != nil {
+		if hasBak {
+			_ = os.RemoveAll(dir)
+			_ = os.Rename(bakDir, dir)
+		}
 		return info, fmt.Errorf("写入编译记录失败: %w", err)
+	}
+	if hasBak {
+		_ = os.RemoveAll(bakDir)
 	}
 
 	elapsed := formatElapsed(time.Since(started))

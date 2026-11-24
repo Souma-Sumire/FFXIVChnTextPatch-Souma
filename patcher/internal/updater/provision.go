@@ -308,6 +308,9 @@ func (zp zipProgress) report(detail string, done, total int64) {
 func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, want BundleInfo, keep bool, zp zipProgress) error {
 	var lastErr error
 	for _, node := range u.nodes() {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		url := strings.TrimRight(node, "/") + "/" + zipName
 		nodeName := shortNodeName(node)
 		u.diag("下载 %s：尝试节点 %s（模式=%s）", zipName, nodeName, u.modeLabel(url, false))
@@ -315,6 +318,7 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 		if err := u.fetchToFile(ctx, u.httpClient(), url, tmp, func(done, total int64) {
 			zp.report(zp.dl, done, total)
 		}); err != nil {
+			_ = os.Remove(tmp)
 			u.diag("下载 %s：节点 %s 失败（%v）", zipName, nodeName, err)
 			lastErr = err
 			continue
@@ -337,7 +341,6 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 		if keep {
 			// 保留快照包，后续校验解压目录时作为可信来源。
 			zipPath = filepath.Join(resourceDir, zipName)
-			_ = os.Remove(zipPath)
 			if err := os.Rename(tmp, zipPath); err != nil {
 				lastErr = fmt.Errorf("保存 %s 失败: %w", zipName, err)
 				_ = os.Remove(tmp)
@@ -368,11 +371,15 @@ func (u *Updater) downloadZip(ctx context.Context, resourceDir, zipName string, 
 func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want FileInfo, progress func(done, total int64)) error {
 	var lastErr error
 	for _, node := range u.nodes() {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		url := strings.TrimRight(node, "/") + "/" + strings.TrimLeft(key, "/")
 		nodeName := shortNodeName(node)
 		u.diag("下载 %s：尝试节点 %s（模式=%s）", key, nodeName, u.modeLabel(url, false))
 		tmp := dst + ".part"
 		if err := u.fetchToFile(ctx, u.httpClient(), url, tmp, progress); err != nil {
+			_ = os.Remove(tmp)
 			u.diag("下载 %s：节点 %s 失败（%v）", key, nodeName, err)
 			lastErr = err
 			continue
@@ -391,9 +398,11 @@ func (u *Updater) downloadVerified(ctx context.Context, key, dst string, want Fi
 			continue
 		}
 		if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+			_ = os.Remove(tmp)
 			return err
 		}
 		if err := os.Rename(tmp, dst); err != nil {
+			_ = os.Remove(tmp)
 			return err
 		}
 		return nil
@@ -506,6 +515,16 @@ func metaModulesComplete(resourceDir string, local, remote *Manifest, csvOK bool
 	}
 	if local.Tables.SHA256 != remote.Tables.SHA256 {
 		return false
+	}
+	if len(remote.Rules.SHA256) == 64 {
+		if got, err := HashFile(filepath.Join(resourceDir, "rules.json")); err != nil || got.SHA256 != remote.Rules.SHA256 {
+			return false
+		}
+	}
+	if len(remote.Tables.SHA256) == 64 {
+		if got, err := HashFile(filepath.Join(resourceDir, "tables.json")); err != nil || got.SHA256 != remote.Tables.SHA256 {
+			return false
+		}
 	}
 	return true
 }

@@ -122,7 +122,11 @@ func BuildTexBlock(data []byte) ([]byte, error) {
 	}
 
 	uncompressedSize := len(data)
-	partCount := int(math.Ceil(float64(uncompressedSize) / float64(blockPartSize)))
+	rawMip := len(data) - len(texHeader)
+	if rawMip <= 0 {
+		return nil, fmt.Errorf("纹理像素数据为空")
+	}
+	partCount := (rawMip + blockPartSize - 1) / blockPartSize
 	dataHeaderLength := alignBlockHeader(24 + mipCount*20 + partCount*2)
 
 	uncompMipSize := width * height
@@ -163,7 +167,11 @@ func BuildTexBlock(data []byte) ([]byte, error) {
 			if k == partCount {
 				part = data[cursor:]
 			} else {
-				part = data[cursor : cursor+blockPartSize]
+				end := cursor + blockPartSize
+				if end > len(data) {
+					end = len(data)
+				}
+				part = data[cursor:end]
 			}
 			cursor += len(part)
 			compr, err := CompressBlock(part)

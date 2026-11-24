@@ -55,7 +55,7 @@ func findRunningProcesses() ([]ProcessInfo, error) {
 }
 
 func killProcess(pid uint32) error {
-	hProc, err := windows.OpenProcess(windows.PROCESS_TERMINATE|windows.SYNCHRONIZE, false, pid)
+	hProc, err := windows.OpenProcess(windows.PROCESS_TERMINATE|windows.SYNCHRONIZE|windows.PROCESS_QUERY_LIMITED_INFORMATION, false, pid)
 	if err != nil {
 		if errors.Is(err, windows.ERROR_INVALID_PARAMETER) {
 			return nil

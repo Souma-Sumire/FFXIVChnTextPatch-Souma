@@ -3,6 +3,7 @@
 package netproxy
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -47,8 +48,12 @@ func currentScutilProxy() *scutilProxy {
 }
 
 func readScutilProxy() ([]byte, error) {
-	if out, err := exec.Command("/usr/sbin/scutil", "--proxy").Output(); err == nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if out, err := exec.CommandContext(ctx, "/usr/sbin/scutil", "--proxy").Output(); err == nil {
 		return out, nil
 	}
-	return exec.Command("scutil", "--proxy").Output()
+	ctx2, cancel2 := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel2()
+	return exec.CommandContext(ctx2, "scutil", "--proxy").Output()
 }

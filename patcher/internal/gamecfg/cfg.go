@@ -206,13 +206,18 @@ func createBackupFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	defer dstFile.Close()
 
 	if _, err := io.Copy(dstFile, srcFile); err != nil {
+		_ = dstFile.Close()
 		_ = os.Remove(dst)
 		return err
 	}
-	return dstFile.Sync()
+	if err := dstFile.Sync(); err != nil {
+		_ = dstFile.Close()
+		_ = os.Remove(dst)
+		return err
+	}
+	return dstFile.Close()
 }
 
 func atomicWriteFile(tmpPath, dstPath string, data []byte) error {

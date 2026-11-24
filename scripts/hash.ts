@@ -13,7 +13,7 @@ function getAllFilePaths(dirPath: string): string[] {
     const fullPath = path.join(dirPath, file);
     if (fs.statSync(fullPath).isDirectory()) {
       filePaths = filePaths.concat(getAllFilePaths(fullPath));
-    } else {
+    } else if (file.toLowerCase().endsWith(".csv")) {
       filePaths.push(fullPath);
     }
   });
@@ -42,7 +42,7 @@ const langHashPaths = [
 
 fs.writeFileSync(
   filePath,
-  [...langHashPaths, ...langHashPaths.map((v) => v.replace("_0_", "_1_")), ...langHashPaths.map((v) => v.replace("_0_en.exd", ".exh"))].join("\n"),
+  [...langHashPaths, ...langHashPaths.map((v) => v.replace("_0_", "_1_")), ...hashPaths.map((v) => v.replace("_0_en.exd", ".exh"))].join("\n"),
   "utf8"
 );
 console.log(`Hash paths saved to ${filePath}`);

@@ -26,6 +26,10 @@ function hideTip(): void {
 export type TipPlacement = "top" | "bottom";
 
 function showTip(target: HTMLElement): void {
+  if (!target.isConnected) {
+    hideTip();
+    return;
+  }
   const text = target.dataset.tip;
   if (!text) {
     hideTip();

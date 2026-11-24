@@ -166,11 +166,17 @@ export function generateManifestAndSnapshot(): void {
     fonts[key] = sha256File(path.join(RESOURCE_PATH, key));
   }
 
-  let fontChanged = !fs.existsSync(FONT_ZIP_PATH);
-  if (!fontChanged && fs.existsSync(MANIFEST_PATH)) {
+  let fontChanged = !fs.existsSync(FONT_ZIP_PATH) || !fs.existsSync(MANIFEST_PATH);
+  if (!fontChanged) {
     try {
       const oldManifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf-8"));
-      if (!oldManifest.fonts || oldManifest.font?.size !== fs.statSync(FONT_ZIP_PATH).size) {
+      const oldFontKeys = oldManifest.fonts ? Object.keys(oldManifest.fonts) : [];
+      if (
+        !oldManifest.fonts ||
+        oldFontKeys.length !== fontKeys.length ||
+        oldManifest.font?.size !== fs.statSync(FONT_ZIP_PATH).size ||
+        oldManifest.font?.sha256 !== sha256File(FONT_ZIP_PATH).sha256
+      ) {
         fontChanged = true;
       } else {
         for (const key of fontKeys) {

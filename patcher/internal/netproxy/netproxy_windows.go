@@ -69,15 +69,16 @@ func currentConfig() *proxyConfig {
 }
 
 func readConfig() *proxyConfig {
+	empty := &proxyConfig{enable: false, loadedAt: time.Now()}
 	key, err := registry.OpenKey(registry.CURRENT_USER, internetSettingsKey, registry.QUERY_VALUE)
 	if err != nil {
-		return nil
+		return empty
 	}
 	defer key.Close()
 
 	enable, _, err := key.GetIntegerValue("ProxyEnable")
 	if err != nil {
-		return nil
+		return empty
 	}
 	server, _, _ := key.GetStringValue("ProxyServer")
 	override, _, _ := key.GetStringValue("ProxyOverride")
@@ -185,25 +186,28 @@ func wildcardMatch(pattern, host string) bool {
 	if strings.HasPrefix(pattern, "*.") && host == pattern[2:] {
 		return true
 	}
-	star := strings.IndexByte(pattern, '*')
-	if star < 0 {
-		return pattern == host
-	}
-	prefix := pattern[:star]
-	if !strings.HasPrefix(host, prefix) {
-		return false
-	}
-	pattern = pattern[star+1:]
-	host = host[len(prefix):]
-	for {
-		if wildcardMatch(pattern, host) {
-			return true
-		}
-		if host == "" {
+	pIdx, hIdx := 0, 0
+	starIdx, matchIdx := -1, 0
+	for hIdx < len(host) {
+		if pIdx < len(pattern) && pattern[pIdx] == host[hIdx] {
+			pIdx++
+			hIdx++
+		} else if pIdx < len(pattern) && pattern[pIdx] == '*' {
+			starIdx = pIdx
+			matchIdx = hIdx
+			pIdx++
+		} else if starIdx != -1 {
+			pIdx = starIdx + 1
+			matchIdx++
+			hIdx = matchIdx
+		} else {
 			return false
 		}
-		host = host[1:]
 	}
+	for pIdx < len(pattern) && pattern[pIdx] == '*' {
+		pIdx++
+	}
+	return pIdx == len(pattern)
 }
 
 func isLoopback(host string) bool {

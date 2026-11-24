@@ -23,6 +23,7 @@ type EXHF struct {
 	Datasets         []Dataset
 	Pages            []Page
 	Langs            []int
+	Variant          uint16
 	NumEntries       uint32
 }
 
@@ -45,6 +46,7 @@ func ParseEXHF(data []byte) (*EXHF, error) {
 
 	e := &EXHF{
 		DatasetChunkSize: binary.BigEndian.Uint16(data[6:]),
+		Variant:          binary.BigEndian.Uint16(data[16:]),
 		NumEntries:       binary.BigEndian.Uint32(data[20:]),
 	}
 	numDataSetTable := int(binary.BigEndian.Uint16(data[8:]))

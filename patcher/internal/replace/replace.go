@@ -91,6 +91,15 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 	if datLength%8 != 0 {
 		return stats, fmt.Errorf("dat0 (%s) 长度未按 8 字节对齐: %d", dat0Path, datLength)
 	}
+	if rem := datLength % 128; rem != 0 {
+		pad := make([]byte, 128-rem)
+		opts.Undo.MarkDatWritten()
+		if _, err := datFile.WriteAt(pad, datLength); err != nil {
+			return stats, fmt.Errorf("补齐 dat0 (%s) 128 字节对齐失败: %w", dat0Path, err)
+		}
+		datLength += int64(len(pad))
+		stats.AppendedBytes += int64(len(pad))
+	}
 
 	fileList, err := readRootExl(opts.TextIndexPath, index)
 	if err != nil {
@@ -147,12 +156,20 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 			opts.Log("解析 EXH 失败 %s: %v", exhPath, err)
 			continue
 		}
-		if len(exh.Langs) == 0 || len(exh.Pages) == 0 {
+		if len(exh.Langs) == 0 || len(exh.Pages) == 0 || exh.Variant > 1 {
 			continue
 		}
 
-		csvRel := exhPath[4:strings.Index(exhPath, ".")]
-		csvPath := filepath.Join(opts.CSVResourceDir, filepath.FromSlash(csvRel)+".csv")
+		dotIdx := strings.LastIndex(exhPath, ".")
+		if dotIdx <= 4 {
+			continue
+		}
+		csvRel := exhPath[4:dotIdx]
+		csvPath, ok := safeJoinUnder(opts.CSVResourceDir, filepath.FromSlash(csvRel)+".csv")
+		if !ok {
+			opts.Log("跳过异常路径 %s", exhPath)
+			continue
+		}
 		offsetMap, dataMap, err := loadCSV(csvPath)
 		if err != nil {
 			// 自定义词条目录允许只包含部分表，缺文件属于预期情况，不逐表刷日志。
@@ -198,6 +215,10 @@ func ReplaceEXDF(opts Options) (Stats, error) {
 					return stats, fmt.Errorf("压缩二进制块 (%s) 失败: %w", exdFileName, err)
 				}
 
+				if datLength+int64(len(block)) > maxDatFileSize {
+					return stats, fmt.Errorf("dat0 (%s) 追加后将超过 2GB 上限 (%d 字节)，请先还原原版客户端后重新汉化", dat0Path, datLength+int64(len(block)))
+				}
+				opts.Undo.MarkDatWritten()
 				if _, err := datFile.WriteAt(block, datLength); err != nil {
 					return stats, fmt.Errorf("写入 dat0 (%s, %s, off=%d) 失败: %w", dat0Path, exdFileName, datLength, err)
 				}
@@ -400,7 +421,7 @@ func ReplaceFontWithUndo(ctx context.Context, indexPath, fontDir string, progres
 	}
 	fonts := make([]string, 0, len(entries))
 	for _, e := range entries {
-		if e.IsDir() {
+		if e.IsDir() || !isFontFile(e.Name()) {
 			continue
 		}
 		fonts = append(fonts, e.Name())
@@ -426,6 +447,15 @@ func ReplaceFontWithUndo(ctx context.Context, indexPath, fontDir string, progres
 	if datLength%8 != 0 {
 		return stats, fmt.Errorf("字体 dat0 (%s) 长度未按 8 字节对齐: %d", dat0Path, datLength)
 	}
+	if rem := datLength % 128; rem != 0 {
+		pad := make([]byte, 128-rem)
+		undo.MarkDatWritten()
+		if _, err := datFile.WriteAt(pad, datLength); err != nil {
+			return stats, fmt.Errorf("补齐字体 dat0 (%s) 128 字节对齐失败: %w", dat0Path, err)
+		}
+		datLength += int64(len(pad))
+		stats.AppendedBytes += int64(len(pad))
+	}
 
 	pending := make([]pendingOffset, 0, len(fonts))
 	for i, name := range fonts {
@@ -450,6 +480,10 @@ func ReplaceFontWithUndo(ctx context.Context, indexPath, fontDir string, progres
 		if err != nil {
 			return stats, fmt.Errorf("构建字体块失败 %s: %w", name, err)
 		}
+		if datLength+int64(len(block)) > maxDatFileSize {
+			return stats, fmt.Errorf("字体 dat0 (%s) 追加后将超过 2GB 上限 (%d 字节)，请先还原原版客户端后重新汉化", dat0Path, datLength+int64(len(block)))
+		}
+		undo.MarkDatWritten()
 		if _, err := datFile.WriteAt(block, datLength); err != nil {
 			return stats, fmt.Errorf("写入字体 dat0 (%s, %s, off=%d) 失败: %w", dat0Path, name, datLength, err)
 		}
@@ -532,4 +566,22 @@ func (c *datCache) Close() {
 		_ = f.Close()
 	}
 	c.files = make(map[string]*sqpack.DatFile)
+}
+
+const maxDatFileSize int64 = 0x7FFFFFFF
+
+func safeJoinUnder(baseDir, rel string) (string, bool) {
+	if filepath.IsAbs(rel) {
+		return "", false
+	}
+	absBase, err := filepath.Abs(baseDir)
+	if err != nil {
+		return "", false
+	}
+	full := filepath.Join(absBase, rel)
+	relPath, err := filepath.Rel(absBase, full)
+	if err != nil || relPath == "." || relPath == ".." || strings.HasPrefix(relPath, ".."+string(os.PathSeparator)) {
+		return "", false
+	}
+	return full, true
 }

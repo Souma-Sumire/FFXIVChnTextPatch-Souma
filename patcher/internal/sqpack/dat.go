@@ -88,6 +88,9 @@ func (d *DatFile) ExtractFile(fileOffset int64) ([]byte, error) {
 	if blockCount > 0 && int64(blockCount)*maxBlockEntrySize > d.size {
 		return nil, fmt.Errorf("dat (%s, off=%d) 文件头非法: 块数 %d 超出文件尺寸 %d", d.f.Name(), fileOffset, blockCount, d.size)
 	}
+	if headerLength < 0 || int64(headerLength) > d.size {
+		return nil, fmt.Errorf("dat (%s, off=%d) 文件头非法: headerLength=%d", d.f.Name(), fileOffset, headerLength)
+	}
 
 	switch contentType {
 	case 2:
@@ -153,7 +156,7 @@ func (d *DatFile) extractType4(fileOffset, headerLength int64, fileSize, blockCo
 		}
 	}
 
-	dataBlocks := make([][]int32, blockCount)
+	dataBlocks := make([][]int64, blockCount)
 	cursor := fileOffset + 24 + int64(blockCount)*20
 	for i := 0; i < int(blockCount); i++ {
 		n := int(blocks[i].NumSubBlocks)
@@ -163,26 +166,26 @@ func (d *DatFile) extractType4(fileOffset, headerLength int64, fileSize, blockCo
 		if int64(n)*2 > d.size {
 			return nil, fmt.Errorf("纹理子块数量 %d 超出文件尺寸 %d", n, d.size)
 		}
-		dataBlocks[i] = make([]int32, n)
+		dataBlocks[i] = make([]int64, n)
 		if n == 0 {
 			continue
 		}
-		dataBlocks[i][0] = blocks[i].Offset
-		running := blocks[i].Offset
+		dataBlocks[i][0] = int64(blocks[i].Offset)
+		running := int64(blocks[i].Offset)
 		for j := 1; j < n; j++ {
 			b, err := d.readAt(cursor, 2)
 			if err != nil {
 				return nil, err
 			}
 			cursor += 2
-			running += int32(binary.LittleEndian.Uint16(b))
+			running += int64(binary.LittleEndian.Uint16(b))
 			dataBlocks[i][j] = running
 		}
 		cursor += 2 // 每个块末尾的填充 short
 	}
 
-	extraHeaderSize := blocks[0].Offset
-	if extraHeaderSize < 0 {
+	extraHeaderSize := int64(blocks[0].Offset)
+	if extraHeaderSize < 0 || extraHeaderSize > int64(fileSize) || fileOffset+headerLength+extraHeaderSize > d.size {
 		return nil, fmt.Errorf("纹理额外头长度非法: %d", extraHeaderSize)
 	}
 	extraHeader, err := d.readAt(fileOffset+headerLength, int(extraHeaderSize))

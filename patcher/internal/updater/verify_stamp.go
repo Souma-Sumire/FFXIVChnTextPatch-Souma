@@ -24,6 +24,8 @@ type verifyStamp struct {
 	Manifest string    `json:"manifest"`
 	Zip      fileStamp `json:"zip"`
 	CSV      treeStamp `json:"csv"`
+	Rules    fileStamp `json:"rules"`
+	Tables   fileStamp `json:"tables"`
 }
 
 type fileStamp struct {
@@ -79,6 +81,12 @@ func buildVerifyStamp(resourceDir string, remote *Manifest) verifyStamp {
 	if st, err := os.Stat(filepath.Join(resourceDir, "rawexd.zip")); err == nil {
 		s.Zip = fileStamp{Size: st.Size(), ModTime: st.ModTime().UnixNano()}
 	}
+	if st, err := os.Stat(filepath.Join(resourceDir, "rules.json")); err == nil {
+		s.Rules = fileStamp{Size: st.Size(), ModTime: st.ModTime().UnixNano()}
+	}
+	if st, err := os.Stat(filepath.Join(resourceDir, "tables.json")); err == nil {
+		s.Tables = fileStamp{Size: st.Size(), ModTime: st.ModTime().UnixNano()}
+	}
 	s.CSV, _ = scanTreeStamp(filepath.Join(resourceDir, "rawexd"))
 	return s
 }
@@ -90,6 +98,20 @@ func (s verifyStamp) matches(resourceDir string, remote *Manifest) bool {
 	}
 	st, err := os.Stat(filepath.Join(resourceDir, "rawexd.zip"))
 	if err != nil || s.Zip.Size != st.Size() || s.Zip.ModTime != st.ModTime().UnixNano() {
+		return false
+	}
+	if s.Rules.Size != 0 || s.Rules.ModTime != 0 {
+		if st, err := os.Stat(filepath.Join(resourceDir, "rules.json")); err != nil || s.Rules.Size != st.Size() || s.Rules.ModTime != st.ModTime().UnixNano() {
+			return false
+		}
+	} else if _, err := os.Stat(filepath.Join(resourceDir, "rules.json")); err == nil {
+		return false
+	}
+	if s.Tables.Size != 0 || s.Tables.ModTime != 0 {
+		if st, err := os.Stat(filepath.Join(resourceDir, "tables.json")); err != nil || s.Tables.Size != st.Size() || s.Tables.ModTime != st.ModTime().UnixNano() {
+			return false
+		}
+	} else if _, err := os.Stat(filepath.Join(resourceDir, "tables.json")); err == nil {
 		return false
 	}
 	csv, ok := scanTreeStamp(filepath.Join(resourceDir, "rawexd"))

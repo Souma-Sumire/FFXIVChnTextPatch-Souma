@@ -11,6 +11,15 @@ import (
 	"github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/patcher/internal/sqpack"
 )
 
+func isFontFile(name string) bool {
+	switch strings.ToLower(filepath.Ext(name)) {
+	case ".tex", ".fdt":
+		return true
+	default:
+		return false
+	}
+}
+
 // CheckFontFiles 在写入任何数据之前，确认 fontDir 里的文件都能在 common/font
 // 找到对应条目。
 //
@@ -47,10 +56,7 @@ func CheckFontFiles(indexPath, fontDir string) error {
 			continue
 		}
 		name := e.Name()
-		// 只看字体文件：目录里混进说明文件一类的东西不该被当成字体去索引里查。
-		switch strings.ToLower(filepath.Ext(name)) {
-		case ".tex", ".fdt":
-		default:
+		if !isFontFile(name) {
 			continue
 		}
 		key := name

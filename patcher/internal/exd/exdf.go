@@ -102,7 +102,7 @@ func BuildEXDF(entries map[int32][]byte) ([]byte, error) {
 		headerSize += 8
 		bodySize += len(v) + 6
 	}
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+	sort.Slice(keys, func(i, j int) bool { return uint32(keys[i]) < uint32(keys[j]) })
 
 	out := make([]byte, 32+headerSize+bodySize)
 	copy(out[0:4], []byte{'E', 'X', 'D', 'F'})

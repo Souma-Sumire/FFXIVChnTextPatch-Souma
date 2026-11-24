@@ -504,19 +504,36 @@ func (a *App) SetCSVDirectoryMeta(language, path, title, desc string) (CSVContex
 	if len([]rune(desc)) > 120 {
 		desc = string([]rune(desc)[:120])
 	}
-	if title == "" && desc == "" {
-		delete(conf.Labels, matched)
-	} else {
-		if conf.Labels == nil {
-			conf.Labels = make(map[string]CSVDirLabel, 1)
+	updatedCfg, err := a.updateConfig(resourceDir, func(latest *AppConfig) error {
+		latestConf := normalizeCSVConfig(latest.CSVDirs[regionKey])
+		latestMatched := ""
+		for _, dir := range latestConf.Dirs {
+			if strings.EqualFold(dir, filepath.Clean(target)) {
+				latestMatched = dir
+				break
+			}
 		}
-		conf.Labels[matched] = CSVDirLabel{Title: title, Desc: desc}
-	}
-	cfg.CSVDirs[regionKey] = normalizeCSVConfig(conf)
-	if err := a.SaveConfig(cfg); err != nil {
+		if latestMatched == "" {
+			return errors.New("该词条目录不在当前区服的列表中")
+		}
+		if title == "" && desc == "" {
+			delete(latestConf.Labels, latestMatched)
+		} else {
+			if latestConf.Labels == nil {
+				latestConf.Labels = make(map[string]CSVDirLabel, 1)
+			}
+			latestConf.Labels[latestMatched] = CSVDirLabel{Title: title, Desc: desc}
+		}
+		if latest.CSVDirs == nil {
+			latest.CSVDirs = CSVDirsByRegion{}
+		}
+		latest.CSVDirs[regionKey] = normalizeCSVConfig(latestConf)
+		return nil
+	})
+	if err != nil {
 		return current, err
 	}
-	return a.csvContext(cfg, doc, regionKey), nil
+	return a.csvContext(updatedCfg, doc, regionKey), nil
 }
 
 // OpenCSVDirectory 在系统文件管理器中打开词条目录；path 为空时打开内置词条目录。
@@ -587,11 +604,20 @@ func customCSVDir(resourceDir string) string {
 // 无需用户选择位置。目录已存在时直接复用，不覆盖用户已修改的内容；
 // convert 为 true 时先按内置的简繁转换（OpenCC 台湾正体）改写副本内容。
 func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext, error) {
+	a.csvCopyMu.Lock()
+	defer a.csvCopyMu.Unlock()
+
 	resourceDir := a.resourceDir()
 	regionKey := normalizeRegionCode(language)
 	cfg := a.loadConfig(resourceDir)
 	doc := a.loadTablesDoc(resourceDir)
 	current := a.csvContext(cfg, doc, regionKey)
+
+	unlock, lockErr := a.lockResource(a.baseContext())
+	if lockErr != nil {
+		return current, lockErr
+	}
+	defer unlock()
 
 	srcDir := filepath.Join(resourceDir, "rawexd")
 	if st, err := os.Stat(srcDir); err != nil || !st.IsDir() {
@@ -636,12 +662,22 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 		if err := os.MkdirAll(tmpDir, 0o755); err != nil {
 			return current, fmt.Errorf("创建自定义词条目录失败: %w", err)
 		}
-		var lastEmit time.Time
+		var lastEmitNano atomic.Int64
 		copyErr := copyCSVTree(srcDir, tmpDir, transform, func(done, total int) {
-			if !a.hasUI() || (done != total && time.Since(lastEmit) < 100*time.Millisecond) {
+			if !a.hasUI() {
 				return
 			}
-			lastEmit = time.Now()
+			now := time.Now().UnixNano()
+			prev := lastEmitNano.Load()
+			if done != total && now-prev < int64(100*time.Millisecond) {
+				return
+			}
+			if done != total && !lastEmitNano.CompareAndSwap(prev, now) {
+				return
+			}
+			if done == total {
+				lastEmitNano.Store(now)
+			}
 			a.emitEvent("csv-copy-progress", ProgressEvent{
 				Stage:  "copy",
 				Detail: detail,
@@ -669,26 +705,28 @@ func (a *App) CopyBuiltinCSVDirectory(language string, convert bool) (CSVContext
 		}
 	}
 
-	conf := normalizeCSVConfig(cfg.CSVDirs[regionKey])
-	conf.Dirs = append(conf.Dirs, dstDir)
-	if created {
-		if conf.Labels == nil {
-			conf.Labels = make(map[string]CSVDirLabel, 1)
+	updatedCfg, err := a.updateConfig(resourceDir, func(latest *AppConfig) error {
+		conf := normalizeCSVConfig(latest.CSVDirs[regionKey])
+		conf.Dirs = append(conf.Dirs, dstDir)
+		if created {
+			if conf.Labels == nil {
+				conf.Labels = make(map[string]CSVDirLabel, 1)
+			}
+			conf.Labels[dstDir] = CSVDirLabel{Desc: copyDescription(resourceDir, convert)}
 		}
-		conf.Labels[dstDir] = CSVDirLabel{Desc: copyDescription(resourceDir, convert)}
-	}
-	conf = normalizeCSVConfig(conf)
-	conf.Selected = dstDir
-	cfg.CSVDirs[regionKey] = conf
-	if err := a.SaveConfig(cfg); err != nil {
+		conf = normalizeCSVConfig(conf)
+		conf.Selected = dstDir
+		if latest.CSVDirs == nil {
+			latest.CSVDirs = CSVDirsByRegion{}
+		}
+		latest.CSVDirs[regionKey] = conf
+		return nil
+	})
+	if err != nil {
 		return current, err
 	}
-	selectedDesc := "内置词条"
-	if conf.Selected != "" {
-		selectedDesc = conf.Selected
-	}
-	a.emitDiag("词条操作：切换词条来源（区服=%s | 目标=%s）", regionKey, selectedDesc)
-	return a.csvContext(cfg, doc, regionKey), nil
+	a.emitDiag("词条操作：切换词条来源（区服=%s | 目标=%s）", regionKey, dstDir)
+	return a.csvContext(updatedCfg, doc, regionKey), nil
 }
 
 // copyDescription 记录副本基于哪份内置词条快照，简繁转换副本额外注明。
@@ -730,35 +768,41 @@ func (a *App) SetCSVSelection(language, path string) (CSVContext, error) {
 	doc := a.loadTablesDoc(resourceDir)
 	current := a.csvContext(cfg, doc, regionKey)
 
-	conf := normalizeCSVConfig(cfg.CSVDirs[regionKey])
-	conf.Selected = ""
-	if strings.TrimSpace(path) != "" {
-		target := filepath.Clean(strings.TrimSpace(path))
-		matched := ""
-		for _, dir := range conf.Dirs {
-			if strings.EqualFold(dir, target) {
-				matched = dir
-				break
+	updatedCfg, err := a.updateConfig(resourceDir, func(latest *AppConfig) error {
+		latestConf := normalizeCSVConfig(latest.CSVDirs[regionKey])
+		latestConf.Selected = ""
+		if strings.TrimSpace(path) != "" {
+			target := filepath.Clean(strings.TrimSpace(path))
+			matched := ""
+			for _, dir := range latestConf.Dirs {
+				if strings.EqualFold(dir, target) {
+					matched = dir
+					break
+				}
 			}
+			if matched == "" {
+				return errors.New("该词条目录不在当前区服的列表中")
+			}
+			if !csvDirHasTables(matched, knownTableKeys(doc)) {
+				return errCSVDirInvalid
+			}
+			latestConf.Selected = matched
 		}
-		if matched == "" {
-			return current, errors.New("该词条目录不在当前区服的列表中")
+		if latest.CSVDirs == nil {
+			latest.CSVDirs = CSVDirsByRegion{}
 		}
-		if !csvDirHasTables(matched, knownTableKeys(doc)) {
-			return current, errCSVDirInvalid
-		}
-		conf.Selected = matched
-	}
-	cfg.CSVDirs[regionKey] = conf
-	if err := a.SaveConfig(cfg); err != nil {
+		latest.CSVDirs[regionKey] = latestConf
+		return nil
+	})
+	if err != nil {
 		return current, err
 	}
 	selectedDesc := "内置词条"
-	if conf.Selected != "" {
-		selectedDesc = conf.Selected
+	if sel := normalizeCSVConfig(updatedCfg.CSVDirs[regionKey]).Selected; sel != "" {
+		selectedDesc = sel
 	}
 	a.emitDiag("词条操作：切换词条来源（区服=%s | 目标=%s）", regionKey, selectedDesc)
-	return a.csvContext(cfg, doc, regionKey), nil
+	return a.csvContext(updatedCfg, doc, regionKey), nil
 }
 
 // removeCSVDirectoryFiles 删除程序生成的词条副本目录。
@@ -826,27 +870,34 @@ func (a *App) RemoveCSVDirectory(language, path string, deleteFiles bool) (CSVCo
 		}
 	}
 
-	kept := make([]string, 0, len(conf.Dirs))
-	for _, dir := range conf.Dirs {
-		if dir != matched {
-			kept = append(kept, dir)
+	updatedCfg, err := a.updateConfig(resourceDir, func(latest *AppConfig) error {
+		latestConf := normalizeCSVConfig(latest.CSVDirs[regionKey])
+		kept := make([]string, 0, len(latestConf.Dirs))
+		for _, dir := range latestConf.Dirs {
+			if !strings.EqualFold(dir, matched) {
+				kept = append(kept, dir)
+			}
 		}
-	}
-	conf.Dirs = kept
-	if strings.EqualFold(conf.Selected, matched) {
-		conf.Selected = ""
-	}
-	for key := range conf.Labels {
-		if strings.EqualFold(key, matched) {
-			delete(conf.Labels, key)
+		latestConf.Dirs = kept
+		if strings.EqualFold(latestConf.Selected, matched) {
+			latestConf.Selected = ""
 		}
-	}
-	cfg.CSVDirs[regionKey] = normalizeCSVConfig(conf)
-	if err := a.SaveConfig(cfg); err != nil {
-		return a.csvContext(cfg, doc, regionKey), err
+		for key := range latestConf.Labels {
+			if strings.EqualFold(key, matched) {
+				delete(latestConf.Labels, key)
+			}
+		}
+		if latest.CSVDirs == nil {
+			latest.CSVDirs = CSVDirsByRegion{}
+		}
+		latest.CSVDirs[regionKey] = normalizeCSVConfig(latestConf)
+		return nil
+	})
+	if err != nil {
+		return a.csvContext(updatedCfg, doc, regionKey), err
 	}
 	a.emitDiag("词条操作：移除自定义词条目录（区服=%s | 删除文件=%t | 目录=%s）", regionKey, deleteFiles, matched)
-	return a.csvContext(cfg, doc, regionKey), nil
+	return a.csvContext(updatedCfg, doc, regionKey), nil
 }
 
 // CSVPreviewResult 是前端小窗预览单个 CSV 表的返回结果。
@@ -927,6 +978,12 @@ func (a *App) PreviewCSVTable(language, tableKey, query string, offset, limit in
 	}
 	end := min(offset+limit, total)
 	page := matched[offset:end]
+	if headers == nil {
+		headers = []string{}
+	}
+	if page == nil {
+		page = [][]string{}
+	}
 
 	return CSVPreviewResult{
 		TableKey:  trimmedKey,
@@ -1019,7 +1076,7 @@ type CSVSearchResult struct {
 func (a *App) SearchCSVContent(language, query string, maxHits int) (CSVSearchResult, error) {
 	q := strings.TrimSpace(query)
 	if q == "" {
-		return CSVSearchResult{Query: ""}, nil
+		return CSVSearchResult{Query: "", Hits: []CSVSearchHit{}}, nil
 	}
 	if maxHits <= 0 {
 		maxHits = 200
@@ -1067,13 +1124,13 @@ func (a *App) SearchCSVContent(language, query string, maxHits int) (CSVSearchRe
 		entries = buildTableList(doc)
 	}
 	if len(entries) == 0 {
-		return CSVSearchResult{Query: q}, nil
+		return CSVSearchResult{Query: q, Hits: []CSVSearchHit{}}, nil
 	}
 
 	qLower := strings.ToLower(q)
 	qBytes := []byte(q)
 	qLowerBytes := []byte(qLower)
-	hasASCIIUpperOrLower := hasASCIILetter(q)
+	hasASCIIUpperOrLower := q != qLower || q != strings.ToUpper(q)
 	canPrefilter := !strings.ContainsRune(q, '"')
 
 	perTableHits := make([][]CSVSearchHit, len(entries))

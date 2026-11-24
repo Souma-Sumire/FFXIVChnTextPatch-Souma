@@ -100,7 +100,10 @@ type App struct {
 	scanRunning chan struct{}
 
 	detectMu     sync.Mutex
+	detectSeq    uint64
 	detectCancel context.CancelFunc
+
+	csvCopyMu sync.Mutex
 
 	csvSearchMu     sync.Mutex
 	csvSearchSeq    uint64
@@ -108,6 +111,10 @@ type App struct {
 
 	cancelPatchMu sync.Mutex
 	cancelPatch   context.CancelFunc
+
+	allowedFilesMu sync.Mutex
+	allowedReads   map[string]struct{}
+	allowedWrites  map[string]struct{}
 
 	mainWin *mygo.Window
 	appIcon []byte
@@ -1231,12 +1238,22 @@ func completeTargetLanguages(saved LanguagesByRegion) LanguagesByRegion {
 	return out
 }
 
+func (a *App) baseContext() context.Context {
+	if a != nil && a.ctx != nil {
+		return a.ctx
+	}
+	return context.Background()
+}
+
 // SaveConfig 保存前端配置到 config.json。
 // 写盘段全程持锁：并发调用会在固定名称的 .tmp 上互相踩踏。
 func (a *App) SaveConfig(cfg AppConfig) error {
 	a.cfgMu.Lock()
 	defer a.cfgMu.Unlock()
-	resourceDir := a.resourceDir()
+	return a.saveConfigLocked(a.resourceDir(), cfg)
+}
+
+func (a *App) saveConfigLocked(resourceDir string, cfg AppConfig) error {
 	dirs := make(map[string]string, len(cfg.GameDirs))
 	for lang, dir := range cfg.GameDirs {
 		if dir == "" {
@@ -1284,17 +1301,38 @@ func (a *App) SaveConfig(cfg AppConfig) error {
 	return writeFileAtomic(cfgPath, append(data, '\n'))
 }
 
+// updateConfig 持 cfgMu 重读最新配置、执行局部修改并原子落盘，避免跨锁 RMW 覆盖并发更新。
+func (a *App) updateConfig(resourceDir string, mutate func(*AppConfig) error) (AppConfig, error) {
+	a.cfgMu.Lock()
+	defer a.cfgMu.Unlock()
+	cfg := a.loadConfigLocked(resourceDir)
+	if err := mutate(&cfg); err != nil {
+		return cfg, err
+	}
+	if err := a.saveConfigLocked(resourceDir, cfg); err != nil {
+		return cfg, err
+	}
+	return cfg, nil
+}
+
 // DetectGamePaths 扫描指定区服的常见安装位置，必要时在磁盘 3 层目录内搜索；
 // 扫描可被 CancelDetect 中止。
 func (a *App) DetectGamePaths(language string) []string {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(a.baseContext())
 	a.detectMu.Lock()
+	if a.detectCancel != nil {
+		a.detectCancel()
+	}
+	a.detectSeq++
+	seq := a.detectSeq
 	a.detectCancel = cancel
 	a.detectMu.Unlock()
 	defer func() {
 		cancel()
 		a.detectMu.Lock()
-		a.detectCancel = nil
+		if a.detectSeq == seq {
+			a.detectCancel = nil
+		}
 		a.detectMu.Unlock()
 	}()
 
@@ -1592,10 +1630,21 @@ type ClientStatusResult struct {
 	Font ClientPartStatus `json:"font"`
 }
 
-// writeFileAtomic 先写临时文件再改名，避免进程中断留下截断的清单文件。
+// writeFileAtomic 先写唯一临时文件再改名，避免进程中断留下截断文件或并发写同路径互相踩踏。
 func writeFileAtomic(path string, data []byte) error {
-	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, data, 0o644); err != nil {
+	dir := filepath.Dir(path)
+	tmpFile, err := os.CreateTemp(dir, "."+filepath.Base(path)+".*.tmp")
+	if err != nil {
+		return err
+	}
+	tmp := tmpFile.Name()
+	if _, err := tmpFile.Write(data); err != nil {
+		_ = tmpFile.Close()
+		_ = os.Remove(tmp)
+		return err
+	}
+	if err := tmpFile.Close(); err != nil {
+		_ = os.Remove(tmp)
 		return err
 	}
 	if err := os.Rename(tmp, path); err != nil {
@@ -2583,31 +2632,32 @@ func (a *App) StartPatch(req PatchRequest) (resp PatchResponse, err error) {
 	resp.Notes = result.Plan.Notes
 
 	// 保存游戏目录与语言，便于下次启动。
-	cfgSaved := a.loadConfig(resourceDir)
-	if cfgSaved.GameDirs == nil {
-		cfgSaved.GameDirs = make(map[string]string)
-	}
 	normLang := normalizeRegionCode(string(lang))
-	cfgSaved.GameDirs[normLang] = req.GameDir
-	cfgSaved.Language = string(lang)
-	if cfgSaved.TargetLanguages == nil {
-		cfgSaved.TargetLanguages = LanguagesByRegion{}
-	}
-	cfgSaved.TargetLanguages[normLang] = targetLangs
-	cfgSaved.ReplaceText = req.ReplaceText
-	cfgSaved.ReplaceFont = req.ReplaceFont
-	scope := req.CustomScope
-	if scope == nil && req.Preset == "custom" {
-		scope = cfgSaved.CustomScope
-	}
-	cfgSaved.Preset, cfgSaved.CustomScope = normalizeTableScope(req.Preset, scope)
-	if cfgSaved.Rules == nil {
-		cfgSaved.Rules = map[string]bool{}
-	}
-	for id, on := range req.Rules {
-		cfgSaved.Rules[id] = on
-	}
-	if err := a.SaveConfig(cfgSaved); err != nil {
+	if _, err := a.updateConfig(resourceDir, func(cfgSaved *AppConfig) error {
+		if cfgSaved.GameDirs == nil {
+			cfgSaved.GameDirs = make(map[string]string)
+		}
+		cfgSaved.GameDirs[normLang] = req.GameDir
+		cfgSaved.Language = string(lang)
+		if cfgSaved.TargetLanguages == nil {
+			cfgSaved.TargetLanguages = LanguagesByRegion{}
+		}
+		cfgSaved.TargetLanguages[normLang] = targetLangs
+		cfgSaved.ReplaceText = req.ReplaceText
+		cfgSaved.ReplaceFont = req.ReplaceFont
+		scope := req.CustomScope
+		if scope == nil && req.Preset == "custom" {
+			scope = cfgSaved.CustomScope
+		}
+		cfgSaved.Preset, cfgSaved.CustomScope = normalizeTableScope(req.Preset, scope)
+		if cfgSaved.Rules == nil {
+			cfgSaved.Rules = map[string]bool{}
+		}
+		for id, on := range req.Rules {
+			cfgSaved.Rules[id] = on
+		}
+		return nil
+	}); err != nil {
 		a.emitWarn(logTagConfig, "保存本地配置失败：%v", err)
 	}
 
@@ -2749,8 +2799,9 @@ func (a *App) SyncResources() (SyncSummary, error) {
 	defer a.endBusy()
 
 	resourceDir := a.resourceDir()
+	ctx := a.baseContext()
 	a.emitDiag("=== 开始手动同步资源 ===")
-	unlock, lockErr := a.lockResource(a.ctx)
+	unlock, lockErr := a.lockResource(ctx)
 	if lockErr != nil {
 		return summary, lockErr
 	}
@@ -2758,7 +2809,10 @@ func (a *App) SyncResources() (SyncSummary, error) {
 	// 复用共享的 updater 实例：节点连通性记忆（直连是否够快、哪个镜像最快）
 	// 在手动同步与汉化前检查之间共享，避免重新探测一遍。
 	u := a.updater
-	status, err := u.Provision(a.ctx, resourceDir, func(stage, detail string, done, total int64) {
+	status, err := u.Provision(ctx, resourceDir, func(stage, detail string, done, total int64) {
+		if a.shouldThrottleProgress("sync:"+stage, detail, done, total) {
+			return
+		}
 		a.emitEvent("sync-progress", ProgressEvent{
 			Stage: stage, Detail: detail, Done: done, Total: total,
 		})
@@ -2805,7 +2859,7 @@ func (a *App) CheckAppUpdate() (updater.AppUpdateInfo, error) {
 	}
 
 	// API 阶段与网页端回退各有一次超时，整体预算需要覆盖「直连 API 不通 → 镜像 API → 网页端」的完整链路。
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(a.baseContext(), 15*time.Second)
 	defer cancel()
 
 	a.emitDiag("检查应用更新：当前版本=%s", current)
@@ -2838,7 +2892,7 @@ func (a *App) InstallAppUpdate() error {
 		return fmt.Errorf("无法定位当前程序: %w", err)
 	}
 
-	checkCtx, cancelCheck := context.WithTimeout(context.Background(), 15*time.Second)
+	checkCtx, cancelCheck := context.WithTimeout(a.baseContext(), 15*time.Second)
 	info, err := updater.CheckAppUpdate(checkCtx, a.getCloud(), appUpdateRepo, appVersion)
 	cancelCheck()
 	if err != nil {
@@ -2851,7 +2905,7 @@ func (a *App) InstallAppUpdate() error {
 	a.emitDiag("=== 开始应用更新 === 当前=%s | 目标=v%s", appVersion, info.LatestVersion)
 	a.emitAppUpdateProgress("download", fmt.Sprintf("正在下载 v%s", info.LatestVersion), 0, 0)
 
-	downloadCtx, cancelDownload := context.WithTimeout(context.Background(), 30*time.Minute)
+	downloadCtx, cancelDownload := context.WithTimeout(a.baseContext(), 30*time.Minute)
 	defer cancelDownload()
 	// 正常网络下首个线路即可完成下载，线路名对用户没有意义。
 	// 只有首条线路失败、真正发生切换时才记录，便于排查网络问题。
@@ -3081,11 +3135,7 @@ func (a *App) DeleteFontPreset(language string, presetId string) error {
 		return nil
 	}
 	cfg.FontPresets[regionKey] = defaultPresetForRegionWithConfig(targetReg, cfg)
-	data, err := json.MarshalIndent(cfg, "", "  ")
-	if err != nil {
-		return err
-	}
-	return writeFileAtomic(configPathFor(resourceDir), append(data, '\n'))
+	return a.saveConfigLocked(resourceDir, cfg)
 }
 
 // RenameFontPreset 重命名字体方案（仅自定义方案）；配置里指向旧 id 时同步改成新 id。
@@ -3105,11 +3155,7 @@ func (a *App) RenameFontPreset(language string, presetId string, newName string)
 		return summary, nil
 	}
 	cfg.FontPresets[regionKey] = summary.ID
-	data, err := json.MarshalIndent(cfg, "", "  ")
-	if err != nil {
-		return summary, err
-	}
-	if err := writeFileAtomic(configPathFor(resourceDir), append(data, '\n')); err != nil {
+	if err := a.saveConfigLocked(resourceDir, cfg); err != nil {
 		return summary, err
 	}
 	return summary, nil
@@ -3150,11 +3196,7 @@ func (a *App) SelectFontPreset(language string, presetId string) error {
 	}
 	cfg.FontPresets[regionKey] = presetId
 
-	data, err := json.MarshalIndent(cfg, "", "  ")
-	if err != nil {
-		return err
-	}
-	return writeFileAtomic(configPathFor(resourceDir), append(data, '\n'))
+	return a.saveConfigLocked(resourceDir, cfg)
 }
 
 func (a *App) GetSystemFonts() ([]string, error) {
@@ -3243,9 +3285,12 @@ func (a *App) GetFontTexture16Bit() bool {
 
 // SetFontTexture16Bit 设置是否开启 16 位贴图压缩并持久化
 func (a *App) SetFontTexture16Bit(enable bool) error {
-	cfg := a.loadConfig(a.resourceDir())
-	cfg.FontTexture16Bit = &enable
-	return a.SaveConfig(cfg)
+	_, err := a.updateConfig(a.resourceDir(), func(cfg *AppConfig) error {
+		v := enable
+		cfg.FontTexture16Bit = &v
+		return nil
+	})
+	return err
 }
 
 // ExportFontRaw 编译并导出原始字体文件 (.fdt / .tex)
@@ -3365,12 +3410,57 @@ func (a *App) SelectFontFile() (string, error) {
 	})
 }
 
+func normalizeAuthorizedPath(p string) string {
+	clean := filepath.Clean(strings.TrimSpace(p))
+	if goruntime.GOOS == "windows" {
+		return strings.ToLower(clean)
+	}
+	return clean
+}
+
+func (a *App) authorizeFile(path string, allowRead, allowWrite bool) {
+	key := normalizeAuthorizedPath(path)
+	if key == "" || key == "." {
+		return
+	}
+	a.allowedFilesMu.Lock()
+	defer a.allowedFilesMu.Unlock()
+	if allowRead {
+		if a.allowedReads == nil {
+			a.allowedReads = make(map[string]struct{})
+		}
+		a.allowedReads[key] = struct{}{}
+	}
+	if allowWrite {
+		if a.allowedWrites == nil {
+			a.allowedWrites = make(map[string]struct{})
+		}
+		a.allowedWrites[key] = struct{}{}
+	}
+}
+
+func (a *App) isFileAuthorized(path string, forWrite bool) bool {
+	key := normalizeAuthorizedPath(path)
+	a.allowedFilesMu.Lock()
+	defer a.allowedFilesMu.Unlock()
+	if forWrite {
+		_, ok := a.allowedWrites[key]
+		return ok
+	}
+	_, ok := a.allowedReads[key]
+	return ok
+}
+
 // SelectFontJsonFile 弹出原生文件选择框供用户选取字体方案 JSON 文件
 func (a *App) SelectFontJsonFile() (string, error) {
-	return a.openFileDialog("导入字体方案文件", []mygo.FileFilter{
+	file, err := a.openFileDialog("导入字体方案文件", []mygo.FileFilter{
 		{Name: "字体方案", Extensions: []string{"json"}},
 		{Name: "所有文件", Extensions: []string{"*"}},
 	})
+	if err == nil && file != "" {
+		a.authorizeFile(file, true, true)
+	}
+	return file, err
 }
 
 // SelectFontJsonSavePath 弹出原生文件保存框供用户导出 JSON 方案
@@ -3378,9 +3468,13 @@ func (a *App) SelectFontJsonSavePath(defaultName string) (string, error) {
 	if defaultName == "" {
 		defaultName = "FFXIV_Font_Preset.json"
 	}
-	return a.saveFileDialog("导出字体方案 JSON 文件", defaultName, []mygo.FileFilter{
+	file, err := a.saveFileDialog("导出字体方案 JSON 文件", defaultName, []mygo.FileFilter{
 		{Name: "字体方案", Extensions: []string{"json"}},
 	})
+	if err == nil && file != "" {
+		a.authorizeFile(file, false, true)
+	}
+	return file, err
 }
 
 // SelectTTMPSavePath 弹出原生文件保存框供用户指定 TTMP2 输出路径
@@ -3392,7 +3486,7 @@ func (a *App) SelectTTMPSavePath() (string, error) {
 
 // OpenElementEditorWindow 打开或复用单例「字体图层属性」原生子窗口。
 func (a *App) OpenElementEditorWindow(title string, stateJson string) error {
-	if !a.hasUI() {
+	if !a.hasUI() || a.quitting.Load() {
 		return errors.New("桌面运行时未就绪")
 	}
 	if strings.TrimSpace(title) == "" {
@@ -3405,8 +3499,10 @@ func (a *App) OpenElementEditorWindow(title string, stateJson string) error {
 
 	a.elemWinMu.Lock()
 	win := a.elemWin
+	a.elemWinMu.Unlock()
 	if win == nil || win.IsDestroyed() {
-		win = mygo.NewWindow(mygo.WindowOptions{
+		// 锁外调用 mygo.NewWindow/SetIcon，避免与主线程 prepareQuit() 形成 AB-BA 死锁。
+		created := mygo.NewWindow(mygo.WindowOptions{
 			Title:           title,
 			Width:           1060,
 			Height:          720,
@@ -3419,21 +3515,36 @@ func (a *App) OpenElementEditorWindow(title string, stateJson string) error {
 			},
 		})
 		if len(a.appIcon) > 0 {
-			_ = win.SetIcon(a.appIcon)
+			_ = created.SetIcon(a.appIcon)
 		}
-		win.OnClose(func(e *mygo.CloseEvent) {
+		created.OnClose(func(e *mygo.CloseEvent) {
 			if a.quitting.Load() {
 				return
 			}
 			e.PreventDefault()
-			win.Hide()
+			created.Hide()
 			a.emitEvent("elem-editor:native-close")
 		})
-		a.elemWin = win
+		a.elemWinMu.Lock()
+		if a.quitting.Load() {
+			a.elemWinMu.Unlock()
+			created.Destroy()
+			return nil
+		}
+		if a.elemWin != nil && !a.elemWin.IsDestroyed() {
+			existing := a.elemWin
+			a.elemWinMu.Unlock()
+			created.Destroy()
+			existing.SetTitle(title)
+			existing.Show()
+			existing.Focus()
+			a.emitEvent("elem-editor:open", stateJson)
+			return nil
+		}
+		a.elemWin = created
 		a.elemWinMu.Unlock()
 		return nil
 	}
-	a.elemWinMu.Unlock()
 
 	win.SetTitle(title)
 	win.Show()
@@ -3487,8 +3598,19 @@ func (a *App) GetElementEditorState() string {
 	return a.elemState
 }
 
-// ReadTextFile 读取指定文本文件内容
+// ReadTextFile 读取经由文件选择对话框授权的文本文件内容
 func (a *App) ReadTextFile(filePath string) (string, error) {
+	if !a.isFileAuthorized(filePath, false) {
+		return "", errors.New("未授权的文件读取路径")
+	}
+	const maxTextFileBytes = 32 * 1024 * 1024
+	st, err := os.Stat(filePath)
+	if err != nil {
+		return "", err
+	}
+	if st.Size() > maxTextFileBytes {
+		return "", fmt.Errorf("文件体积超过上限 (%d 字节)", maxTextFileBytes)
+	}
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return "", err
@@ -3496,10 +3618,13 @@ func (a *App) ReadTextFile(filePath string) (string, error) {
 	return string(bytes), nil
 }
 
-// WriteTextFile 将文本内容原子写入指定文件
+// WriteTextFile 将文本内容原子写入经由文件对话框授权的目标文件
 func (a *App) WriteTextFile(filePath string, content string) error {
 	if strings.TrimSpace(filePath) == "" {
 		return errors.New("文件路径不能为空")
+	}
+	if !a.isFileAuthorized(filePath, true) {
+		return errors.New("未授权的文件写入路径")
 	}
 	return writeFileAtomic(filepath.Clean(filePath), []byte(content))
 }

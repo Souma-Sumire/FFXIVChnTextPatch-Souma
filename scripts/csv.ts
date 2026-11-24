@@ -35,7 +35,7 @@ const IGNORED_ROOT_CSVS = new Set([
   "RacingChocoboName.csv",
   "World.csv",
 ]);
-const NO_TRANSLATION_REG = /^●|翻訳不要|^[<hex:A-Z0-9>\\!@#$%^&*()_+-=/ 《》]+$/;
+const NO_TRANSLATION_REG = /^●|翻訳不要|^(?:<hex:[0-9A-Fa-f]+>|[A-Z0-9\\!@#$%^&*()_+\-=/ 《》])+$/;
 const SHOUTING_REG = /(?<=(?:“说话”频道.*输入).*?“)(?<str>(?!<hex).+?)(?=”)/;
 const SKIP_REG = /（★未使用／削除予定★）/;
 const KANA_REG = /[\u3040-\u309f\u30a0-\u30ff]/;
@@ -62,7 +62,7 @@ function parseCsv(content: string): string[][] {
       } else {
         field += ch;
       }
-    } else if (ch === '"') {
+    } else if (ch === '"' && field.length === 0) {
       inQuotes = true;
     } else if (ch === ",") {
       row.push(field);
@@ -382,7 +382,8 @@ function processRootCsv(fileName: string): void {
       ? ["0", "1"]
       : headerKeys.slice(1).filter((_, idx) => typeKeys[idx + 1]?.trim() === "String");
 
-  const cnMap = readCsvRowMap(cnPath, targetCols);
+  const cnTargetCols = [...new Set([...targetCols, ...Object.values(cnColShift[fileName] ?? {})])];
+  const cnMap = readCsvRowMap(cnPath, cnTargetCols);
   const enMap = readCsvRowMap(enPath, targetCols);
   let soumaMap: Map<string, Record<string, string>> | null = null;
 
@@ -433,7 +434,7 @@ function processRootCsv(fileName: string): void {
         },
       });
 
-      outRow.push(rawVal.replaceAll(/\n/g, "<hex:02100103>"));
+      outRow.push(rawVal.replaceAll(/\r?\n/g, "<hex:02100103>"));
     }
 
     outRows.push(outRow);
@@ -462,8 +463,6 @@ function readDialogueMap(filePath: string): Map<string, string> {
   return map;
 }
 
-const shoutingCollect = new Set<string>();
-
 function processFolderCsv(relPath: string): void {
   const jaPath = path.join(CSV_PATHS.ja, relPath);
   const cnPath = path.join(CSV_PATHS.cn, relPath);
@@ -473,6 +472,20 @@ function processFolderCsv(relPath: string): void {
   const jaRows = parseCsv(fs.readFileSync(jaPath, "utf8"));
   const cnMap = readDialogueMap(cnPath);
   const enMap = readDialogueMap(enPath);
+  const shoutingCollect = new Set<string>();
+
+  for (let i = 0; i < jaRows.length; i++) {
+    const r = jaRows[i];
+    if (!r) continue;
+    const key = r[0] ?? "";
+    if (TOP_KEYS.has(key)) continue;
+    const textId = r[1] ?? "";
+    const cnText = cnMap.get(textId) ?? "";
+    const m = cnText.match(SHOUTING_REG);
+    if (m?.[0]) {
+      shoutingCollect.add(m[0]);
+    }
+  }
 
   const outRows: string[][] = [];
   for (let i = 0; i < jaRows.length; i++) {
@@ -504,9 +517,8 @@ function processFolderCsv(relPath: string): void {
       c2 = enText;
     } else {
       c2 = c1.replace(SHOUTING_REG, (value) => {
-        shoutingCollect.add(value);
         const match = enText?.match(/“(?<str>.+?)”/);
-        return match?.groups?.["str"] ?? "";
+        return match?.groups?.["str"] ?? value;
       });
       if (shoutingCollect.has(c1) && /^TEXT_.+(?:TODO|SYSTEM)/.test(textId) && enText !== undefined) {
         c2 = enText;
