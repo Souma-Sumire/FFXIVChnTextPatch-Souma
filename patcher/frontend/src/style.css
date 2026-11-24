@@ -676,6 +676,11 @@ svg {
   margin-right: 0;
 }
 
+.lang-picker.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .lang-picker-label {
   font-size: var(--fs-label);
   color: var(--text-3);

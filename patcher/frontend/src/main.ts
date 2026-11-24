@@ -1268,15 +1268,20 @@ function toggleConsole(open?: boolean): void {
   }
 }
 
-// 「词条目录」「选表范围」跟「文本数据」开关联动：关掉时没有意义，禁用；打开立刻恢复。
+// 「词条目录」「选表范围」「替换语言」跟「文本数据」开关联动：关掉时没有意义，禁用；打开立刻恢复。
 // 之前只有 endCSVBusy() 里按开关算过一次 disabled，之后开开关没有任何地方清掉它，
 // 于是启动时如果是关的，后面怎么开都点不动。
 function updateTextScopeState(): void {
   const disabled = busy || Boolean(csvBusyText) || !el.replaceText.checked;
   el.btnOpenTables.disabled = disabled;
   el.csvTrigger.disabled = disabled;
+  el.targetLangTrigger.disabled = disabled;
   el.btnOpenTables.closest(".scope-control")?.classList.toggle("disabled", disabled);
   el.csvPicker?.classList.toggle("disabled", disabled);
+  el.targetLangTrigger.closest(".lang-picker")?.classList.toggle("disabled", disabled);
+  if (disabled) {
+    toggleTargetLangMenu(false);
+  }
   updateWorkbenchState();
 }
 
@@ -7603,7 +7608,7 @@ function wireEvents(): void {
 
   el.targetLangTrigger.addEventListener("click", (e) => {
     e.stopPropagation();
-    if (busy) {
+    if (busy || !el.replaceText.checked) {
       return;
     }
     toggleTargetLangMenu();
