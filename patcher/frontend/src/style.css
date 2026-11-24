@@ -2806,13 +2806,7 @@ body.is-resizing-log * {
 .fc-preset-picker {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   height: 24px;
-}
-
-.fc-preset-icon {
-  color: var(--text-3);
-  flex-shrink: 0;
 }
 
 .fc-preset-select {

@@ -6191,8 +6191,6 @@ function renderPropsPanel(): void {
   const elem = face?.elements[activeElementIndex];
   if (!elem) return;
 
-  ensureElementDefaults(elem);
-
   const curFamily = getElementFamily(elem);
   el.propFontFamily.replaceChildren();
   const optDefault = document.createElement("option");
